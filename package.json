@@ -1,0 +1,38 @@
+{
+  "name": "lint-staged",
+  "version": "0.1.0",
+  "description": "Lint JS and CSS files staged by git",
+  "bin": {
+    "eslint-staged": "./eslint.sh",
+    "stylelint-staged": "./stylelint.sh"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okonet/lint-staged.git"
+  },
+  "keywords": [
+    "lint",
+    "git",
+    "staged",
+    "javascript",
+    "css",
+    "eslint",
+    "stylelint",
+    "code",
+    "quality"
+  ],
+  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/okonet/lint-staged/issues"
+  },
+  "homepage": "https://github.com/okonet/lint-staged#readme",
+  "dependencies": {
+    "eslint": "^1.10.3",
+    "staged-files": "^0.1.2",
+    "stylelint": "^3.2.2"
+  }
+}
