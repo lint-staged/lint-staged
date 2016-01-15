@@ -12,6 +12,6 @@ This repsitory contains 2 shell scrtips that run [ESLint](http://eslint.org) and
 To start linting, you have to install a pre-commit hook:
 
 1. `npm install -D pre-commit`
-1. Add `"eslint": "eslint"` to scripts section of package.json (if you want to lint your JS)
-1. Add `"stylelint": "stylelint"` to scripts section of package.json (if you want to lint your CSS)
-1. Add `pre-commit": [ "eslint", "stylelint" ]` to package.json
+1. Add `"eslint-staged": "eslint-staged"` to scripts section of package.json (if you want to lint your JS)
+1. Add `"stylelint-staged": "stylelint-staged"` to scripts section of package.json (if you want to lint your CSS)
+1. Add `pre-commit": [ "eslint-staged", "stylelint-staged" ]` to package.json
