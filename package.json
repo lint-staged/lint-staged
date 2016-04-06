@@ -7,7 +7,7 @@
     "stylelint-staged": "./stylelint.sh"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,6 @@
   },
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
-    "eslint": "^1.10.3",
-    "staged-files": "^0.1.2",
-    "stylelint": "^3.2.2"
+    "staged-files": "^0.1.2"
   }
 }
