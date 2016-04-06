@@ -1,6 +1,6 @@
 {
   "name": "lint-staged",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Lint JS and CSS files staged by git",
   "bin": {
     "eslint-staged": "./scripts/eslint-staged.sh",
