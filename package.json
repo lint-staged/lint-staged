@@ -5,7 +5,7 @@
   "bin": {
     "eslint-staged": "./scripts/eslint-staged.sh",
     "jscs-staged": "./scripts/jscs-staged.sh",
-    "flow-staged": "./scripts/eslint-staged.sh",
+    "flow-staged": "./scripts/flow-staged.sh",
     "stylelint-staged": "./scripts/stylelint-staged.sh"
   },
   "scripts": {
