@@ -3,10 +3,10 @@
   "version": "0.1.1",
   "description": "Lint JS and CSS files staged by git",
   "bin": {
-    "eslint-staged": "./eslint.sh",
-    "jscs-staged": "./jscs.sh",
-    "flow-staged": "./eslint.sh",
-    "stylelint-staged": "./stylelint.sh"
+    "eslint-staged": "./eslint-staged.sh",
+    "jscs-staged": "./jscs-staged.sh",
+    "flow-staged": "./eslint-staged.sh",
+    "stylelint-staged": "./stylelint-staged.sh"
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0"
