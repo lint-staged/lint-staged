@@ -4,6 +4,8 @@
   "description": "Lint JS and CSS files staged by git",
   "bin": {
     "eslint-staged": "./eslint.sh",
+    "jscs-staged": "./jscs.sh",
+    "flow-staged": "./eslint.sh",
     "stylelint-staged": "./stylelint.sh"
   },
   "scripts": {
