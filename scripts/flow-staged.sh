@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-executable=node_modules/.bin/staged-files
+executable=$(npm bin)/staged-files
 linter_name="flow"
-linter_path=flow
+linter_path=$(npm bin)/flow
 lint_extensions="**/*.@(js|jsx)"
 
-if [[ -e "${linter_path}" ]]; then
+if [[ -f "${linter_path}" ]]; then
   echo "Running ${linter_name} on git staged files: ${lint_extensions}"
   ${executable} "${lint_extensions}" -- ${linter_path}
 else

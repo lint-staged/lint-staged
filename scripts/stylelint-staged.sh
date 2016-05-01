@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-executable=node_modules/.bin/staged-files
+executable=$(npm bin)/staged-files
 linter_name="stylelint"
-linter_path=./node_modules/.bin/stylelint
+linter_path=$(npm bin)/stylelint
 lint_extensions="**/*.@(css|scss|less|styl)"
 
-if [[ -e "${linter_path}" ]]; then
+if [[ -f "${linter_path}" ]]; then
   echo "Running ${linter_name} on git staged files: ${lint_extensions}"
   ${executable} "${lint_extensions}" -- ${linter_path}
 else
