@@ -2,6 +2,7 @@
   "name": "lint-staged",
   "version": "0.2.1",
   "description": "Lint JS and CSS files staged by git",
+  "main": "index.js",
   "bin": {
     "eslint-staged": "./scripts/eslint-staged.sh",
     "jscs-staged": "./scripts/jscs-staged.sh",
@@ -33,6 +34,11 @@
   },
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
+    "gulp-eslint": "^2.0.0",
+    "gulp-filter": "^4.0.0",
+    "gulp-spawn": "^0.3.0",
+    "map-stream": "0.0.6",
+    "npm-run": "^3.0.0",
     "staged-files": "^0.1.2"
   }
 }
