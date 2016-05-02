@@ -9,7 +9,8 @@
     "stylelint-staged": "./scripts/stylelint-staged.sh"
   },
   "scripts": {
-    "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0"
+    "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
+    "release": "npmpub"
   },
   "repository": {
     "type": "git",
@@ -34,5 +35,8 @@
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
     "staged-files": "^0.1.2"
+  },
+  "devDependencies": {
+    "npmpub": "^3.1.0"
   }
 }
