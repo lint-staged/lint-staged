@@ -12,5 +12,5 @@ else
   echo "Could not find ${linter_name} at ${linter_path}. Is it installed?"
   echo ""
   echo "Try running:"
-  echo "brew install ${linter_name}"
+  echo "npm install ${linter_name}-bin"
 fi
