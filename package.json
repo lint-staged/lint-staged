@@ -15,7 +15,9 @@
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node index.js"
   },
-  "pre-commit": ["pre-commit"],
+  "pre-commit": [
+    "pre-commit"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
@@ -47,7 +49,7 @@
   },
   "devDependencies": {
     "eslint": "^2.9.0",
-    "eslint-config-wildbit": "^2.0.1",
+    "eslint-config-es5": "^0.5.0",
     "pre-commit": "^1.1.3"
   }
 }
