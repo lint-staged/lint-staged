@@ -45,7 +45,7 @@
     "gulp-spawn": "^0.3.0",
     "map-stream": "0.0.6",
     "npm-run": "^3.0.0",
-    "staged-files": "^0.1.2"
+    "staged-files": "github:okonet/staged-files#fix-1"
   },
   "devDependencies": {
     "eslint": "^2.9.0",
