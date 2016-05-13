@@ -1,22 +1,13 @@
 var stagedFiles = require('staged-files');
-var map = require('map-stream');
-var npmRun = require('npm-run');
-var spawn = require("gulp-spawn")
-var filter = require("gulp-filter")
-var eslint = require('gulp-eslint')
-var fs = require('vinyl-fs');
+var filter = require('gulp-filter');
+var eslint = require('gulp-eslint');
 
-var log = function(file, cb) {
-    console.log(JSON.stringify(file));
-    cb(null, file);
-};
+var eslintFilter = filter('**/*.js', { restore: true });
 
 stagedFiles()
-    // .pipe(filter(['*.js']))
-    // .pipe(fs.src(['**/*.js'], { passthrough: true }))
-    // .pipe(map(log))
+    .pipe(eslintFilter)
     .pipe(eslint({
         useEslintrc: true
     }))
     .pipe(eslint.format())
-    .pipe(eslint.failAfterError())
+    .pipe(eslint.failAfterError());
