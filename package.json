@@ -12,8 +12,10 @@
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
     "lint": "eslint src",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "pre-commit": "node index.js"
   },
+  "pre-commit": ["pre-commit"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "eslint": "^2.9.0",
-    "eslint-config-wildbit": "^2.0.1"
+    "eslint-config-wildbit": "^2.0.1",
+    "pre-commit": "^1.1.3"
   }
 }
