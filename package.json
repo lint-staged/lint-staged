@@ -10,7 +10,9 @@
     "stylelint-staged": "./scripts/stylelint-staged.sh"
   },
   "scripts": {
-    "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0"
+    "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
+    "lint": "eslint src",
+    "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
@@ -40,5 +42,9 @@
     "map-stream": "0.0.6",
     "npm-run": "^3.0.0",
     "staged-files": "^0.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^2.9.0",
+    "eslint-config-wildbit": "^2.0.1"
   }
 }
