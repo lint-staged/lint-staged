@@ -6,8 +6,7 @@ var eslintFilter = filter('**/*.js', { restore: true });
 
 stagedFiles()
     .pipe(eslintFilter)
-    .pipe(eslint({
-        useEslintrc: true
-    }))
+    .pipe(eslint())
     .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
+    .pipe(eslint.failAfterError())
+    .pipe(eslintFilter.restore);
