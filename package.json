@@ -6,7 +6,8 @@
     "eslint-staged": "./scripts/eslint-staged.sh",
     "jscs-staged": "./scripts/jscs-staged.sh",
     "flow-staged": "./scripts/flow-staged.sh",
-    "stylelint-staged": "./scripts/stylelint-staged.sh"
+    "stylelint-staged": "./scripts/stylelint-staged.sh",
+    "stylint-staged": "./scripts/stylint-staged.sh"
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
