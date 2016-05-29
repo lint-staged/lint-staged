@@ -3,7 +3,7 @@
 executable=$(npm bin)/staged-files
 linter_name="sass-lint"
 linter_path=$(npm bin)/sass-lint
-lint_extensions="**/*.@(scss|scs)"
+lint_extensions="**/*.@(scss|sass)"
 
 if [[ -f "${linter_path}" ]]; then
   echo "Running ${linter_name} on git staged files: ${lint_extensions}"
