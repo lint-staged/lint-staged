@@ -1,3 +1,8 @@
+# v0.3.0
+
+- Added sass-lint linter (#13)
+- Added stylint linter (#11)
+
 # v0.2.2
 
 - Switch to bin/bash and fix file existncy check #9 @fubhy
