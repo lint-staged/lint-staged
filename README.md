@@ -4,8 +4,16 @@ Lint JS and CSS files staged by git
 
 ## Motivation
 
-Linting makes more sense when running before commiting you code into repository. In this case you can ensure no :poop: is going put into it and enforce styles.
-This repsitory contains shell scrtips that run [ESLint](http://eslint.org), [Stylelint](http://stylelint.io/), [JSCS](http://jscs.info/) and [Flow](http://flowtype.org/) against only currently staged files.
+Linting makes more sense when running before commiting you code into repository. In this case you can ensure no :poop: is going put into it and enforce styles. This repsitory contains shell scrtips that run linters against only currently staged files.
+
+Supported linters:
+
+* [ESLint](http://eslint.org) 
+* [Stylelint](http://stylelint.io/)
+* [JSCS](http://jscs.info/)
+* [Flow](http://flowtype.org/)
+* [stylint](https://github.com/rossPatton/stylint)
+* [sass-lint](https://github.com/sasstools/sass-lint)
 
 ## Installation
 
