@@ -4,6 +4,7 @@
   "description": "Lint JS and CSS files staged by git",
   "main": "index.js",
   "bin": {
+    "lint-staged": "./bin/index.js",
     "eslint-staged": "./scripts/eslint-staged.sh",
     "jscs-staged": "./scripts/jscs-staged.sh",
     "flow-staged": "./scripts/flow-staged.sh",
@@ -11,8 +12,8 @@
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
-    "lint": "eslint src",
-    "lint:fix": "npm run lint -- --fix",
+    "eslint": "eslint .",
+    "eslint:fix": "npm run eslint -- --fix",
     "pre-commit": "node index.js"
   },
   "pre-commit": [
