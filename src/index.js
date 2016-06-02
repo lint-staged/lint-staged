@@ -35,7 +35,10 @@ stream.on('end', function() {
         console.log('Running linters...');
         Object.keys(linters).forEach(function(linter) {
             var fileList = paths.filter(minimatch.filter(linters[linter], { matchBase: true }));
-            runLinter(linter, fileList);
+            if (fileList.length) {
+                console.log('Running %s on %s', linter, fileList);
+                runLinter(linter, fileList);
+            }
         });
     }
 });
