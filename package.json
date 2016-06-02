@@ -12,8 +12,9 @@
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
-    "eslint": "eslint .",
-    "eslint:fix": "npm run eslint -- --fix",
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "eslint-staged": "eslint",
     "pre-commit": "node index.js"
   },
   "pre-commit": [
@@ -45,6 +46,7 @@
     "gulp-filter": "^4.0.0",
     "gulp-spawn": "^0.3.0",
     "map-stream": "0.0.6",
+    "minimatch": "^3.0.0",
     "npm-run": "^3.0.0",
     "staged-files": "^0.1.2"
   },
