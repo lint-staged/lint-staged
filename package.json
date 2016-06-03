@@ -48,6 +48,7 @@
     "map-stream": "0.0.6",
     "minimatch": "^3.0.0",
     "npm-run": "^3.0.0",
+    "ora": "^0.2.3",
     "staged-git-files": "0.0.4"
   },
   "devDependencies": {
