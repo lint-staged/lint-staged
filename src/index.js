@@ -33,9 +33,10 @@ sgf('ACM', function(err, results) {
     });
     if (filePaths.length) {
         Object.keys(linters).forEach(function(linter) {
-            var fileList = filePaths.filter(minimatch.filter(linters[linter], { matchBase: true }));
+            var extensions = linters[linter];
+            var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
             if (fileList.length) {
-                spinner.text = 'Running ' + linter + ' on ' + fileList;
+                spinner.text = 'Running ' + linter + ' on ' + extensions;
                 runLinter(linter, fileList);
             }
         });
