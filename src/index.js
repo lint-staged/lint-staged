@@ -1,13 +1,11 @@
 var spawn = require('child_process').spawn;
-var stagedFiles = require('staged-files');
+var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 
-var files = [];
 var linters = {
     'eslint': '**/*.js',
     'stylelint': '**/*.scss'
 };
-var stream = stagedFiles(null, ['--diff-filter=ACM']);
 
 function runLinter(linter, paths) {
     var args = ['run', '-s', linter + '-staged', '--'].concat(paths);
@@ -22,13 +20,10 @@ function runLinter(linter, paths) {
     });
 }
 
-stream.on('data', function(data) {
-    files.push(data);
-});
-
-stream.on('end', function() {
-    var paths = files.map(function(file) {
-        return file.path;
+sgf('ACM', function(err, results) {
+    console.log(results);
+    var paths = results.map(function(file) {
+        return file.filename;
     });
     console.log('Found %s staged files', paths.length);
     if (paths.length) {

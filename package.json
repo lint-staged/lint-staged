@@ -48,7 +48,7 @@
     "map-stream": "0.0.6",
     "minimatch": "^3.0.0",
     "npm-run": "^3.0.0",
-    "staged-files": "^0.1.2"
+    "staged-git-files": "0.0.4"
   },
   "devDependencies": {
     "eslint": "^2.9.0",
