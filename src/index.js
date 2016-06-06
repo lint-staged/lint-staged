@@ -5,6 +5,7 @@ var minimatch = require('minimatch');
 var ora = require('ora');
 var which = require('which');
 var stripEof = require('strip-eof');
+var assign = require('object-assign');
 
 var gitBin = which.sync('git');
 var npmBin = which.sync('npm');
@@ -12,7 +13,7 @@ var root = cp.execSync(gitBin + ' rev-parse --show-toplevel', { encoding: 'utf8'
 var config = require(path.join(stripEof(root), 'package.json'));
 var defaultLinters = {};
 var customLinters = config['lint-staged'];
-var linters = Object.assign(defaultLinters, customLinters);
+var linters = assign(defaultLinters, customLinters);
 var spinner = ora('Starting lint-staged').start();
 
 function runLinter(linter, paths, cb) {
