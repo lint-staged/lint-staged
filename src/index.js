@@ -25,7 +25,7 @@ function runLinter(linter, paths, cb) {
         cb.call(this, error, null);
     });
     npmStream.on('close', function(code) {
-        if (cb !== 'undefined') {
+        if (typeof cb === 'function') {
             cb.call(this, null, code);
         }
     });
