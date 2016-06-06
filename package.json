@@ -44,10 +44,6 @@
   },
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
-    "gulp-eslint": "^2.0.0",
-    "gulp-filter": "^4.0.0",
-    "gulp-spawn": "^0.3.0",
-    "map-stream": "0.0.6",
     "minimatch": "^3.0.0",
     "npm-run": "^3.0.0",
     "object-assign": "^4.1.0",
