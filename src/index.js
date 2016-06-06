@@ -1,5 +1,6 @@
 var path = require('path');
 var cp = require('child_process');
+var npmRun = require('npm-run');
 var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 var ora = require('ora');
@@ -8,7 +9,6 @@ var stripEof = require('strip-eof');
 var assign = require('object-assign');
 
 var gitBin = which.sync('git');
-var npmBin = which.sync('npm');
 var root = cp.execSync(gitBin + ' rev-parse --show-toplevel', { encoding: 'utf8' });
 var config = require(path.join(stripEof(root), 'package.json'));
 var defaultLinters = {};
@@ -17,8 +17,8 @@ var linters = assign(defaultLinters, customLinters);
 var spinner = ora('Starting lint-staged').start();
 
 function runLinter(linter, paths, cb) {
-    var args = ['run', '-s', linter, '--'].concat(paths);
-    var npmStream = cp.spawn(npmBin, args, {
+    var args = ['--'].concat(paths);
+    var npmStream = npmRun.spawn(linter, args, {
         stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
     });
     npmStream.on('error', function(error) {
