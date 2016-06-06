@@ -22,6 +22,7 @@ function runLinter(linter, paths, cb) {
         stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
     });
     npmStream.on('error', function(error) {
+        process.exitCode = 1;
         cb.call(this, error, null);
     });
     npmStream.on('close', function(code) {
@@ -46,6 +47,7 @@ sgf('ACM', function(err, results) {
             var extensions = linters[linter];
             var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
             if (fileList.length) {
+                spinner.text = 'Running ' + linter + '...';
                 runLinter(linter, fileList, function(error, exitCode) {
                     if (error) {
                         console.error(error);
@@ -54,6 +56,7 @@ sgf('ACM', function(err, results) {
                         console.log('Linter %s exited with code %s', linter, exitCode);
                     }
                     spinner.stop();
+                    spinner.clear();
                 });
             } else {
                 spinner.stop();
