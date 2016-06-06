@@ -1,25 +1,39 @@
-var spawn = require('child_process').spawn;
+var path = require('path');
+var cp = require('child_process');
 var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 var ora = require('ora');
+var which = require('which');
+var stripEof = require('strip-eof');
 
-var linters = {
-    'eslint': '**/*.js',
-    'stylelint': '**/*.scss'
+var gitBin = which.sync('git');
+var npmBin = which.sync('npm');
+var root = cp.execSync(gitBin + ' rev-parse --show-toplevel', { encoding: 'utf8' });
+var config = require(path.join(stripEof(root), 'package.json'));
+var customLinters = config['lint-staged'];
+
+var defaultLinters = {
+    'eslint': '*.js',
+    'stylelint': '*.css'
 };
+var linters = Object.assign(defaultLinters, customLinters);
 
 var spinner = ora('Starting lint-staged').start();
 
-function runLinter(linter, paths) {
-    var args = ['run', '-s', linter + '-staged', '--'].concat(paths);
-    var npmStream = spawn('npm', args, {
+function runLinter(linter, paths, cb) {
+    var args = ['run', '-s', linter, '--'].concat(paths);
+    var npmStream = cp.spawn(npmBin, args, {
         stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
     });
     npmStream.on('error', function(error) {
-        console.log('error', error);
+        cb.call(this, error, null);
     });
     npmStream.on('close', function(code) {
-        spinner.stop();
+        if (cb !== 'undefined') {
+            cb.call(this, null, code);
+        }
+    });
+    npmStream.on('exit', function(code) {
         process.exitCode = code;
     });
 }
@@ -36,10 +50,20 @@ sgf('ACM', function(err, results) {
             var extensions = linters[linter];
             var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
             if (fileList.length) {
-                spinner.text = 'Running ' + linter + ' on ' + extensions;
-                runLinter(linter, fileList);
+                runLinter(linter, fileList, function(error, exitCode) {
+                    if (error) {
+                        console.error(error);
+                    }
+                    console.log('Linter %s exited with code %s', linter, exitCode);
+                    spinner.stop();
+                });
+            } else {
+                spinner.stop();
             }
         });
+    } else {
+        spinner.stop();
+        console.log('No staged files found...');
     }
 });
 
