@@ -1,3 +1,8 @@
+# v1.0.0
+
+- Rewrote the script completely using Node.js API to fix #6, #7, #8
+- Switched to staged-git-files that supports git filter. Exclude deleted files. Closes #12
+
 # v0.3.0
 
 - Added sass-lint linter (#13)
