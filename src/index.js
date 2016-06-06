@@ -50,7 +50,9 @@ sgf('ACM', function(err, results) {
                     if (error) {
                         console.error(error);
                     }
-                    console.log('Linter %s exited with code %s', linter, exitCode);
+                    if (exitCode > 0) {
+                        console.log('Linter %s exited with code %s', linter, exitCode);
+                    }
                     spinner.stop();
                 });
             } else {
