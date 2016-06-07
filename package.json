@@ -4,7 +4,7 @@
   "description": "Lint JS and CSS files staged by git",
   "main": "index.js",
   "bin": {
-    "lint-staged": "./index.js"
+    "lint-staged": "index.js"
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
@@ -14,7 +14,7 @@
     "release": "npmpub"
   },
   "lint-staged": {
-    "eslint": "*.@(js|jsx)"
+    "eslint": "*.js"
   },
   "pre-commit": [
     "pre-commit"
