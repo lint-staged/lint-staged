@@ -7,11 +7,6 @@
 - Complete re-write using Node.js API to fix #5, #6, #7, #8
 - Switched to staged-git-files that supports git filter. Exclude deleted files. Closes #12
 
-# 0.3.0
-
-- Added sass-lint linter (#13)
-- Added stylint linter (#11)
-
 # 0.2.2
 
 - Switch to bin/bash and fix file existncy check #9 @fubhy
