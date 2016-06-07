@@ -1,0 +1,11 @@
+{
+  "extends": "eslint-config-es5",
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "no-console": 0,
+    "indent": [2, 4]
+  }
+}

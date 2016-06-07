@@ -1,47 +1,89 @@
 # lint-staged
 
-Lint JS and CSS files staged by git
+Run linters against staged git files and don't let :poop: slip into your code base! 
 
-## Motivation
+## Why
 
-Linting makes more sense when running before commiting you code into repository. In this case you can ensure no :poop: is going put into it and enforce styles. This repsitory contains shell scrtips that run linters against only currently staged files.
+Linting makes more sense when running before commiting you code. By doing that you
+can ensure no errors are going into repository and enforce code style. But running a lint process
+ on a whole project is slow and linting results can be irrelevant. Ultimately you want to lint only 
+ files that will be committed. 
 
-Supported linters:
+This project contains a script that will run arbitary npm tasks against staged files, filtered by
+a spicified glob pattern.
 
-* [ESLint](http://eslint.org) 
-* [Stylelint](http://stylelint.io/)
-* [JSCS](http://jscs.info/)
-* [Flow](http://flowtype.org/)
-* [stylint](https://github.com/rossPatton/stylint)
-* [sass-lint](https://github.com/sasstools/sass-lint)
+## Installation & Setup
 
-## Installation
+1. `npm install --save-dev lint-staged`
+1. `npm install --save-dev pre-commit` (recommended way of adding a git hook)
+1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc` etc. configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
+1. Add `lint-staged": { "eslint": "*.js" }` to `package.json` (see [configuration](#configuration))
+1. Add '{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`
+1. Add `pre-commit": [ "lint-staged" ]` to `package.json`
 
-`npm install --save-dev lint-staged`
+## Configuration
 
-Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc` etc. configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
+You can configure lint-staged by adding a `lint-staged` section to your `package.json`. It should 
+be an object where each key is a command to run and value is a glob pattern to use for this  
+command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns. 
+See the documentation for it in case you have question.
 
-## Adding pre-commit hooks
+```json
+{
+    "scripts": {
+        "my-cool-linter": "eslint"
+    },
+    "lint-staged": {
+        "my-cool-linter": "*"
+    }
+}
+```
 
-To start linting, you have to install a pre-commit hook:
+This config will run `my-cool-linter` with all staged files passed as argument. Every script that 
+can be run via `npm run-script` is supported. And since this package is using 
+[npm-run](https://github.com/timoxley/npm-run) to run scripts, you don't need to add `{ 
+"eslint": "eslint" }` to the `scripts` section of your `pacakge.json` when running with default 
+parameters. So the above example becomes:
+ 
+```json
+{
+    "scripts": {
+    },
+    "lint-staged": {
+        "eslint": "*"
+    }
+}
+```
 
-1. `npm install --save-dev pre-commit`
-1. Add `"eslint-staged": "eslint-staged"` to scripts section of package.json (if you want to lint your JS)
-1. Add `"stylelint-staged": "stylelint-staged"` to scripts section of package.json (if you want to lint your CSS)
-1. ...
-1. Add `pre-commit": [ "eslint-staged", "stylelint-staged" ]` to package.json
+If you want to pass some custom parameters to your linter, you can add it to the 
+`scripts` section and then add it to the `lint-staged` configuration. See examples below.
 
-Example `package.json`
+### ESLint with default parameters
 
 ```json
 {
   "name": "My project",
-  "version": "0.0.1",
-  "scripts": {
-    "eslint-staged": "eslint-staged",
-    "stylelint-staged": "stylelint-staged"
+  "version": "0.1.0",
+  "lint-staged": {
+    "eslint": "*.@(js|jsx)",
   },
-  "pre-commit": [ "eslint-staged", "stylelint-staged" ]
-  "devDependencies: {}
+  "pre-commit": [ "lint-staged" ]
+}
+```
+
+### Stylelint with SCSS syntax (and ESLint)
+
+```json
+{
+  "name": "My project",
+  "version": "0.1.0",
+  "scripts": {
+    "stylelint-staged": "stylelint --syntax=scss"
+  },
+  "lint-staged": {
+    "eslint": "*.js",
+    "stylelint-staged": "*.scss"
+  },
+  "pre-commit": [ "lint-staged" ]
 }
 ```
