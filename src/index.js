@@ -1,10 +1,10 @@
 var path = require('path');
 var cp = require('child_process');
-var npmRun = require('npm-run');
 var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 var ora = require('ora');
 var which = require('which');
+var npmWhich = require('npm-which')(process.cwd());
 var stripEof = require('strip-eof');
 var assign = require('object-assign');
 
@@ -17,21 +17,28 @@ var linters = assign(defaultLinters, customLinters);
 var spinner = ora('Starting lint-staged').start();
 
 function runLinter(linter, paths, cb) {
-    var args = ['--'].concat(paths);
-    var npmStream = npmRun.spawn(linter, args, {
-        stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
-    });
-    npmStream.on('error', function(error) {
-        process.exitCode = 1;
-        cb.call(this, error, null);
-    });
-    npmStream.on('close', function(code) {
-        if (typeof cb === 'function') {
-            cb.call(this, null, code);
+    npmWhich(linter, function(err, binPath) {
+        var args = ['--'].concat(paths);
+        if (err) {
+            // Support for scripts from package.json
+            binPath = 'npm'; // eslint-disable-line
+            args = ['run', '-s', linter, '--'].concat(paths);
         }
-    });
-    npmStream.on('exit', function(code) {
-        process.exitCode = code;
+        var npmStream = cp.spawn(binPath, args, {
+            stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
+        });
+        npmStream.on('error', function(error) {
+            process.exitCode = 1;
+            cb.call(this, error, null);
+        });
+        npmStream.on('close', function(code) {
+            if (typeof cb === 'function') {
+                cb.call(this, null, code);
+            }
+        });
+        npmStream.on('exit', function(code) {
+            process.exitCode = code;
+        });
     });
 }
 

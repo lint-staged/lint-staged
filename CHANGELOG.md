@@ -1,3 +1,7 @@
+# v1.0.1
+
+- Fixed support of local npm scripts from package.json
+
 # v1.0.0
 
 - Complete re-write using Node.js API to fix #5, #6, #7, #8

@@ -40,9 +40,9 @@ See the documentation for it in case you have question.
 ```
 
 This config will run `my-cool-linter` with all staged files passed as argument. Every script that 
-can be run via `npm run-script` is supported. And since this package is using 
-[npm-run](https://github.com/timoxley/npm-run) to run scripts, you don't need to add `{ 
-"eslint": "eslint" }` to the `scripts` section of your `pacakge.json` when running with default 
+can be run via `npm run-script` or installed via `npm` is supported. This package is 
+using [npm-which](https://github.com/timoxley/npm-which) to locate scripts, so you don't need to
+ add `{ "eslint": "eslint" }` to the `scripts` section of your `pacakge.json` when running with default 
 parameters. So the above example becomes:
  
 ```json
