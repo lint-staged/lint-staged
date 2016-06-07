@@ -27,27 +27,35 @@ be an object where each key is a command to run and value is a glob pattern to u
 command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns. 
 See the documentation for it in case you have question.
 
-
 ```json
 {
     "scripts": {
-        "my-cool-task": "echo 1"
+        "my-cool-linter": "eslint"
     },
     "lint-staged": {
-        "my-cool-task": "*"
+        "my-cool-linter": "*"
     }
 }
 ```
 
-This config will run `my-cool-task` with all staged files passed as argument.
-
-## What linters are supported
-
-Every script that can be run via `npm run-script` is supported. And since this package is using 
+This config will run `my-cool-linter` with all staged files passed as argument. Every script that 
+can be run via `npm run-script` is supported. And since this package is using 
 [npm-run](https://github.com/timoxley/npm-run) to run scripts, you don't need to add `{ 
 "eslint": "eslint" }` to the `scripts` section of your `pacakge.json` when running with default 
-parameters. But if you need to pass some custom parameters, you can just add it to the `scripts` 
-section and then add to `lint-staged` configuration. See examples below.
+parameters. So the above example becomes:
+ 
+```json
+{
+    "scripts": {
+    },
+    "lint-staged": {
+        "eslint": "*"
+    }
+}
+```
+
+If you want to pass some custom parameters to your linter, you can add it to the 
+`scripts` section and then add it to the `lint-staged` configuration. See examples below.
 
 ### ESLint with default parameters
 
