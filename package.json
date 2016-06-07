@@ -10,11 +10,12 @@
     "postinstall": "echo \"lint-staged installed! Do not forget to install linters!\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
+    "eslint-hook": "eslint --quiet",
     "pre-commit": "node index.js",
     "release": "npmpub"
   },
   "lint-staged": {
-    "eslint": "*.js"
+    "eslint-hook": "*.js"
   },
   "pre-commit": [
     "pre-commit"
@@ -44,7 +45,7 @@
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
     "minimatch": "^3.0.0",
-    "npm-run": "^3.0.0",
+    "npm-which": "^2.0.0",
     "object-assign": "^4.1.0",
     "ora": "^0.2.3",
     "staged-git-files": "0.0.4",
