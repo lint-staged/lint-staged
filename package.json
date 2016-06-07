@@ -1,7 +1,7 @@
 {
   "name": "lint-staged",
   "version": "0.2.2",
-  "description": "Lint JS and CSS files staged by git",
+  "description": "Lint files staged by git",
   "main": "index.js",
   "bin": {
     "lint-staged": "index.js"
