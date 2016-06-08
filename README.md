@@ -19,7 +19,7 @@ a spicified glob pattern.
 1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc` etc. configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
 1. Add `"lint-staged": { "eslint": "*.js" }` to `package.json` (see [configuration](#configuration))
 1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`
-1. Add `pre-commit": [ "lint-staged" ]` to `package.json`
+1. Add `"pre-commit": [ "lint-staged" ]` to `package.json`
 
 ## Configuration
 
@@ -78,7 +78,7 @@ If you want to pass some custom parameters to your linter, you can add it to the
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-    "stylelint-staged": "stylelint --syntax=scss"
+   "stylelint-staged": "stylelint --syntax=scss"
   },
   "lint-staged": {
     "eslint": "*.js",
