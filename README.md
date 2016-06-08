@@ -74,7 +74,7 @@ If you want to pass some custom parameters to your linter, you can add it to the
 }
 ```
 
-### Stylelint with SCSS syntax (and ESLint)
+### ESLint + Stylelint with SCSS syntax
 
 ```json
 {
