@@ -48,6 +48,7 @@ parameters. So the above example becomes:
 ```json
 {
     "scripts": {
+      "lint-staged": "lint-staged"
     },
     "lint-staged": {
         "eslint": "*"
@@ -58,12 +59,15 @@ parameters. So the above example becomes:
 If you want to pass some custom parameters to your linter, you can add it to the 
 `scripts` section and then add it to the `lint-staged` configuration. See examples below.
 
-### ESLint with default parameters
+### ESLint with default parameters for *.js and *.jsx
 
 ```json
 {
   "name": "My project",
   "version": "0.1.0",
+  "scripts": {
+    "lint-staged": "lint-staged"
+  },
   "lint-staged": {
     "eslint": "*.@(js|jsx)",
   },
@@ -78,7 +82,8 @@ If you want to pass some custom parameters to your linter, you can add it to the
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-   "stylelint-staged": "stylelint --syntax=scss"
+    "lint-staged": "lint-staged",
+    "stylelint-staged": "stylelint --syntax=scss"
   },
   "lint-staged": {
     "eslint": "*.js",
