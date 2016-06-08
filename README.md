@@ -48,7 +48,6 @@ parameters. So the above example becomes:
 ```json
 {
     "scripts": {
-      "lint-staged": "lint-staged"
     },
     "lint-staged": {
         "eslint": "*"
