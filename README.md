@@ -4,10 +4,12 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 ## Why
 
+[Read the Medium post](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
+
 Linting makes more sense when running before commiting you code. By doing that you
 can ensure no errors are going into repository and enforce code style. But running a lint process
  on a whole project is slow and linting results can be irrelevant. Ultimately you want to lint only 
- files that will be committed. 
+ files that will be committed.
 
 This project contains a script that will run arbitary npm tasks against staged files, filtered by
 a spicified glob pattern.
