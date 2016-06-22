@@ -44,13 +44,12 @@
   },
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
+    "app-root-path": "^1.2.1",
     "minimatch": "^3.0.0",
     "npm-which": "^2.0.0",
     "object-assign": "^4.1.0",
     "ora": "^0.2.3",
-    "staged-git-files": "0.0.4",
-    "strip-eof": "^1.0.0",
-    "which": "^1.2.9"
+    "staged-git-files": "0.0.4"
   },
   "devDependencies": {
     "eslint": "^2.9.0",

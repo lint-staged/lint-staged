@@ -1,16 +1,12 @@
-var path = require('path');
 var cp = require('child_process');
 var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 var ora = require('ora');
-var which = require('which');
 var npmWhich = require('npm-which')(process.cwd());
-var stripEof = require('strip-eof');
 var assign = require('object-assign');
 
-var gitBin = which.sync('git');
-var root = cp.execSync(gitBin + ' rev-parse --show-toplevel', { encoding: 'utf8' });
-var config = require(path.join(stripEof(root), 'package.json'));
+var appRoot = require('app-root-path');
+var config = require(appRoot.resolve('package.json'));
 var defaultLinters = {};
 var customLinters = config['lint-staged'];
 var linters = assign(defaultLinters, customLinters);
