@@ -12,7 +12,8 @@
     "lint:fix": "npm run lint -- --fix",
     "eslint-hook": "eslint --quiet",
     "pre-commit": "node index.js",
-    "release": "npmpub"
+    "release": "npmpub",
+    "test": "ava"
   },
   "lint-staged": {
     "eslint-hook": "*.js"
@@ -53,9 +54,13 @@
     "which": "^1.2.9"
   },
   "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
     "eslint": "^2.9.0",
     "eslint-config-es5": "^0.5.0",
     "npmpub": "^3.1.0",
-    "pre-commit": "^1.1.3"
+    "pre-commit": "^1.1.3",
+    "rewire": "^2.5.1"
   }
 }
