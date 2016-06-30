@@ -1,3 +1,7 @@
+# 1.0.2
+
+- Fixed path resolution to the app root on Windows. #19 by <OJ Kwon>
+
 # 1.0.1
 
 - Fixed support of local npm scripts from package.json
