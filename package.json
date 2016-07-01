@@ -10,13 +10,13 @@
     "postinstall": "echo \"lint-staged installed! Do not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "eslint-hook": "eslint --quiet",
+    "eslint": "eslint --quiet",
     "pre-commit": "node index.js",
     "release": "npmpub",
     "test": "ava"
   },
   "lint-staged": {
-    "eslint-hook": "*.js"
+    "eslint": "*.js"
   },
   "pre-commit": [
     "pre-commit"
