@@ -1,15 +1,12 @@
-var cp = require('child_process');
-var npmWhich = require('npm-which')(process.cwd());
+var findBin = require('./findBin');
+var spawn = require('child_process').spawn;
 
-module.exports = function runLinter(linter, paths, cb) {
-    npmWhich(linter, function(err, binPath) {
-        var args = ['--'].concat(paths);
+module.exports = function runScript(linter, paths, cb) {
+    findBin(linter, paths, function(err, binPath, args) {
         if (err) {
-            // Support for scripts from package.json
-            binPath = 'npm'; // eslint-disable-line
-            args = ['run', '-s', linter, '--'].concat(paths);
+            console.error(err);
         }
-        var npmStream = cp.spawn(binPath, args, {
+        var npmStream = spawn(binPath, args, {
             stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
         });
         npmStream.on('error', function(error) {
@@ -25,4 +22,4 @@ module.exports = function runLinter(linter, paths, cb) {
             process.exitCode = code;
         });
     });
-}
+};

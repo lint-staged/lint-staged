@@ -1,13 +1,11 @@
-var cp = require('child_process');
 var sgf = require('staged-git-files');
 var minimatch = require('minimatch');
 var ora = require('ora');
-var npmWhich = require('npm-which')(process.cwd());
 var assign = require('object-assign');
-var runCommand = require('./runCommand')
-
 var appRoot = require('app-root-path');
 var config = require(appRoot.resolve('package.json'));
+var runScript = require('./runScript');
+
 var defaultLinters = {};
 var customLinters = config['lint-staged'];
 var linters = assign(defaultLinters, customLinters);
@@ -26,7 +24,7 @@ sgf('ACM', function(err, results) {
             var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
             if (fileList.length) {
                 spinner.text = 'Running ' + linter + '...';
-                runCommand(linter, fileList, function(error, exitCode) {
+                runScript(linter, fileList, function(error, exitCode) {
                     if (error) {
                         console.error(error);
                     }
