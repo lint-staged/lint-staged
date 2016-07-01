@@ -24,7 +24,7 @@ sgf('ACM', function(err, results) {
             var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
             if (fileList.length) {
                 spinner.text = 'Running ' + linter + '...';
-                runScript(linter, fileList, function(error, exitCode) {
+                runScript(linter, fileList, config, function(error, exitCode) {
                     if (error) {
                         console.error(error);
                     }

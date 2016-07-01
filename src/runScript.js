@@ -1,8 +1,8 @@
 var findBin = require('./findBin');
 var spawn = require('child_process').spawn;
 
-module.exports = function runScript(linter, paths, cb) {
-    findBin(linter, paths, function(err, binPath, args) {
+module.exports = function runScript(linter, paths, config, cb) {
+    findBin(linter, paths, config, function(err, binPath, args) {
         if (err) {
             console.error(err);
         }
