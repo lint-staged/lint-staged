@@ -16,12 +16,6 @@ module.exports = function(wallaby) {
             '**/*.js': wallaby.compilers.babel()
         },
 
-        testFramework: 'ava',
-
-        // setup: function() {
-        //     require('babel-polyfill');
-        // },
-
-        debug: true
+        testFramework: 'mocha'
     };
 };
