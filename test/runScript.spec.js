@@ -3,51 +3,56 @@ import mockSpawn from 'mock-spawn';
 import rewire from 'rewire';
 const runScript = rewire('../src/runScript');
 
-var mySpawn = mockSpawn();
-require('child_process').spawn = mySpawn;
-mySpawn.setDefault(mySpawn.simple(1 /* exit code */, 'hello world' /* stdout */));
-
 const packageJSON = {
     scripts: {
-        test: 'noop'
+        test: 'noop',
+        test2: 'noop'
     },
     'lint-staged': {}
 };
 
 describe('runScript', () => {
-    it.skip('should run the callback with the proper exit code', done => {
+    it('should run the callback with the proper exit code', done => {
         const spy = expect.createSpy();
-        const findBinSpy = expect.createSpy(runScript.__get__('findBin')).andCallThrough();
-        runScript.__set__('findBin', findBinSpy);
+        const mySpawn = mockSpawn();
+        mySpawn.setDefault(mySpawn.simple(0));
+        runScript.__set__('spawn', mySpawn);
+
         runScript('test', 'test.js', packageJSON, spy);
         setTimeout(() => {
-            expect(findBinSpy.calls.length).toEqual(1);
+            expect(mySpawn.calls.length).toEqual(1);
+            expect(mySpawn.calls[0].exitCode).toEqual(0);
+            expect(mySpawn.calls[0].command).toEqual('npm');
+            expect(mySpawn.calls[0].args).toEqual(['run', '-s', 'test', '--', 'test.js']);
+
             expect(spy.calls.length).toEqual(1);
-            expect(findBinSpy.calls[0].arguments[0]).toEqual('test');
-            expect(findBinSpy.calls[0].arguments[1]).toEqual('test.js');
-            expect(spy).toHaveBeenCalledWith(null, 1);
+            expect(spy).toHaveBeenCalledWith(null, 0);
             done();
-        }, 0);
+        }, 10);
     });
 
-    it.skip('should support array of scripts as a first argument', done => {
+    it('should support array of scripts as a first argument', done => {
         const spy = expect.createSpy();
-        const findBinSpy = expect.createSpy(runScript.__get__('findBin')).andCallThrough();
-        runScript.__set__('findBin', findBinSpy);
+        const mySpawn = mockSpawn();
+        mySpawn.sequence.add(mySpawn.simple(0));
+        mySpawn.sequence.add(mySpawn.simple(1));
+        runScript.__set__('spawn', mySpawn);
+
         runScript(['test', 'test2'], 'test.js', packageJSON, spy);
         setTimeout(() => {
-            expect(findBinSpy.calls.length).toEqual(2);
+            expect(mySpawn.calls.length).toEqual(2);
+            expect(mySpawn.calls[0].exitCode).toEqual(0);
+            expect(mySpawn.calls[0].command).toEqual('npm');
+            expect(mySpawn.calls[0].args).toEqual(['run', '-s', 'test', '--', 'test.js']);
 
-            expect(findBinSpy.calls[0].arguments[0]).toEqual('test');
-            expect(findBinSpy.calls[0].arguments[1]).toEqual('test.js');
-
-            expect(findBinSpy.calls[1].arguments[0]).toEqual('test2');
-            expect(findBinSpy.calls[1].arguments[1]).toEqual('test.js');
+            expect(mySpawn.calls[1].exitCode).toEqual(1);
+            expect(mySpawn.calls[1].command).toEqual('npm');
+            expect(mySpawn.calls[1].args).toEqual(['run', '-s', 'test2', '--', 'test.js']);
 
             expect(spy.calls.length).toEqual(1);
             expect(spy).toHaveBeenCalledWith(null, 1);
             done();
-        }, 0);
+        }, 10);
     });
 });
 
