@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./src/index');
+require('./src/index')
