@@ -19,9 +19,9 @@ sgf('ACM', function(err, results) {
         return file.filename;
     });
     if (filePaths.length) {
-        Object.keys(linters).forEach(function(linter) {
-            var extensions = linters[linter];
-            var fileList = filePaths.filter(minimatch.filter(extensions, { matchBase: true }));
+        Object.keys(linters).forEach(function(key) {
+            var linter = linters[key];
+            var fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }));
             if (fileList.length) {
                 spinner.text = 'Running ' + linter + '...';
                 runScript(linter, fileList, config, function(error, exitCode) {
