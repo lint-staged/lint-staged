@@ -1,3 +1,7 @@
+# 2.0.0
+
+- Support for sequences of commands. Needs config update! #25 by @okonet
+
 # 1.0.2
 
 - Fixed path resolution to the app root on Windows. #19 by <OJ Kwon>
