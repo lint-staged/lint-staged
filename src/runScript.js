@@ -15,7 +15,6 @@ module.exports = function runScript (linters, paths, config, cb) {
                     stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
                 })
                 npmStream.on('error', function (error) {
-                    // process.exitCode = 1;
                     throw new Error(error)
                 })
                 npmStream.on('exit', function (code) {

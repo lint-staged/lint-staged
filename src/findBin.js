@@ -17,10 +17,10 @@ module.exports = function findBin (binName, paths, config, cb) {
         *  This is useful for shorter configs like:
         *
         *  "lint-staged": {
-        *    "eslint": "*.js"
+        *    "*.js": "eslint"
         *  }
         *
-        *  without having
+        *  without adding
         *
         *  "scripts" {
         *    "eslint": "eslint"
