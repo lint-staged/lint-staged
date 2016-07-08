@@ -1,6 +1,7 @@
 # 2.0.0
 
-- Support for sequences of commands. Needs config update! #25 by @okonet
+- Support for sequences of commands. Needs config update! #25 @okonet
+- Allow adding files to the commit after running a task. #16 @okonet
 
 # 1.0.2
 
