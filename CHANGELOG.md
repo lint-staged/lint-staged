@@ -1,3 +1,7 @@
+# 2.0.1
+
+- When on of the sequential tasks fails, exit the process. Closes #26
+
 # 2.0.0
 
 - Support for sequences of commands. Needs config update! #25 @okonet
