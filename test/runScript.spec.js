@@ -54,5 +54,59 @@ describe('runScript', () => {
             done()
         }, 10)
     })
+
+    it('should stop the sequence execution if prev process finishes with non-zero', done => {
+        const spy = expect.createSpy()
+        const mySpawn = mockSpawn()
+        mySpawn.sequence.add(mySpawn.simple(1))
+        mySpawn.sequence.add(mySpawn.simple(0))
+        runScript.__set__('spawn', mySpawn)
+
+        runScript(['test', 'test2'], 'test.js', packageJSON, spy)
+        setTimeout(() => {
+            expect(mySpawn.calls.length).toEqual(1)
+            expect(mySpawn.calls[0].exitCode).toEqual(1)
+
+            expect(spy.calls.length).toEqual(1)
+            expect(spy).toHaveBeenCalledWith(null, 1)
+            done()
+        }, 10)
+    })
+
+    it('should handle errors for single commands', done => {
+        const err = new Error('linting error')
+        const spy = expect.createSpy()
+        const mySpawn = mockSpawn()
+        mySpawn.sequence.add({throws: err})
+        mySpawn.sequence.add(mySpawn.simple(0))
+        runScript.__set__('spawn', mySpawn)
+
+        runScript('test', 'test.js', packageJSON, spy)
+        setTimeout(() => {
+            expect(mySpawn.calls.length).toEqual(1)
+            expect(spy.calls.length).toEqual(1)
+            expect(spy.calls[0].arguments[0]).toBe(err)
+            expect(spy.calls[0].arguments[1]).toNotEqual(0)
+            done()
+        }, 10)
+    })
+
+    it('should handle errors for sequences', done => {
+        const err = new Error('linting error')
+        const spy = expect.createSpy()
+        const mySpawn = mockSpawn()
+        mySpawn.sequence.add({throws: err})
+        mySpawn.sequence.add(mySpawn.simple(0))
+        runScript.__set__('spawn', mySpawn)
+
+        runScript(['test', 'test2'], 'test.js', packageJSON, spy)
+        setTimeout(() => {
+            expect(mySpawn.calls.length).toEqual(1)
+            expect(spy.calls.length).toEqual(1)
+            expect(spy.calls[0].arguments[0]).toBe(err)
+            expect(spy.calls[0].arguments[1]).toNotEqual(0)
+            done()
+        }, 10)
+    })
 })
 
