@@ -61,7 +61,7 @@ This config will run `lint:js` npm script aginst staged files passed as argument
 
 You can pass arguments to your linter. To do so, add it to the `scripts` and then add it to the `lint-staged` configuration. See examples below.
 
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) you can now run sequences of commands. Pass an array of commands for a glob patter and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitary sequences. In case of `eslint --fix`, after the code is reformatted we want it to be added to the same commit. This can be done by creating 2 scripts and running them sequentially:
+Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitary sequences. In case of `eslint --fix`, after the code is reformatted we want it to be added to the same commit. This can be done by creating 2 scripts and running them sequentially:
 
 ```json
 {
