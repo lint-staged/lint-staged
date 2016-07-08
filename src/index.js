@@ -23,13 +23,13 @@ sgf('ACM', function (err, results) {
             var linter = linters[key]
             var fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }))
             if (fileList.length) {
-                spinner.text = 'Running ' + linter + '...'
+                spinner.text = 'Running ' + Array.isArray(linter) ? linter.join(' → ') : linter + '...'
                 runScript(linter, fileList, config, function (error, exitCode) {
                     if (error) {
                         console.error(error)
                     }
                     if (exitCode > 0) {
-                        console.log('Linter %s exited with code %s', linter, exitCode)
+                        console.log('😱  %s found some issues. Fix them and try again.', linter, exitCode)
                     }
                     spinner.stop()
                     spinner.clear()
@@ -40,7 +40,7 @@ sgf('ACM', function (err, results) {
         })
     } else {
         spinner.stop()
-        console.log('No staged files found...')
+        console.log('\n👀  Nothing to lint. `git add` some files and try again...\n')
     }
 })
 
