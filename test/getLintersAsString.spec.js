@@ -11,4 +11,8 @@ describe('getLintersAsString', () => {
     it('should return a concatenated string for an array', () => {
         expect(getLintersAsString(['eslint', 'stylelint'])).toEqual('eslint → stylelint')
     })
+
+    it('should return a single entry for an array with 1 element', () => {
+        expect(getLintersAsString(['eslint'])).toEqual('eslint')
+    })
 })
