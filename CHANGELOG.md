@@ -1,3 +1,9 @@
+# 2.0.2
+
+- Fixes an error when running a config with just one task (#28). #27 @Anber.
+- Beautiful string representation for multiple linters in case of error.
+- Added tests to getLintersAsString.
+
 # 2.0.1
 
 - When on of the sequential tasks fails, exit the process. Closes #26
