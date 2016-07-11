@@ -5,6 +5,7 @@ var assign = require('object-assign')
 var appRoot = require('app-root-path')
 var config = require(appRoot.resolve('package.json'))
 var runScript = require('./runScript')
+var getLintersAsString = require('./getLintersAsString')
 
 var defaultLinters = {}
 var customLinters = config['lint-staged']
@@ -23,13 +24,16 @@ sgf('ACM', function (err, results) {
             var linter = linters[key]
             var fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }))
             if (fileList.length) {
-                spinner.text = 'Running ' + (Array.isArray(linter) ? linter.join(' → ') : linter + '...')
+                spinner.text = 'Running ' + getLintersAsString(linter) + '...'
                 runScript(linter, fileList, config, function (error, exitCode) {
                     if (error) {
                         console.error(error)
                     }
                     if (exitCode > 0) {
-                        console.log('😱  %s found some issues. Fix them and try again.', linter, exitCode)
+                        console.log(
+                            '😱  %s found some issues. Fix them and try again.',
+                            getLintersAsString(linter)
+                        )
                     }
                     spinner.stop()
                     spinner.clear()
