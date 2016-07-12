@@ -29,7 +29,7 @@ See complete examples below.
 ## Configuration
 
 You can configure lint-staged by adding a `lint-staged` section to your `package.json`. It should 
-be an object where each key is a command to run and value is a glob pattern to use for this  
+be an object where each value is a command to run and key is a glob pattern to use for this  
 command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns. 
 See its [documentation](https://github.com/isaacs/minimatch) if you have questions regarding glob patterns.
 
