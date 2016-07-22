@@ -1,8 +1,10 @@
-var npmWhich = require('npm-which')(process.cwd())
+'use strict'
+
+const npmWhich = require('npm-which')(process.cwd())
 
 module.exports = function findBin (binName, paths, config, cb) {
-    var binPath = 'npm'
-    var args = ['run', '-s', binName, '--'].concat(paths)
+    const binPath = 'npm'
+    const args = ['run', '-s', binName, '--'].concat(paths)
     /*
     * If package.json has script with binName defined
     * we want it to be executed first
