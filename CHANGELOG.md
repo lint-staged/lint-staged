@@ -1,3 +1,9 @@
+# 3.0.0
+
+- Switched to listr. Simplified code and more beautiful output.
+- Switched to execa. Should fix #30
+- Use ES2015. Dropped support for Node < 4.x
+
 # 2.0.2
 
 - Fixes an error when running a config with just one task (#28). #27 @Anber.
