@@ -17,7 +17,10 @@
     "test": "mocha --compilers js:babel-core/register ./test/*.spec.js"
   },
   "lint-staged": {
-    "*.js": ["eslint", "git:add"]
+    "*.js": [
+      "eslint",
+      "git:add"
+    ]
   },
   "pre-commit": [
     "pre-commit"
@@ -48,6 +51,8 @@
   "dependencies": {
     "app-root-path": "^1.2.1",
     "batchflow": "^0.4.0",
+    "execa": "^0.4.0",
+    "listr": "^0.4.3",
     "minimatch": "^3.0.0",
     "npm-which": "^2.0.0",
     "object-assign": "^4.1.0",
