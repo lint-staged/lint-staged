@@ -44,8 +44,8 @@ describe('runScript', () => {
     })
 
     it('should support array of scripts as a first argument', () => {
-        const execa = runScript.__get__('execa')
-        const spy = expect.spyOn(execa, 'spawn')
+        const spy = expect.createSpy()
+        runScript.__set__('execa', spy)
         const res = runScript(['test', 'test2'], 'test.js', packageJSON)
         expect(res.length).toBe(2)
         expect(res[0].title).toBe('test')
@@ -54,13 +54,13 @@ describe('runScript', () => {
         expect(res[0].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(1)
         expect(spy.calls[0].arguments).toEqual(
-            ['npm', ['run', '-s', 'test', '--', 'test.js'], {stdio: 'inherit'}]
+            ['npm', ['run', '-s', 'test', '--color', '--', 'test.js']]
         )
 
         expect(res[1].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(2)
         expect(spy.calls[1].arguments).toEqual(
-            ['npm', ['run', '-s', 'test2', '--', 'test.js'], {stdio: 'inherit'}]
+            ['npm', ['run', '-s', 'test2', '--color', '--', 'test.js']]
         )
     })
 })
