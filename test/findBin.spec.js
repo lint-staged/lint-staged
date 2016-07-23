@@ -29,14 +29,14 @@ describe('findBin', () => {
         findBin.__set__('npmWhich', npmWichMockGood)
         const { bin, args } = findBin('eslint', 'test.js', packageJSONMock)
         expect(bin).toEqual('npm')
-        expect(args).toEqual(['run', '-s', 'eslint', '--', 'test.js'])
+        expect(args).toEqual(['run', '-s', 'eslint', '--color', '--', 'test.js'])
     })
 
     it('should return bin from node_modules/.bin if there is no command in package.json', () => {
         findBin.__set__('npmWhich', npmWichMockGood)
         const { bin, args } = findBin('eslint', 'test.js test2.js', packageJSON)
         expect(bin).toEqual('eslint')
-        expect(args).toEqual(['--', 'test.js test2.js'])
+        expect(args).toEqual(['--color', '--', 'test.js test2.js'])
     })
 
     it('should return error if bin not found and there is no entry in scripts section', () => {

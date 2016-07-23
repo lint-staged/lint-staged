@@ -4,7 +4,8 @@ const npmWhich = require('npm-which')(process.cwd())
 
 module.exports = function findBin (binName, paths, config) {
     const bin = 'npm'
-    const args = ['run', '-s', binName, '--'].concat(paths)
+    const files = ['--color', '--'].concat(paths)
+    const args = ['run', '-s', binName].concat(files)
     /*
     * If package.json has script with binName defined
     * we want it to be executed first
@@ -34,6 +35,6 @@ module.exports = function findBin (binName, paths, config) {
     */
     return {
         bin: npmWhich.sync(binName),
-        args: ['--'].concat(paths)
+        args: files
     }
 }
