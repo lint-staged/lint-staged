@@ -48,6 +48,7 @@
   "dependencies": {
     "app-root-path": "^1.2.1",
     "batchflow": "^0.4.0",
+    "cross-spawn": "^4.0.0",
     "minimatch": "^3.0.0",
     "npm-which": "^2.0.0",
     "object-assign": "^4.1.0",
