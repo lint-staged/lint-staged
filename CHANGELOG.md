@@ -1,3 +1,8 @@
+# 2.0.3
+
+- Use `cross-spawn` to fix issues with Windows. Closes #30. (#34)
+- Updated dependencies
+
 # 2.0.2
 
 - Fixes an error when running a config with just one task (#28). #27 @Anber.
