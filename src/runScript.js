@@ -1,5 +1,5 @@
 var findBin = require('./findBin')
-var spawn = require('child_process').spawn
+var spawn = require('cross-spawn')
 var batch = require('batchflow')
 
 module.exports = function runScript (linters, paths, config, cb) {
