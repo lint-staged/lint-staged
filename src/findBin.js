@@ -7,7 +7,7 @@ module.exports = function findBin (binName, paths, config, cb) {
     * If package.json has script with binName defined
     * we want it to be executed first
     */
-    if (config.scripts[binName] !== undefined) {
+    if (config.scripts && config.scripts[binName] !== undefined) {
         // Support for scripts from package.json
         cb.call(this, null, binPath, args)
     } else {
