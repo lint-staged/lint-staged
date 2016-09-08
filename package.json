@@ -55,7 +55,7 @@
     "minimatch": "^3.0.0",
     "npm-which": "^2.0.0",
     "object-assign": "^4.1.0",
-    "ora": "^0.2.3",
+    "ora": "^0.3.0",
     "staged-git-files": "0.0.4"
   },
   "devDependencies": {
