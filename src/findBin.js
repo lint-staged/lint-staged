@@ -9,7 +9,7 @@ module.exports = function findBin (cmd, paths, config) {
     * If package.json has script with cmd defined
     * we want it to be executed first
     */
-    if (config.scripts[cmd] !== undefined) {
+    if (config.scripts && config.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
         return {
             bin: 'npm',

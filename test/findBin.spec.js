@@ -54,6 +54,16 @@ describe('findBin', () => {
         expect(args).toEqual(['add', '--', 'test.js test2.js'])
     })
 
+    it('should return bin from node_modules/.bin on missed scripts in package.json', done => {
+        findBin.__set__('npmWhich', npmWichMockGood)
+        findBin('eslint', 'test.js test2.js', { }, (err, bin, args) => {
+            expect(err).toBe(null)
+            expect(bin).toEqual('eslint')
+            expect(args).toEqual(['--', 'test.js test2.js'])
+            done()
+        })
+    })
+
     it('should return error if bin not found and there is no entry in scripts section', () => {
         findBin.__set__('npmWhich', npmWichMockBad)
         findBin.__set__('which', npmWichMockBad)
