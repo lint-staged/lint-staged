@@ -36,17 +36,25 @@ See its [documentation](https://github.com/isaacs/minimatch) if you have questio
 ```json
 {
   "scripts": {
-    "lint:js": "eslint",
+    "my-task": "your-command",
   },
   "lint-staged": {
-    "*": "lint:js"
+    "*": "my-task"
   }
 }
 ```
 
-This config will run `lint:js` npm script aginst staged files passed as argument. Supported are both local scripts (`npm run-script`) and locally or globally installed via `npm`. 
+This config will execute `npm run my-task`  with the list of currently staged files passed as argument. 
 
-`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts, so you don't need to add `{ "eslint": "eslint" }` to the `scripts` section of your `pacakge.json` when running with default parameters. So the above example can be written as:
+So, considering you did `git add file1.ext file2.ext`, lint-staged will run following command:
+
+`npm run my-task — file1.ext file2.ext`
+
+Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.
+
+> Using globally installed scripts is discouraged, since in this case lint-staged might not work for someone who doesn’t have it installed.
+
+`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts, so you don't need to add `{ "eslint": "eslint" }` to the `scripts` section of your `pacakge.json`. So, for simplicity, you can write:
  
 ```json
 {
@@ -54,30 +62,31 @@ This config will run `lint:js` npm script aginst staged files passed as argument
     ...
   },
   "lint-staged": {
-    "*": "eslint"
+    "*.js": "eslint —fix"
   }
 }
 ```
 
-You can pass arguments to your linter. To do so, add it to the `scripts` and then add it to the `lint-staged` configuration. See examples below.
+You can pass arguments to your linter separated by space. See examples below.
 
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitary sequences. In case of `eslint --fix`, after the code is reformatted we want it to be added to the same commit. This can be done by creating 2 scripts and running them sequentially:
+Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences. 
+
+In case of `eslint --fix`, after the code is reformatted we want it to be added to the same commit. This can be easily done using following config:
 
 ```json
 {
   "scripts": {
-    "eslint:fix": "eslint --fix",
-    "git:add": "git add"
+	  ...
   },
   "lint-staged": {
-    "*.js": ["eslint:fix", "git:add"]
+    "*.js": ["eslint --fix", "git add"]
   },
 }
 ```
 
 ## Examples
 
-### ESLint with default parameters for *.js and *.jsx
+### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
 ```json
 {
@@ -101,17 +110,15 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
   "version": "0.1.0",
   "scripts": {
     "lint-staged": "lint-staged",
-    "eslint:fix": "eslint --fix",
-    "git:add": "git add"
   },
   "lint-staged": {
-    "*.js": ["eslint:fix", "git:add"]
+    "*.js": ["eslint --fix", "git add"]
   },
   "pre-commit": "lint-staged"
 }
 ```
 
-This will run `eslint --fix` and automatically add changes to the commit.
+This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
 
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
 
@@ -121,13 +128,12 @@ This will run `eslint --fix` and automatically add changes to the commit.
   "version": "0.1.0",
   "scripts": {
     "lint-staged": "lint-staged",
-    "stylelint:scss": "stylelint --syntax=scss"
   },
   "lint-staged": {
     "*.css": "stylelint",
-    "*.scss": "stylelint:scss"
+    "*.scss": "stylelint --syntax=scss"
   },
-  "pre-commit": [ "lint-staged" ]
+  "pre-commit": "lint-staged"
 }
 ```
 
@@ -138,17 +144,15 @@ This will run `eslint --fix` and automatically add changes to the commit.
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-    "lint-staged": "lint-staged",
-    "git:add": "git add",
-    "postcss:sorting": "postcss --config "[path to your config]" --replace",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "*.scss": [
-      "postcss:sorting",
-      "git:add",
+      "postcss --config "[path to your config]" --replace"
+      "git add",
       "stylelint"
     ]
   },
-  "pre-commit": [ "lint-staged" ]
+  "pre-commit": "lint-staged"
 }
 ```

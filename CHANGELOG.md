@@ -1,3 +1,12 @@
+# 3.0.0
+
+- Switched to listr. Simplified code and more beautiful output.
+- Switched to execa. Should fix #30
+- Use ES2015. Dropped support for Node < 4.x
+- Support commands with arguments in the lint-staged config. Closes #47
+- Support binaries from $PATH. Closes #47
+- Removed `--color` option from runner. You should pass arguments yourself.
+
 # 2.0.3
 
 - Use `cross-spawn` to fix issues with Windows. Closes #30. (#34)

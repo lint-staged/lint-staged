@@ -1,40 +1,58 @@
-var npmWhich = require('npm-which')(process.cwd())
+'use strict'
 
-module.exports = function findBin (binName, paths, config, cb) {
-    var binPath = 'npm'
-    var args = ['run', '-s', binName, '--'].concat(paths)
+const npmWhich = require('npm-which')(process.cwd())
+const which = require('which')
+
+module.exports = function findBin (cmd, paths, config) {
+    const defaultArgs = ['--'].concat(paths)
     /*
-    * If package.json has script with binName defined
+    * If package.json has script with cmd defined
     * we want it to be executed first
     */
-    if (config.scripts && config.scripts[binName] !== undefined) {
+    if (config.scripts && config.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
-        cb.call(this, null, binPath, args)
-    } else {
-        /*
-        *  If binName wasn't found in package.json scripts
-        *  we'll try to locate the binary in node_modules/.bin
-        *  This is useful for shorter configs like:
-        *
-        *  "lint-staged": {
-        *    "*.js": "eslint"
-        *  }
-        *
-        *  without adding
-        *
-        *  "scripts" {
-        *    "eslint": "eslint"
-        *  }
-        */
-        npmWhich(binName, function (err, bin) {
-            if (err) {
-                /*
-                * If we could not locate a binary than the config is invald
-                * and we should warn about it...
-                */
-                cb.call(this, err, null)
-            }
-            cb.call(this, null, bin, ['--'].concat(paths))
-        })
+        return {
+            bin: 'npm',
+            args: ['run', '--silent', cmd].concat(defaultArgs)
+        }
+    }
+
+    /*
+    *  If cmd wasn't found in package.json scripts
+    *  we'll try to locate the binary in node_modules/.bin
+    *  and if this fails in $PATH.
+    *
+    *  This is useful for shorter configs like:
+    *
+    *  "lint-staged": {
+    *    "*.js": "eslint"
+    *  }
+    *
+    *  without adding
+    *
+    *  "scripts" {
+    *    "eslint": "eslint"
+    *  }
+    */
+
+    const parts = cmd.split(' ')
+    let bin = parts[0]
+    let args = parts.splice(1)
+
+    try {
+        /* Firstly, try to resolve the bin in local node_modules/.bin */
+        bin = npmWhich.sync(bin)
+    } catch (e) {
+        /* If this fails, try to resolve binary in $PATH */
+        try {
+            bin = which.sync(bin)
+        } catch (e) {
+            throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
+        }
+    }
+
+    return {
+        bin,
+        args: args.concat(defaultArgs)
     }
 }

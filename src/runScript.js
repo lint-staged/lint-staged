@@ -1,40 +1,35 @@
-var findBin = require('./findBin')
-var spawn = require('cross-spawn')
-var batch = require('batchflow')
+'use strict'
 
-module.exports = function runScript (linters, paths, config, cb) {
-    var lintersArray = Array.isArray(linters) ? linters : [linters]
-    var exitCode = 0
-    batch(lintersArray)
-        .series()
-        .each(function (i, linter, next) {
-            // If previous process finished with non-zero code
-            // we'll stop executing the sequence
-            if (exitCode > 0) {
-                return next(exitCode)
-            }
+const findBin = require('./findBin')
+const execa = require('execa')
 
-            findBin(linter, paths, config, function (err, binPath, args) {
-                if (err) {
-                    throw err
+module.exports = function runScript (linters, pathsToLint, config) {
+    const lintersArray = Array.isArray(linters) ? linters : [linters]
+    return lintersArray.map(linter => {
+        return {
+            title: linter,
+            task: () => {
+                try {
+                    const res = findBin(linter, pathsToLint, config)
+                    return new Promise((resolve, reject) => {
+                        execa(res.bin, res.args)
+                            .then(() => {
+                                resolve(`${linter} passed!`)
+                            })
+                            .catch(err => {
+                                reject(`
+🚨  ${linter} found some errors. Please fix them and try committing again.
+
+${err.stdout}
+`
+                                )
+                            })
+                    })
+                } catch (err) {
+                    throw new Error(`${linter} not found. Try 'npm install ${linter}'`)
                 }
-                var npmStream = spawn(binPath, args, {
-                    stdio: 'inherit' // <== IMPORTANT: use this option to inherit the parent's environment
-                })
-                npmStream.on('exit', function (code) {
-                    exitCode = code
-                })
-                npmStream.on('close', next)
-            })
-        })
-        .error(function (err) {
-            console.error(err)
-            cb.call(this, err, null)
-        })
-        .end(function () {
-            process.exitCode = exitCode
-            if (typeof cb === 'function') {
-                cb.call(this, null, exitCode)
             }
-        })
+        }
+    })
 }
+

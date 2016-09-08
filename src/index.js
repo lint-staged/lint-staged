@@ -1,50 +1,40 @@
-var sgf = require('staged-git-files')
-var minimatch = require('minimatch')
-var ora = require('ora')
-var assign = require('object-assign')
-var appRoot = require('app-root-path')
-var config = require(appRoot.resolve('package.json'))
-var runScript = require('./runScript')
-var getLintersAsString = require('./getLintersAsString')
+'use strict'
 
-var defaultLinters = {}
-var customLinters = config['lint-staged']
-var linters = assign(defaultLinters, customLinters)
-var spinner = ora('Starting lint-staged').start()
+const sgf = require('staged-git-files')
+const minimatch = require('minimatch')
+const assign = require('object-assign')
+const appRoot = require('app-root-path')
+const config = require(appRoot.resolve('package.json'))
+const runScript = require('./runScript')
+const Listr = require('listr')
+
+const defaultLinters = {}
+const customLinters = config['lint-staged']
+const linters = assign(defaultLinters, customLinters)
 
 sgf('ACM', function (err, results) {
     if (err) {
         console.error(err)
     }
-    var filePaths = results.map(function (file) {
-        return file.filename
-    })
-    if (filePaths.length) {
-        Object.keys(linters).forEach(function (key) {
-            var linter = linters[key]
-            var fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }))
-            if (fileList.length) {
-                spinner.text = 'Running ' + getLintersAsString(linter) + '...'
-                runScript(linter, fileList, config, function (error, exitCode) {
-                    if (error) {
-                        console.error(error)
-                    }
-                    if (exitCode > 0) {
-                        console.log(
-                            '😱  %s found some issues. Fix them and try again.',
-                            getLintersAsString(linter)
-                        )
-                    }
-                    spinner.stop()
-                    spinner.clear()
-                })
-            } else {
-                spinner.stop()
+    const filePaths = results.map(file => file.filename)
+    const tasks = Object.keys(linters).map(key => {
+        const linter = linters[key]
+        const fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }))
+        if (fileList.length) {
+            return {
+                title: `Running tasks for ${key}`,
+                task: () => {
+                    return new Listr(runScript(linter, fileList, config))
+                }
             }
+        }
+    }).filter(task => typeof task !== 'undefined') // Filter undefined values
+
+    if (tasks.length) {
+        new Listr(tasks).run().catch(err => {
+            console.error(err)
+            process.exit(1)
         })
-    } else {
-        spinner.stop()
-        console.log('\n👀  Nothing to lint. `git add` some files and try again...\n')
     }
 })
 

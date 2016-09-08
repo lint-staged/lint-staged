@@ -1,7 +1,18 @@
 import expect from 'expect'
-import mockSpawn from 'mock-spawn'
+import isPromise from 'is-promise'
 import rewire from 'rewire'
 const runScript = rewire('../src/runScript')
+
+expect.extend({
+    toBeAPromise () {
+        expect.assert(
+            isPromise(this.actual),
+            'expected %s to be a Promise',
+            this.actual
+        )
+        return this
+    }
+})
 
 const packageJSON = {
     scripts: {
@@ -12,101 +23,45 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-    it('should run the callback with the proper exit code', done => {
-        const spy = expect.createSpy()
-        const mySpawn = mockSpawn()
-        mySpawn.setDefault(mySpawn.simple(0))
-        runScript.__set__('spawn', mySpawn)
-
-        runScript('test', 'test.js', packageJSON, spy)
-        setTimeout(() => {
-            expect(mySpawn.calls.length).toEqual(1)
-            expect(mySpawn.calls[0].exitCode).toEqual(0)
-            expect(mySpawn.calls[0].command).toEqual('npm')
-            expect(mySpawn.calls[0].args).toEqual(['run', '-s', 'test', '--', 'test.js'])
-
-            expect(spy.calls.length).toEqual(1)
-            expect(spy).toHaveBeenCalledWith(null, 0)
-            done()
-        }, 10)
+    afterEach(function () {
+        expect.restoreSpies()
     })
 
-    it('should support array of scripts as a first argument', done => {
-        const spy = expect.createSpy()
-        const mySpawn = mockSpawn()
-        mySpawn.sequence.add(mySpawn.simple(0))
-        mySpawn.sequence.add(mySpawn.simple(1))
-        runScript.__set__('spawn', mySpawn)
-
-        runScript(['test', 'test2'], 'test.js', packageJSON, spy)
-        setTimeout(() => {
-            expect(mySpawn.calls.length).toEqual(2)
-            expect(mySpawn.calls[0].exitCode).toEqual(0)
-            expect(mySpawn.calls[0].command).toEqual('npm')
-            expect(mySpawn.calls[0].args).toEqual(['run', '-s', 'test', '--', 'test.js'])
-
-            expect(mySpawn.calls[1].exitCode).toEqual(1)
-            expect(mySpawn.calls[1].command).toEqual('npm')
-            expect(mySpawn.calls[1].args).toEqual(['run', '-s', 'test2', '--', 'test.js'])
-
-            expect(spy.calls.length).toEqual(1)
-            expect(spy).toHaveBeenCalledWith(null, 1)
-            done()
-        }, 10)
+    it('should return an array', () => {
+        expect(runScript('test', 'test.js', packageJSON)).toBeA('array')
     })
 
-    it('should stop the sequence execution if prev process finishes with non-zero', done => {
-        const spy = expect.createSpy()
-        const mySpawn = mockSpawn()
-        mySpawn.sequence.add(mySpawn.simple(1))
-        mySpawn.sequence.add(mySpawn.simple(0))
-        runScript.__set__('spawn', mySpawn)
-
-        runScript(['test', 'test2'], 'test.js', packageJSON, spy)
-        setTimeout(() => {
-            expect(mySpawn.calls.length).toEqual(1)
-            expect(mySpawn.calls[0].exitCode).toEqual(1)
-
-            expect(spy.calls.length).toEqual(1)
-            expect(spy).toHaveBeenCalledWith(null, 1)
-            done()
-        }, 10)
+    it('should return not empty array', () => {
+        const res = runScript('test', 'test.js', packageJSON)
+        expect(res.length).toBe(1)
+        expect(res[0].title).toBe('test')
+        expect(res[0].task).toBeA('function')
+        expect(res[0].task()).toBeAPromise()
     })
 
-    it('should handle errors for single commands', done => {
-        const err = new Error('linting error')
-        const spy = expect.createSpy()
-        const mySpawn = mockSpawn()
-        mySpawn.sequence.add({throws: err})
-        mySpawn.sequence.add(mySpawn.simple(0))
-        runScript.__set__('spawn', mySpawn)
-
-        runScript('test', 'test.js', packageJSON, spy)
-        setTimeout(() => {
-            expect(mySpawn.calls.length).toEqual(1)
-            expect(spy.calls.length).toEqual(1)
-            expect(spy.calls[0].arguments[0]).toBe(err)
-            expect(spy.calls[0].arguments[1]).toNotEqual(0)
-            done()
-        }, 10)
+    it('should return empty array for non-existend script', () => {
+        expect(runScript('test3', 'test.js', packageJSON)[0].task).toThrow("test3 not found. Try 'npm install test3'")
     })
 
-    it('should handle errors for sequences', done => {
-        const err = new Error('linting error')
+    it('should support array of scripts as a first argument', () => {
         const spy = expect.createSpy()
-        const mySpawn = mockSpawn()
-        mySpawn.sequence.add({throws: err})
-        mySpawn.sequence.add(mySpawn.simple(0))
-        runScript.__set__('spawn', mySpawn)
+        runScript.__set__('execa', spy)
+        const res = runScript(['test', 'test2'], 'test.js', packageJSON)
+        expect(res.length).toBe(2)
+        expect(res[0].title).toBe('test')
+        expect(res[1].title).toBe('test2')
 
-        runScript(['test', 'test2'], 'test.js', packageJSON, spy)
-        setTimeout(() => {
-            expect(mySpawn.calls.length).toEqual(1)
-            expect(spy.calls.length).toEqual(1)
-            expect(spy.calls[0].arguments[0]).toBe(err)
-            expect(spy.calls[0].arguments[1]).toNotEqual(0)
-            done()
-        }, 10)
+        expect(res[0].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(1)
+        expect(spy.calls[0].arguments).toEqual(
+            ['npm', ['run', '--silent', 'test', '--', 'test.js']]
+        )
+
+        expect(res[1].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(2)
+        expect(spy.calls[1].arguments).toEqual(
+            ['npm', ['run', '--silent', 'test2', '--', 'test.js']]
+        )
     })
 })
 
