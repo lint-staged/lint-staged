@@ -10,8 +10,6 @@
     "postinstall": "echo \"lint-staged installed! Do not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "eslint": "eslint --quiet --fix",
-    "git:add": "git add",
     "pre-commit": "node index.js",
     "release": "npmpub",
     "test": "mocha --compilers js:babel-core/register ./test/*.spec.js",
@@ -20,8 +18,9 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint",
-      "git:add"
+      "eslint --fix",
+      "git add",
+      "eslint"
     ]
   },
   "pre-commit": [
@@ -59,7 +58,8 @@
     "npm-which": "^3.0.1",
     "object-assign": "^4.1.0",
     "ora": "^0.2.3",
-    "staged-git-files": "0.0.4"
+    "staged-git-files": "0.0.4",
+    "which": "^1.2.11"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

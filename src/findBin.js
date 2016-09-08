@@ -1,26 +1,27 @@
 'use strict'
 
 const npmWhich = require('npm-which')(process.cwd())
+const which = require('which')
 
-module.exports = function findBin (binName, paths, config) {
-    const bin = 'npm'
-    const files = ['--color', '--'].concat(paths)
-    const args = ['run', '-s', binName].concat(files)
+module.exports = function findBin (cmd, paths, config) {
+    const defaultArgs = ['--'].concat(paths)
     /*
-    * If package.json has script with binName defined
+    * If package.json has script with cmd defined
     * we want it to be executed first
     */
-    if (config.scripts[binName] !== undefined) {
+    if (config.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
         return {
-            bin,
-            args
+            bin: 'npm',
+            args: ['run', '--silent', cmd].concat(defaultArgs)
         }
     }
 
     /*
-    *  If binName wasn't found in package.json scripts
+    *  If cmd wasn't found in package.json scripts
     *  we'll try to locate the binary in node_modules/.bin
+    *  and if this fails in $PATH.
+    *
     *  This is useful for shorter configs like:
     *
     *  "lint-staged": {
@@ -33,8 +34,25 @@ module.exports = function findBin (binName, paths, config) {
     *    "eslint": "eslint"
     *  }
     */
+
+    const parts = cmd.split(' ')
+    let bin = parts[0]
+    let args = parts.splice(1)
+
+    try {
+        /* Firstly, try to resolve the bin in local node_modules/.bin */
+        bin = npmWhich.sync(bin)
+    } catch (e) {
+        /* If this fails, try to resolve binary in $PATH */
+        try {
+            bin = which.sync(bin)
+        } catch (e) {
+            throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
+        }
+    }
+
     return {
-        bin: npmWhich.sync(binName),
-        args: files
+        bin,
+        args: args.concat(defaultArgs)
     }
 }
