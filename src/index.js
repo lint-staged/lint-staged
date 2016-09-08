@@ -35,8 +35,6 @@ sgf('ACM', function (err, results) {
             console.error(err)
             process.exit(1)
         })
-    } else {
-        console.log('No staged files found. Nothing to lint!')
     }
 })
 
