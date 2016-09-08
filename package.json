@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
-    "app-root-path": "^1.2.1",
+    "app-root-path": "^2.0.0",
     "batchflow": "^0.4.0",
     "cross-spawn": "^4.0.0",
     "minimatch": "^3.0.0",
