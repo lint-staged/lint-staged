@@ -54,13 +54,13 @@ describe('runScript', () => {
         expect(res[0].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(1)
         expect(spy.calls[0].arguments).toEqual(
-            ['npm', ['run', '-s', 'test', '--color', '--', 'test.js']]
+            ['npm', ['run', '--silent', 'test', '--', 'test.js']]
         )
 
         expect(res[1].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(2)
         expect(spy.calls[1].arguments).toEqual(
-            ['npm', ['run', '-s', 'test2', '--color', '--', 'test.js']]
+            ['npm', ['run', '--silent', 'test2', '--', 'test.js']]
         )
     })
 })
