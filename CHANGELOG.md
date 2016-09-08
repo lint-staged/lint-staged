@@ -1,4 +1,4 @@
-# 3.0.0
+# 3.0.1
 
 - Switched to listr. Simplified code and more beautiful output.
 - Switched to execa. Should fix #30
