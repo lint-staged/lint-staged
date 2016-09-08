@@ -19,8 +19,7 @@
   "lint-staged": {
     "*.js": [
       "eslint --fix",
-      "git add",
-      "eslint"
+      "git add"
     ]
   },
   "pre-commit": [
