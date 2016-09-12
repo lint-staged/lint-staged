@@ -1,3 +1,7 @@
+# 3.0.2
+
+- Removed unused dependecies
+
 # 3.0.1
 
 - Switched to listr. Simplified code and more beautiful output.
