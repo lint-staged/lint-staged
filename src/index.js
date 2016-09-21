@@ -1,4 +1,7 @@
+/* global process */
 'use strict'
+
+process.env.FORCE_COLOR = true // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 
 const sgf = require('staged-git-files')
 const minimatch = require('minimatch')

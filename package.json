@@ -18,7 +18,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix --color",
+      "eslint --fix",
       "git add"
     ]
   },
