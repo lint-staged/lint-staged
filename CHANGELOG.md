@@ -1,4 +1,4 @@
-# HEAD
+# 3.0.3
 
 - Added `FORCE_COLOR` env variable to force colors for packages that depend on https://www.npmjs.com/package/supports-color. Closes #50
 
