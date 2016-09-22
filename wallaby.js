@@ -2,7 +2,9 @@ module.exports = function (wallaby) {
     return {
         files: [
             { pattern: 'test/__fixtures__/*', instrument: false },
-            'src/*.js'
+            'src/*.js',
+            'src/__mocks__/*.js',
+            '!test/*.spec.js'
         ],
 
         tests: [
@@ -10,13 +12,14 @@ module.exports = function (wallaby) {
         ],
 
         env: {
-            type: 'node'
+            type: 'node',
+            runner: 'node'
         },
 
         compilers: {
             '**/*.js': wallaby.compilers.babel()
         },
 
-        testFramework: 'mocha'
+        testFramework: 'jest'
     }
 }
