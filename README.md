@@ -1,14 +1,14 @@
 # lint-staged
 
-Run linters against staged git files and don't let :poop: slip into your code base! 
+Run linters against staged git files and don't let :poop: slip into your code base!
 
 ## Why
 
 [Read the Medium post](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 
-Linting makes more sense when running before commiting you code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you want to lint only files that will be committed.
+Linting makes more sense when running before committing you code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you want to lint only files that will be committed.
 
-This project contains a script that will run arbitary npm tasks against staged files, filtered by a spicified glob pattern.
+This project contains a script that will run arbitrary npm tasks against staged files, filtered by a specified glob pattern.
 
 ## Installation & Setup
 
@@ -17,7 +17,7 @@ This project contains a script that will run arbitary npm tasks against staged f
 1. Add `"lint-staged": { "*.js": "eslint" }` to `package.json` (see [configuration](#configuration))
 1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`
 
-Now `git add` a few files and `npm run lint-staged` to lint them. 
+Now `git add` a few files and `npm run lint-staged` to lint them.
 
 I recommend using an awesome [pre-commit](https://github.com/observing/pre-commit) to run `lint-staged` as pre-commit hook:
 
@@ -28,9 +28,9 @@ See complete examples below.
 
 ## Configuration
 
-You can configure lint-staged by adding a `lint-staged` section to your `package.json`. It should 
-be an object where each value is a command to run and key is a glob pattern to use for this  
-command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns. 
+You can configure lint-staged by adding a `lint-staged` section to your `package.json`. It should
+be an object where each value is a command to run and its key is a glob pattern to use for this
+command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
 See its [documentation](https://github.com/isaacs/minimatch) if you have questions regarding glob patterns.
 
 ```json
@@ -44,18 +44,18 @@ See its [documentation](https://github.com/isaacs/minimatch) if you have questio
 }
 ```
 
-This config will execute `npm run my-task`  with the list of currently staged files passed as argument. 
+This config will execute `npm run my-task` with the list of currently staged files passed as arguments.
 
-So, considering you did `git add file1.ext file2.ext`, lint-staged will run following command:
+So, considering you did `git add file1.ext file2.ext`, lint-staged will run the following command:
 
 `npm run my-task — file1.ext file2.ext`
 
 Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.
 
-> Using globally installed scripts is discouraged, since in this case lint-staged might not work for someone who doesn’t have it installed.
+> Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
 
-`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts, so you don't need to add `{ "eslint": "eslint" }` to the `scripts` section of your `pacakge.json`. So, for simplicity, you can write:
- 
+`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts, so you don't need to add `{ "eslint": "eslint" }` to the `scripts` section of your `package.json`. For simplicity, you can write:
+
 ```json
 {
   "scripts": {
@@ -69,7 +69,7 @@ Supported are both local npm scripts (`npm run-script`), or any executables inst
 
 You can pass arguments to your linter separated by space. See examples below.
 
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences. 
+Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
 In case of `eslint --fix`, after the code is reformatted we want it to be added to the same commit. This can be easily done using following config:
 
