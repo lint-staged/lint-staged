@@ -1,9 +1,9 @@
 {
   "plugins": ["import"],
   "extends": [
-      "standard",
-      "plugin:import/errors",
-      "plugin:import/warnings"
+    "standard",
+    "plugin:import/errors",
+    "plugin:import/warnings"
   ],
   "parserOptions": {
     "ecmaVersion": 6,
