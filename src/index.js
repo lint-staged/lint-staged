@@ -17,7 +17,7 @@ const resolvePaths = require('./resolvePaths')
 const generateTasks = require('./generateTasks')
 
 cosmiconfig(packageJson.name, {
-    rc: 'lintstaged'
+    rc: '.lintstagedrc'
 })
     .then((result) => {
         // result.config is the parsed configuration object
