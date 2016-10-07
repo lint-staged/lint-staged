@@ -55,7 +55,6 @@
     "listr": "^0.6.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
-    "object-assign": "^4.1.0",
     "staged-git-files": "0.0.4",
     "which": "^1.2.11"
   },
