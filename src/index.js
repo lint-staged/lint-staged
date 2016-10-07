@@ -31,9 +31,9 @@ sgf('ACM', function (err, results) {
         if (fileList.length) {
             // If current working directory is not the git root -> resolve file paths accordingly
             if (sgf.cwd !== process.cwd()) {
-                var relpath = path.relative(process.cwd(), sgf.cwd) + '/'
+                var relpath = path.relative(process.cwd(), sgf.cwd)
                 for (var i in fileList) {
-                    fileList[i] = path.resolve(relpath + fileList[i])
+                    fileList[i] = path.resolve(relpath, fileList[i])
                 }
             }
             return {
