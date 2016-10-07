@@ -10,11 +10,16 @@ const appRoot = require('app-root-path')
 const config = require(appRoot.resolve('package.json'))
 const runScript = require('./runScript')
 const Listr = require('listr')
+const path = require('path')
 
 const defaultLinters = {}
-const customLinters = config['lint-staged']
+const customLinters = config['lint-staged']['linters'] !== undefined ? config['lint-staged']['linters'] : config['lint-staged']
 const linters = assign(defaultLinters, customLinters)
 
+// If git root is defined -> Set git root as sgf's cwd
+if (config['lint-staged']['git-root'] !== undefined) {
+    sgf.cwd = path.resolve(config['lint-staged']['git-root'])
+}
 sgf('ACM', function (err, results) {
     if (err) {
         console.error(err)
@@ -24,6 +29,13 @@ sgf('ACM', function (err, results) {
         const linter = linters[key]
         const fileList = filePaths.filter(minimatch.filter(key, { matchBase: true }))
         if (fileList.length) {
+            // If current working directory is not the git root -> resolve file paths accordingly
+            if (sgf.cwd !== process.cwd()) {
+                var relpath = path.relative(process.cwd(), sgf.cwd) + '/'
+                for (var i in fileList) {
+                    fileList[i] = path.resolve(relpath + fileList[i])
+                }
+            }
             return {
                 title: `Running tasks for ${key}`,
                 task: () => {
