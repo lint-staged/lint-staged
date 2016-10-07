@@ -23,6 +23,7 @@ cosmiconfig(packageJson.name, {
         // result.config is the parsed configuration object
         // result.filepath is the path to the config file that was found
         const config = result.config
+        const concurrent = config.concurrent || true
 
         // If git-root is defined -> set git root as sgf's cwd
         if ('git-root' in config) {
@@ -42,7 +43,7 @@ cosmiconfig(packageJson.name, {
 
 
             if (tasks.length) {
-                new Listr(tasks).run().catch((error) => {
+                new Listr(tasks, { concurrent }).run().catch((error) => {
                     console.error(error)
                     process.exit(1)
                 })
