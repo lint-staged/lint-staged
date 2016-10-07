@@ -8,7 +8,7 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 Linting makes more sense when running before committing you code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
-This project contains a script that will run arbitrary npm and shell tasks with a list of  staged files as argument, filtered by a specified glob pattern.
+This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as argument, filtered by a specified glob pattern.
 
 ## Installation & Setup
 
@@ -23,7 +23,7 @@ I recommend using [pre-commit](https://github.com/observing/pre-commit) or [husk
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
-See complete examples below.
+See [examples](#examples) below.
 
 ## Configuration
 
@@ -73,7 +73,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `git-root` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [Working from a subdirectory](#)
+* `git-root` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 
 ## What commands are supported?
