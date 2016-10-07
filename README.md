@@ -112,12 +112,10 @@ If your `package.json` is located in a subdirectory of the git root directory, y
 
 ```json
 {
-  "lint-staged": {
     "git-root": "../",
     "linters":{
-      "*": "my-task"
+        "*": "my-task"
     }
-  }
 }
 ```
 
@@ -131,9 +129,6 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
   "version": "0.1.0",
   "scripts": {
     "lint-staged": "lint-staged"
-  },
-  "lint-staged": {
-    "*.@(js|jsx)": "eslint"
   },
   "pre-commit": "lint-staged"
 }
