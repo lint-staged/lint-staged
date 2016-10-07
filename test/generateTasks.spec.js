@@ -15,7 +15,7 @@ const nestedConfig = {
 const files = ['test.js', 'test2.js', 'test.css', 'test.txt']
 
 describe('generateTasks', () => {
-    it('should should not generate tasks for non-matching files', () => {
+    it('should not generate tasks for non-matching files', () => {
         const res = generateTasks(simpleConfig, ['test'])
         expect(res).toBeAn('array')
         expect(res.length).toEqual(0)
