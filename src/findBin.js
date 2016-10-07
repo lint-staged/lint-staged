@@ -3,7 +3,7 @@
 const npmWhich = require('npm-which')(process.cwd())
 const which = require('which')
 
-module.exports = function findBin (cmd, paths, config) {
+module.exports = function findBin(cmd, paths, config) {
     const defaultArgs = ['--'].concat(paths)
     /*
     * If package.json has script with cmd defined
@@ -37,17 +37,17 @@ module.exports = function findBin (cmd, paths, config) {
 
     const parts = cmd.split(' ')
     let bin = parts[0]
-    let args = parts.splice(1)
+    const args = parts.splice(1)
 
     try {
         /* Firstly, try to resolve the bin in local node_modules/.bin */
         bin = npmWhich.sync(bin)
-    } catch (e) {
+    } catch (err) {
         /* If this fails, try to resolve binary in $PATH */
         try {
             bin = which.sync(bin)
-        } catch (e) {
-            throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
+        } catch (error) {
+            throw new Error(`${ bin } could not be found. Try \`npm install ${ bin }\`.`)
         }
     }
 

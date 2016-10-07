@@ -1,7 +1,8 @@
-/* eslint no-unused-expressions: 0 */
+/* eslint no-underscore-dangle: 0 */
 
 import expect from 'expect'
 import rewire from 'rewire'
+
 const findBin = rewire('../src/findBin')
 const packageJSON = {
     scripts: {
@@ -13,8 +14,8 @@ const npmWichMockGood = {
     sync: path => path
 }
 const npmWichMockBad = {
-    sync: path => {
-        throw new Error('not found: ' + path)
+    sync: (path) => {
+        throw new Error(`not found: ${ path }`)
     }
 }
 
