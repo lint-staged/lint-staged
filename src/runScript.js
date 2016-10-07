@@ -20,6 +20,7 @@ module.exports = function runScript (linters, pathsToLint, config) {
                                 reject(`
 🚨  ${linter} found some errors. Please fix them and try committing again.
 
+${err.stderr}
 ${err.stdout}
 `
                                 )
