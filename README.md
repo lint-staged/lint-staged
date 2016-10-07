@@ -1,4 +1,4 @@
-# lint-staged
+# lint-staged [![Build Status](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged)
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
