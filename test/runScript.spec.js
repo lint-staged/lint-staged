@@ -1,10 +1,13 @@
+/* eslint no-underscore-dangle: 0 */
+
 import expect from 'expect'
 import isPromise from 'is-promise'
 import rewire from 'rewire'
+
 const runScript = rewire('../src/runScript')
 
 expect.extend({
-    toBeAPromise () {
+    toBeAPromise() {
         expect.assert(
             isPromise(this.actual),
             'expected %s to be a Promise',
@@ -23,7 +26,7 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-    afterEach(function () {
+    afterEach(() => {
         expect.restoreSpies()
     })
 
