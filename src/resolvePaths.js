@@ -2,7 +2,7 @@
 
 const path = require('path')
 
-module.exports = function resolvePaths (filePaths, relativeTo) {
+module.exports = function resolvePaths(filePaths, relativeTo) {
     return filePaths.map((file) => {
         if (!relativeTo) relativeTo = process.cwd() // eslint-disable-line
         return path.resolve(process.cwd(), relativeTo, file.filename)
