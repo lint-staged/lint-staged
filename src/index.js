@@ -37,7 +37,7 @@ cosmiconfig(packageJson.name, {
             const tasks = generateTasks(config, resolvePaths(files))
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
-                    task: () => (new Listr(runScript(task.commands, task.fileList, config)))
+                    task: () => (new Listr(runScript(task.commands, task.fileList, packageJson)))
                 }))
 
 
