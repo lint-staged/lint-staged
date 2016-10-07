@@ -2,7 +2,7 @@
 
 const minimatch = require('minimatch')
 
-module.exports = function generateTasks (config, filePaths) {
+module.exports = function generateTasks(config, filePaths) {
     const linters = config.linters !== undefined ? config.linters : config
     return Object.keys(linters)
         .map((pattern) => {
