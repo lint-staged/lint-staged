@@ -52,7 +52,7 @@ cosmiconfig(packageJson.name, {
     })
     .catch((parsingError) => {
         // do something constructive
-        console.error(`Could not parse lint-staged config.
+        console.error(`Could not parse ${ packageJson.name } config.
 Make sure you have created it. See ${ packageJson.homepage }.
 
 ${ parsingError }
