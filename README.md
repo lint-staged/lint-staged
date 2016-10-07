@@ -44,7 +44,8 @@ See its [documentation](https://github.com/isaacs/minimatch) if you have questio
 }
 ```
 
-**Working from a subdirectory** (i.e. not git root)
+**Working from a subdirectory**
+
 You can also configure lint-staged to work when your npm working directory is a subdirectory of the git root directory
 
 ```json
