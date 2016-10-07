@@ -43,12 +43,26 @@ See its [documentation](https://github.com/isaacs/minimatch) if you have questio
   }
 }
 ```
-
 This config will execute `npm run my-task` with the list of currently staged files passed as arguments.
 
 So, considering you did `git add file1.ext file2.ext`, lint-staged will run the following command:
 
 `npm run my-task — file1.ext file2.ext`
+
+**Working from a subdirectory**
+
+You can also configure lint-staged to work when your npm working directory is a subdirectory of the git root directory
+
+```json
+{
+  "lint-staged": {
+    "git-root": "../",
+    "linters":{
+      "*": "my-task"
+    }
+  }
+}
+```
 
 Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.
 
