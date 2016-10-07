@@ -10,6 +10,7 @@ const sgf = require('staged-git-files')
 const appRoot = require('app-root-path')
 const Listr = require('listr')
 const cosmiconfig = require('cosmiconfig')
+const execa = require('execa')
 
 const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-line
 const runScript = require('./runScript')
@@ -40,15 +41,21 @@ cosmiconfig('lint-staged', {
             const tasks = generateTasks(config, resolvePaths(files, gitDir))
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
-                    task: () => (new Listr(runScript(task.commands, task.fileList, packageJson)))
+                    task: () => new Listr(runScript(task.commands, task.fileList, packageJson))
                 }))
 
 
             if (tasks.length) {
-                new Listr(tasks, { concurrent }).run().catch((error) => {
-                    console.error(error)
-                    process.exit(1)
-                })
+                execa('git', ['stash', '--keep-index']) // Stash non-index changes
+                    .then(() => new Listr(tasks, { concurrent })
+                        .run()
+                        .then(() => execa.sync('git', ['stash', 'pop'])) // Restore from stash
+                        .catch((error) => {
+                            execa.sync('git', ['stash', 'pop'])  // Restore from stash
+                            console.error(error)
+                            process.exit(1)
+                        })
+                    )
             }
         })
     })
