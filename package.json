@@ -16,15 +16,7 @@
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "pre-commit": [
-    "pre-commit"
-  ],
+  "pre-commit": "pre-commit",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
