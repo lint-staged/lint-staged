@@ -66,7 +66,7 @@
     "eslint": "^3.2.0",
     "eslint-config-standard": "^6.0.0",
     "eslint-plugin-import": "^2.0.0",
-    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.1",
     "expect": "^1.20.2",
     "is-promise": "^2.1.0",
