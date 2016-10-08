@@ -16,6 +16,5 @@ module.exports = function generateTasks(config, filePaths) {
                 }
             }
             return undefined
-        })
-        .filter(task => typeof task !== 'undefined') // Filter undefined values
+        }).filter(Boolean) // Filter undefined values
 }
