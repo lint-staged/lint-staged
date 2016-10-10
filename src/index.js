@@ -16,7 +16,7 @@ const runScript = require('./runScript')
 const resolvePaths = require('./resolvePaths')
 const generateTasks = require('./generateTasks')
 
-cosmiconfig(packageJson.name, {
+cosmiconfig('lint-staged', {
     rc: '.lintstagedrc'
 })
     .then((result) => {
@@ -51,8 +51,8 @@ cosmiconfig(packageJson.name, {
         })
     })
     .catch((parsingError) => {
-        console.error(`Could not parse ${ packageJson.name } config.
-Make sure you have created it. See ${ packageJson.homepage }.
+        console.error(`Could not parse lint-staged config.
+Make sure you have created it. See https://github.com/okonet/lint-staged#readme.
 
 ${ parsingError }
 `)
