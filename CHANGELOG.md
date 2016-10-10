@@ -1,5 +1,11 @@
 # HEAD
 
+- Implemented a complete git workflow with stash that allows patch commits. Closes #62
+- Split code into smaller modules + added tests for them. Closes #68
+- Support for different configs via https://github.com/davidtheclark/cosmiconfig. Closes #64
+- Run separate linters concurrently by default
+- Added concurrent option to the config. Closes #63
+- Switched to https://github.com/okonet/eslint-config-okonet
 - lint-staged now work from sub-directories. #65 by @TheWolfNL
 - Output both `stdout` and `stderr` in case of error. Closes #66
 
