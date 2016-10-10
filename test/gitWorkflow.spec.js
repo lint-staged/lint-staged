@@ -123,6 +123,8 @@ describe('gitWorkflow', () => {
     border: 1px solid green;
 }
 `))
+                .then(() => gitflow.execGit(['config', 'user.name', '"test"'], gitOpts))
+                .then(() => gitflow.execGit(['config', 'user.email', '"test@test.com"'], gitOpts))
                 // Add all files
                 .then(() => gitflow.execGit(['add', '.'], gitOpts))
                 // Create inital commit
