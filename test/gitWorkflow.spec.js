@@ -1,4 +1,4 @@
-/* eslint no-unused-expressions: 0 */
+/* eslint no-underscore-dangle: 0 */
 
 import path from 'path'
 import expect from 'expect'
@@ -42,12 +42,29 @@ describe('gitWorkflow', () => {
                     done()
                 })
         })
+
+        it('should call execa in cwd if cwd is not specified', (done) => {
+            const spy = expect.createSpy().andReturn(new Promise((resolve) => {
+                resolve()
+            }))
+            const revert = gitflow.__set__('execa', spy)
+            gitflow.execGit(['init', 'param'])
+                .then(() => {
+                    expect(spy).toHaveBeenCalledWith(
+                        'git',
+                        ['--git-dir', path.resolve(process.cwd(), '.git'), 'init', 'param'],
+                        { cwd: path.resolve(process.cwd()) }
+                    )
+                    spy.restore()
+                    revert()
+                    done()
+                })
+        })
     })
 
     describe('gitStashSave/gitStashPop', () => {
         beforeEach((done) => {
             wcDir = tmp.dirSync({ unsafeCleanup: true })
-            console.log(wcDir)
             wcDirPath = wcDir.name
             gitOpts = {
                 cwd: wcDirPath
@@ -67,10 +84,7 @@ describe('gitWorkflow', () => {
                 .then(() => gitflow.execGit(['add', '.'], gitOpts))
                 // Create inital commit
                 .then(() => gitflow.execGit(['commit', '-m', '"commit"'], gitOpts))
-                .then((res) => {
-                    done()
-                })
-                .catch(err => console.log(err))
+                .then(() => done())
         })
 
         afterEach(() => {
@@ -110,7 +124,6 @@ describe('gitWorkflow', () => {
                     expect(res.stdout).toEqual(' M test.css\nM  test.js')
                     done()
                 })
-                .catch(err => console.log(err))
         })
 
         it('should stash and restore WC state after commit', (done) => {
@@ -153,7 +166,6 @@ describe('gitWorkflow', () => {
                     expect(res.stdout).toEqual(' M test.css')
                     done()
                 })
-                .catch(err => console.log(err))
         })
 
         it('should stash and restore WC state with additional edits without a commit', (done) => {
@@ -204,7 +216,6 @@ describe('gitWorkflow', () => {
 }`)
                     done()
                 })
-                .catch(err => console.log(err))
         })
 
     })

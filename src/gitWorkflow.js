@@ -8,8 +8,7 @@ module.exports = {
     },
 
     execGit(cmd, options) {
-        let cwd = options.cwd
-        if (!cwd) cwd = process.cwd()
+        const cwd = options && options.cwd ? options.cwd : process.cwd()
         return execa('git', this.getCmdArgs(cwd).concat(cmd), { cwd: path.resolve(cwd) })
     },
 
@@ -18,6 +17,7 @@ module.exports = {
     },
 
     gitStashPop(options) {
-        return this.execGit(['stash', 'pop'], options)
+        return this.execGit(['checkout', '.'], options)
+            .then(() => this.execGit(['stash', 'pop'], options))
     }
 }
