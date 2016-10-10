@@ -3,6 +3,7 @@
 import expect from 'expect'
 import path from 'path'
 import fs from 'fs'
+import tmp from 'tmp'
 import resolvePaths from '../src/resolvePaths'
 
 const files = fs.readdirSync(path.resolve('test', '__fixtures__')).map(file => ({
@@ -33,5 +34,10 @@ describe('resolvePaths', () => {
                 'test.txt'
             ].map(file => path.resolve(cwdParent, file))
         )
+    })
+
+    it('should return absolute paths if they were absolute', () => {
+        const tmpFile = tmp.fileSync()
+        expect(resolvePaths([{ filename: tmpFile.name }], '..')).toEqual([tmpFile.name])
     })
 })
