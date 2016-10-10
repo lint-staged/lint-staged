@@ -3,13 +3,21 @@ const execa = require('execa')
 
 module.exports = {
 
-    getCmdArgs(wcPath) {
-        return ['--git-dir', path.join(wcPath, '.git')]
+    getAbsolutePath(dir) {
+        return path.isAbsolute(dir) ? dir : path.resolve(dir)
+    },
+
+    getCmdArgs(gitDir) {
+        if (gitDir) {
+            return ['--git-dir', this.getAbsolutePath(gitDir)]
+        }
+        return []
     },
 
     execGit(cmd, options) {
         const cwd = options && options.cwd ? options.cwd : process.cwd()
-        return execa('git', this.getCmdArgs(cwd).concat(cmd), { cwd: path.resolve(cwd) })
+        const gitDir = options && options.gitDir
+        return execa('git', this.getCmdArgs(gitDir).concat(cmd), { cwd: this.getAbsolutePath(cwd) })
     },
 
     gitStashSave(options) {
