@@ -1,6 +1,6 @@
 {
   "name": "lint-staged",
-  "version": "4.0.0-beta-1",
+  "version": "4.0.0-beta-2",
   "description": "Lint files staged by git",
   "main": "index.js",
   "bin": {
