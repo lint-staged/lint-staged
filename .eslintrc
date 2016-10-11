@@ -12,7 +12,7 @@
     "indent": [2, 4],
     "strict": 0,
     "import/no-extraneous-dependencies": [2, {
-      "devDependencies": ["**/*.spec.js"]
+      "devDependencies": ["**/*.spec.js", "**/utils.js"]
     }]
   }
 }

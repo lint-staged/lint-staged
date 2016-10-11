@@ -1,21 +1,12 @@
 /* eslint no-underscore-dangle: 0 */
 
 import expect from 'expect'
-import isPromise from 'is-promise'
 import rewire from 'rewire'
+import testUtils from './utils'
+
+expect.extend(testUtils)
 
 const runScript = rewire('../src/runScript')
-
-expect.extend({
-    toBeAPromise() {
-        expect.assert(
-            isPromise(this.actual),
-            'expected %s to be a Promise',
-            this.actual
-        )
-        return this
-    }
-})
 
 const packageJSON = {
     scripts: {

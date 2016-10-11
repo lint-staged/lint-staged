@@ -5,6 +5,7 @@ import expect from 'expect'
 import rewire from 'rewire'
 import fsp from 'fs-promise'
 import tmp from 'tmp'
+import { toEventuallyEqual } from './utils'
 
 const gitflow = rewire('../src/gitWorkflow')
 
@@ -13,8 +14,10 @@ let wcDirPath
 let gitOpts = { cwd: 'test/__fixtures__' }
 
 tmp.setGracefulCleanup()
+expect.extend(toEventuallyEqual)
 
 const execaSpy = expect.createSpy().andReturn(new Promise(resolve => resolve()))
+const gitStatus = opts => gitflow.execGit(['status', '--porcelain'], opts)
 
 describe('gitWorkflow', () => {
 
@@ -143,74 +146,19 @@ describe('gitWorkflow', () => {
                 .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
     test: 'test2'
 }`))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect both are modified
-                    expect(res.stdout).toEqual(' M test.css\n M test.js')
-                })
+                // Expect both are modified
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\n M test.js'))
                 .then(() => gitflow.execGit(['add', 'test.js'], gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect one is in index
-                    expect(res.stdout).toEqual(' M test.css\nM  test.js')
-                })
+                // Expect one is in index
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\nM  test.js'))
                 .then(() => gitflow.gitStashSave(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect only one file from indexed
-                    expect(res.stdout).toEqual('M  test.js')
-                })
-
+                // Expect only one file from indexed
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.js'))
                 // Restoring state
                 .then(() => gitflow.gitStashPop(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect stashed files to be back. Indexed file remains indexed
-                    expect(res.stdout).toEqual(' M test.css\nM  test.js')
-                    done()
-                })
-        })
-
-        it('should stash and restore WC state after commit', (done) => {
-            // Update one of the files
-            fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
-                // Update one of the files
-                .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
-    test: 'test2'
-}`))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect both are modified
-                    expect(res.stdout).toEqual(' M test.css\n M test.js')
-                })
-                .then(() => gitflow.execGit(['add', 'test.js'], gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect one is in index
-                    expect(res.stdout).toEqual(' M test.css\nM  test.js')
-                })
-                .then(() => gitflow.gitStashSave(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect only one file from indexed
-                    expect(res.stdout).toEqual('M  test.js')
-                })
-
-                .then(() => gitflow.execGit(['commit', '-m', 'second commit'], gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect clean WC
-                    expect(res.stdout).toEqual('')
-                })
-
-                // Restoring state
-                .then(() => gitflow.gitStashPop(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect stashed files to be back. Commited file is gone.
-                    expect(res.stdout).toEqual(' M test.css')
-                    done()
-                })
+                // Expect stashed files to be back. Indexed file remains indexed
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\nM  test.js'))
+                .then(() => { done() })
         })
 
         it('should stash and restore WC state with additional edits without a commit', (done) => {
@@ -220,45 +168,68 @@ describe('gitWorkflow', () => {
                 .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
     test: 'test2'
 }`))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect both are modified
-                    expect(res.stdout).toEqual(' M test.css\n M test.js')
-                })
+                // Expect both are modified
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\n M test.js'))
                 .then(() => gitflow.execGit(['add', 'test.js'], gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect one is in index
-                    expect(res.stdout).toEqual(' M test.css\nM  test.js')
-                })
+                // Expect one is in index
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\nM  test.js'))
                 .then(() => gitflow.gitStashSave(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect only one file from indexed
-                    expect(res.stdout).toEqual('M  test.js')
-                })
-
+                // Expect only one file from indexed
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.js'))
                 // Do additional edits (imitate eslint --fix)
                 .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
     test: 'test2',
 };`))
 
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
-                    // Expect both indexed and modified state on one file
-                    expect(res.stdout).toEqual('MM test.js')
-                })
-
+                // Expect both indexed and modified state on one file
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('MM test.js'))
                 // Restoring state
                 .then(() => gitflow.gitStashPop(gitOpts))
-                .then(() => gitflow.execGit(['status', '--porcelain'], gitOpts))
-                .then((res) => {
+                // Expect stashed files to be back. Commited file is gone.
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\nM  test.js'))
+                .then(() => {
                     const jsContent = fsp.readFileSync(path.join(wcDirPath, 'test.js'), { encoding: 'utf-8' })
-                    // Expect stashed files to be back. Commited file is gone.
-                    expect(res.stdout).toEqual(' M test.css\nM  test.js')
                     expect(jsContent).toEqual(`module.exports = {
     test: 'test2'
 }`)
+                    done()
+                })
+        })
+
+        it('should stash and restore WC state with additional edits before a commit', (done) => {
+            // Update one of the files
+            fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
+                // Update one of the files
+                .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
+    test: 'test2'
+}`))
+                // Expect both are modified
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual(' M test.css\n M test.js'))
+                .then(() => gitflow.execGit(['add', '.'], gitOpts))
+                // Expect both are in index
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.css\nM  test.js'))
+                .then(() => gitflow.gitStashSave(gitOpts))
+                // Expect both are in index
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.css\nM  test.js'))
+                // Do additional edits (simulate eslint --fix)
+                .then(() => fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
+    test: 'test2',
+};`))
+                // Expect both indexed and modified state on one file
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.css\nMM test.js'))
+                // Add additional changes to the commit
+                .then(() => gitflow.execGit(['add', 'test.js'], gitOpts))
+                // Expect both files are in the index
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.css\nM  test.js'))
+                // Restoring state
+                .then(() => gitflow.gitStashPop(gitOpts))
+                // Expect stashed files to be back. Index changes are persisted.
+                .then(() => expect(gitStatus(gitOpts)).toEventuallyEqual('M  test.css\nM  test.js'))
+                .then(() => {
+                    const jsContent = fsp.readFileSync(path.join(wcDirPath, 'test.js'), { encoding: 'utf-8' })
+                    expect(jsContent).toEqual(`module.exports = {
+    test: 'test2',
+};`)
                     done()
                 })
         })
