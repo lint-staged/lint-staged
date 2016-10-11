@@ -3,6 +3,7 @@ module.exports = function (wallaby) {
         files: [
             { pattern: 'test/__fixtures__/*', instrument: false },
             { pattern: 'test/__fixtures__/**/*', instrument: false },
+            { pattern: 'test-setup.js', instrument: false },
             'test/utils.js',
             'src/*.js'
         ],
@@ -19,6 +20,10 @@ module.exports = function (wallaby) {
             '**/*.js': wallaby.compilers.babel()
         },
 
-        testFramework: 'mocha'
+        testFramework: 'mocha',
+
+        setup: () => {
+            require('babel-polyfill') // eslint-disable-line
+        }
     }
 }
