@@ -25,9 +25,9 @@ cosmiconfig('lint-staged', {
         const config = result.config
         const concurrent = config.concurrent || true
 
-        // If git-root is defined -> set git root as sgf's cwd
-        if ('git-root' in config) {
-            sgf.cwd = path.resolve(config['git-root'])
+        // If gitDir is defined -> set git root as sgf's cwd
+        if ('gitDir' in config) {
+            sgf.cwd = path.resolve(config.gitDir)
         }
 
         sgf('ACM', (err, files) => {

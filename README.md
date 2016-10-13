@@ -73,7 +73,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `git-root` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a subdirectory](#working-from-a-subdirectory)
+* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 
 ## What commands are supported?
@@ -108,11 +108,11 @@ Starting from v3.1, lint-staged will stash you remaining changes (not added to t
 
 ## Working from a subdirectory
 
-If your `package.json` is located in a subdirectory of the git root directory, you can use `git-root` relative path to point there in order to make lint-staged work. 
+If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work. 
 
 ```json
 {
-    "git-root": "../",
+    "gitDir": "../",
     "linters":{
         "*": "my-task"
     }
@@ -152,7 +152,7 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 }
 ```
 
-This will run `eslint --fix` and automatically add changes to the commit. ~~Please note, that it doesn’t work well with committing hunks (`git add -p`).~~
+This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
 
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
 

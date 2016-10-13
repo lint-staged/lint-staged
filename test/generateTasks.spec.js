@@ -5,7 +5,7 @@ const simpleConfig = {
     '*.css': 'stylelint'
 }
 const nestedConfig = {
-    'git-root': '../',
+    gitDir: '../',
     linters: {
         '*.js': ['eslint --fix', 'git add'],
         '*.css': 'stylelint'
