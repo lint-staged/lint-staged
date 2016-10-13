@@ -35,7 +35,7 @@ cosmiconfig('lint-staged', {
                 console.error(err)
             }
 
-            const tasks = generateTasks(config, resolvePaths(files))
+            const tasks = generateTasks(config, resolvePaths(files, sgf.cwd))
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
                     task: () => (new Listr(runScript(task.commands, task.fileList, packageJson)))
