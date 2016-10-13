@@ -1,4 +1,4 @@
-# HEAD
+# 3.1.0
 
 - Split code into smaller modules + added tests for them. Closes #68
 - Support for different configs via https://github.com/davidtheclark/cosmiconfig. Closes #64
