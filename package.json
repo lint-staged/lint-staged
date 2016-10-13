@@ -16,15 +16,7 @@
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "pre-commit": [
-    "pre-commit"
-  ],
+  "pre-commit": "pre-commit",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
@@ -50,11 +42,11 @@
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
     "app-root-path": "^2.0.0",
+    "cosmiconfig": "^1.1.0",
     "execa": "^0.5.0",
     "listr": "^0.6.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
-    "object-assign": "^4.1.0",
     "staged-git-files": "0.0.4",
     "which": "^1.2.11"
   },
@@ -71,10 +63,13 @@
     "eslint-plugin-standard": "^2.0.1",
     "expect": "^1.20.2",
     "is-promise": "^2.1.0",
+    "jsonlint-cli": "^1.0.1",
     "mocha": "^3.1.0",
     "npm-check": "^5.2.2",
     "npmpub": "^3.1.0",
     "pre-commit": "^1.1.3",
-    "rewire": "^2.5.1"
+    "rewire": "^2.5.1",
+    "tmp": "^0.0.29",
+    "yaspeller": "^2.9.1"
   }
 }

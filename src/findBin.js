@@ -3,13 +3,13 @@
 const npmWhich = require('npm-which')(process.cwd())
 const which = require('which')
 
-module.exports = function findBin(cmd, paths, config) {
+module.exports = function findBin(cmd, paths, packageJson) {
     const defaultArgs = ['--'].concat(paths)
     /*
     * If package.json has script with cmd defined
     * we want it to be executed first
     */
-    if (config.scripts && config.scripts[cmd] !== undefined) {
+    if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
         return {
             bin: 'npm',

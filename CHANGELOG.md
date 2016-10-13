@@ -1,6 +1,11 @@
 # HEAD
 
-- lint-staged now work from sub0directories. #65 by @TheWolfNL
+- Split code into smaller modules + added tests for them. Closes #68
+- Support for different configs via https://github.com/davidtheclark/cosmiconfig. Closes #64
+- Run separate linters concurrently by default
+- Added concurrent option to the config. Closes #63
+- Switched to https://github.com/okonet/eslint-config-okonet
+- lint-staged now work from sub-directories. #65 by @TheWolfNL
 - Output both `stdout` and `stderr` in case of error. Closes #66
 
 # 3.0.3
@@ -9,7 +14,7 @@
 
 # 3.0.2
 
-- Removed unused dependecies
+- Removed unused dependencies
 
 # 3.0.1
 
