@@ -4,7 +4,6 @@
             "eslint --fix",
             "git add"
         ],
-        "*.md": "yaspeller",
         ".*rc": "jsonlint"
     }
 }
