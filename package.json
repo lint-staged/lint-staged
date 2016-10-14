@@ -42,7 +42,7 @@
   "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
     "app-root-path": "^2.0.0",
-    "cosmiconfig": "^1.1.0",
+    "cosmiconfig": "^2.1.0",
     "execa": "^0.5.0",
     "listr": "^0.6.0",
     "minimatch": "^3.0.0",
