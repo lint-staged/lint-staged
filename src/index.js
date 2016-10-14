@@ -24,10 +24,11 @@ cosmiconfig('lint-staged', {
         // result.filepath is the path to the config file that was found
         const config = result.config
         const concurrent = config.concurrent || true
-
+        const gitDir = path.resolve(config.gitDir) || process.cwd()
+        
         // If gitDir is defined -> set git root as sgf's cwd
-        if ('gitDir' in config) {
-            sgf.cwd = path.resolve(config.gitDir)
+        if (gitDir != process.cwd()) {
+            sgf.cwd = gitDir
         }
 
         sgf('ACM', (err, files) => {
@@ -35,7 +36,7 @@ cosmiconfig('lint-staged', {
                 console.error(err)
             }
 
-            const tasks = generateTasks(config, resolvePaths(files, sgf.cwd))
+            const tasks = generateTasks(config, resolvePaths(files, gitDir))
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
                     task: () => (new Listr(runScript(task.commands, task.fileList, packageJson)))
