@@ -27,7 +27,7 @@ cosmiconfig('lint-staged', {
         const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
 
         // If gitDir is defined -> set git root as sgf's cwd
-        if (gitDir != process.cwd()) {
+        if (gitDir !== process.cwd()) {
             sgf.cwd = gitDir
         }
 
