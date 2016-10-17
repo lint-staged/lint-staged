@@ -1,3 +1,7 @@
+# 3.1.1
+
+- [fix] Properly resolve paths when the git directory differs from the current working directory. #78
+
 # 3.1.0
 
 - Split code into smaller modules + added tests for them. Closes #68
