@@ -12,7 +12,7 @@
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node index.js",
     "release": "npmpub",
-    "test": "mocha --compilers js:babel-register ./test/*.spec.js",
+    "test": "npm run lint && mocha --compilers js:babel-register ./test/*.spec.js",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
