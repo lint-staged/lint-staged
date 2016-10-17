@@ -1,6 +1,7 @@
 # 3.1.1
 
 - [fix] Properly resolve paths when the git directory differs from the current working directory. #78
+- [fix] Fixed `TypeError: Path must be a string. Received undefined` when `gitDir` isn't defined in the config.
 
 # 3.1.0
 
