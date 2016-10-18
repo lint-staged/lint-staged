@@ -1,3 +1,7 @@
+# HEAD
+
+- [feature] Support rc files extensions (`.json`, `.yml` etc) as they aren't supported by default
+                                           
 # 3.1.1
 
 - [fix] Properly resolve paths when the git directory differs from the current working directory. #78
