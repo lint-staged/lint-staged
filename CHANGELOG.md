@@ -1,4 +1,4 @@
-# HEAD
+# 3.2.0
 
 - [feature] Support rc files extensions (`.json`, `.yml` etc) as they aren't supported by default
                                            
