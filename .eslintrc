@@ -11,6 +11,7 @@
   "rules": {
     "indent": [2, 4],
     "strict": 0,
+    "no-console": 0,
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": ["**/*.spec.js", "**/utils.js"]
     }]
