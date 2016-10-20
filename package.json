@@ -4,19 +4,27 @@
   "description": "Lint files staged by git",
   "main": "index.js",
   "bin": {
-    "lint-staged": "index.js"
+    "lint-staged": "index.js",
+    "lint-staged-pre": "pre.js",
+    "lint-staged-post": "post.js"
   },
   "scripts": {
     "postinstall": "echo \"lint-staged installed! Do not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "pre-commit": "node index.js",
+    "pre-commit": "node pre.js && node index.js",
+    "post-commit": "node post.js",
     "release": "npmpub",
     "test": "mocha --compilers js:babel-register --require babel-polyfill ./test/*.spec.js",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
-  "pre-commit": "pre-commit",
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run pre-commit",
+      "post-commit": "npm run post-commit"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
@@ -44,6 +52,7 @@
     "app-root-path": "^2.0.0",
     "cosmiconfig": "^1.1.0",
     "execa": "^0.5.0",
+    "ghooks": "^1.3.2",
     "listr": "^0.6.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
@@ -66,7 +75,6 @@
     "mocha": "^3.1.0",
     "npm-check": "^5.2.2",
     "npmpub": "^3.1.0",
-    "pre-commit": "^1.1.3",
     "rewire": "^2.5.1",
     "tmp": "^0.0.29"
   }

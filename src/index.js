@@ -46,18 +46,14 @@ cosmiconfig('lint-staged', {
 
 
             if (tasks.length) {
-                git.gitStashSave()
-                    .then(() => new Listr(tasks, { concurrent })
-                        .run()
-                        .then(() => git.gitStashPop())
-                        .catch((error) => {
-                            git.gitStashPop()
-                                .then(() => {
-                                    console.error(error)
-                                    process.exit(1)
-                                })
+                new Listr(tasks, { concurrent })
+                    .run()
+                    .catch((error) => {
+                        git.gitStashPop().then(() => {
+                            console.error(error)
+                            process.exit(1)
                         })
-                    )
+                    })
             }
         })
     })
