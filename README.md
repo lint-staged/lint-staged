@@ -13,13 +13,13 @@ This project contains a script that will run arbitrary npm and shell tasks with 
 ## Installation & Setup
 
 1. `npm install --save-dev lint-staged`
-1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc` , etc., configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
-1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`
-1. Add `"lint-staged": { "*.js": "eslint" }` to `package.json` (see [configuration](#configuration))
-1. `npm install --save-dev pre-commit` *. 
-1. Add `"pre-commit": "lint-staged"` to `package.json`
+1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc`, etc., configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
+1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`.
+1. Add `"lint-staged": { "*.js": "eslint" }` to `package.json` (see [configuration](#configuration)).
+1. `npm install --save-dev pre-commit` ¹.
+1. Add `"pre-commit": "lint-staged"` to `package.json` (top level, not the `scripts` section).
 
-I recommend using [pre-commit](https://github.com/observing/pre-commit) or [husky](https://github.com/typicode/husky) to manage git hooks but you can use whatever you want.
+¹ I recommend using [pre-commit](https://github.com/observing/pre-commit) or [husky](https://github.com/typicode/husky) to manage git hooks but you can use whatever you want.
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
