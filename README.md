@@ -140,7 +140,7 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 
 ```json
 {
-	"*.@(js|jsx)": "eslint"
+	"*.{js,jsx}": "eslint"
 }
 ```
 
