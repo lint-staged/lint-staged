@@ -7,7 +7,12 @@ module.exports = function generateTasks(config, filePaths) {
     return Object.keys(linters)
         .map((pattern) => {
             const commands = linters[pattern]
-            const fileList = filePaths.filter(minimatch.filter(pattern, { matchBase: true }))
+            const fileList = filePaths.filter(
+                minimatch.filter(pattern, {
+                    matchBase: true,
+                    dot: true
+                })
+            )
             if (fileList.length) {
                 return {
                     pattern,

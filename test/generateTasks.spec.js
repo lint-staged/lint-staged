@@ -12,13 +12,27 @@ const nestedConfig = {
     }
 }
 
-const files = ['test.js', 'test2.js', 'test.css', 'test.txt']
+const files = ['test.js', 'src/.hidden/test2.js', '/.storybook/test.css', '.storybook/test.css', '/absolute/path/test.txt']
 
 describe('generateTasks', () => {
     it('should not generate tasks for non-matching files', () => {
         const res = generateTasks(simpleConfig, ['test'])
         expect(res).toBeAn('array')
         expect(res.length).toEqual(0)
+    })
+
+    it('should generate tasks for files with dots in path', () => {
+        const res = generateTasks(simpleConfig, files)
+        expect(res).toBeAn('array')
+        expect(res[0].fileList).toEqual(['/.storybook/test.css', '.storybook/test.css'])
+    })
+
+    it('should generate tasks with complex globs', () => {
+        const res = generateTasks({
+            '**/*.css': 'stylelint'
+        }, files)
+        expect(res).toBeAn('array')
+        expect(res[0].fileList).toEqual(['/.storybook/test.css', '.storybook/test.css'])
     })
 
     it('should generate tasks for simple config', () => {
@@ -29,7 +43,7 @@ describe('generateTasks', () => {
             {
                 pattern: '*.css',
                 commands: 'stylelint',
-                fileList: ['test.css']
+                fileList: ['/.storybook/test.css', '.storybook/test.css']
             }
         ])
     })
@@ -42,12 +56,12 @@ describe('generateTasks', () => {
             {
                 pattern: '*.js',
                 commands: ['eslint --fix', 'git add'],
-                fileList: ['test.js', 'test2.js']
+                fileList: ['test.js', 'src/.hidden/test2.js']
             },
             {
                 pattern: '*.css',
                 commands: 'stylelint',
-                fileList: ['test.css']
+                fileList: ['/.storybook/test.css', '.storybook/test.css']
             }
         ])
     })
