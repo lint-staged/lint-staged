@@ -1,4 +1,4 @@
-# HEAD
+# 3.2.1
 
 - [fix]: Added `{ dot: true }` to allow more complex globs with dots in path (#93)
 - [docs] Simpler pattern for matching js/jsx in the README. <Artem Sapegin>
