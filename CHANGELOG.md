@@ -1,6 +1,12 @@
 # HEAD
 
-- [fix] Removed unused dev dependencies.
+- [fix]: Added `{ dot: true }` to allow more complex globs with dots in path (#93)
+- [docs] Simpler pattern for matching js/jsx in the README. <Artem Sapegin>
+- [docs] Be more specific about where to put `pre-commit` in the installation instructions. (#87) <Artem Sapegin>
+- [chore]: Added commitizen conventional changelog (#92)
+- [chore] update eslint to version 3.9.1 (#88)
+- [chore]: update listr to version 0.7.0 (#85)
+- [chore]: Removed unused dev dependencies.
 
 # 3.2.0
 
