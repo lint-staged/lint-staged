@@ -6,9 +6,9 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 [Read the Medium post](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 
-Linting makes more sense when running before committing you code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
+Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
-This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as argument, filtered by a specified glob pattern.
+This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
 ## Installation & Setup
 
@@ -41,7 +41,7 @@ Lint-staged supports simple and advanced config formats.
 
 Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
 
-#### `pacakge.json` example:
+#### `package.json` example:
 ```json
 {
   "scripts": {
@@ -134,7 +134,7 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 }
 ```
 
-*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse you tasks with paths from package.json.*
+*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse your tasks with paths from package.json.*
 
 ### 1. ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
