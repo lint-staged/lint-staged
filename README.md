@@ -136,7 +136,7 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 
 *Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse your tasks with paths from package.json.*
 
-### 1. ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
+### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
 ```json
 {
@@ -144,7 +144,7 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 }
 ```
 
-### 2. Automatically fix code style with `--fix` and add to commit
+### Automatically fix code style with `--fix` and add to commit
 
 ```json
 {
@@ -160,6 +160,14 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 {
 	"*.css": "stylelint",
 	"*.scss": "stylelint --syntax=scss"
+}
+```
+
+### Automatically fix SCSS style with `stylefmt` and add to commit
+
+```json
+{
+	"*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
 }
 ```
 
