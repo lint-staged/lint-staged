@@ -17,7 +17,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson) {
                         })
                         .catch((err) => {
                             reject(`
-🚨  ${ linter } found some errors. Please fix them and try committing again.
+🚫 ${ linter } found some errors. Please fix them and try committing again.
 
 ${ err.stderr }
 ${ err.stdout }

@@ -3,8 +3,6 @@
 
 'use strict'
 
-process.env.FORCE_COLOR = true // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-
 const path = require('path')
 const sgf = require('staged-git-files')
 const appRoot = require('app-root-path')
@@ -15,6 +13,12 @@ const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-l
 const runScript = require('./runScript')
 const resolvePaths = require('./resolvePaths')
 const generateTasks = require('./generateTasks')
+
+// Force colors for packages that depend on https://www.npmjs.com/package/supports-color
+// but do this only in TTY mode
+if (process.stdout.isTTY) {
+    process.env.FORCE_COLOR = true
+}
 
 cosmiconfig('lint-staged', {
     rc: '.lintstagedrc',
