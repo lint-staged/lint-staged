@@ -1,3 +1,8 @@
+# 3.2.2
+
+- [fix]: Force colors only when running in TTY (#108)
+- [docs]: Added npm version badge
+
 # 3.2.1
 
 - [fix]: Added `{ dot: true }` to allow more complex globs with dots in path (#93)
