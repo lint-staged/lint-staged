@@ -4,6 +4,7 @@
             "eslint --fix",
             "git add"
         ],
-        ".*rc": "jsonlint"
+        ".*rc": "jsonlint",
+        "*.json": "jsonlint"
     }
 }
