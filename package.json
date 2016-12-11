@@ -17,6 +17,11 @@
     "deps:update": "npm-check -u"
   },
   "pre-commit": "pre-commit",
+  "greenkeeper": {
+    "ignore": [
+      "cosmiconfig"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okonet/lint-staged.git"
