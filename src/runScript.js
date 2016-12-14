@@ -3,15 +3,16 @@
 const findBin = require('./findBin')
 const execa = require('execa')
 
-module.exports = function runScript(commands, pathsToLint, packageJson) {
+module.exports = function runScript(commands, pathsToLint, packageJson, gitDir) {
     const lintersArray = Array.isArray(commands) ? commands : [commands]
+    const execaOptions = gitDir ? { cwd: gitDir } : {}
     return lintersArray.map(linter => ({
         title: linter,
         task: () => {
             try {
                 const res = findBin(linter, pathsToLint, packageJson)
                 return new Promise((resolve, reject) => {
-                    execa(res.bin, res.args)
+                    execa(res.bin, res.args, execaOptions)
                         .then(() => {
                             resolve(`${ linter } passed!`)
                         })
