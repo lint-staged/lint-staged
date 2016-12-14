@@ -12,7 +12,8 @@
     "pre-commit": "node index.js",
     "test": "mocha --compilers js:babel-register ./test/*.spec.js",
     "deps": "npm-check -s",
-    "deps:update": "npm-check -u"
+    "deps:update": "npm-check -u",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "pre-commit": "pre-commit",
   "greenkeeper": {
@@ -22,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/okonet/lint-staged.git"
+    "url": "https://github.com/okonet/lint-staged.git"
   },
   "keywords": [
     "lint",
