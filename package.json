@@ -6,7 +6,7 @@
     "lint-staged": "index.js"
   },
   "scripts": {
-    "postinstall": "echo \"lint-staged installed! Do not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
+    "postinstall": "echo \"🚫💩 lint-staged installed! \nDo not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node index.js",
