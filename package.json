@@ -1,6 +1,5 @@
 {
   "name": "lint-staged",
-  "version": "3.2.2",
   "description": "Lint files staged by git",
   "main": "index.js",
   "bin": {
@@ -72,6 +71,7 @@
     "npmpub": "^3.1.0",
     "pre-commit": "^1.1.3",
     "rewire": "^2.5.1",
+    "semantic-release": "^6.3.2",
     "tmp": "^0.0.31"
   },
   "config": {
