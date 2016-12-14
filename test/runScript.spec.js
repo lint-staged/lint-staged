@@ -57,13 +57,30 @@ describe('runScript', () => {
         expect(res[0].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(1)
         expect(spy.calls[0].arguments).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js']]
+            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
         )
 
         expect(res[1].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(2)
         expect(spy.calls[1].arguments).toEqual(
-            ['npm', ['run', '--silent', 'test2', '--', 'test.js']]
+            ['npm', ['run', '--silent', 'test2', '--', 'test.js'], {}]
+        )
+    })
+
+    it('should pass cwd option to execa if gitDir option is set', () => {
+        const spy = expect.createSpy()
+        runScript.__set__('execa', spy)
+        const res = runScript(['test', 'test2'], 'test.js', packageJSON, '../')
+        expect(res[0].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(1)
+        expect(spy.calls[0].arguments).toEqual(
+            ['npm', ['run', '--silent', 'test', '--', 'test.js'], { cwd: '../' }]
+        )
+
+        expect(res[1].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(2)
+        expect(spy.calls[1].arguments).toEqual(
+            ['npm', ['run', '--silent', 'test2', '--', 'test.js'], { cwd: '../' }]
         )
     })
 })

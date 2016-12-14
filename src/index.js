@@ -44,7 +44,11 @@ cosmiconfig('lint-staged', {
             const tasks = generateTasks(config, resolvePaths(files, gitDir))
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
-                    task: () => (new Listr(runScript(task.commands, task.fileList, packageJson)))
+                    task: () => (
+                        new Listr(
+                            runScript(task.commands, task.fileList, packageJson, gitDir)
+                        )
+                    )
                 }))
 
 
