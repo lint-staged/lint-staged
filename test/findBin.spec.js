@@ -55,7 +55,7 @@ describe('findBin', () => {
         expect(args).toEqual(['add', '--', 'test.js test2.js'])
     })
 
-    it('should return error if bin not found and there is no entry in scripts section', () => {
+    it('should throw error if bin not found and there is no entry in scripts section', () => {
         findBin.__set__('npmWhich', npmWichMockBad)
         findBin.__set__('which', npmWichMockBad)
         expect(() => {
