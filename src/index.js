@@ -54,7 +54,7 @@ cosmiconfig('lint-staged', {
 
             if (tasks.length) {
                 new Listr(tasks, { concurrent }).run().catch((error) => {
-                    console.error(error)
+                    console.error(error.message)
                     process.exit(1)
                 })
             }

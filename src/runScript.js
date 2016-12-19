@@ -17,13 +17,12 @@ module.exports = function runScript(commands, pathsToLint, packageJson, gitDir) 
                             resolve(`${ linter } passed!`)
                         })
                         .catch((err) => {
-                            reject(`
+                            reject(new Error(`
 🚫 ${ linter } found some errors. Please fix them and try committing again.
 
 ${ err.stderr }
 ${ err.stdout }
-`
-                            )
+`))
                         })
                 })
             } catch (err) {
