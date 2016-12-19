@@ -42,8 +42,8 @@ describe('runScript', () => {
         expect(res[0].task()).toBeAPromise()
     })
 
-    it('should return empty array for non-existend script', () => {
-        expect(runScript('test3', 'test.js', packageJSON)[0].task).toThrow("test3 not found. Try 'npm install test3'")
+    it('should throw for non-existend script', () => {
+        expect(runScript('test3', 'test.js', packageJSON)[0].task).toThrow()
     })
 
     it('should support array of scripts as a first argument', () => {

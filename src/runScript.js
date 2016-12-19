@@ -26,7 +26,7 @@ ${ err.stdout }
                         })
                 })
             } catch (err) {
-                throw new Error(`${ linter } not found. Try 'npm install ${ linter }'`)
+                throw err
             }
         }
     }))
