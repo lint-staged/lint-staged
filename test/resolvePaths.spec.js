@@ -3,15 +3,13 @@
 import expect from 'expect'
 import path from 'path'
 import fs from 'fs'
-import tmp from 'tmp'
 import resolvePaths from '../src/resolvePaths'
 
 const files = fs.readdirSync(path.resolve('test', '__fixtures__')).map(file => ({
     filename: file
 }))
 
-const cwd = process.cwd()
-const cwdParent = path.relative(cwd, '..')
+const cwdParent = path.resolve('..')
 
 describe('resolvePaths', () => {
     it('should return Array of filenames', () => {
@@ -22,22 +20,17 @@ describe('resolvePaths', () => {
                 'test.css',
                 'test.js',
                 'test.txt'
-            ].map(file => path.resolve(cwd, file))
+            ]
         )
     })
 
-    it('should return relative paths if second parameter is set', () => {
-        expect(resolvePaths(files, '..')).toEqual(
+    it('should return CWD-relative paths if second parameter is set', () => {
+        expect(resolvePaths(files, cwdParent)).toEqual(
             [
                 'test.css',
                 'test.js',
                 'test.txt'
-            ].map(file => path.resolve(cwdParent, file))
+            ].map(file => path.join('..', file))
         )
-    })
-
-    it('should return absolute paths if they were absolute', () => {
-        const tmpFile = tmp.fileSync()
-        expect(resolvePaths([{ filename: tmpFile.name }], '..')).toEqual([tmpFile.name])
     })
 })
