@@ -1,68 +1,124 @@
 import expect from 'expect'
 import generateTasks from '../src/generateTasks'
 
-const simpleConfig = {
-    '*.css': 'stylelint'
-}
-const nestedConfig = {
-    gitDir: '../',
-    linters: {
-        '*.js': ['eslint --fix', 'git add'],
-        '*.css': 'stylelint'
-    }
+const files = {
+    'test.js': '/root/test.js',
+    'deeper/test.js': '/root/deeper/test.js',
+    'deeper/test2.js': '/root/deeper/test2.js',
+    'even/deeper/test.js': '/root/even/deeper/test.js',
+    '.hidden/test.js': '/root/.hidden/test.js',
+
+    'test.css': '/root/test.css',
+    'deeper/test.css': '/root/deeper/test.css',
+    'deeper/test2.css': '/root/deeper/test2.css',
+    'even/deeper/test.css': '/root/even/deeper/test.css',
+    '.hidden/test.css': '/root/.hidden/test.css',
+
+    'test.txt': '/root/test.txt',
+    'deeper/test.txt': '/root/deeper/test.txt',
+    'deeper/test2.txt': '/root/deeper/test2.txt',
+    'even/deeper/test.txt': '/root/even/deeper/test.txt',
+    '.hidden/test.txt': '/root/.hidden/test.txt'
 }
 
-const files = ['test.js', 'src/.hidden/test2.js', '/.storybook/test.css', '.storybook/test.css', '/absolute/path/test.txt']
+const linters = {
+    '*.js': 'root-js',
+    '**/*.js': 'any-js',
+    'deeper/*.js': 'deeper-js',
+    '.hidden/*.js': 'hidden-js',
+    'unknown/*.js': 'unknown-js',
+    '*.{css,js}': 'root-css-or-js'
+}
 
 describe('generateTasks', () => {
-    it('should not generate tasks for non-matching files', () => {
-        const res = generateTasks(simpleConfig, ['test'])
-        expect(res).toBeAn('array')
-        expect(res.length).toEqual(0)
-    })
-
-    it('should generate tasks for files with dots in path', () => {
-        const res = generateTasks(simpleConfig, files)
-        expect(res).toBeAn('array')
-        expect(res[0].fileList).toEqual(['/.storybook/test.css', '.storybook/test.css'])
-    })
-
-    it('should generate tasks with complex globs', () => {
-        const res = generateTasks({
-            '**/*.css': 'stylelint'
-        }, files)
-        expect(res).toBeAn('array')
-        expect(res[0].fileList).toEqual(['/.storybook/test.css', '.storybook/test.css'])
-    })
-
-    it('should generate tasks for simple config', () => {
-        const res = generateTasks(simpleConfig, files)
-        expect(res).toBeAn('array')
-        expect(res.length).toBe(1)
-        expect(res).toEqual([
-            {
-                pattern: '*.css',
-                commands: 'stylelint',
-                fileList: ['/.storybook/test.css', '.storybook/test.css']
-            }
+    it('should return only linters it could find files for', () => {
+        const result = generateTasks(linters, files)
+        const commands = result.map(match => match.commands)
+        expect(commands).toEqual([
+            'root-js',
+            'any-js',
+            'deeper-js',
+            'hidden-js',
+            // 'unknown-js' does not match any files
+            'root-css-or-js'
         ])
     })
 
-    it('should generate tasks for nested config', () => {
-        const res = generateTasks(nestedConfig, files)
-        expect(res).toBeAn('array')
-        expect(res.length).toBe(2)
-        expect(res).toEqual([
-            {
-                pattern: '*.js',
-                commands: ['eslint --fix', 'git add'],
-                fileList: ['test.js', 'src/.hidden/test2.js']
-            },
-            {
-                pattern: '*.css',
-                commands: 'stylelint',
-                fileList: ['/.storybook/test.css', '.storybook/test.css']
-            }
-        ])
+    it('should match pattern "*.js"', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === '*.js')
+        expect(linter).toEqual({
+            pattern: '*.js',
+            commands: 'root-js',
+            fileList: [
+                '/root/test.js',
+                '/root/deeper/test.js',
+                '/root/deeper/test2.js',
+                '/root/even/deeper/test.js',
+                '/root/.hidden/test.js'
+            ]
+        })
+    })
+
+    it('should match pattern "**/*.js"', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === '**/*.js')
+        expect(linter).toEqual({
+            pattern: '**/*.js',
+            commands: 'any-js',
+            fileList: [
+                '/root/test.js',
+                '/root/deeper/test.js',
+                '/root/deeper/test2.js',
+                '/root/even/deeper/test.js',
+                '/root/.hidden/test.js'
+            ]
+        })
+    })
+
+    it('should match pattern "deeper/*.js"', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === 'deeper/*.js')
+        expect(linter).toEqual({
+            pattern: 'deeper/*.js',
+            commands: 'deeper-js',
+            fileList: [
+                '/root/deeper/test.js',
+                '/root/deeper/test2.js'
+            ]
+        })
+    })
+
+    it('should match pattern ".hidden/*.js"', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === '.hidden/*.js')
+        expect(linter).toEqual({
+            pattern: '.hidden/*.js',
+            commands: 'hidden-js',
+            fileList: [
+                '/root/.hidden/test.js'
+            ]
+        })
+    })
+
+    it('should match pattern "*.{css,js}"', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === '*.{css,js}')
+        expect(linter).toEqual({
+            pattern: '*.{css,js}',
+            commands: 'root-css-or-js',
+            fileList: [
+                '/root/test.js',
+                '/root/deeper/test.js',
+                '/root/deeper/test2.js',
+                '/root/even/deeper/test.js',
+                '/root/.hidden/test.js',
+                '/root/test.css',
+                '/root/deeper/test.css',
+                '/root/deeper/test2.css',
+                '/root/even/deeper/test.css',
+                '/root/.hidden/test.css'
+            ]
+        })
     })
 })

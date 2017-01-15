@@ -11,7 +11,6 @@ const cosmiconfig = require('cosmiconfig')
 
 const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-line
 const runScript = require('./runScript')
-const resolvePaths = require('./resolvePaths')
 const generateTasks = require('./generateTasks')
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
@@ -30,18 +29,21 @@ cosmiconfig('lint-staged', {
         const config = result.config
         const concurrent = config.concurrent || true
         const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
-
-        // If gitDir is defined -> set git root as sgf's cwd
-        if (gitDir !== process.cwd()) {
-            sgf.cwd = gitDir
-        }
+        sgf.cwd = gitDir
 
         sgf('ACM', (err, files) => {
             if (err) {
                 console.error(err)
             }
 
-            const tasks = generateTasks(config, resolvePaths(files, gitDir))
+            const resolvedFiles = {}
+            files.forEach((file) => {
+                const absolute = path.resolve(gitDir, file.filename)
+                const relative = path.relative(gitDir, absolute)
+                resolvedFiles[relative] = absolute
+            })
+
+            const tasks = generateTasks(config, resolvedFiles)
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
                     task: () => (
@@ -68,4 +70,3 @@ ${ parsingError }
 `)
         process.exit(1)
     })
-
