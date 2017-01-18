@@ -73,8 +73,25 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a subdirectory](#working-from-a-subdirectory)
+* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a sub-directory](#working-from-a-sub-directory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+
+## Filtering files
+
+It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns. The paths used for filtering via minimatch are relative to the directory that contains the `.git` directory. The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory, as would be the case when using the `gitDir` option.
+
+```js
+{
+	// .js files anywhere in the project
+	"*.js": "eslint",
+	// .js files anywhere in the project
+	"**/*.js": "eslint",
+	// .js file in the src directory
+	"src/*.js": "eslint",
+	// .js file anywhere within and below the src directory
+	"src/**/*.js": "eslint",
+}
+```
 
 ## What commands are supported?
 
@@ -106,9 +123,9 @@ Tools like ESLint or stylefmt can re-format your code according to an appropriat
 
 Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.
 
-## Working from a subdirectory
+## Working from a sub-directory
 
-If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work. 
+If your `package.json` is located in a sub-directory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
 
 ```json
 {
