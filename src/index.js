@@ -27,7 +27,11 @@ cosmiconfig('lint-staged', {
         // result.config is the parsed configuration object
         // result.filepath is the path to the config file that was found
         const config = result.config
+        const verbose = config.verbose
+        // Output config in verbose mode
+        if (verbose) console.log(config)
         const concurrent = typeof config.concurrent !== 'undefined' ? config.concurrent : true
+        const renderer = verbose ? 'verbose' : 'update'
         const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
         sgf.cwd = gitDir
 
@@ -48,14 +52,19 @@ cosmiconfig('lint-staged', {
                     title: `Running tasks for ${ task.pattern }`,
                     task: () => (
                         new Listr(
-                            runScript(task.commands, task.fileList, packageJson, gitDir)
+                            runScript(
+                                task.commands,
+                                task.fileList,
+                                packageJson,
+                                { gitDir, verbose }
+                            )
                         )
                     )
                 }))
 
 
             if (tasks.length) {
-                new Listr(tasks, { concurrent }).run().catch((error) => {
+                new Listr(tasks, { concurrent, renderer }).run().catch((error) => {
                     console.error(error.message)
                     process.exit(1)
                 })

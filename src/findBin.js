@@ -3,7 +3,7 @@
 const npmWhich = require('npm-which')(process.cwd())
 const which = require('which')
 
-module.exports = function findBin(cmd, paths, packageJson) {
+module.exports = function findBin(cmd, paths, packageJson, options) {
     const defaultArgs = ['--'].concat(paths)
     /*
     * If package.json has script with cmd defined
@@ -13,7 +13,13 @@ module.exports = function findBin(cmd, paths, packageJson) {
         // Support for scripts from package.json
         return {
             bin: 'npm',
-            args: ['run', '--silent', cmd].concat(defaultArgs)
+            args: [
+                'run',
+                options && options.verbose ? undefined : '--silent',
+                cmd
+            ]
+                .filter(Boolean)
+                .concat(defaultArgs)
         }
     }
 

@@ -33,6 +33,19 @@ describe('findBin', () => {
         expect(args).toEqual(['run', '--silent', 'eslint', '--', 'test.js'])
     })
 
+    it('should return npm run command without --silent in verbose mode', () => {
+        const packageJSONMock = {
+            scripts: {
+                eslint: 'eslint'
+            }
+        }
+
+        findBin.__set__('npmWhich', npmWichMockGood)
+        const { bin, args } = findBin('eslint', 'test.js', packageJSONMock, { verbose: true })
+        expect(bin).toEqual('npm')
+        expect(args).toEqual(['run', 'eslint', '--', 'test.js'])
+    })
+
     it('should return bin from node_modules/.bin if there is no command in package.json', () => {
         findBin.__set__('npmWhich', npmWichMockGood)
         const { bin, args } = findBin('eslint', 'test.js test2.js', packageJSON)
