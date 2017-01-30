@@ -27,7 +27,7 @@ cosmiconfig('lint-staged', {
         // result.config is the parsed configuration object
         // result.filepath is the path to the config file that was found
         const config = result.config
-        const concurrent = config.concurrent || true
+        const concurrent = typeof config.concurrent !== 'undefined' ? config.concurrent : true
         const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
         sgf.cwd = gitDir
 
