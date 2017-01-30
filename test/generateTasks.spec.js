@@ -31,6 +31,33 @@ const linters = {
 }
 
 describe('generateTasks', () => {
+    it('should work with simple configuration', () => {
+        const result = generateTasks({
+            '*.js': 'lint'
+        }, {
+            'test.js': '/root/test.js'
+        })
+        const commands = result.map(match => match.commands)
+        expect(commands).toEqual([
+            'lint'
+        ])
+    })
+
+    it('should work with advanced configuration', () => {
+        const result = generateTasks({
+            gitDir: '../',
+            linters: {
+                '*.js': 'lint'
+            }
+        }, {
+            'test.js': '/root/test.js'
+        })
+        const commands = result.map(match => match.commands)
+        expect(commands).toEqual([
+            'lint'
+        ])
+    })
+
     it('should return only linters it could find files for', () => {
         const result = generateTasks(linters, files)
         const commands = result.map(match => match.commands)
