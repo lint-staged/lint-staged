@@ -70,7 +70,12 @@ describe('runScript', () => {
     it('should pass cwd option to execa if gitDir option is set', () => {
         const spy = expect.createSpy()
         runScript.__set__('execa', spy)
-        const res = runScript(['test', 'test2'], 'test.js', packageJSON, '../')
+        const res = runScript(
+            ['test', 'test2'],
+            'test.js',
+            packageJSON,
+            { gitDir: '../' }
+        )
         expect(res[0].task()).toBeAPromise()
         expect(spy.calls.length).toEqual(1)
         expect(spy.calls[0].arguments).toEqual(
@@ -81,6 +86,38 @@ describe('runScript', () => {
         expect(spy.calls.length).toEqual(2)
         expect(spy.calls[1].arguments).toEqual(
             ['npm', ['run', '--silent', 'test2', '--', 'test.js'], { cwd: '../' }]
+        )
+    })
+
+    it('should use --silent in non-verbose mode', () => {
+        const spy = expect.createSpy()
+        runScript.__set__('execa', spy)
+        const res = runScript(
+            'test',
+            'test.js',
+            packageJSON,
+            { verbose: false }
+        )
+        expect(res[0].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(1)
+        expect(spy.calls[0].arguments).toEqual(
+            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
+        )
+    })
+
+    it('should not use --silent in verbose mode', () => {
+        const spy = expect.createSpy()
+        runScript.__set__('execa', spy)
+        const res = runScript(
+            'test',
+            'test.js',
+            packageJSON,
+            { verbose: true }
+        )
+        expect(res[0].task()).toBeAPromise()
+        expect(spy.calls.length).toEqual(1)
+        expect(spy.calls[0].arguments).toEqual(
+            ['npm', ['run', 'test', '--', 'test.js'], {}]
         )
     })
 })
