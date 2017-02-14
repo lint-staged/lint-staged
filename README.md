@@ -194,7 +194,7 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 ```json
 {
 	"*.scss": [
-	  "postcss --config "[path to your config]" --replace",
+	  "postcss --config path/to/your/config --replace",
 	  "stylelint",
 	  "git add"
 	]
