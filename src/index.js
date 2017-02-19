@@ -57,17 +57,34 @@ cosmiconfig('lint-staged', {
                                 task.fileList,
                                 packageJson,
                                 { gitDir, verbose }
-                            )
+                            ), {
+                                // In sub-tasks we don't want to run concurrently
+                                // and we want to abort on errors
+                                concurrent: false,
+                                exitOnError: true
+                            }
                         )
                     )
                 }))
 
 
             if (tasks.length) {
-                new Listr(tasks, { concurrent, renderer }).run().catch((error) => {
-                    console.error(error.message)
-                    process.exit(1)
+                new Listr(tasks, {
+                    concurrent,
+                    renderer,
+                    exitOnError: !concurrent // Wait for all errors when running concurrently
                 })
+                    .run()
+                    .catch((error) => {
+                        if (Array.isArray(error.errors)) {
+                            error.errors.forEach((lintError) => {
+                                console.error(lintError.message)
+                            })
+                        } else {
+                            console.log(error.message)
+                        }
+                        process.exit(1)
+                    })
             }
         })
     })
