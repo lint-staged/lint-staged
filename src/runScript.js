@@ -15,15 +15,12 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
                 return new Promise((resolve, reject) => {
                     execa(res.bin, res.args, execaOptions)
                         .then(() => {
-                            resolve(`${ linter } passed!`)
+                            resolve(`✅ ${ linter } passed!`)
                         })
                         .catch((err) => {
-                            reject(new Error(`
-🚫  ${ linter } found some errors. Please fix them and try committing again.
-
+                            reject(new Error(`🚫 ${ linter } found some errors. Please fix them and try committing again.
 ${ err.stderr }
-${ err.stdout }
-`))
+${ err.stdout }`))
                         })
                 })
             } catch (err) {
