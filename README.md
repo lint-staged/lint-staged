@@ -10,6 +10,12 @@ Linting makes more sense when running before committing your code. By doing that
 
 This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
+## Related blogs posts
+
+* [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+
+> If you've written one, please submit a PR with the link to it!
+
 ## Installation & Setup
 
 1. `npm install --save-dev lint-staged`
