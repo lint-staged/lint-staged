@@ -128,7 +128,7 @@ Tools like ESLint or stylefmt can re-format your code according to an appropriat
 }
 ```
 
-Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.
+~~Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.~~ This is still not resolved. See #62
 
 ## Working from a sub-directory
 
