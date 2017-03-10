@@ -51,8 +51,7 @@
     "listr": "^0.11.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
-    "staged-git-files": "0.0.4",
-    "which": "^1.2.11"
+    "staged-git-files": "0.0.4"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
