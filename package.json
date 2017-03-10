@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node index.js",
-    "test": "jest",
+    "test": "jest --coverage",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
