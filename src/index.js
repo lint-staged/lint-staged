@@ -64,7 +64,13 @@ cosmiconfig('lint-staged', {
                                 exitOnError: true
                             }
                         )
-                    )
+                    ),
+                    skip: () => {
+                        if (task.fileList.length === 0) {
+                            return `No staged files match ${ task.pattern }`
+                        }
+                        return false
+                    }
                 }))
 
 
