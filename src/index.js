@@ -50,7 +50,7 @@ cosmiconfig('lint-staged', {
             const tasks = generateTasks(config, resolvedFiles)
                 .map((task) => {
                     // If no files matched the pattern, there's nothing to do.
-                    if (!task.fileList) {
+                    if (task.fileList.length === 0) {
                         console.log(`✅ No staged files match ${ task.pattern }`)
                         // Return undefined so we know to ignore this task.
                         return undefined
