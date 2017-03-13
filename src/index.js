@@ -48,33 +48,30 @@ cosmiconfig('lint-staged', {
             })
 
             const tasks = generateTasks(config, resolvedFiles)
-                .map((task) => {
-                    // If no files matched the pattern, there's nothing to do.
-                    if (task.fileList.length === 0) {
-                        console.log(`✅ No staged files match ${ task.pattern }`)
-                        // Return undefined so we know to ignore this task.
-                        return undefined
-                    }
-
-                    return {
-                        title: `Running tasks for ${ task.pattern }`,
-                        task: () => (
-                            new Listr(
-                                runScript(
-                                    task.commands,
-                                    task.fileList,
-                                    packageJson,
-                                    { gitDir, verbose }
-                                ), {
-                                    // In sub-tasks we don't want to run concurrently
-                                    // and we want to abort on errors
-                                    concurrent: false,
-                                    exitOnError: true
-                                }
-                            )
+                .map(task => ({
+                    title: `Running tasks for ${ task.pattern }`,
+                    task: () => (
+                        new Listr(
+                            runScript(
+                                task.commands,
+                                task.fileList,
+                                packageJson,
+                                { gitDir, verbose }
+                            ), {
+                                // In sub-tasks we don't want to run concurrently
+                                // and we want to abort on errors
+                                concurrent: false,
+                                exitOnError: true
+                            }
                         )
+                    ),
+                    skip: () => {
+                        if (task.fileList.length === 0) {
+                            return `No staged files match ${ task.pattern }`
+                        }
+                        return false
                     }
-                }).filter(Boolean) // Filter out tasks with no matching files.
+                }))
 
 
             if (tasks.length) {
