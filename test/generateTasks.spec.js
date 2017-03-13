@@ -58,17 +58,15 @@ describe('generateTasks', () => {
         ])
     })
 
-    it('should return only linters it could find files for', () => {
+    it('should return an empty file list for linters with no matches.', () => {
         const result = generateTasks(linters, files)
-        const commands = result.map(match => match.commands)
-        expect(commands).toEqual([
-            'root-js',
-            'any-js',
-            'deeper-js',
-            'hidden-js',
-            // 'unknown-js' does not match any files
-            'root-css-or-js'
-        ])
+        for (const task of result) {
+            if (task.commands === 'unknown-js') {
+                expect(task.fileList.length).toEqual(0)
+            } else {
+                expect(task.fileList.length).toNotEqual(0)
+            }
+        }
     })
 
     it('should match pattern "*.js"', () => {

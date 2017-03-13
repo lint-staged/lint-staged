@@ -13,13 +13,10 @@ module.exports = function generateTasks(config, files) {
                 dot: true
             })
             const fileList = Object.keys(files).filter(filter).map(resolve)
-            if (fileList.length) {
-                return {
-                    pattern,
-                    commands,
-                    fileList
-                }
+            return {
+                pattern,
+                commands,
+                fileList
             }
-            return undefined
-        }).filter(Boolean) // Filter undefined values
+        })
 }
