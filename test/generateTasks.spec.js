@@ -1,4 +1,3 @@
-import expect from 'expect'
 import generateTasks from '../src/generateTasks'
 
 const files = {
@@ -64,7 +63,7 @@ describe('generateTasks', () => {
             if (task.commands === 'unknown-js') {
                 expect(task.fileList.length).toEqual(0)
             } else {
-                expect(task.fileList.length).toNotEqual(0)
+                expect(task.fileList.length).not.toEqual(0)
             }
         }
     })

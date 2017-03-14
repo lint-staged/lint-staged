@@ -1,11 +1,16 @@
-/* eslint no-underscore-dangle: 0 */
-
-import expect from 'expect'
 import mockFn from 'execa'
-import testUtils from './utils'
+import isPromise from 'is-promise'
 import runScript from '../src/runScript'
 
-expect.extend(testUtils)
+expect.extend({
+    toBeAPromise(received) {
+        const pass = isPromise(received)
+        return {
+            message: () => (`expected ${ received } ${ pass ? 'not' : '' } to be a Promise`),
+            pass
+        }
+    }
+})
 jest.mock('execa')
 
 const packageJSON = {
@@ -23,7 +28,7 @@ describe('runScript', () => {
     })
 
     it('should return an array', () => {
-        expect(runScript('test', 'test.js', packageJSON)).toBeA('array')
+        expect(runScript('test', 'test.js', packageJSON)).toBeInstanceOf(Array)
     })
 
     it('should throw for non-existend script', () => {
@@ -36,7 +41,7 @@ describe('runScript', () => {
         const res = runScript('test', 'test.js', packageJSON)
         expect(res.length).toBe(1)
         expect(res[0].title).toBe('test')
-        expect(res[0].task).toBeA('function')
+        expect(res[0].task).toBeInstanceOf(Function)
         expect(res[0].task()).toBeAPromise()
     })
 

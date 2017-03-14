@@ -1,4 +1,3 @@
-import expect from 'expect'
 import findBin from '../src/findBin'
 
 jest.mock('npm-which')
