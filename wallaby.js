@@ -4,9 +4,8 @@ module.exports = function (wallaby) {
             { pattern: 'test/__fixtures__/*', instrument: false },
             { pattern: 'test/__fixtures__/**/*', instrument: false },
             { pattern: 'test-setup.js', instrument: false },
-            'test/utils.js',
             'src/*.js',
-            'src/__mocks__/*.js',
+            'test/**/*.js',
             '!test/*.spec.js'
         ],
 
