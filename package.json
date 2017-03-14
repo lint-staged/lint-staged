@@ -1,6 +1,5 @@
 {
   "name": "lint-staged",
-  "version": "4.0.0-beta-2",
   "description": "Lint files staged by git",
   "main": "index.js",
   "bin": {
@@ -9,15 +8,15 @@
     "lint-staged-post": "post.js"
   },
   "scripts": {
-    "postinstall": "echo \"lint-staged installed! Do not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
+    "postinstall": "echo \"🚫💩 lint-staged installed! \nDo not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node pre.js && node index.js",
     "post-commit": "node post.js",
-    "release": "npmpub",
-    "test": "mocha --compilers js:babel-register --require babel-polyfill ./test/*.spec.js",
+    "test": "jest --coverage",
     "deps": "npm-check -s",
-    "deps:update": "npm-check -u"
+    "deps:update": "npm-check -u",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "config": {
     "ghooks": {
@@ -25,9 +24,14 @@
       "post-commit": "npm run post-commit"
     }
   },
+  "greenkeeper": {
+    "ignore": [
+      "cosmiconfig"
+    ]
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/okonet/lint-staged.git"
+    "url": "https://github.com/okonet/lint-staged.git"
   },
   "keywords": [
     "lint",
@@ -51,31 +55,35 @@
   "dependencies": {
     "app-root-path": "^2.0.0",
     "cosmiconfig": "^1.1.0",
-    "execa": "^0.5.0",
+    "execa": "^0.6.0",
     "ghooks": "^1.3.2",
-    "listr": "^0.6.0",
+    "listr": "^0.11.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
-    "staged-git-files": "0.0.4",
-    "which": "^1.2.11"
+    "staged-git-files": "0.0.4"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
-    "babel-polyfill": "^6.16.0",
+    "babel-jest": "^19.0.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.16.3",
-    "eslint": "^3.7.1",
+    "cz-conventional-changelog": "^1.2.0",
+    "eslint": "^3.9.1",
     "eslint-config-okonet": "^1.1.1",
     "expect": "^1.20.2",
     "fs-promise": "^0.5.0",
     "is-promise": "^2.1.0",
+    "jest": "^19.0.2",
     "jsonlint": "^1.6.2",
     "jsonlint-cli": "^1.0.1",
-    "mocha": "^3.1.0",
     "npm-check": "^5.2.2",
-    "npmpub": "^3.1.0",
-    "rewire": "^2.5.1",
-    "tmp": "^0.0.29"
-  }
+    "semantic-release": "^6.3.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "version": "0.0.0-development"
 }

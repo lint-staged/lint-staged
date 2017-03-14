@@ -1,9 +1,8 @@
 'use strict'
 
 const npmWhich = require('npm-which')(process.cwd())
-const which = require('which')
 
-module.exports = function findBin(cmd, paths, packageJson) {
+module.exports = function findBin(cmd, paths, packageJson, options) {
     const defaultArgs = ['--'].concat(paths)
     /*
     * If package.json has script with cmd defined
@@ -13,7 +12,13 @@ module.exports = function findBin(cmd, paths, packageJson) {
         // Support for scripts from package.json
         return {
             bin: 'npm',
-            args: ['run', '--silent', cmd].concat(defaultArgs)
+            args: [
+                'run',
+                options && options.verbose ? undefined : '--silent',
+                cmd
+            ]
+                .filter(Boolean)
+                .concat(defaultArgs)
         }
     }
 
@@ -40,15 +45,11 @@ module.exports = function findBin(cmd, paths, packageJson) {
     const args = parts.splice(1)
 
     try {
-        /* Firstly, try to resolve the bin in local node_modules/.bin */
+        /* npm-which tries to resolve the bin in local node_modules/.bin */
+        /* and if this fails it look in $PATH */
         bin = npmWhich.sync(bin)
     } catch (err) {
-        /* If this fails, try to resolve binary in $PATH */
-        try {
-            bin = which.sync(bin)
-        } catch (error) {
-            throw new Error(`${ bin } could not be found. Try \`npm install ${ bin }\`.`)
-        }
+        throw new Error(`${ bin } could not be found. Try \`npm install ${ bin }\`.`)
     }
 
     return {

@@ -1,65 +1,55 @@
-/* eslint no-underscore-dangle: 0 */
-
 import expect from 'expect'
-import rewire from 'rewire'
+import findBin from '../src/findBin'
 
-const findBin = rewire('../src/findBin')
+jest.mock('npm-which')
+
 const packageJSON = {
     scripts: {
         test: 'noop'
     },
     'lint-staged': {}
 }
-const npmWichMockGood = {
-    sync: path => path
-}
-const npmWichMockBad = {
-    sync: (path) => {
-        throw new Error(`not found: ${ path }`)
-    }
-}
+
 
 describe('findBin', () => {
-    it('should return npm run command if it exist in both package.json and .bin/', () => {
+    it('should favor `npm run` command if exists in both package.json and .bin/', () => {
+        const packageJSONMock = {
+            scripts: {
+                'my-linter': 'my-linter'
+            }
+        }
+        const { bin, args } = findBin('my-linter', 'test.js', packageJSONMock)
+        expect(bin).toEqual('npm')
+        expect(args).toEqual(['run', '--silent', 'my-linter', '--', 'test.js'])
+    })
+
+    it('should return npm run command without --silent in verbose mode', () => {
         const packageJSONMock = {
             scripts: {
                 eslint: 'eslint'
             }
         }
-
-        findBin.__set__('npmWhich', npmWichMockGood)
-        const { bin, args } = findBin('eslint', 'test.js', packageJSONMock)
+        const { bin, args } = findBin('eslint', 'test.js', packageJSONMock, { verbose: true })
         expect(bin).toEqual('npm')
-        expect(args).toEqual(['run', '--silent', 'eslint', '--', 'test.js'])
+        expect(args).toEqual(['run', 'eslint', '--', 'test.js'])
     })
 
-    it('should return bin from node_modules/.bin if there is no command in package.json', () => {
-        findBin.__set__('npmWhich', npmWichMockGood)
-        const { bin, args } = findBin('eslint', 'test.js test2.js', packageJSON)
-        expect(bin).toEqual('eslint')
+    it('should return path to bin if there is no `script` with name in package.json', () => {
+        const { bin, args } = findBin('my-linter', 'test.js test2.js', packageJSON)
+        expect(bin).toEqual('my-linter')
         expect(args).toEqual(['--', 'test.js test2.js'])
     })
 
-    it('should parse cmd and add arguments to args', () => {
-        findBin.__set__('npmWhich', npmWichMockGood)
-        const { bin, args } = findBin('eslint --fix', 'test.js test2.js', packageJSON)
-        expect(bin).toEqual('eslint')
-        expect(args).toEqual(['--fix', '--', 'test.js test2.js'])
-    })
-
-    it('should return bin from $PATH if there is no command in package.json and no bin in node_modules', () => {
-        findBin.__set__('npmWhich', npmWichMockBad)
-        findBin.__set__('which', npmWichMockGood)
-        const { bin, args } = findBin('git add', 'test.js test2.js', packageJSON)
-        expect(bin).toEqual('git')
-        expect(args).toEqual(['add', '--', 'test.js test2.js'])
-    })
-
-    it('should return error if bin not found and there is no entry in scripts section', () => {
-        findBin.__set__('npmWhich', npmWichMockBad)
-        findBin.__set__('which', npmWichMockBad)
+    it('should throw an error if bin not found and there is no entry in scripts section', () => {
         expect(() => {
-            findBin('eslint', 'test.js', packageJSON)
-        }).toThrow('eslint could not be found. Try `npm install eslint`.')
+            findBin('my-missing-linter', 'test.js', packageJSON)
+        }).toThrow('my-missing-linter could not be found. Try `npm install my-missing-linter`.')
+    })
+
+
+    it('should parse cmd and add arguments to args', () => {
+        const { bin, args } = findBin('my-linter task --fix', 'test.js test2.js', packageJSON)
+        expect(bin).toEqual('my-linter')
+        expect(args).toEqual(['task', '--fix', '--', 'test.js test2.js'])
     })
 })

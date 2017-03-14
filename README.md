@@ -1,4 +1,4 @@
-# lint-staged [![Build Status](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged)
+# lint-staged [![Build Status](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged)
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -6,20 +6,26 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 [Read the Medium post](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 
-Linting makes more sense when running before committing you code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
+Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
-This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as argument, filtered by a specified glob pattern.
+This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
+
+## Related blogs posts
+
+* [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+
+> If you've written one, please submit a PR with the link to it!
 
 ## Installation & Setup
 
 1. `npm install --save-dev lint-staged`
-1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc` , etc., configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
-1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`
-1. Add `"lint-staged": { "*.js": "eslint" }` to `package.json` (see [configuration](#configuration))
-1. `npm install --save-dev pre-commit` *. 
-1. Add `"pre-commit": "lint-staged"` to `package.json`
+1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc` and `.stylelintrc`, etc., configs (see [ESLint](http://eslint.org) and [Stylelint](http://stylelint.io/) docs if you need help here).
+1. Add `{ "lint-staged": "lint-staged" }` to `scripts` section of `package.json`.
+1. Add `"lint-staged": { "*.js": "eslint" }` to `package.json` (see [configuration](#configuration)).
+1. `npm install --save-dev pre-commit` ¹.
+1. Add `"pre-commit": "lint-staged"` to `package.json` (top level, not the `scripts` section).
 
-I recommend using [pre-commit](https://github.com/observing/pre-commit) or [husky](https://github.com/typicode/husky) to manage git hooks but you can use whatever you want.
+¹ I recommend using [pre-commit](https://github.com/observing/pre-commit) or [husky](https://github.com/typicode/husky) to manage git hooks but you can use whatever you want.
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
@@ -41,7 +47,7 @@ Lint-staged supports simple and advanced config formats.
 
 Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
 
-#### `pacakge.json` example:
+#### `package.json` example:
 ```json
 {
   "scripts": {
@@ -73,8 +79,26 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a subdirectory](#working-from-a-subdirectory)
+* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a sub-directory](#working-from-a-sub-directory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+* `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
+
+## Filtering files
+
+It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns. The paths used for filtering via minimatch are relative to the directory that contains the `.git` directory. The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory, as would be the case when using the `gitDir` option.
+
+```js
+{
+	// .js files anywhere in the project
+	"*.js": "eslint",
+	// .js files anywhere in the project
+	"**/*.js": "eslint",
+	// .js file in the src directory
+	"src/*.js": "eslint",
+	// .js file anywhere within and below the src directory
+	"src/**/*.js": "eslint",
+}
+```
 
 ## What commands are supported?
 
@@ -104,11 +128,11 @@ Tools like ESLint or stylefmt can re-format your code according to an appropriat
 }
 ```
 
-Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.
+~~Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.~~ This is still [not resolved](https://github.com/okonet/lint-staged/issues/62)
 
-## Working from a subdirectory
+## Working from a sub-directory
 
-If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work. 
+If your `package.json` is located in a sub-directory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
 
 ```json
 {
@@ -134,17 +158,17 @@ All examples assuming you’ve already set up lint-staged and pre-commit in the 
 }
 ```
 
-*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse you tasks with paths from package.json.*
+*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse your tasks with paths from package.json.*
 
-### 1. ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
+### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
 ```json
 {
-	"*.@(js|jsx)": "eslint"
+	"*.{js,jsx}": "eslint"
 }
 ```
 
-### 2. Automatically fix code style with `--fix` and add to commit
+### Automatically fix code style with `--fix` and add to commit
 
 ```json
 {
@@ -163,12 +187,20 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 }
 ```
 
+### Automatically fix SCSS style with `stylefmt` and add to commit
+
+```json
+{
+	"*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
+}
+```
+
 ### Run PostCSS sorting, add files to commit and run Stylelint to check
 
 ```json
 {
 	"*.scss": [
-	  "postcss --config "[path to your config]" --replace",
+	  "postcss --config path/to/your/config --replace",
 	  "stylelint",
 	  "git add"
 	]
