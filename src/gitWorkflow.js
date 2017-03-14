@@ -27,5 +27,11 @@ module.exports = {
     gitStashPop(options) {
         return this.execGit(['checkout', '.'], options)
             .then(() => this.execGit(['stash', 'pop'], options))
+    },
+
+    gitRestore(options) {
+        return this.execGit(['checkout', '--merge', 'stash', '--', '.'], options)
+            .then(() => this.execGit(['reset', '.'], options))
+            .then(() => this.execGit(['stash', 'drop'], options))
     }
 }
