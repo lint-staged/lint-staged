@@ -1,5 +1,3 @@
-/* eslint no-underscore-dangle: 0 */
-
 import path from 'path'
 import fsp from 'fs-promise'
 import tmp from 'tmp'
@@ -45,6 +43,12 @@ describe('git', () => {
             await gitflow.execGit(['add', '.'], gitOpts)
             // Create inital commit
             await gitflow.execGit(['commit', '-m', '"commit"'], gitOpts)
+            // Update one of the files
+            await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
+            // Update one of the files
+            await fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
+    test: 'test2'
+}`)
         })
 
         afterEach(() => {
@@ -52,12 +56,6 @@ describe('git', () => {
         })
 
         it('should stash and restore WC state without a commit', async () => {
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
-    test: 'test2'
-}`)
             // Expect both are modified
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             await gitflow.execGit(['add', 'test.js'], gitOpts)
@@ -73,12 +71,6 @@ describe('git', () => {
         })
 
         it('should stash and restore WC state with additional edits without a commit', async() => {
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
-    test: 'test2'
-}`)
             // Expect both are modified
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             await gitflow.execGit(['add', 'test.js'], gitOpts)
@@ -104,13 +96,7 @@ describe('git', () => {
 }`)
         })
 
-        it('should stash and restore WC state with additional edits before a commit', async() => {
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
-            // Update one of the files
-            await fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
-    test: 'test2'
-}`)
+        it('should stash and restore WC state with additional edits after the commit', async() => {
             // Expect both are modified
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             await gitflow.execGit(['add', '.'], gitOpts)
@@ -129,9 +115,11 @@ describe('git', () => {
             await gitflow.execGit(['add', 'test.js'], gitOpts)
             // Expect both files are in the index
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            // Restoring state
-            await gitflow.gitStashPop(gitOpts)
-            // Expect stashed files to be back. Index changes are persisted.
+            // Commit changes
+            await gitflow.execGit(['commit', '-m', '"fixed code commit"'], gitOpts)
+            // Restoring from stash after the commit simulating running post script
+            await gitflow.gitRestore(gitOpts)
+            // Expect stashed files to be back. Index changes should be persisted.
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), { encoding: 'utf-8' })
             expect(jsContent).toEqual(`module.exports = {
