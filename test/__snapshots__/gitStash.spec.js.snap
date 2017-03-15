@@ -1,32 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 1`] = `
- M test.css
- M test.js
-`;
-
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 2`] = `
-M  test.css
-M  test.js
-`;
-
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 3`] = `
-M  test.css
-M  test.js
-`;
-
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 4`] = `
-M  test.css
-MM test.js
-`;
-
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 5`] = `
-M  test.css
-M  test.js
-`;
-
-exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits after the commit 6`] = ` M test.js`;
-
 exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits without a commit 1`] = `
  M test.css
  M test.js

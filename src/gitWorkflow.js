@@ -29,11 +29,5 @@ module.exports = {
             .then(() => this.execGit(['stash', 'pop', 'stash@{1}'], options))
             .then(() => this.execGit(['read-tree', 'stash'], options))
             .then(() => this.execGit(['stash', 'drop'], options))
-    },
-
-    gitRestore(options) {
-        return this.execGit(['checkout', '--merge', 'stash', '--', '.'], options)
-            .then(() => this.execGit(['reset', '.'], options))
-            .then(() => this.execGit(['stash', 'drop'], options))
     }
 }

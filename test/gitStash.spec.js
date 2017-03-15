@@ -95,37 +95,5 @@ describe('git', () => {
     test: 'test2'
 }`)
         })
-
-        xit('should stash and restore WC state with additional edits after the commit', async() => {
-            // Expect both are modified
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            await gitflow.execGit(['add', '.'], gitOpts)
-            // Expect both are in index
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            await gitflow.gitStashSave(gitOpts)
-            // Expect both are in index
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            // Do additional edits (simulate eslint --fix)
-            await fsp.writeFile(path.join(wcDirPath, 'test.js'), `module.exports = {
-    test: 'test2',
-};`)
-            // Expect both indexed and modified state on one file
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            // Add additional changes to the commit
-            await gitflow.execGit(['add', 'test.js'], gitOpts)
-            // Expect both files are in the index
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            // Commit changes
-            // await gitflow.execGit(['commit', '-m', '"fixed code commit"'], gitOpts)
-            // Restoring from stash after the commit simulating running post script
-            await gitflow.gitStashPop(gitOpts)
-            // Expect stashed files to be back. Index changes should be persisted.
-            expect(await gitStatus(gitOpts)).toMatchSnapshot()
-            const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), { encoding: 'utf-8' })
-            expect(jsContent).toEqual(`module.exports = {
-    test: 'test2',
-};`)
-        })
-
     })
 })
