@@ -12,7 +12,6 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "precommit": "node pre.js && node index.js",
-    "postcommit": "node post.js",
     "test": "jest --coverage",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u",

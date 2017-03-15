@@ -116,9 +116,9 @@ describe('git', () => {
             // Expect both files are in the index
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             // Commit changes
-            await gitflow.execGit(['commit', '-m', '"fixed code commit"'], gitOpts)
+            // await gitflow.execGit(['commit', '-m', '"fixed code commit"'], gitOpts)
             // Restoring from stash after the commit simulating running post script
-            await gitflow.gitRestore(gitOpts)
+            await gitflow.gitStashPop(gitOpts)
             // Expect stashed files to be back. Index changes should be persisted.
             expect(await gitStatus(gitOpts)).toMatchSnapshot()
             const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), { encoding: 'utf-8' })

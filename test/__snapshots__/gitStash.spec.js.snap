@@ -43,7 +43,7 @@ exports[`git gitStashSave/gitStashPop should stash and restore WC state with add
 
 exports[`git gitStashSave/gitStashPop should stash and restore WC state with additional edits without a commit 5`] = `
  M test.css
-M  test.js
+MM test.js
 `;
 
 exports[`git gitStashSave/gitStashPop should stash and restore WC state without a commit 1`] = `

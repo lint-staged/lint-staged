@@ -82,6 +82,10 @@ cosmiconfig('lint-staged', {
                     exitOnError: !concurrent // Wait for all errors when running concurrently
                 })
                     .run()
+                    .then(() => {
+                        console.log('All done')
+                        git.gitStashPop()
+                    })
                     .catch((error) => {
                         git.gitStashPop().then(() => {
                             if (Array.isArray(error.errors)) {
