@@ -3,7 +3,6 @@
 
 'use strict'
 
-const path = require('path')
 const sgf = require('staged-git-files')
 const appRoot = require('app-root-path')
 const Listr = require('listr')
@@ -12,6 +11,7 @@ const cosmiconfig = require('cosmiconfig')
 const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-line
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
+const resolveGitDir = require('./resolveGitDir')
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 // but do this only in TTY mode
@@ -32,7 +32,7 @@ cosmiconfig('lint-staged', {
         if (verbose) console.log(config)
         const concurrent = typeof config.concurrent !== 'undefined' ? config.concurrent : true
         const renderer = verbose ? 'verbose' : 'update'
-        const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
+        const gitDir = resolveGitDir(config)
         sgf.cwd = gitDir
 
         sgf('ACM', (err, files) => {
@@ -40,14 +40,9 @@ cosmiconfig('lint-staged', {
                 console.error(err)
             }
 
-            const resolvedFiles = {}
-            files.forEach((file) => {
-                const absolute = path.resolve(gitDir, file.filename)
-                const relative = path.relative(gitDir, absolute)
-                resolvedFiles[relative] = absolute
-            })
-
-            const tasks = generateTasks(config, resolvedFiles)
+            /* files is an Object{ filename: String, status: String } */
+            const filenames = files.map(file => file.filename)
+            const tasks = generateTasks(config, filenames)
                 .map(task => ({
                     title: `Running tasks for ${ task.pattern }`,
                     task: () => (
