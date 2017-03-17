@@ -4,7 +4,7 @@ import stripColors from 'strip-ansi'
 import runAll from '../src/runAll'
 
 describe('runAll', () => {
-    it('should work', async () => {
+    it('should work', (done) => {
         const config = {
             verbose: true,
             linters: {
@@ -14,8 +14,10 @@ describe('runAll', () => {
         let stdout = []
         console.log = jest.fn()
             .mockImplementation(input => stdout.push(JSON.stringify(stripColors(input))))
-        await runAll({}, config)
-        stdout = stdout.map(line => line && line.replace(/\[\d\d:\d\d:\d\d\]\W/, ''))
-        expect(stdout).toMatchSnapshot()
+        runAll({}, config).then(() => {
+            stdout = stdout.map(line => line && line.replace(/\[\d\d:\d\d:\d\d\]\W/, ''))
+            expect(stdout).toMatchSnapshot()
+            done()
+        })
     })
 })
