@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runAll should work 1`] = `
+Array [
+  "{\\"verbose\\":true,\\"linters\\":{\\"*\\":\\"eslint\\"},\\"gitDir\\":\\".\\",\\"renderer\\":\\"verbose\\",\\"concurrent\\":true}",
+  "\\"Running tasks for * [started]\\"",
+  "\\"Running tasks for * [skipped]\\"",
+  "\\"→ No staged files match *\\"",
+]
+`;
