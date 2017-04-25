@@ -10,7 +10,7 @@ import runScript from '../src/runScript'
 jest.mock('execa')
 
 // Mock findBin to return an absolute path
-jest.mock('../src/findBin', () => (commands, paths) => {
+jest.mock('../src/findBin', () => (commands) => {
     const [
       bin,
       ...otherArgs
@@ -18,7 +18,7 @@ jest.mock('../src/findBin', () => (commands, paths) => {
 
     return ({
         bin: `/usr/local/bin/${ bin }`,
-        args: otherArgs.concat(['--']).concat(paths)
+        args: otherArgs
     })
 }, { virtual: true })
 
@@ -44,18 +44,20 @@ const packageJSON = {
 describe.only('runScript with absolute paths', () => {
     beforeEach(() => {
         mockFn.mockReset()
-        mockFn.mockImplementation(() => new Promise(() => {}))
+        mockFn.mockImplementation(() => Promise.resolve(true))
     })
 
-    it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', () => {
+    it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
         const res = runScript(
           ['git add'],
-          'test.js',
+          ['test.js'],
           packageJSON,
           { gitDir: '../' }
         )
 
-        expect(res[0].task()).toBeAPromise()
+        const taskPromise = res[0].task()
+        expect(taskPromise).toBeAPromise()
+        await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
         expect(mockFn.mock.calls[0][0]).toMatch('/usr/local/bin/git')
         expect(mockFn.mock.calls[0][1]).toEqual(['add', '--', 'test.js'])
