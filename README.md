@@ -79,7 +79,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a sub-directory. See [working from a sub-directory](#working-from-a-sub-directory)
+* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
 
@@ -116,11 +116,11 @@ Supported are both local npm scripts (`npm run-script`), or any executables inst
 
 Pass arguments to your commands separated by space as you would do in the shell. See [examples](#examples) below.
 
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running auto-formatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
+Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
-## Re-formatting the code
+## Reformatting the code
 
-Tools like ESLint or stylefmt can re-format your code according to an appropriate config  by running `eslint --fix`. After the code is re-formatted, we want it to be added to the same commit. This can be done using following config:
+Tools like ESLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
@@ -130,9 +130,9 @@ Tools like ESLint or stylefmt can re-format your code according to an appropriat
 
 ~~Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.~~ This is still [not resolved](https://github.com/okonet/lint-staged/issues/62)
 
-## Working from a sub-directory
+## Working from a subdirectory
 
-If your `package.json` is located in a sub-directory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
+If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
 
 ```json
 {
