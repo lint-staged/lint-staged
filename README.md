@@ -152,16 +152,16 @@ If your `package.json` is located in a subdirectory of the git root directory, y
 
 ## Examples
 
-All examples assuming you’ve already set up lint-staged and pre-commit in the  `package.json`
+All examples assuming you’ve already set up lint-staged and husky in the `package.json`.
 
 ```json
 {
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-    "lint-staged": "lint-staged"
+    "precommit": "lint-staged"
   },
-  "pre-commit": "lint-staged"
+  "lint-staged": {}
 }
 ```
 
