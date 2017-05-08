@@ -11,7 +11,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
             try {
                 const res = findBin(linter, pathsToLint, packageJson, options)
                 const execaOptions =
-                    res.bin !== 'npm' && options && options.gitDir ? { cwd: options.gitDir } : {}
+                    res.bin === 'git' && options && options.gitDir ? { cwd: options.gitDir } : {}
                 return new Promise((resolve, reject) => {
                     execa(res.bin, res.args, execaOptions)
                         .then(() => {
@@ -29,4 +29,3 @@ ${ err.stdout }`))
         }
     }))
 }
-
