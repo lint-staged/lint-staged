@@ -198,7 +198,7 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
+	"*.scss": ["stylefmt -r", "stylelint --syntax scss", "git add"]
 }
 ```
 
