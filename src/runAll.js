@@ -5,14 +5,22 @@
 
 const sgf = require('staged-git-files')
 const Listr = require('listr')
+const getConfig = require('./getConfig')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
-const getConfig = require('./getConfig')
 
-module.exports = function (packageJson, config) {
-    const { gitDir, verbose, concurrent, renderer } = getConfig(config)
+module.exports = function runAll(packageJson, originalConfig) {
+    const config = getConfig(originalConfig)
+    const { gitDir, verbose, concurrent, renderer } = config
     sgf.cwd = resolveGitDir(gitDir)
+
+    if (verbose) {
+        console.log('Running lint-staged with the following config:\n')
+        console.log(config)
+        console.log('\n')
+    }
+
     return new Promise((resolve, reject) => {
         sgf('ACM', (err, files) => {
             if (err) {
