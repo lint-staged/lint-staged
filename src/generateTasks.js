@@ -2,11 +2,11 @@
 
 const path = require('path')
 const minimatch = require('minimatch')
+const getConfig = require('./getConfig')
 const resolveGitDir = require('./resolveGitDir')
 
 module.exports = function generateTasks(config, files) {
-    const linters = config.linters !== undefined ? config.linters : config
-    const gitDir = resolveGitDir(config)
+    const { linters, gitDir } = getConfig(config) // Ensure we have a normalized config
     return Object.keys(linters)
         .map((pattern) => {
             const commands = linters[pattern]
@@ -15,8 +15,10 @@ module.exports = function generateTasks(config, files) {
                 dot: true
             })
             const fileList = files
+                // We want to filter before resolving paths
                 .filter(filter)
-                .map(file => path.resolve(gitDir, file)) // Return absolute path after the filter
+                // Return absolute path after the filter is run
+                .map(file => path.resolve(resolveGitDir(gitDir), file))
             return {
                 pattern,
                 commands,
