@@ -51,6 +51,7 @@
     "listr": "^0.12.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
+    "npmlog": "^4.1.0",
     "staged-git-files": "0.0.4"
   },
   "devDependencies": {
