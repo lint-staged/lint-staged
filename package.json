@@ -49,6 +49,7 @@
     "cosmiconfig": "^1.1.0",
     "execa": "^0.6.0",
     "listr": "^0.12.0",
+    "lodash": "^4.17.4",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
     "staged-git-files": "0.0.4"

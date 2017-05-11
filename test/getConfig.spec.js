@@ -8,6 +8,24 @@ describe('getConfig', () => {
         expect(getConfig({})).toMatchSnapshot()
     })
 
+    it('should set verbose', () => {
+        expect(getConfig({})).toEqual(expect.objectContaining({
+            verbose: false
+        }))
+
+        expect(getConfig({
+            verbose: false
+        })).toEqual(expect.objectContaining({
+            verbose: false
+        }))
+
+        expect(getConfig({
+            verbose: true
+        })).toEqual(expect.objectContaining({
+            verbose: true
+        }))
+    })
+
     it('should set concurrent', () => {
         expect(getConfig({})).toEqual(expect.objectContaining({
             concurrent: true
@@ -56,7 +74,31 @@ describe('getConfig', () => {
         }))
     })
 
-    it.only('should output config to stdout in verbose mode', () => {
+    it('should set linters', () => {
+        expect(getConfig({})).toEqual(expect.objectContaining({
+            linters: {}
+        }))
+
+        expect(getConfig({
+            '*.js': 'eslint'
+        })).toEqual(expect.objectContaining({
+            linters: {
+                '*.js': 'eslint'
+            }
+        }))
+
+        expect(getConfig({
+            linters: {
+                '*.js': [
+                    'eslint --fix',
+                    'git add'
+                ],
+                '.*rc': 'jsonlint'
+            }
+        })).toMatchSnapshot()
+    })
+
+    xit('should output config to stdout in verbose mode', () => {
         const stdout = []
         console.log = jest.fn().mockImplementation((input) => {
             stdout.push(JSON.stringify(stripColors(input)))

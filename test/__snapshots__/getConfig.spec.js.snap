@@ -1,7 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getConfig should output config to stdout in verbose mode 1`] = `
-Array [
-  "{\\"verbose\\":true,\\"gitDir\\":\\".\\",\\"renderer\\":\\"verbose\\",\\"concurrent\\":true}",
-]
+exports[`getConfig should return config with defaults 1`] = `
+Object {
+  "concurrent": true,
+  "gitDir": ".",
+  "linters": Object {},
+  "renderer": "update",
+  "verbose": false,
+}
+`;
+
+exports[`getConfig should set linters 1`] = `
+Object {
+  "concurrent": true,
+  "gitDir": "..",
+  "linters": Object {
+    "*.js": Array [
+      "eslint --fix",
+      "git add",
+    ],
+    ".*rc": "jsonlint",
+  },
+  "renderer": "update",
+  "verbose": true,
+}
 `;
