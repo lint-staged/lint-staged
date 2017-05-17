@@ -106,6 +106,20 @@ describe('runScript', () => {
         expect(mockFn.mock.calls[1][2]).toEqual({ cwd: '../' })
     })
 
+    it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', () => {
+        const res = runScript(
+          ['jest'],
+          'test.js',
+          packageJSON,
+          { gitDir: '../' }
+        )
+        expect(res[0].task()).toBeAPromise()
+        expect(mockFn.mock.calls.length).toEqual(1)
+        expect(mockFn.mock.calls[0]).toEqual(
+          ['jest', ['--', 'test.js'], {}]
+        )
+    })
+
     it('should use --silent in non-verbose mode', () => {
         const res = runScript(
             'test',
@@ -134,4 +148,3 @@ describe('runScript', () => {
         )
     })
 })
-
