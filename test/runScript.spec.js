@@ -30,6 +30,7 @@ describe('runScript', () => {
 
     beforeEach(() => {
         mockFn.mockReset()
+        mockFn.mockImplementation(() => new Promise(() => {}))
     })
 
     it('should return an array', () => {
