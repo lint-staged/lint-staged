@@ -10,8 +10,10 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
         task: () => {
             try {
                 const res = findBin(linter, pathsToLint, packageJson, options)
+                // Only use gitDir as CWD if we are using the git binary
+                // e.g `npm` should run tasks in the actual CWD
                 const execaOptions =
-                    res.bin !== 'npm' && options && options.gitDir ? { cwd: options.gitDir } : {}
+                    res.bin.endsWith('git') && options && options.gitDir ? { cwd: options.gitDir } : {}
                 return new Promise((resolve, reject) => {
                     execa(res.bin, res.args, execaOptions)
                         .then(() => {
@@ -29,4 +31,3 @@ ${ err.stdout }`))
         }
     }))
 }
-
