@@ -2,24 +2,20 @@
 
 const npmWhich = require('npm-which')(process.cwd())
 
-module.exports = function findBin(cmd, paths, packageJson, options) {
-    const defaultArgs = ['--'].concat(paths)
+module.exports = function findBin(cmd, packageJson, options) {
     /*
     * If package.json has script with cmd defined
     * we want it to be executed first
     */
     if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
-        return {
-            bin: 'npm',
-            args: [
-                'run',
-                options && options.verbose ? undefined : '--silent',
-                cmd
-            ]
-                .filter(Boolean)
-                .concat(defaultArgs)
-        }
+        const args = [
+            'run',
+            options && options.verbose ? undefined : '--silent',
+            cmd
+        ].filter(Boolean)
+
+        return { bin: 'npm', args }
     }
 
     /*
@@ -52,8 +48,5 @@ module.exports = function findBin(cmd, paths, packageJson, options) {
         throw new Error(`${ bin } could not be found. Try \`npm install ${ bin }\`.`)
     }
 
-    return {
-        bin,
-        args: args.concat(defaultArgs)
-    }
+    return { bin, args }
 }

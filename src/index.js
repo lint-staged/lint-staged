@@ -12,6 +12,7 @@ const cosmiconfig = require('cosmiconfig')
 const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-line
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
+const readConfigOption = require('./readConfigOption')
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 // but do this only in TTY mode
@@ -27,10 +28,11 @@ cosmiconfig('lint-staged', {
         // result.config is the parsed configuration object
         // result.filepath is the path to the config file that was found
         const config = result.config
+
         const verbose = config.verbose
         // Output config in verbose mode
         if (verbose) console.log(config)
-        const concurrent = typeof config.concurrent !== 'undefined' ? config.concurrent : true
+        const concurrent = readConfigOption(config, 'concurrent', true)
         const renderer = verbose ? 'verbose' : 'update'
         const gitDir = config.gitDir ? path.resolve(config.gitDir) : process.cwd()
         sgf.cwd = gitDir
@@ -56,7 +58,7 @@ cosmiconfig('lint-staged', {
                                 task.commands,
                                 task.fileList,
                                 packageJson,
-                                { gitDir, verbose }
+                                { gitDir, verbose, config }
                             ), {
                                 // In sub-tasks we don't want to run concurrently
                                 // and we want to abort on errors
