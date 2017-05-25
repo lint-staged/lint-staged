@@ -198,7 +198,6 @@ describe('runScript', () => {
         try {
             await taskPromise
         } catch (err) {
-            // expect(err).toBeInstanceOf(Error)
             expect(err.message).toMatch(`🚫 mock-fail-linter found some errors. Please fix them and try committing again.
 ${ linteErr.stdout }
 ${ linteErr.stderr }`)
