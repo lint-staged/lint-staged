@@ -30,7 +30,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
                 // Only use gitDir as CWD if we are using the git binary
                 // e.g `npm` should run tasks in the actual CWD
                 const execaOptions =
-                    res.bin.endsWith('git') && options && options.gitDir
+                    /git(\.exe)?$/i.test(res.bin) && options && options.gitDir
                     ? { cwd: options.gitDir } : {}
 
                 const errors = []
