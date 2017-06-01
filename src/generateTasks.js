@@ -14,7 +14,7 @@ module.exports = function generateTasks(config, files) {
             const filter = minimatch.filter(pattern, Object.assign({
                 matchBase: true,
                 dot: true
-            }))
+            }, globOptions))
             const fileList = Object.keys(files).filter(filter).map(resolve)
             return {
                 pattern,
