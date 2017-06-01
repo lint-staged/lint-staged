@@ -146,4 +146,25 @@ describe('generateTasks', () => {
             ]
         })
     })
+
+    it('should support globOptions specified in advanced configuration', () => {
+        const result = generateTasks(
+            {
+                globOptions: {
+                    matchBase: false,
+                    nocase: true
+                },
+                linters: {
+                    'TeSt.*': 'lint'
+                }
+            },
+            files
+        )
+        const linter = result.find(item => item.pattern === 'TeSt.*')
+        expect(linter).toEqual({
+            pattern: 'TeSt.*',
+            commands: 'lint',
+            fileList: ['/root/test.js', '/root/test.css', '/root/test.txt']
+        })
+    })
 })
