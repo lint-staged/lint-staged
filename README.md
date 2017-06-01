@@ -91,7 +91,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See #147
 * `subTaskConcurrency` — `2` — Controls concurrency for processing chunks generated for each linter.
 * `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
-* `globOptions` — `{ baseMatch: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
+* `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
 
 ## Filtering files
 
