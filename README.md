@@ -38,6 +38,12 @@ See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
 
+> **NOTE:** 
+>
+> If you're using commitizen and having following npm-script `{ commit: git-cz }`, `precommit` hook will run twice before commitizen cli and after the commit. [This buggy behaviour is introduced by husky](https://github.com/okonet/lint-staged/issues/152#issuecomment-306046520).
+>
+> To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
+
 ## Configuration
 
 Starting with v3.1 you can now use different ways of configuring it:
@@ -130,7 +136,7 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
 
 ## Reformatting the code
 
-Tools like ESLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
@@ -187,6 +193,22 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 ```
 
 This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
+
+
+### Automatically fix code style with `prettier` for javascript + flow or typescript
+
+```json
+{
+	"*.{js,jsx}": ["prettier --parser flow --write", "git add"]
+}
+```
+
+```json
+{
+	"*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
+}
+```
+
 
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
 
