@@ -1,23 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`runAll should run tasks on staged files 1`] = `
-Array [
-  "\\"Running lint-staged with the following config:\\\\n\\"",
-  "{\\"concurrent\\":true,\\"gitDir\\":\\".\\",\\"linters\\":{\\"*\\":\\"mytask\\"},\\"renderer\\":\\"verbose\\",\\"verbose\\":true}",
-  "\\"\\\\n\\"",
-  "\\"Running tasks for * [started]\\"",
-  "\\"Running tasks for * [skipped]\\"",
-  "\\"→ No staged files match *\\"",
-]
+"\\"Running lint-staged with the following config:\\\\n\\"
+{\\"concurrent\\":true,\\"gitDir\\":\\".\\",\\"linters\\":{\\"*\\":\\"mytask\\"},\\"renderer\\":\\"verbose\\",\\"verbose\\":true}
+\\"\\\\n\\"
+\\"Running tasks for * [started]\\"
+\\"Running tasks for * [skipped]\\"
+\\"→ No staged files match *\\"
+"
 `;
 
 exports[`runAll should skip all tasks if there are no staged files 1`] = `
-Array [
-  "\\"Running lint-staged with the following config:\\\\n\\"",
-  "{\\"concurrent\\":true,\\"gitDir\\":\\".\\",\\"linters\\":{\\"*\\":\\"mytask\\"},\\"renderer\\":\\"verbose\\",\\"verbose\\":true}",
-  "\\"\\\\n\\"",
-  "\\"Running tasks for * [started]\\"",
-  "\\"Running tasks for * [skipped]\\"",
-  "\\"→ No staged files match *\\"",
-]
+"\\"Running lint-staged with the following config:\\\\n\\"
+{\\"concurrent\\":true,\\"gitDir\\":\\".\\",\\"linters\\":{\\"*\\":\\"mytask\\"},\\"renderer\\":\\"verbose\\",\\"verbose\\":true}
+\\"\\\\n\\"
+\\"Running tasks for * [started]\\"
+\\"Running tasks for * [skipped]\\"
+\\"→ No staged files match *\\"
+"
 `;

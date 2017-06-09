@@ -3,10 +3,11 @@
 import stripColors from 'strip-ansi'
 import runAll from '../src/runAll'
 
-let stdout = []
+let stdout = ''
 console.log = jest.fn((input) => {
-    stdout.push(JSON.stringify(stripColors(input)).replace(/\[\d\d:\d\d:\d\d\]\W/, ''))
-    return stdout.join('\n')
+    // eslint-disable-next-line prefer-template
+    stdout += JSON.stringify(stripColors(input)).replace(/\[\d\d:\d\d:\d\d\]\W/, '') + '\n'
+    return stdout
 })
 
 const packageJson = {
@@ -17,7 +18,7 @@ const packageJson = {
 
 describe('runAll', () => {
     beforeEach(() => {
-        stdout = []
+        stdout = ''
     })
 
     it('should skip all tasks if there are no staged files', (done) => {
