@@ -58,7 +58,7 @@ Lint-staged supports simple and advanced config formats.
 
 ### Simple config format
 
-Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
+Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [multimatch](https://github.com/sindresorhus/multimatch) which in turn uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
 
 #### `package.json` example:
 ```json

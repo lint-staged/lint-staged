@@ -50,7 +50,7 @@
     "execa": "^0.6.0",
     "listr": "^0.12.0",
     "lodash.chunk": "^4.2.0",
-    "minimatch": "^3.0.0",
+    "multimatch": "^2.1.0",
     "npm-which": "^3.0.1",
     "p-map": "^1.1.1",
     "staged-git-files": "0.0.4"
