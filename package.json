@@ -47,7 +47,7 @@
   "dependencies": {
     "app-root-path": "^2.0.0",
     "cosmiconfig": "^1.1.0",
-    "execa": "^0.6.0",
+    "execa": "^0.7.0",
     "listr": "^0.12.0",
     "lodash.chunk": "^4.2.0",
     "minimatch": "^3.0.0",
