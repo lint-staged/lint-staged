@@ -16,6 +16,9 @@
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "pre-commit": "pre-commit",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "greenkeeper": {
     "ignore": [
       "cosmiconfig"
