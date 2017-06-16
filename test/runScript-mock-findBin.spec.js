@@ -60,8 +60,7 @@ describe.only('runScript with absolute paths', () => {
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
         expect(mockFn.mock.calls[0][0]).toMatch('/usr/local/bin/git')
-        expect(mockFn.mock.calls[0][1]).toEqual(['add', '--', 'test.js'])
+        expect(mockFn.mock.calls[0][1]).toEqual(['add', 'test.js'])
         expect(mockFn.mock.calls[0][2]).toEqual({ cwd: '../' })
     })
 })
-
