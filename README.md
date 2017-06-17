@@ -76,7 +76,7 @@ Should be an object where each value is a command to run and its key is a glob p
 
 ```json
 {
-	"*": "my-task"
+  "*": "my-task"
 }
 ```
 
@@ -105,14 +105,14 @@ It is possible to run linters for certain paths only by using [minimatch](https:
 
 ```js
 {
-	// .js files anywhere in the project
-	"*.js": "eslint",
-	// .js files anywhere in the project
-	"**/*.js": "eslint",
-	// .js file in the src directory
-	"src/*.js": "eslint",
-	// .js file anywhere within and below the src directory
-	"src/**/*.js": "eslint",
+  // .js files anywhere in the project
+  "*.js": "eslint",
+  // .js files anywhere in the project
+  "**/*.js": "eslint",
+  // .js file in the src directory
+  "src/*.js": "eslint",
+  // .js file anywhere within and below the src directory
+  "src/**/*.js": "eslint",
 }
 ```
 
@@ -126,7 +126,7 @@ Supported are both local npm scripts (`npm run-script`), or any executables inst
 
 ```json
 {
-	"*.js": "eslint --fix"
+  "*.js": "eslint --fix"
 }
 ```
 
@@ -140,7 +140,7 @@ Tools like ESLint/TSLint or stylefmt can reformat your code according to an appr
 
 ```json
 {
-	"*.js": ["eslint --fix", "git add"]
+  "*.js": ["eslint --fix", "git add"]
 }
 ```
 
@@ -180,7 +180,7 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 
 ```json
 {
-	"*.{js,jsx}": "eslint"
+  "*.{js,jsx}": "eslint"
 }
 ```
 
@@ -188,7 +188,7 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 
 ```json
 {
-	"*.js": ["eslint --fix", "git add"]
+  "*.js": ["eslint --fix", "git add"]
 }
 ```
 
@@ -199,13 +199,13 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.{js,jsx}": ["prettier --parser flow --write", "git add"]
+  "*.{js,jsx}": ["prettier --parser flow --write", "git add"]
 }
 ```
 
 ```json
 {
-	"*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
+  "*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
 }
 ```
 
@@ -214,8 +214,8 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.css": "stylelint",
-	"*.scss": "stylelint --syntax=scss"
+  "*.css": "stylelint",
+  "*.scss": "stylelint --syntax=scss"
 }
 ```
 
@@ -223,7 +223,7 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
+  "*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
 }
 ```
 
@@ -231,10 +231,10 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.scss": [
-	  "postcss --config path/to/your/config --replace",
-	  "stylelint",
-	  "git add"
-	]
+  "*.scss": [
+    "postcss --config path/to/your/config --replace",
+    "stylelint",
+    "git add"
+  ]
 }
 ```
