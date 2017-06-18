@@ -105,14 +105,14 @@ describe('runScript', () => {
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
         expect(mockFn.mock.calls[0][0]).toContain('node')
-        expect(mockFn.mock.calls[0][1]).toEqual(['--arg=true', './myscript.js', '--', 'test.js'])
+        expect(mockFn.mock.calls[0][1]).toEqual(['--arg=true', './myscript.js', 'test.js'])
 
         taskPromise = res[1].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(2)
         expect(mockFn.mock.calls[1][0]).toContain('git')
-        expect(mockFn.mock.calls[1][1]).toEqual(['add', '--', 'test.js'])
+        expect(mockFn.mock.calls[1][1]).toEqual(['add', 'test.js'])
     })
 
     it('should pass cwd to execa if gitDir option is set for non-npm tasks', async () => {
@@ -135,7 +135,7 @@ describe('runScript', () => {
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(2)
         expect(mockFn.mock.calls[1][0]).toMatch(/git$/)
-        expect(mockFn.mock.calls[1][1]).toEqual(['add', '--', 'test.js'])
+        expect(mockFn.mock.calls[1][1]).toEqual(['add', 'test.js'])
         expect(mockFn.mock.calls[1][2]).toEqual({ cwd: '../' })
     })
 
@@ -151,7 +151,7 @@ describe('runScript', () => {
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
         expect(mockFn.mock.calls[0]).toEqual(
-          ['jest', ['--', 'test.js'], {}]
+          ['jest', ['test.js'], {}]
         )
     })
 
@@ -204,4 +204,3 @@ ${ linteErr.stderr }`)
         }
     })
 })
-
