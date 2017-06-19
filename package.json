@@ -5,6 +5,9 @@
   "bin": {
     "lint-staged": "index.js"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "postinstall": "echo \"🚫💩 lint-staged installed! \nDo not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
