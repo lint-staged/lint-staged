@@ -27,6 +27,9 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
             try {
                 const res = findBin(linter, packageJson, options)
 
+                const separatorArgs = /npm(\.exe)?$/i.test(res.bin)
+                    ? ['--'] : [];
+
                 // Only use gitDir as CWD if we are using the git binary
                 // e.g `npm` should run tasks in the actual CWD
                 const execaOptions =
@@ -35,7 +38,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
 
                 const errors = []
                 const mapper = (pathsChunk) => {
-                    const args = res.args.concat(['--'], pathsChunk)
+                    const args = res.args.concat(separatorArgs, pathsChunk)
 
                     return execa(res.bin, args, Object.assign({}, execaOptions))
                         /* If we don't catch, pMap will terminate on first rejection */
@@ -67,4 +70,3 @@ ${ errStderr }`)
         }
     }))
 }
-
