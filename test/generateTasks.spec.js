@@ -27,7 +27,8 @@ const linters = {
     'deeper/*.js': 'deeper-js',
     '.hidden/*.js': 'hidden-js',
     'unknown/*.js': 'unknown-js',
-    '*.{css,js}': 'root-css-or-js'
+    '*.{css,js}': 'root-css-or-js',
+    '*%,%!**/deeper/**': 'any-except-deeper'
 }
 
 describe('generateTasks', () => {
@@ -143,6 +144,23 @@ describe('generateTasks', () => {
                 '/root/deeper/test2.css',
                 '/root/even/deeper/test.css',
                 '/root/.hidden/test.css'
+            ]
+        })
+    })
+
+    it('should match multimatch pattern *%,%!**/deeper/**', () => {
+        const result = generateTasks(linters, files)
+        const linter = result.find(item => item.pattern === '*%,%!**/deeper/**')
+        expect(linter).toEqual({
+            pattern: '*%,%!**/deeper/**',
+            commands: 'any-except-deeper',
+            fileList: [
+                '/root/test.js',
+                '/root/.hidden/test.js',
+                '/root/test.css',
+                '/root/.hidden/test.css',
+                '/root/test.txt',
+                '/root/.hidden/test.txt'
             ]
         })
     })

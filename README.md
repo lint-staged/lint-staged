@@ -113,6 +113,8 @@ It is possible to run linters for certain paths only by using [minimatch](https:
   "src/*.js": "eslint",
   // .js file anywhere within and below the src directory
   "src/**/*.js": "eslint",
+  // .js file anywhere within and below the src directory excluding src/somefolder. The %,% splits the string into an array passed to multimatch.
+  "src/**/*.js%,%!src/somefolder/*": "eslint",
 }
 ```
 

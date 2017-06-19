@@ -9,9 +9,10 @@ module.exports = function generateTasks(config, files) {
     const resolve = file => files[file]
     return Object.keys(linters)
         .map((pattern) => {
+            let patternToUse = pattern.split('%,%')
             const commands = linters[pattern]
             const globOptions = readConfigOption(config, 'globOptions', {})
-            const fileList = multimatch(Object.keys(files), pattern, Object.assign({
+            const fileList = multimatch(Object.keys(files), patternToUse, Object.assign({
                 matchBase: true,
                 dot: true
             }, globOptions)).map(resolve)
