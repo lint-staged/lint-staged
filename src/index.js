@@ -40,6 +40,7 @@ cosmiconfig('lint-staged', {
         sgf('ACM', (err, files) => {
             if (err) {
                 console.error(err)
+                process.exit(1)
             }
 
             const resolvedFiles = {}
