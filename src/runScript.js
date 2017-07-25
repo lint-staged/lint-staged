@@ -38,7 +38,14 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
 
                 const errors = []
                 const mapper = (pathsChunk) => {
-                    const args = res.args.concat(separatorArgs, pathsChunk)
+                    var args = []
+                    if (res.args[res.args.length - 1] !== '#') {
+                      // we push the current pathsChunk
+                      args = res.args.concat(separatorArgs, pathsChunk)
+                    } else {
+                      // we remove the '#' from execution and ignore the pathChunks
+                      args = res.args.splice(0, res.args.length - 1)
+                    }
 
                     return execa(res.bin, args, Object.assign({}, execaOptions))
                         /* If we don't catch, pMap will terminate on first rejection */

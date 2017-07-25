@@ -116,6 +116,20 @@ It is possible to run linters for certain paths only by using [minimatch](https:
 }
 ```
 
+## Omit the pre-committed files name
+
+It can be useful to avoid pushing the committed list of file at then end of the npm script/command.
+Example: when using cucumberJS, you don't want the pre-commit to be treating all your committed javascript files as 
+gherkin feature files.
+In that case, simply put a '#' at the end of the lint-staged command, like this:
+```js
+{
+  "*.js": "npm run test #",
+  "codeaway/**/*.js": "cucumber-js testcodeaway/features #"
+}
+```
+It will now launch your npm script/command for all those *.js committed file without the committed files list appended
+
 ## What commands are supported?
 
 Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.

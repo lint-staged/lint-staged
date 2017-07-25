@@ -203,4 +203,13 @@ ${ linteErr.stdout }
 ${ linteErr.stderr }`)
         }
     })
+
+    it('should allow trapping of pre-committed file list', async () => {
+      const res = runScript('npm run test #', ['test.js'], packageJSON)
+      const taskPromise = res[0].task()
+      expect(taskPromise).toBeAPromise()
+      await taskPromise
+      expect(mockFn.mock.calls.length).toEqual(1)
+      expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', 'test'], {}])
+    })
 })
