@@ -203,4 +203,22 @@ ${ linteErr.stdout }
 ${ linteErr.stderr }`)
         }
     })
+
+    it('should allow trapping of pre-committed file list', async () => {
+      const res = runScript({ "script":"npm run test", "trap":true}, ['test.js'], packageJSON)
+      const taskPromise = res[0].task()
+      expect(taskPromise).toBeAPromise()
+      await taskPromise
+      expect(mockFn.mock.calls.length).toEqual(1)
+      expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', 'test'], {}])
+    })
+
+    it('should allow complex command with prepend, append, prepend_each, append_each', async () => {
+      const res = runScript([{ "name": "compressing svg", "script": "echo", "prepend": "--doit --better --compressoption", "prepend_each":"--out ", "append_each":".tar.gz" }, '{ "script": "npm run test2", "prepend": "test" }'], ['test.js'], packageJSON)
+      const taskPromise = res[0].task()
+      expect(taskPromise).toBeAPromise()
+      await taskPromise
+      expect(mockFn.mock.calls.length).toEqual(1)
+      expect(mockFn.mock.calls[0]).toEqual(['echo', [ '--doit --better --compressoption', '--out test.js.tar.gz' ], {}])
+    })
 })

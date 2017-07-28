@@ -2,11 +2,15 @@
 
 const npmWhich = require('npm-which')(process.cwd())
 
-module.exports = function findBin(cmd, packageJson, options) {
+module.exports = function findBin(cmdOrObject, packageJson, options) {
     /*
     * If package.json has script with cmd defined
     * we want it to be executed first
     */
+    let cmd = (typeof cmdOrObject === "object" && !Array.isArray( cmdOrObject ) && cmdOrObject !== null) ? 
+        cmdOrObject.script : 
+        cmdOrObject
+    
     if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
         const args = [

@@ -116,6 +116,41 @@ It is possible to run linters for certain paths only by using [minimatch](https:
 }
 ```
 
+## Omit the pre-committed files name
+
+It can be useful to avoid pushing the committed list of file at then end of the npm script/command.
+Example: when using cucumberJS, you don't want the pre-commit to be treating all your committed javascript files as 
+gherkin feature files.
+In that case, you can trap the files name list using a complex command, like this:
+```js
+{
+  "*.js": { "script": "npm run test", "trap": true },
+  "codeaway/**/*.js": { "script": "cucumber-js testcodeaway/features", "trap": true}
+}
+```
+It will now launch your npm script/command if any *.js files are committed in codeaway/ but without pushing the file list 
+in the command
+
+## Complex Command
+
+For some complex grunt tasks or other tools with different parameters expectations, you would need to use a complex command.
+Complex command allows 5 configuration options:
+- prepend : to add string just after the script name and before all the rest of the command
+- append : to add string after the whole command and parameters (including the commited file names)
+- append_each : to prepend each pre-committed file name with a specific string
+- prepend_each : to append each pre-committed file name with a specific string
+- trap : to deactivate the passing of the the pre-committed file names to that specific command
+
+Here are examples of complex commands:
+```js
+{
+  "*.js": { "script": "npm run test", "trap": true }, //this will call 'npm run test'
+  "*.html": { "script": "gulp lint", "prepend_each": "--grep="}, //this will call 'gulp lint --grep=file1 --grep=file2 ... --grep=fileN'
+  "*.svg": { "script": "svgo", "prepend": "--multipass", "prepend_each": "-i "} //this will call 'svgo --multipass -i file1 -i file2 ... -i fileN'
+  "*.comp": { "script": "compress", "prepend": "--deepcompress", "append": "--archive=final.tar.gz" } //this will call 'compress --deepcompress file1 file2 ... fileN --archive=final.tar.gz'
+}
+```
+
 ## What commands are supported?
 
 Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.
