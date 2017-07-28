@@ -20,11 +20,15 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
     const filePathChunks = chunk(pathsToLint, chunkSize)
 
     const lintersArray = Array.isArray(commands) ? commands : [commands]
+    let isObject = ( toTest ) => {
+        return (typeof toTest === "object" && !Array.isArray(toTest) && toTest !== null)
+    }
 
     return lintersArray.map(linter => ({
-        title: linter,
+        title: isObject( linter ) ? ( linter.name || linter.script ) : linter,
         task: () => {
             try {
+                const isComplexCommand = isObject( linter )
                 const res = findBin(linter, packageJson, options)
 
                 const separatorArgs = /npm(\.exe)?$/i.test(res.bin)
@@ -37,15 +41,23 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
                     ? { cwd: options.gitDir } : {}
 
                 const errors = []
+                if( isComplexCommand && linter.prepend )
+                    res.args.push( linter.prepend )
+                
                 const mapper = (pathsChunk) => {
-                    var args = []
-                    if (res.args[res.args.length - 1] !== '#') {
-                      // we push the current pathsChunk
-                      args = res.args.concat(separatorArgs, pathsChunk)
-                    } else {
-                      // we remove the '#' from execution and ignore the pathChunks
-                      args = res.args.splice(0, res.args.length - 1)
-                    }
+                    let finalPaths = pathsChunk
+                    if( isComplexCommand && ( linter.prepend_each || linter.append_each ) )
+                        finalPaths = pathsChunk.map( ( currentChunk ) => {
+                                        return ( linter.prepend_each || '' ) +
+                                                    currentChunk +
+                                                    ( linter.append_each || '' ) } )
+
+                    let args = ( isComplexCommand && linter.trap ) ?
+                                res.args :
+                                res.args.concat(separatorArgs, finalPaths)
+
+                    if( isComplexCommand && linter.append )
+                        args.push( linter.append )
 
                     return execa(res.bin, args, Object.assign({}, execaOptions))
                         /* If we don't catch, pMap will terminate on first rejection */
