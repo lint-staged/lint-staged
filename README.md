@@ -147,10 +147,10 @@ For more advanced uses, a (light) templating system allows some flexibility rega
 All 'patterns' have to be enclosed in the '<' and '>'.
 All enclosed expression will be repeated as many time as there is pre-commited files.
 Inside the enclosure, 4 patterns are available to delimit the pre-commited filename expansion :
-- <> or <full> : to insert the full filename as given by git
-- <filename> : to insert only the filename (without the extension)
-- <path> : to insert the path of the file (beware, git will use a relative path to the root of the repo)
-- <extension> : to insert the extension
+- <> or \<full\> : to insert the full filename as given by git
+- \<filename\> : to insert only the filename (without the extension)
+- \<path\> : to insert the path of the file (beware, git will use a relative path to the root of the repo)
+- \<extension\> : to insert the extension
 
 ### Advanced command example
 ```js
