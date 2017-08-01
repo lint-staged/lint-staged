@@ -3,6 +3,7 @@
 const chunk = require('lodash.chunk')
 const execa = require('execa')
 const pMap = require('p-map')
+const pathlib = require( 'path' )
 
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
@@ -20,9 +21,10 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
     const filePathChunks = chunk(pathsToLint, chunkSize)
 
     const lintersArray = Array.isArray(commands) ? commands : [commands]
+    const isObject = toTest => typeof toTest === 'object' && !Array.isArray(toTest) && toTest !== null
 
     return lintersArray.map(linter => ({
-        title: linter,
+        title: isObject(linter) && linter.name ? linter.name : linter,
         task: () => {
             try {
                 const res = findBin(linter, packageJson, options)
@@ -37,8 +39,37 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
                     ? { cwd: options.gitDir } : {}
 
                 const errors = []
+                const complexArgsParser = ( complexArgs, pathsChunkForComplex ) => {
+                  let parsedArgs = []
+                  const patternArgs = /((?:-[^ <>]* )|(?:[^ <>]*))((?:<full>|(?:<filename>|(?:<path>|(?:<extension>|<>))))){1}([^ <>]*)/i
+                  complexArgs.forEach( currentArg => {
+                    if( patternArgs.test( currentArg )) {
+                      pathsChunkForComplex.forEach( currentChunk => {
+                        let parsing = currentArg
+                          .split( patternArgs )
+                          .map( currentArgPart => {
+                            if( currentArgPart[0] !== '<' ) return currentArgPart
+                            else if( currentArgPart === '<>' || currentArgPart === '<full>' ) return currentChunk
+                            else if( currentArgPart === '<filename>' ) return pathlib.basename( currentChunk, pathlib.extname( currentChunk ) )
+                            else if( currentArgPart === '<path>' ) return pathlib.dirname( currentChunk )
+                            else if( currentArgPart === '<extension>' ) return pathlib.extname( currentChunk ).substring(1)
+                            else return currentArgPart
+                          })
+                        parsedArgs.push( parsing.filter( currentPart => currentPart !== '' ).join( '' ) )
+                      })
+                    }
+                    else
+                      parsedArgs.push( currentArg )
+                  })
+                  return parsedArgs
+                }
+
                 const mapper = (pathsChunk) => {
-                    const args = res.args.concat(separatorArgs, pathsChunk)
+                    const args = res.isComplexCommand
+                                   ? complexArgsParser( res.args, pathsChunk )
+                                   : isObject( linter ) && linter.trap
+                                       ? res.args
+                                       : res.args.concat(separatorArgs, pathsChunk)
 
                     return execa(res.bin, args, Object.assign({}, execaOptions))
                         /* If we don't catch, pMap will terminate on first rejection */

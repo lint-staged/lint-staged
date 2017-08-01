@@ -38,7 +38,7 @@ See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
 
-> **NOTE:** 
+> **NOTE:**
 >
 > If you're using commitizen and having following npm-script `{ commit: git-cz }`, `precommit` hook will run twice before commitizen cli and after the commit. [This buggy behaviour is introduced by husky](https://github.com/okonet/lint-staged/issues/152#issuecomment-306046520).
 >
@@ -113,6 +113,54 @@ It is possible to run linters for certain paths only by using [minimatch](https:
   "src/*.js": "eslint",
   // .js file anywhere within and below the src directory
   "src/**/*.js": "eslint",
+}
+```
+
+## Trapping the file name
+
+It can be useful to avoid pushing the committed list of file at then end of the npm script/command.
+Example: when using cucumberJS, you don't want the pre-commit to be treating all your committed javascript files as
+gherkin feature files.
+In that case, you can trap the files name list using a complex command, like this:
+```js
+{
+  "*.js": "npm run test",
+  "codeaway/**/*.js": { "command": "cucumber-js testcodeaway/features", "trap": true}
+}
+```
+It will now launch your npm script/command if any \*.js files are committed in codeaway/ but without pushing the file list
+in the command
+
+## Pretty command name
+
+You can also customize the displayed command name in the prompt, like this:
+```js
+{
+  "*.js": {"name": "my very important command", "command": "npm run test" }
+}
+```
+
+
+## Advanced commands (using a template)
+
+For more advanced uses, a (light) templating system allows some flexibility regarding your command parsing.
+All 'patterns' have to be enclosed in the '<' and '>'.
+All enclosed expression will be repeated as many time as there is pre-commited files.
+Inside the enclosure, 4 patterns are available to delimit the pre-commited filename expansion :
+- <> or <full> : to insert the full filename as given by git
+- <filename> : to insert only the filename (without the extension)
+- <path> : to insert the path of the file (beware, git will use a relative path to the root of the repo)
+- <extension> : to insert the extension
+
+### Advanced command example
+```js
+{
+  // compress binary files anywhere in a subdirectory /bin where the file is currently
+  "*.bin": "compress <--in=<full> --out=<path>/bin/<filename>.tar.gz>",
+  // optimize all SVG file using svgo and pushing each optimized version with 'opt' before the extension
+  "*.svg": "svgo --multipass <-i <> -o <path><filename>.opt.svg>",
+  // translation of the simple "eslint" command in an advanced command (those are equivalent)
+  "*.js": "eslint -- <<>>"
 }
 ```
 
