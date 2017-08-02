@@ -208,4 +208,13 @@ ${linteErr.stderr}`)
       expect(err.message).toMatch( `Command could not be found. You're package.json is probably wrong.`)
     }
   })
+  
+  it('should allow complex command with expression the ressemble protected ones', async () => {
+    const res = runScript([ "compress <personal>"], ['file1.js', 'file2.js'], packageJSON)
+        const taskPromise = res[0].task()
+    expect(taskPromise).toBeAPromise()
+    await taskPromise
+        expect(mockFn.mock.calls.length).toEqual(1)
+        expect(mockFn.mock.calls[0]).toEqual([ 'compress', [ '<personal>', 'file1.js', 'file2.js' ], {}])
+  })
 })
