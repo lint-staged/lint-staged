@@ -5,8 +5,10 @@
   "bin": {
     "lint-staged": "index.js"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
-    "postinstall": "echo \"🚫💩 lint-staged installed! \nDo not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "node index.js",
@@ -16,6 +18,9 @@
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "pre-commit": "pre-commit",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "greenkeeper": {
     "ignore": [
       "cosmiconfig"
@@ -47,7 +52,7 @@
   "dependencies": {
     "app-root-path": "^2.0.0",
     "cosmiconfig": "^1.1.0",
-    "execa": "^0.7.0",
+    "execa": "^0.8.0",
     "listr": "^0.12.0",
     "lodash.chunk": "^4.2.0",
     "minimatch": "^3.0.0",
