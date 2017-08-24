@@ -9,7 +9,6 @@
     "es6": true
   },
   "rules": {
-    "indent": [2, 4],
     "strict": 0,
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": ["**/*.spec.js"]
