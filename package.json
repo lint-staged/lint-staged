@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "remove-lockfiles && node index.js",
+    "pretest": "npm run lint",
     "test": "jest --coverage",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
