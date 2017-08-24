@@ -9,19 +9,10 @@
     "es6": true
   },
   "rules": {
+    "indent": [2, 4],
     "strict": 0,
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": ["**/*.spec.js"]
-    }],
-    "prettier/prettier": [
-      "error",
-      {
-        "printWidth": 100,
-        "tabWidth": 4,
-        "semi": false,
-        "singleQuote": true,
-        "trailingComma": "none"
-      }
-    ]
+    }]
   }
 }
