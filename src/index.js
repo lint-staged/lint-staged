@@ -9,7 +9,7 @@ const appRoot = require('app-root-path')
 const Listr = require('listr')
 const cosmiconfig = require('cosmiconfig')
 
-const packageJson = require(appRoot.resolve('package.json')) // eslint-disable-line
+const packageJson = require(appRoot.resolve('package.json')); // eslint-disable-line
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const readConfigOption = require('./readConfigOption')
@@ -24,7 +24,7 @@ cosmiconfig('lint-staged', {
     rc: '.lintstagedrc',
     rcExtensions: true
 })
-    .then((result) => {
+    .then(result => {
         // result.config is the parsed configuration object
         // result.filepath is the path to the config file that was found
         const config = result.config
@@ -44,38 +44,35 @@ cosmiconfig('lint-staged', {
             }
 
             const resolvedFiles = {}
-            files.forEach((file) => {
+            files.forEach(file => {
                 const absolute = path.resolve(gitDir, file.filename)
                 const relative = path.relative(gitDir, absolute)
                 resolvedFiles[relative] = absolute
             })
 
-            const tasks = generateTasks(config, resolvedFiles)
-                .map(task => ({
-                    title: `Running tasks for ${ task.pattern }`,
-                    task: () => (
-                        new Listr(
-                            runScript(
-                                task.commands,
-                                task.fileList,
-                                packageJson,
-                                { gitDir, verbose, config }
-                            ), {
-                                // In sub-tasks we don't want to run concurrently
-                                // and we want to abort on errors
-                                concurrent: false,
-                                exitOnError: true
-                            }
-                        )
-                    ),
-                    skip: () => {
-                        if (task.fileList.length === 0) {
-                            return `No staged files match ${ task.pattern }`
+            const tasks = generateTasks(config, resolvedFiles).map(task => ({
+                title: `Running tasks for ${task.pattern}`,
+                task: () =>
+                    new Listr(
+                        runScript(task.commands, task.fileList, packageJson, {
+                            gitDir,
+                            verbose,
+                            config
+                        }),
+                        {
+                            // In sub-tasks we don't want to run concurrently
+                            // and we want to abort on errors
+                            concurrent: false,
+                            exitOnError: true
                         }
-                        return false
+                    ),
+                skip: () => {
+                    if (task.fileList.length === 0) {
+                        return `No staged files match ${task.pattern}`
                     }
-                }))
-
+                    return false
+                }
+            }))
 
             if (tasks.length) {
                 new Listr(tasks, {
@@ -84,9 +81,9 @@ cosmiconfig('lint-staged', {
                     exitOnError: !concurrent // Wait for all errors when running concurrently
                 })
                     .run()
-                    .catch((error) => {
+                    .catch(error => {
                         if (Array.isArray(error.errors)) {
-                            error.errors.forEach((lintError) => {
+                            error.errors.forEach(lintError => {
                                 console.error(lintError.message)
                             })
                         } else {
@@ -97,11 +94,11 @@ cosmiconfig('lint-staged', {
             }
         })
     })
-    .catch((parsingError) => {
+    .catch(parsingError => {
         console.error(`Could not parse lint-staged config.
 Make sure you have created it. See https://github.com/okonet/lint-staged#readme.
 
-${ parsingError }
+${parsingError}
 `)
         process.exit(1)
     })

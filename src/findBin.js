@@ -9,11 +9,9 @@ module.exports = function findBin(cmd, packageJson, options) {
     */
     if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
         // Support for scripts from package.json
-        const args = [
-            'run',
-            options && options.verbose ? undefined : '--silent',
-            cmd
-        ].filter(Boolean)
+        const args = ['run', options && options.verbose ? undefined : '--silent', cmd].filter(
+            Boolean
+        )
 
         return { bin: 'npm', args }
     }
@@ -45,7 +43,7 @@ module.exports = function findBin(cmd, packageJson, options) {
         /* and if this fails it look in $PATH */
         bin = npmWhich.sync(bin)
     } catch (err) {
-        throw new Error(`${ bin } could not be found. Try \`npm install ${ bin }\`.`)
+        throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
     }
 
     return { bin, args }

@@ -10,7 +10,6 @@ const packageJSON = {
     'lint-staged': {}
 }
 
-
 describe('findBin', () => {
     it('should favor `npm run` command if exists in both package.json and .bin/', () => {
         const packageJSONMock = {
@@ -45,7 +44,6 @@ describe('findBin', () => {
             findBin('my-missing-linter', packageJSON)
         }).toThrow('my-missing-linter could not be found. Try `npm install my-missing-linter`.')
     })
-
 
     it('should parse cmd and add arguments to args', () => {
         const { bin, args } = findBin('my-linter task --fix', packageJSON)

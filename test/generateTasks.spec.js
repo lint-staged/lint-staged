@@ -32,30 +32,32 @@ const linters = {
 
 describe('generateTasks', () => {
     it('should work with simple configuration', () => {
-        const result = generateTasks({
-            '*.js': 'lint'
-        }, {
-            'test.js': '/root/test.js'
-        })
+        const result = generateTasks(
+            {
+                '*.js': 'lint'
+            },
+            {
+                'test.js': '/root/test.js'
+            }
+        )
         const commands = result.map(match => match.commands)
-        expect(commands).toEqual([
-            'lint'
-        ])
+        expect(commands).toEqual(['lint'])
     })
 
     it('should work with advanced configuration', () => {
-        const result = generateTasks({
-            gitDir: '../',
-            linters: {
-                '*.js': 'lint'
+        const result = generateTasks(
+            {
+                gitDir: '../',
+                linters: {
+                    '*.js': 'lint'
+                }
+            },
+            {
+                'test.js': '/root/test.js'
             }
-        }, {
-            'test.js': '/root/test.js'
-        })
+        )
         const commands = result.map(match => match.commands)
-        expect(commands).toEqual([
-            'lint'
-        ])
+        expect(commands).toEqual(['lint'])
     })
 
     it('should return an empty file list for linters with no matches.', () => {
@@ -107,10 +109,7 @@ describe('generateTasks', () => {
         expect(linter).toEqual({
             pattern: 'deeper/*.js',
             commands: 'deeper-js',
-            fileList: [
-                '/root/deeper/test.js',
-                '/root/deeper/test2.js'
-            ]
+            fileList: ['/root/deeper/test.js', '/root/deeper/test2.js']
         })
     })
 
@@ -120,9 +119,7 @@ describe('generateTasks', () => {
         expect(linter).toEqual({
             pattern: '.hidden/*.js',
             commands: 'hidden-js',
-            fileList: [
-                '/root/.hidden/test.js'
-            ]
+            fileList: ['/root/.hidden/test.js']
         })
     })
 

@@ -17,4 +17,3 @@ module.exports = function readConfigOption(config, key, defaultValue) {
 
     return defaultValue
 }
-

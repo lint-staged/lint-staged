@@ -10,25 +10,22 @@ import runScript from '../src/runScript'
 jest.mock('execa')
 
 // Mock findBin to return an absolute path
-jest.mock('../src/findBin', () => (commands) => {
-    const [
-      bin,
-      ...otherArgs
-    ] = commands.split(' ')
+jest.mock(
+    '../src/findBin',
+    () => commands => {
+        const [bin, ...otherArgs] = commands.split(' ')
 
-    return ({
-        bin: `/usr/local/bin/${ bin }`,
-        args: otherArgs
-    })
-}, { virtual: true })
+        return {
+            bin: `/usr/local/bin/${bin}`,
+            args: otherArgs
+        }
+    },
+    { virtual: true }
+)
 
 expect.extend({
     toBeAPromise() {
-        expect.assert(
-            isPromise(this.actual),
-            'expected %s to be a Promise',
-            this.actual
-        )
+        expect.assert(isPromise(this.actual), 'expected %s to be a Promise', this.actual)
         return this
     }
 })
@@ -48,12 +45,7 @@ describe.only('runScript with absolute paths', () => {
     })
 
     it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
-        const res = runScript(
-          ['git add'],
-          ['test.js'],
-          packageJSON,
-          { gitDir: '../' }
-        )
+        const res = runScript(['git add'], ['test.js'], packageJSON, { gitDir: '../' })
 
         const taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()

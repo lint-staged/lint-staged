@@ -9,11 +9,7 @@ jest.mock('execa')
 
 expect.extend({
     toBeAPromise() {
-        expect.assert(
-            isPromise(this.actual),
-            'expected %s to be a Promise',
-            this.actual
-        )
+        expect.assert(isPromise(this.actual), 'expected %s to be a Promise', this.actual)
         return this
     }
 })
@@ -27,7 +23,6 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-
     beforeEach(() => {
         mockFn.mockReset()
         mockFn.mockImplementation(() => Promise.resolve(true))
@@ -63,39 +58,48 @@ describe('runScript', () => {
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual([
+            'npm',
+            ['run', '--silent', 'test', '--', 'test.js'],
+            {}
+        ])
         taskPromise = res[1].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(2)
-        expect(mockFn.mock.calls[1]).toEqual(
-            ['npm', ['run', '--silent', 'test2', '--', 'test.js'], {}]
-        )
+        expect(mockFn.mock.calls[1]).toEqual([
+            'npm',
+            ['run', '--silent', 'test2', '--', 'test.js'],
+            {}
+        ])
     })
 
     it('should respect chunk size', async () => {
-        const res = runScript(
-            ['test'],
-            ['test1.js', 'test2.js'],
-            packageJSON,
-            { config: { chunkSize: 1 } }
-        )
+        const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
+            config: { chunkSize: 1 }
+        })
         const taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(2)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test1.js'], {}]
-        )
-        expect(mockFn.mock.calls[1]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test2.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual([
+            'npm',
+            ['run', '--silent', 'test', '--', 'test1.js'],
+            {}
+        ])
+        expect(mockFn.mock.calls[1]).toEqual([
+            'npm',
+            ['run', '--silent', 'test', '--', 'test2.js'],
+            {}
+        ])
     })
 
     it('should support non npm scripts', async () => {
-        const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'], packageJSON)
+        const res = runScript(
+            ['node --arg=true ./myscript.js', 'git add'],
+            ['test.js'],
+            packageJSON
+        )
         expect(res.length).toBe(2)
         expect(res[0].title).toBe('node --arg=true ./myscript.js')
         expect(res[1].title).toBe('git add')
@@ -116,19 +120,16 @@ describe('runScript', () => {
     })
 
     it('should pass cwd to execa if gitDir option is set for non-npm tasks', async () => {
-        const res = runScript(
-            ['test', 'git add'],
-            ['test.js'],
-            packageJSON,
-            { gitDir: '../' }
-        )
+        const res = runScript(['test', 'git add'], ['test.js'], packageJSON, { gitDir: '../' })
         let taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual([
+            'npm',
+            ['run', '--silent', 'test', '--', 'test.js'],
+            {}
+        ])
 
         taskPromise = res[1].task()
         expect(taskPromise).toBeAPromise()
@@ -140,51 +141,34 @@ describe('runScript', () => {
     })
 
     it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
-        const res = runScript(
-          ['jest'],
-          ['test.js'],
-          packageJSON,
-          { gitDir: '../' }
-        )
+        const res = runScript(['jest'], ['test.js'], packageJSON, { gitDir: '../' })
         const taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-          ['jest', ['test.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual(['jest', ['test.js'], {}])
     })
 
     it('should use --silent in non-verbose mode', async () => {
-        const res = runScript(
-            'test',
-            ['test.js'],
-            packageJSON,
-            { verbose: false }
-        )
+        const res = runScript('test', ['test.js'], packageJSON, { verbose: false })
         const taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual([
+            'npm',
+            ['run', '--silent', 'test', '--', 'test.js'],
+            {}
+        ])
     })
 
     it('should not use --silent in verbose mode', async () => {
-        const res = runScript(
-            'test',
-            ['test.js'],
-            packageJSON,
-            { verbose: true }
-        )
+        const res = runScript('test', ['test.js'], packageJSON, { verbose: true })
         const taskPromise = res[0].task()
         expect(taskPromise).toBeAPromise()
         await taskPromise
         expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', 'test', '--', 'test.js'], {}]
-        )
+        expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', 'test', '--', 'test.js'], {}])
     })
 
     it('should throw error for failed linters', async () => {
@@ -198,9 +182,10 @@ describe('runScript', () => {
         try {
             await taskPromise
         } catch (err) {
-            expect(err.message).toMatch(`🚫 mock-fail-linter found some errors. Please fix them and try committing again.
-${ linteErr.stdout }
-${ linteErr.stderr }`)
+            expect(err.message)
+                .toMatch(`🚫 mock-fail-linter found some errors. Please fix them and try committing again.
+${linteErr.stdout}
+${linteErr.stderr}`)
         }
     })
 })

@@ -13,14 +13,10 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-
     it('should respect concurrency', () => {
-        const res = runScript(
-            ['test'],
-            ['test1.js', 'test2.js'],
-            packageJSON,
-            { config: { chunkSize: 1, subTaskConcurrency: 1 } }
-        )
+        const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
+            config: { chunkSize: 1, subTaskConcurrency: 1 }
+        })
         res[0].task()
         expect(pMap.mock.calls.length).toEqual(1)
         const pMapArgs = pMap.mock.calls[0]
@@ -32,11 +28,7 @@ describe('runScript', () => {
     it('should handle unexpected error', async () => {
         pMap.mockImplementation(() => Promise.reject(new Error('Unexpected Error')))
 
-        const res = runScript(
-            ['test'],
-            ['test.js'],
-            packageJSON
-        )
+        const res = runScript(['test'], ['test.js'], packageJSON)
         try {
             await res[0].task()
         } catch (err) {
@@ -44,5 +36,4 @@ describe('runScript', () => {
 Unexpected Error`)
         }
     })
-
 })
