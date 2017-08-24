@@ -10,7 +10,8 @@ before_script:
   - npm prune
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - npm run semantic-release
+  - npm install -g semantic-release
+  - semantic-release pre && npm publish && semantic-release post
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
