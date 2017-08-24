@@ -11,7 +11,7 @@ const readConfigOption = require('./readConfigOption')
 module.exports = function runScript(commands, pathsToLint, packageJson, options) {
     const config = readConfigOption(options, 'config', {})
 
-    const concurrency = readConfigOption(config, 'subTaskConcurrency', 2)
+    const concurrency = readConfigOption(config, 'subTaskConcurrency', 1)
     const chunkSize = calcChunkSize(
         pathsToLint,
         readConfigOption(config, 'chunkSize', Number.MAX_SAFE_INTEGER)
