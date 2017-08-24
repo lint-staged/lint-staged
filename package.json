@@ -13,6 +13,7 @@
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "remove-lockfiles && node index.js",
     "test": "jest --coverage",
+    "test-watch": "jest --watch",
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
@@ -54,7 +55,7 @@
     "execa": "^0.8.0",
     "listr": "^0.12.0",
     "lodash.chunk": "^4.2.0",
-    "minimatch": "^3.0.0",
+    "multimatch": "^2.1.0",
     "npm-which": "^3.0.1",
     "p-map": "^1.1.1",
     "staged-git-files": "0.0.4"

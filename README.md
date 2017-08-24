@@ -58,7 +58,7 @@ Lint-staged supports simple and advanced config formats.
 
 ### Simple config format
 
-Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
+Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [multimatch](https://github.com/sindresorhus/multimatch) which in turn uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
 
 #### `package.json` example:
 ```json
@@ -113,6 +113,8 @@ It is possible to run linters for certain paths only by using [minimatch](https:
   "src/*.js": "eslint",
   // .js file anywhere within and below the src directory
   "src/**/*.js": "eslint",
+  // .js file anywhere within and below the src directory excluding src/somefolder. The %,% splits the string into an array passed to multimatch.
+  "src/**/*.js%,%!src/somefolder/*": "eslint",
 }
 ```
 

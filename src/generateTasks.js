@@ -1,6 +1,6 @@
 'use strict'
 
-const minimatch = require('minimatch')
+const multimatch = require('multimatch')
 
 const readConfigOption = require('./readConfigOption')
 
@@ -9,13 +9,13 @@ module.exports = function generateTasks(config, files) {
     const resolve = file => files[file]
     return Object.keys(linters)
         .map((pattern) => {
+            let patternToUse = pattern.split('%,%')
             const commands = linters[pattern]
             const globOptions = readConfigOption(config, 'globOptions', {})
-            const filter = minimatch.filter(pattern, Object.assign({
+            const fileList = multimatch(Object.keys(files), patternToUse, Object.assign({
                 matchBase: true,
                 dot: true
-            }, globOptions))
-            const fileList = Object.keys(files).filter(filter).map(resolve)
+            }, globOptions)).map(resolve)
             return {
                 pattern,
                 commands,
