@@ -5,12 +5,5 @@
         "node": "current"
       }
     }]
-  ],
-  "plugins": [
-    ["transform-runtime", {
-      "helpers": false,
-      "polyfill": false,
-      "regenerator": true
-    }]
   ]
 }
