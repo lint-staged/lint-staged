@@ -11,10 +11,9 @@
  * @returns {*}
  */
 module.exports = function readConfigOption(config, key, defaultValue) {
-    if (typeof config !== 'undefined' && typeof config[key] !== 'undefined') {
-        return config[key]
-    }
+  if (typeof config !== 'undefined' && typeof config[key] !== 'undefined') {
+    return config[key]
+  }
 
-    return defaultValue
+  return defaultValue
 }
-

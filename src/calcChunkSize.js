@@ -26,17 +26,17 @@
  * @returns {number} The chunk size
  */
 module.exports = function calcChunkSize(paths, idealChunkSize) {
-    /* What is the longest file path? */
-    const maxPathLen = paths.reduce(
-        (maxLen, filePath) => Math.max(maxLen, filePath.length),
-        20 // safe initial value
-    )
+  /* What is the longest file path? */
+  const maxPathLen = paths.reduce(
+    (maxLen, filePath) => Math.max(maxLen, filePath.length),
+    20 // safe initial value
+  )
 
-    /* In the worst case scenario, */
-    /* how many files can we process in a single command? */
-    /* For windows systems, command length is limited to 8192 */
-    const maxAllowedChunkSize = Math.floor(8000 / maxPathLen)
+  /* In the worst case scenario, */
+  /* how many files can we process in a single command? */
+  /* For windows systems, command length is limited to 8192 */
+  const maxAllowedChunkSize = Math.floor(8000 / maxPathLen)
 
-    /* Configured chunk size / default - idealChunkSize */
-    return Math.min(paths.length, maxAllowedChunkSize, idealChunkSize)
+  /* Configured chunk size / default - idealChunkSize */
+  return Math.min(paths.length, maxAllowedChunkSize, idealChunkSize)
 }
