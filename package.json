@@ -68,7 +68,7 @@
     "babel-register": "^6.16.3",
     "babel-runtime": "^6.23.0",
     "cz-conventional-changelog": "^1.2.0",
-    "eslint": "^3.9.1",
+    "eslint": "^4.1.0",
     "eslint-config-okonet": "^4.0.0",
     "expect": "^1.20.2",
     "is-promise": "^2.1.0",
