@@ -9,6 +9,7 @@
     "src"
   ],
   "scripts": {
+    "commit": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "remove-lockfiles && node index.js",
@@ -67,7 +68,8 @@
     "babel-preset-env": "^1.4.0",
     "babel-register": "^6.16.3",
     "babel-runtime": "^6.23.0",
-    "cz-conventional-changelog": "^1.2.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.5.0",
     "eslint-config-okonet": "^5.0.1",
     "expect": "^1.20.2",
