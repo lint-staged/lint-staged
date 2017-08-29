@@ -9,6 +9,7 @@
     "src"
   ],
   "scripts": {
+    "commit": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "remove-lockfiles && node index.js",
