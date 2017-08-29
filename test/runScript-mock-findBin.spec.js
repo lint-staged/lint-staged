@@ -38,7 +38,7 @@ const packageJSON = {
   'lint-staged': {}
 }
 
-describe.only('runScript with absolute paths', () => {
+describe('runScript with absolute paths', () => {
   beforeEach(() => {
     mockFn.mockReset()
     mockFn.mockImplementation(() => Promise.resolve(true))
