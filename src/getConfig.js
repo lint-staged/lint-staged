@@ -1,10 +1,13 @@
 /* eslint no-console: 0 */
-const intersection = require('lodash/intersection')
+const { intersection, merge } = require('lodash')
 
 const defaultConfig = {
   concurrent: true,
   gitDir: '.',
-  globOptions: {},
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
   linters: {},
   renderer: 'update',
   verbose: false
@@ -29,13 +32,13 @@ module.exports = function getConfig(config) {
     !('linters' in config) &&
     intersection(Object.keys(defaultConfig), Object.keys(config)).length === 0
   ) {
-    return Object.assign(defaultConfig, {
+    return merge(defaultConfig, {
       linters: config
     })
   }
   // Output config in verbose mode
   // if (verbose) console.log(completeConfig)
-  return Object.assign(defaultConfig, config, {
+  return merge(defaultConfig, config, {
     renderer: config.verbose ? 'verbose' : 'update'
   })
 }

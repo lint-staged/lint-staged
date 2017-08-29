@@ -139,6 +139,24 @@ describe('getConfig', () => {
     ).toMatchSnapshot()
   })
 
+  it('should deeply merge configs', () => {
+    expect(
+      getConfig({
+        globOptions: {
+          nocase: true
+        }
+      })
+    ).toEqual(
+      expect.objectContaining({
+        globOptions: {
+          nocase: true,
+          matchBase: true,
+          dot: true
+        }
+      })
+    )
+  })
+
   xit('should output config to stdout in verbose mode', () => {
     const stdout = []
     console.log = jest.fn().mockImplementation(input => {

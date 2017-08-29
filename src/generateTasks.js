@@ -9,16 +9,7 @@ module.exports = function generateTasks(config, files) {
   const { linters, gitDir, globOptions } = getConfig(config) // Ensure we have a normalized config
   return Object.keys(linters).map(pattern => {
     const commands = linters[pattern]
-    const filter = minimatch.filter(
-      pattern,
-      Object.assign(
-        {
-          matchBase: true,
-          dot: true
-        },
-        globOptions
-      )
-    )
+    const filter = minimatch.filter(pattern, globOptions)
     const fileList = files
       // We want to filter before resolving paths
       .filter(filter)
