@@ -2,15 +2,8 @@
   "presets": [
     ["env", {
       "targets": {
-        "node": "current"
+        "node": 4
       }
-    }]
-  ],
-  "plugins": [
-    ["transform-runtime", {
-      "helpers": false,
-      "polyfill": false,
-      "regenerator": true
     }]
   ]
 }
