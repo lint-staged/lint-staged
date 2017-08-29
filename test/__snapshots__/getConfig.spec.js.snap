@@ -4,6 +4,7 @@ exports[`getConfig should return config with defaults 1`] = `
 Object {
   "concurrent": true,
   "gitDir": ".",
+  "globOptions": Object {},
   "linters": Object {},
   "renderer": "update",
   "verbose": false,
@@ -14,6 +15,7 @@ exports[`getConfig should set linters 1`] = `
 Object {
   "concurrent": true,
   "gitDir": "..",
+  "globOptions": Object {},
   "linters": Object {
     "*.js": Array [
       "eslint --fix",
