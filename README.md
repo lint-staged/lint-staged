@@ -38,6 +38,12 @@ See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
 
+> **NOTE:**
+>
+> If you're using commitizen and having following npm-script `{ commit: git-cz }`, `precommit` hook will run twice before commitizen cli and after the commit. [This buggy behaviour is introduced by husky](https://github.com/okonet/lint-staged/issues/152#issuecomment-306046520).
+>
+> To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
+
 ## Configuration
 
 Starting with v3.1 you can now use different ways of configuring it:
@@ -70,7 +76,7 @@ Should be an object where each value is a command to run and its key is a glob p
 
 ```json
 {
-	"*": "my-task"
+  "*": "my-task"
 }
 ```
 
@@ -88,7 +94,10 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+* `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
+* `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
 * `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
+* `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
 
 ## Filtering files
 
@@ -96,14 +105,14 @@ It is possible to run linters for certain paths only by using [minimatch](https:
 
 ```js
 {
-	// .js files anywhere in the project
-	"*.js": "eslint",
-	// .js files anywhere in the project
-	"**/*.js": "eslint",
-	// .js file in the src directory
-	"src/*.js": "eslint",
-	// .js file anywhere within and below the src directory
-	"src/**/*.js": "eslint",
+  // .js files anywhere in the project
+  "*.js": "eslint",
+  // .js files anywhere in the project
+  "**/*.js": "eslint",
+  // .js file in the src directory
+  "src/*.js": "eslint",
+  // .js file anywhere within and below the src directory
+  "src/**/*.js": "eslint",
 }
 ```
 
@@ -117,7 +126,7 @@ Supported are both local npm scripts (`npm run-script`), or any executables inst
 
 ```json
 {
-	"*.js": "eslint --fix"
+  "*.js": "eslint --fix"
 }
 ```
 
@@ -127,11 +136,11 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
 
 ## Reformatting the code
 
-Tools like ESLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
-	"*.js": ["eslint --fix", "git add"]
+  "*.js": ["eslint --fix", "git add"]
 }
 ```
 
@@ -171,7 +180,7 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 
 ```json
 {
-	"*.{js,jsx}": "eslint"
+  "*.{js,jsx}": "eslint"
 }
 ```
 
@@ -179,18 +188,34 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 
 ```json
 {
-	"*.js": ["eslint --fix", "git add"]
+  "*.js": ["eslint --fix", "git add"]
 }
 ```
 
 This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
 
+
+### Automatically fix code style with `prettier` for javascript + flow or typescript
+
+```json
+{
+  "*.{js,jsx}": ["prettier --parser flow --write", "git add"]
+}
+```
+
+```json
+{
+  "*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
+}
+```
+
+
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
 
 ```json
 {
-	"*.css": "stylelint",
-	"*.scss": "stylelint --syntax=scss"
+  "*.css": "stylelint",
+  "*.scss": "stylelint --syntax=scss"
 }
 ```
 
@@ -198,7 +223,7 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
+  "*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
 }
 ```
 
@@ -206,10 +231,10 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
 ```json
 {
-	"*.scss": [
-	  "postcss --config path/to/your/config --replace",
-	  "stylelint",
-	  "git add"
-	]
+  "*.scss": [
+    "postcss --config path/to/your/config --replace",
+    "stylelint",
+    "git add"
+  ]
 }
 ```

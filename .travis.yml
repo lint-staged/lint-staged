@@ -1,16 +1,13 @@
 language: node_js
-cache:
-  directories:
-    - node_modules
 node_js:
-  - '7'
+  - '8'
   - '6'
   - '4'
-before_script:
-  - npm prune
+before_install: if [[ `npm -v` < 3* ]]; then npm i -g npm@^3; fi
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - npm run semantic-release
+  - npm install -g semantic-release
+  - semantic-release pre && npm publish && semantic-release post
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
