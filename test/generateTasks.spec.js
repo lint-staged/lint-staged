@@ -87,12 +87,13 @@ describe('generateTasks', () => {
 
   it('should match pattern "*.js" for relative path', () => {
     const relPath = path.resolve(path.join(process.cwd(), '..'))
-    const result = generateTasks(
-      Object.assign(config, {
-        gitDir: '..'
-      }),
-      files
-    )
+    const localConfig = {
+      gitDir: '..',
+      linters: {
+        '*.js': 'root-js'
+      }
+    }
+    const result = generateTasks(localConfig, files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
