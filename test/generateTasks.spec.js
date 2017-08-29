@@ -76,13 +76,13 @@ describe('generateTasks', () => {
 
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
-    for (const task of result) {
+    result.forEach(task => {
       if (task.commands === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
         expect(task.fileList.length).toNotEqual(0)
       }
-    }
+    })
   })
 
   it('should match pattern "*.js" for relative path', () => {
