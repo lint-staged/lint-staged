@@ -46,7 +46,6 @@ describe.only('runScript with absolute paths', () => {
 
   it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
     const res = runScript(['git add'], ['test.js'], packageJSON, { gitDir: '../' })
-
     const taskPromise = res[0].task()
     expect(taskPromise).toBeAPromise()
     await taskPromise

@@ -80,7 +80,7 @@ describe('generateTasks', () => {
       if (task.commands === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
-        expect(task.fileList.length).toNotEqual(0)
+        expect(task.fileList.length).not.toEqual(0)
       }
     })
   })
@@ -183,6 +183,7 @@ describe('generateTasks', () => {
   it('should support globOptions specified in advanced configuration', () => {
     const result = generateTasks(
       {
+        gitDir: '/root',
         globOptions: {
           matchBase: false,
           nocase: true
