@@ -6,7 +6,7 @@ import runAll from '../src/runAll'
 let stdout = ''
 console.log = jest.fn(input => {
   // eslint-disable-next-line prefer-template
-  stdout += JSON.stringify(stripColors(input)).replace(/\[\d\d:\d\d:\d\d\]\W/, '') + '\n'
+  stdout += stripColors(input).replace(/\[\d\d:\d\d:\d\d\]\W/, '') + '\n'
   return stdout
 })
 
@@ -16,12 +16,13 @@ const packageJson = {
   }
 }
 
-describe.skip('runAll', () => {
+describe('runAll', () => {
   beforeEach(() => {
+    process.stdout.isTTY = false // Overwrite TTY mode in order for Listr to use verbose renderer
     stdout = ''
   })
 
-  it('should skip all tasks if there are no staged files', done => {
+  it('should ouput config in verbose mode', done => {
     const config = {
       verbose: true,
       linters: {
@@ -35,7 +36,7 @@ describe.skip('runAll', () => {
     })
   })
 
-  it('should run tasks on staged files', done => {
+  it('should not output config in non verbose mode', done => {
     const config = {
       '*': 'mytask'
     }

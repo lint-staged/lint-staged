@@ -5,6 +5,7 @@
 
 const sgf = require('staged-git-files')
 const Listr = require('listr')
+const stringifyObject = require('stringify-object')
 const getConfig = require('./getConfig')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
@@ -16,9 +17,11 @@ module.exports = function runAll(packageJson, originalConfig) {
   sgf.cwd = resolveGitDir(gitDir)
 
   if (verbose) {
-    console.log('Running lint-staged with the following config:\n')
-    console.log(config)
-    console.log('\n')
+    console.log(`
+Running lint-staged with the following config:
+${stringifyObject(config)}
+
+`)
   }
 
   return new Promise((resolve, reject) => {
@@ -47,11 +50,14 @@ module.exports = function runAll(packageJson, originalConfig) {
       }))
 
       if (tasks.length) {
-        new Listr(tasks, {
-          concurrent,
-          renderer,
-          exitOnError: !concurrent // Wait for all errors when running concurrently
-        })
+        new Listr(
+          tasks,
+          Object.assign({}, config, {
+            concurrent,
+            renderer,
+            exitOnError: !concurrent // Wait for all errors when running concurrently
+          })
+        )
           .run()
           .then(() => {
             resolve()
