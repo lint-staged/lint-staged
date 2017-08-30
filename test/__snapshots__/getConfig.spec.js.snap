@@ -2,6 +2,7 @@
 
 exports[`getConfig should return config with defaults 1`] = `
 Object {
+  "chunkSize": 9007199254740991,
   "concurrent": true,
   "gitDir": ".",
   "globOptions": Object {
@@ -10,14 +11,32 @@ Object {
   },
   "linters": Object {},
   "renderer": "update",
+  "subTaskConcurrency": 1,
+  "verbose": false,
+}
+`;
+
+exports[`getConfig should return config with defaults for undefined 1`] = `
+Object {
+  "chunkSize": 9007199254740991,
+  "concurrent": true,
+  "gitDir": ".",
+  "globOptions": Object {
+    "dot": true,
+    "matchBase": true,
+  },
+  "linters": Object {},
+  "renderer": "update",
+  "subTaskConcurrency": 1,
   "verbose": false,
 }
 `;
 
 exports[`getConfig should set linters 1`] = `
 Object {
+  "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": "..",
+  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -30,6 +49,7 @@ Object {
     ".*rc": "jsonlint",
   },
   "renderer": "update",
-  "verbose": true,
+  "subTaskConcurrency": 1,
+  "verbose": false,
 }
 `;

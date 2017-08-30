@@ -4,6 +4,10 @@ import stripColors from 'strip-ansi'
 import getConfig from '../src/getConfig'
 
 describe('getConfig', () => {
+  it('should return config with defaults for undefined', () => {
+    expect(getConfig()).toMatchSnapshot()
+  })
+
   it('should return config with defaults', () => {
     expect(getConfig({})).toMatchSnapshot()
   })
@@ -73,6 +77,16 @@ describe('getConfig', () => {
 
     expect(
       getConfig({
+        '*.js': ['eslint', 'git add']
+      })
+    ).toEqual(
+      expect.objectContaining({
+        renderer: 'update'
+      })
+    )
+
+    expect(
+      getConfig({
         verbose: false
       })
     ).toEqual(
@@ -101,16 +115,22 @@ describe('getConfig', () => {
 
     expect(
       getConfig({
-        gitDir: '..'
+        gitDir: '../path'
       })
     ).toEqual(
       expect.objectContaining({
-        gitDir: '..'
+        gitDir: '../path'
       })
     )
   })
 
   it('should set linters', () => {
+    expect(getConfig()).toEqual(
+      expect.objectContaining({
+        linters: {}
+      })
+    )
+
     expect(getConfig({})).toEqual(
       expect.objectContaining({
         linters: {}
@@ -155,6 +175,25 @@ describe('getConfig', () => {
         }
       })
     )
+  })
+
+  it('should not change config if the whole config was passed', () => {
+    const src = {
+      concurrent: false,
+      chunkSize: 2,
+      gitDir: '/to',
+      globOptions: {
+        matchBase: false,
+        dot: true
+      },
+      linters: {
+        '*.js': 'eslint'
+      },
+      subTaskConcurrency: 10,
+      renderer: 'custom',
+      verbose: true
+    }
+    expect(getConfig(src)).toEqual(src)
   })
 
   xit('should output config to stdout in verbose mode', () => {
