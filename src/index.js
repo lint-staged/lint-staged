@@ -1,4 +1,3 @@
-/* global process */
 /* eslint no-console: 0 */
 /* eslint no-process-exit: 0 */
 
