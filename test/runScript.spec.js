@@ -68,7 +68,7 @@ describe('runScript', () => {
 
   it('should respect chunk size', async () => {
     const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
-      config: { chunkSize: 1 }
+      chunkSize: 1
     })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeAPromise()

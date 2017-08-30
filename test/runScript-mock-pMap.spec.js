@@ -15,7 +15,8 @@ const packageJSON = {
 describe('runScript', () => {
   it('should respect concurrency', () => {
     const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
-      config: { chunkSize: 1, subTaskConcurrency: 1 }
+      chunkSize: 1,
+      subTaskConcurrency: 1
     })
     res[0].task()
     expect(pMap.mock.calls.length).toEqual(1)

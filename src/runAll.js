@@ -32,7 +32,7 @@ module.exports = function runAll(packageJson, originalConfig) {
       const tasks = generateTasks(config, filenames).map(task => ({
         title: `Running tasks for ${task.pattern}`,
         task: () =>
-          new Listr(runScript(task.commands, task.fileList, packageJson, { gitDir, verbose }), {
+          new Listr(runScript(task.commands, task.fileList, packageJson, config), {
             // In sub-tasks we don't want to run concurrently
             // and we want to abort on errors
             concurrent: false,
