@@ -8,7 +8,10 @@ const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 
 module.exports = function runScript(commands, pathsToLint, packageJson, config) {
-  const { subTaskConcurrency, chunkSize, gitDir } = getConfig(config)
+  const normalizedConfig = getConfig(config)
+  const chunkSize = normalizedConfig.chunkSize
+  const concurrency = normalizedConfig.subTaskConcurrency
+  const gitDir = normalizedConfig.gitDir
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
@@ -41,7 +44,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
           )
         }
 
-        return pMap(filePathChunks, mapper, { concurrency: subTaskConcurrency })
+        return pMap(filePathChunks, mapper, { concurrency })
           .catch(err => {
             /* This will probably never be called. But just in case.. */
             throw new Error(`🚫 ${linter} got an unexpected error.

@@ -1,6 +1,8 @@
 /* eslint no-console: 0 */
 /* eslint no-prototype-builtins: 0 */
-const { intersection, defaultsDeep, isObject } = require('lodash')
+const intersection = require('lodash/intersection')
+const defaultsDeep = require('lodash/defaultsDeep')
+const isObject = require('lodash/isObject')
 
 /**
  * Default config object
@@ -30,7 +32,7 @@ const defaultConfig = {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *   concurrent: boolean, gitDir: string, linters: Object, renderer: string, verbose: boolean
+ *  concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
  * }}
  */
 module.exports = function getConfig(sourceConfig) {

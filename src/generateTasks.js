@@ -6,7 +6,10 @@ const getConfig = require('./getConfig')
 const resolveGitDir = require('./resolveGitDir')
 
 module.exports = function generateTasks(config, files) {
-  const { linters, gitDir, globOptions } = getConfig(config) // Ensure we have a normalized config
+  const normalizedConfig = getConfig(config) // Ensure we have a normalized config
+  const linters = normalizedConfig.linters
+  const gitDir = normalizedConfig.gitDir
+  const globOptions = normalizedConfig.globOptions
   return Object.keys(linters).map(pattern => {
     const commands = linters[pattern]
     const filter = minimatch.filter(pattern, globOptions)

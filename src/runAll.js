@@ -1,4 +1,3 @@
-/* global process */
 /* eslint no-console: 0 */
 
 'use strict'
@@ -13,7 +12,10 @@ const resolveGitDir = require('./resolveGitDir')
 
 module.exports = function runAll(packageJson, originalConfig) {
   const config = getConfig(originalConfig)
-  const { gitDir, verbose, concurrent, renderer } = config
+  const gitDir = config.gitDir
+  const verbose = config.verbose
+  const concurrent = config.concurrent
+  const renderer = config.renderer
   sgf.cwd = resolveGitDir(gitDir)
 
   if (verbose) {
@@ -70,7 +72,6 @@ ${stringifyObject(config)}
             } else {
               console.log(error.message)
             }
-            process.exit(1)
             reject()
           })
       }
