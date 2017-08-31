@@ -1,5 +1,3 @@
-/* eslint no-console: 0 */
-
 'use strict'
 
 const sgf = require('staged-git-files')
@@ -19,6 +17,8 @@ module.exports = function runAll(packageJson, originalConfig) {
   sgf.cwd = resolveGitDir(gitDir)
 
   if (verbose) {
+    // TODO: Remove config resolution and logging
+    // eslint-disable-next-line
     console.log(`
 Running lint-staged with the following config:
 ${stringifyObject(config)}
@@ -29,7 +29,7 @@ ${stringifyObject(config)}
   return new Promise((resolve, reject) => {
     sgf('ACM', (err, files) => {
       if (err) {
-        console.error(err)
+        reject(err)
       }
 
       /* files is an Object{ filename: String, status: String } */
@@ -61,19 +61,8 @@ ${stringifyObject(config)}
           })
         )
           .run()
-          .then(() => {
-            resolve()
-          })
-          .catch(error => {
-            if (Array.isArray(error.errors)) {
-              error.errors.forEach(lintError => {
-                console.error(lintError.message)
-              })
-            } else {
-              console.log(error.message)
-            }
-            reject()
-          })
+          .then(resolve)
+          .catch(reject)
       }
     })
   })
