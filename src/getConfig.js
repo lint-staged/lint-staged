@@ -45,7 +45,7 @@ module.exports = function getConfig(sourceConfig) {
     !sourceConfig.hasOwnProperty('linters') &&
     intersection(Object.keys(defaultConfig), Object.keys(sourceConfig)).length === 0
   ) {
-    // and set `linters` explicetly
+    // and set `linters` explicitly
     config.linters = sourceConfig
   }
 
