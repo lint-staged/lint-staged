@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`printErrors should print Listr nested errors 1`] = `
+"
+ERROR Foo failed
+ERROR Unicorn failed"
+`;
+
+exports[`printErrors should print plain errors 1`] = `
+"
+ERROR We have a problem"
+`;
