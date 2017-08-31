@@ -1,6 +1,6 @@
 'use strict'
 
-const chunk = require('lodash.chunk')
+const chunk = require('lodash/chunk')
 const execa = require('execa')
 const pMap = require('p-map')
 const getConfig = require('./getConfig')
