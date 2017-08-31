@@ -24,6 +24,20 @@ const defaultConfig = {
 }
 
 /**
+ * Check if the config is "simple" i.e. doesn't contains any of full config keys
+ *
+ * @param config
+ * @returns {boolean}
+ */
+function isSimple(config) {
+  return (
+    isObject(config) &&
+    !config.hasOwnProperty('linters') &&
+    intersection(Object.keys(defaultConfig), Object.keys(config)).length === 0
+  )
+}
+
+/**
  * For a given configuration object that we retrive from .lintstagedrc or package.json
  * construct a full configuration with all options set.
  *
@@ -36,26 +50,16 @@ const defaultConfig = {
  * }}
  */
 module.exports = function getConfig(sourceConfig) {
-  // Do not mutate sourceConfig!!!
-  const config = defaultsDeep({}, sourceConfig, defaultConfig)
-
-  // Check if the config is "simple" i.e. doesn't contains any of full config keys
-  if (
-    isObject(sourceConfig) &&
-    !sourceConfig.hasOwnProperty('linters') &&
-    intersection(Object.keys(defaultConfig), Object.keys(sourceConfig)).length === 0
-  ) {
-    // and set `linters` explicitly
-    config.linters = sourceConfig
-  }
+  const config = defaultsDeep(
+    {}, // Do not mutate sourceConfig!!!
+    isSimple(sourceConfig) ? { linters: sourceConfig } : sourceConfig,
+    defaultConfig
+  )
 
   // Check if renderer is set in sourceConfig and if not, set accordingly to verbose
   if (isObject(sourceConfig) && !sourceConfig.hasOwnProperty('renderer')) {
     config.renderer = config.verbose ? 'verbose' : 'update'
   }
-
-  // Output config in verbose mode
-  // if (verbose) console.log(completeConfig)
 
   return config
 }

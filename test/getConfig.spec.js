@@ -177,6 +177,18 @@ describe('getConfig', () => {
     )
   })
 
+  it('should not add plain linters object to the full config', () => {
+    expect(
+      getConfig({
+        '*.js': 'eslint'
+      })
+    ).not.toEqual(
+      expect.objectContaining({
+        '*.js': 'eslint'
+      })
+    )
+  })
+
   it('should not change config if the whole config was passed', () => {
     const src = {
       concurrent: false,
