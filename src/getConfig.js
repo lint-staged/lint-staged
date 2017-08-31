@@ -24,7 +24,7 @@ const defaultConfig = {
 }
 
 /**
- * For a given configuration object that we retrive from .lintstagedrc or pacakge.json
+ * For a given configuration object that we retrive from .lintstagedrc or package.json
  * construct a full configuration with all options set.
  *
  * This is a bit tricky since we support 2 different syntxes: simple and full
