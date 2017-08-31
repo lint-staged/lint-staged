@@ -40,9 +40,7 @@ describe('runScript with absolute paths', () => {
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
-    expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0][0]).toMatch('/usr/local/bin/git')
-    expect(mockFn.mock.calls[0][1]).toEqual(['add', 'test.js'])
-    expect(mockFn.mock.calls[0][2]).toEqual({ cwd: '../' })
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).toHaveBeenCalledWith('/usr/local/bin/git', ['add', 'test.js'], { cwd: '../' })
   })
 })

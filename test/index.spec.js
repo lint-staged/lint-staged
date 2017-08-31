@@ -3,10 +3,10 @@
 /* eslint no-global-assign: 0 */
 
 import { makeConsoleMock } from 'consolemock'
+import cosmiconfig from 'cosmiconfig'
 import lintStaged from '../src/index'
 
-jest.mock('cosmiconfig', () => jest.fn(() => Promise.resolve({ config: { verbose: true } })))
-const cosmiconfig = require('cosmiconfig')
+jest.mock('cosmiconfig')
 
 describe('lintStaged', () => {
   beforeEach(() => {

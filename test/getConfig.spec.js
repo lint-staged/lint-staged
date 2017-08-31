@@ -1,6 +1,5 @@
 /* eslint no-console: 0 */
 
-import stripColors from 'strip-ansi'
 import getConfig from '../src/getConfig'
 
 describe('getConfig', () => {
@@ -206,15 +205,5 @@ describe('getConfig', () => {
       verbose: true
     }
     expect(getConfig(src)).toEqual(src)
-  })
-
-  xit('should output config to stdout in verbose mode', () => {
-    const stdout = []
-    console.log = jest.fn().mockImplementation(input => {
-      stdout.push(JSON.stringify(stripColors(input)))
-    })
-    getConfig({ verbose: true })
-    expect(console.log).toHaveBeenCalledTimes(1)
-    expect(stdout).toMatchSnapshot()
   })
 })
