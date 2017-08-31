@@ -2,7 +2,6 @@
 
 const sgf = require('staged-git-files')
 const Listr = require('listr')
-const stringifyObject = require('stringify-object')
 const getConfig = require('./getConfig')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
@@ -11,20 +10,9 @@ const resolveGitDir = require('./resolveGitDir')
 module.exports = function runAll(packageJson, originalConfig) {
   const config = getConfig(originalConfig)
   const gitDir = config.gitDir
-  const verbose = config.verbose
   const concurrent = config.concurrent
   const renderer = config.renderer
   sgf.cwd = resolveGitDir(gitDir)
-
-  if (verbose) {
-    // TODO: Remove config resolution and logging
-    // eslint-disable-next-line
-    console.log(`
-Running lint-staged with the following config:
-${stringifyObject(config)}
-
-`)
-  }
 
   return new Promise((resolve, reject) => {
     sgf('ACM', (err, files) => {
@@ -63,6 +51,8 @@ ${stringifyObject(config)}
           .run()
           .then(resolve)
           .catch(reject)
+      } else {
+        resolve('No tasks to run.')
       }
     })
   })
