@@ -1,4 +1,3 @@
-import expect from 'expect'
 import pMap from 'p-map'
 import runScript from '../src/runScript'
 
@@ -22,7 +21,7 @@ describe('runScript', () => {
     expect(pMap.mock.calls.length).toEqual(1)
     const pMapArgs = pMap.mock.calls[0]
     expect(pMapArgs[0]).toEqual([['test1.js'], ['test2.js']])
-    expect(pMapArgs[1]).toBeA('function')
+    expect(pMapArgs[1]).toBeInstanceOf(Function)
     expect(pMapArgs[2]).toEqual({ concurrency: 1 })
   })
 

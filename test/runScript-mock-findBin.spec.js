@@ -2,8 +2,6 @@
 // `jest.mock` gets hoisted, but even with `jest.doMock` it wasn't working
 /* eslint no-underscore-dangle: 0 */
 
-import expect from 'expect'
-import isPromise from 'is-promise'
 import mockFn from 'execa'
 import runScript from '../src/runScript'
 
@@ -23,13 +21,6 @@ jest.mock(
   { virtual: true }
 )
 
-expect.extend({
-  toBeAPromise() {
-    expect.assert(isPromise(this.actual), 'expected %s to be a Promise', this.actual)
-    return this
-  }
-})
-
 const packageJSON = {
   scripts: {
     test: 'noop',
@@ -47,7 +38,7 @@ describe('runScript with absolute paths', () => {
   it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
     const res = runScript(['git add'], ['test.js'], packageJSON, { gitDir: '../' })
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0][0]).toMatch('/usr/local/bin/git')
