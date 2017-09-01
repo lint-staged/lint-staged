@@ -10,7 +10,6 @@ jest.mock('cosmiconfig')
 
 describe('lintStaged', () => {
   beforeEach(() => {
-    process.stdout.isTTY = false // Overwrite TTY mode to always render without ansi
     console = makeConsoleMock()
   })
 

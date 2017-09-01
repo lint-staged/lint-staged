@@ -23,7 +23,8 @@
   },
   "pre-commit": "pre-commit",
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": ["./testSetup.js"]
   },
   "greenkeeper": {
     "ignore": [
