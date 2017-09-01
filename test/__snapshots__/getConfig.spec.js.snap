@@ -1,5 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`getConfig config validation should not throw and print nothing for valid config 1`] = `""`;
+
+exports[`getConfig config validation should not throw and print validation warnings for mixed config 1`] = `
+"
+WARN [33m[1m[1m●[1m Validation Warning[22m:
+
+
+  Unknown option [1m\\"*.js\\"[22m with value [1m['eslint --fix', 'git add'][22m was found in the config root.
+  
+  You probably trying to mix simple and advanced config formats. 
+  
+  Adding 
+  
+  [1m\\"linters\\": {[22m
+[1m    \\"*.js\\": ['eslint --fix', 'git add'][22m
+[1m  }[22m
+   
+  will fix it and remove this message.
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...[39m"
+`;
+
+exports[`getConfig config validation should throw and print validation errors for invalid config 1`] = `
+"[31m[1m[1m●[1m Validation Error[22m:
+
+  Option [1m\\"chunkSize\\"[22m must be of type:
+    [1m[32mnumber[31m[22m
+  but instead received:
+    [1m[31mstring[31m[22m
+
+  Example:
+  {
+    [1m\\"chunkSize\\"[22m: [1m9007199254740991[22m
+  }
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...[39m"
+`;
+
 exports[`getConfig should return config with defaults 1`] = `
 Object {
   "chunkSize": 9007199254740991,

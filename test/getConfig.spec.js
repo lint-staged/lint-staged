@@ -1,5 +1,6 @@
 /* eslint no-console: 0 */
 
+import { makeConsoleMock } from 'consolemock'
 import getConfig from '../src/getConfig'
 
 describe('getConfig', () => {
@@ -205,5 +206,37 @@ describe('getConfig', () => {
       verbose: true
     }
     expect(getConfig(src)).toEqual(src)
+  })
+
+  describe('config validation', () => {
+    beforeEach(() => {
+      global.console = makeConsoleMock()
+    })
+
+    it('should throw and print validation errors for invalid config', () => {
+      const invalidAdvancedConfig = {
+        foo: false,
+        chunkSize: 'string',
+        gitDir: 111
+      }
+      expect(() => getConfig(invalidAdvancedConfig)).toThrowErrorMatchingSnapshot()
+    })
+
+    it('should not throw and print validation warnings for mixed config', () => {
+      const invalidMixedConfig = {
+        gitDir: './path/to/packagejson/',
+        '*.js': ['eslint --fix', 'git add']
+      }
+      expect(() => getConfig(invalidMixedConfig)).not.toThrow()
+      expect(console.printHistory()).toMatchSnapshot()
+    })
+
+    it('should not throw and print nothing for valid config', () => {
+      const validSimpleConfig = {
+        '*.js': ['eslint --fix', 'git add']
+      }
+      expect(() => getConfig(validSimpleConfig)).not.toThrow()
+      expect(console.printHistory()).toMatchSnapshot()
+    })
   })
 })

@@ -1,8 +1,14 @@
 /* eslint no-console: 0 */
 /* eslint no-prototype-builtins: 0 */
+const chalk = require('chalk')
+const format = require('stringify-object')
 const intersection = require('lodash/intersection')
 const defaultsDeep = require('lodash/defaultsDeep')
 const isObject = require('lodash/isObject')
+const validate = require('jest-validate').validate
+const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
+const logValidationWarning = require('jest-validate/build/utils').logValidationWarning
+const isGlob = require('is-glob')
 
 /**
  * Default config object
@@ -23,6 +29,13 @@ const defaultConfig = {
   verbose: false
 }
 
+const exampleConfig = Object.assign({}, defaultConfig, {
+  linters: {
+    '*.js': ['eslint --fix', 'git add'],
+    '*.css': 'stylelint'
+  }
+})
+
 /**
  * Check if the config is "simple" i.e. doesn't contains any of full config keys
  *
@@ -35,6 +48,43 @@ function isSimple(config) {
     !config.hasOwnProperty('linters') &&
     intersection(Object.keys(defaultConfig), Object.keys(config)).length === 0
   )
+}
+
+/**
+ * Custom jest-validate reporter for unknown options
+ * @param config
+ * @param example
+ * @param option
+ * @param options
+ * @returns {void}
+ */
+function unknownValidationReporter(config, example, option, options) {
+  /**
+   * If the unkonwn property is a glob this is probably
+   * a typical mistake of mixing simple and advanced configs
+   */
+  if (isGlob(option)) {
+    const message = `
+  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
+      format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+    )} was found in the config root.
+  
+  You probably trying to mix simple and advanced config formats. 
+  
+  Adding 
+  
+  ${chalk.bold(`"linters": {
+    "${option}": ${format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY }, '  ')}
+  }`)}
+   
+  will fix it and remove this message.`
+
+    const comment = options.comment
+    const name = (options.title && options.title.warning) || 'WARNING'
+    logValidationWarning(name, message, comment)
+  }
+  // If it is not glob pattern, when use default jest-validate reporter
+  return unknownOptionWarning
 }
 
 /**
@@ -59,6 +109,17 @@ module.exports = function getConfig(sourceConfig) {
   // Check if renderer is set in sourceConfig and if not, set accordingly to verbose
   if (isObject(sourceConfig) && !sourceConfig.hasOwnProperty('renderer')) {
     config.renderer = config.verbose ? 'verbose' : 'update'
+  }
+
+  const validation = validate(config, {
+    exampleConfig,
+    unknown: unknownValidationReporter,
+    comment:
+      'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'
+  })
+
+  if (!validation.isValid) {
+    throw new Error('lint-staged config is invalid... Aborting.')
   }
 
   return config
