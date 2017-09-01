@@ -210,6 +210,7 @@ describe('getConfig', () => {
 
   describe('config validation', () => {
     beforeEach(() => {
+      process.stdout.isTTY = false // Overwrite TTY mode to always render without ansi
       global.console = makeConsoleMock()
     })
 

@@ -8,6 +8,7 @@ import printErrors from '../src/printErrors'
 
 describe('printErrors', () => {
   beforeEach(() => {
+    process.stdout.isTTY = false // Overwrite TTY mode to always render without ansi
     console = makeConsoleMock()
   })
   it('should print plain errors', () => {
