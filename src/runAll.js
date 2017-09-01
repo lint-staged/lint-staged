@@ -2,13 +2,22 @@
 
 const sgf = require('staged-git-files')
 const Listr = require('listr')
-const getConfig = require('./getConfig')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
 
-module.exports = function runAll(packageJson, originalConfig) {
-  const config = getConfig(originalConfig)
+/**
+ * Executes all tasks and either resolves or rejects the promise
+ * @param packageJson
+ * @param config
+ * @returns {Promise}
+ */
+module.exports = function runAll(packageJson, config) {
+  // Config validation
+  if (!config || !config.gitDir || !config.concurrent || !config.renderer) {
+    throw new Error('Invalid config provided to runAll! Use getConfig instead.')
+  }
+
   const gitDir = config.gitDir
   const concurrent = config.concurrent
   const renderer = config.renderer
@@ -40,14 +49,11 @@ module.exports = function runAll(packageJson, originalConfig) {
       }))
 
       if (tasks.length) {
-        new Listr(
-          tasks,
-          Object.assign({}, config, {
-            concurrent,
-            renderer,
-            exitOnError: !concurrent // Wait for all errors when running concurrently
-          })
-        )
+        new Listr(tasks, {
+          concurrent,
+          renderer,
+          exitOnError: !concurrent // Wait for all errors when running concurrently
+        })
           .run()
           .then(resolve)
           .catch(reject)

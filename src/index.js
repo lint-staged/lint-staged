@@ -40,7 +40,7 @@ ${stringifyObject(config)}
 `)
       }
 
-      runAll(packageJson, result.config)
+      runAll(packageJson, config)
         .then(() => {
           // No errors, exiting with 0
           process.exitCode = 0
