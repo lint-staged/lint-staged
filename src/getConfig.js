@@ -29,13 +29,6 @@ const defaultConfig = {
   verbose: false
 }
 
-const exampleConfig = Object.assign({}, defaultConfig, {
-  linters: {
-    '*.js': ['eslint --fix', 'git add'],
-    '*.css': 'stylelint'
-  }
-})
-
 /**
  * Check if the config is "simple" i.e. doesn't contains any of full config keys
  *
@@ -99,7 +92,7 @@ function unknownValidationReporter(config, example, option, options) {
  *  concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
  * }}
  */
-module.exports = function getConfig(sourceConfig) {
+function getConfig(sourceConfig) {
   const config = defaultsDeep(
     {}, // Do not mutate sourceConfig!!!
     isSimple(sourceConfig) ? { linters: sourceConfig } : sourceConfig,
@@ -110,6 +103,22 @@ module.exports = function getConfig(sourceConfig) {
   if (isObject(sourceConfig) && !sourceConfig.hasOwnProperty('renderer')) {
     config.renderer = config.verbose ? 'verbose' : 'update'
   }
+
+  return config
+}
+
+/**
+ * Runs config validation. Throws error if the config is not valid.
+ * @param config {Object}
+ * @returns config {Object}
+ */
+function validateConfig(config) {
+  const exampleConfig = Object.assign({}, defaultConfig, {
+    linters: {
+      '*.js': ['eslint --fix', 'git add'],
+      '*.css': 'stylelint'
+    }
+  })
 
   const validation = validate(config, {
     exampleConfig,
@@ -123,4 +132,9 @@ module.exports = function getConfig(sourceConfig) {
   }
 
   return config
+}
+
+module.exports = {
+  getConfig,
+  validateConfig
 }

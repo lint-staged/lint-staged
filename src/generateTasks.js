@@ -2,7 +2,7 @@
 
 const path = require('path')
 const minimatch = require('minimatch')
-const getConfig = require('./getConfig')
+const getConfig = require('./getConfig').getConfig
 const resolveGitDir = require('./resolveGitDir')
 
 module.exports = function generateTasks(config, files) {

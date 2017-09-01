@@ -1,6 +1,6 @@
 /* eslint no-console: 0 */
 
-import getConfig from '../src/getConfig'
+import { getConfig } from '../src/getConfig'
 import runAll from '../src/runAll'
 
 const packageJson = {

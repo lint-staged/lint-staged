@@ -6,7 +6,8 @@
 const appRoot = require('app-root-path')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const getConfig = require('./getConfig')
+const getConfig = require('./getConfig').getConfig
+const validateConfig = require('./getConfig').validateConfig
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
@@ -31,7 +32,7 @@ module.exports = function lintStaged() {
     .then(result => {
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
-      const config = getConfig(result.config)
+      const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {
         console.log(`

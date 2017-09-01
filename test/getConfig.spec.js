@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 
 import { makeConsoleMock } from 'consolemock'
-import getConfig from '../src/getConfig'
+import { getConfig, validateConfig } from '../src/getConfig'
 
 describe('getConfig', () => {
   it('should return config with defaults for undefined', () => {
@@ -207,37 +207,36 @@ describe('getConfig', () => {
     }
     expect(getConfig(src)).toEqual(src)
   })
+})
 
-  describe('config validation', () => {
-    beforeEach(() => {
-      process.stdout.isTTY = false // Overwrite TTY mode to always render without ansi
-      global.console = makeConsoleMock()
-    })
+describe('validateConfig', () => {
+  beforeEach(() => {
+    global.console = makeConsoleMock()
+  })
 
-    it('should throw and print validation errors for invalid config', () => {
-      const invalidAdvancedConfig = {
-        foo: false,
-        chunkSize: 'string',
-        gitDir: 111
-      }
-      expect(() => getConfig(invalidAdvancedConfig)).toThrowErrorMatchingSnapshot()
-    })
+  it('should throw and print validation errors for invalid config', () => {
+    const invalidAdvancedConfig = {
+      foo: false,
+      chunkSize: 'string',
+      gitDir: 111
+    }
+    expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
+  })
 
-    it('should not throw and print validation warnings for mixed config', () => {
-      const invalidMixedConfig = {
-        gitDir: './path/to/packagejson/',
-        '*.js': ['eslint --fix', 'git add']
-      }
-      expect(() => getConfig(invalidMixedConfig)).not.toThrow()
-      expect(console.printHistory()).toMatchSnapshot()
-    })
+  it('should not throw and print validation warnings for mixed config', () => {
+    const invalidMixedConfig = {
+      gitDir: './path/to/packagejson/',
+      '*.js': ['eslint --fix', 'git add']
+    }
+    expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
 
-    it('should not throw and print nothing for valid config', () => {
-      const validSimpleConfig = {
-        '*.js': ['eslint --fix', 'git add']
-      }
-      expect(() => getConfig(validSimpleConfig)).not.toThrow()
-      expect(console.printHistory()).toMatchSnapshot()
-    })
+  it('should not throw and print nothing for valid config', () => {
+    const validSimpleConfig = {
+      '*.js': ['eslint --fix', 'git add']
+    }
+    expect(() => validateConfig(getConfig(validSimpleConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
   })
 })
