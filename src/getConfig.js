@@ -57,8 +57,7 @@ function unknownValidationReporter(config, example, option, options) {
    * a typical mistake of mixing simple and advanced configs
    */
   if (isGlob(option)) {
-    const message = `
-  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
+    const message = `  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
       format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
     )} was found in the config root.
   

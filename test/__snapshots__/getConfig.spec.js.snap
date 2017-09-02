@@ -60,7 +60,6 @@ exports[`validateConfig should not throw and print validation warnings for mixed
 "
 WARN ● Validation Warning:
 
-
   Unknown option \\"*.js\\" with value ['eslint --fix', 'git add'] was found in the config root.
   
   You probably trying to mix simple and advanced config formats. 
