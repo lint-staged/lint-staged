@@ -62,12 +62,13 @@ WARN ● Validation Warning:
 
   Unknown option \\"*.js\\" with value ['eslint --fix', 'git add'] was found in the config root.
   
-  You probably trying to mix simple and advanced config formats. 
-  
-  Adding 
+  You are probably trying to mix simple and advanced config formats. Adding 
   
   \\"linters\\": {
-    \\"*.js\\": ['eslint --fix', 'git add']
+    \\"*.js\\": [
+	    \\"eslint --fix\\",
+	    \\"git add\\"
+]
   }
    
   will fix it and remove this message.

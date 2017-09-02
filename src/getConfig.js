@@ -61,12 +61,10 @@ function unknownValidationReporter(config, example, option, options) {
       format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
     )} was found in the config root.
   
-  You probably trying to mix simple and advanced config formats. 
-  
-  Adding 
+  You are probably trying to mix simple and advanced config formats. Adding 
   
   ${chalk.bold(`"linters": {
-    "${option}": ${format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY }, '  ')}
+    "${option}": ${JSON.stringify(config[option], null, '\t    ')}
   }`)}
    
   will fix it and remove this message.`
