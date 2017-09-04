@@ -1,12 +1,9 @@
 {
   "name": "lint-staged",
   "description": "Lint files staged by git",
-  "main": "index.js",
-  "bin": {
-    "lint-staged": "index.js"
-  },
+  "bin": "index.js",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=4"
   },
   "files": [
     "src"
@@ -33,10 +30,7 @@
       "cosmiconfig"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/okonet/lint-staged.git"
-  },
+  "repository": "https://github.com/okonet/lint-staged",
   "keywords": [
     "lint",
     "git",
@@ -52,10 +46,6 @@
   ],
   "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/okonet/lint-staged/issues"
-  },
-  "homepage": "https://github.com/okonet/lint-staged#readme",
   "dependencies": {
     "app-root-path": "^2.0.0",
     "chalk": "^2.1.0",
