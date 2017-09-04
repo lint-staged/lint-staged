@@ -6,8 +6,8 @@ const intersection = require('lodash/intersection')
 const defaultsDeep = require('lodash/defaultsDeep')
 const isObject = require('lodash/isObject')
 const validate = require('jest-validate').validate
+const logValidationWarning = require('jest-validate').logValidationWarning
 const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
-const logValidationWarning = require('jest-validate/build/utils').logValidationWarning
 const isGlob = require('is-glob')
 
 /**
