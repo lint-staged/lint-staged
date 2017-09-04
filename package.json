@@ -60,7 +60,7 @@
     "cosmiconfig": "^1.1.0",
     "execa": "^0.8.0",
     "is-glob": "^4.0.0",
-    "jest-validate": "^20.0.3",
+    "jest-validate": "^21.0.0",
     "listr": "^0.12.0",
     "lodash": "^4.17.4",
     "minimatch": "^3.0.0",
