@@ -232,9 +232,20 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should not throw and print nothing for valid config', () => {
+  it('should not throw and should print nothing for simple valid config', () => {
     const validSimpleConfig = {
       '*.js': ['eslint --fix', 'git add']
+    }
+    expect(() => validateConfig(getConfig(validSimpleConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for advanced valid config', () => {
+    const validSimpleConfig = {
+      gitDir: '.',
+      linters: {
+        '*.js': ['eslint --fix', 'git add']
+      }
     }
     expect(() => validateConfig(getConfig(validSimpleConfig))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
