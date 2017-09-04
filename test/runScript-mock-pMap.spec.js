@@ -1,4 +1,5 @@
 import pMap from 'p-map'
+import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
 
 jest.mock('p-map', () => jest.fn(() => Promise.resolve(true)))
@@ -32,7 +33,7 @@ describe('runScript', () => {
     try {
       await res[0].task()
     } catch (err) {
-      expect(err.message).toMatch(`🚫 test got an unexpected error.
+      expect(err.message).toMatch(`${logSymbols.error} test got an unexpected error.
 Unexpected Error`)
     }
   })
