@@ -215,7 +215,7 @@ describe('validateConfig', () => {
     global.console = makeConsoleMock()
   })
 
-  it('should throw and print validation errors for invalid config', () => {
+  it('should throw and should print validation errors for invalid config', () => {
     const invalidAdvancedConfig = {
       foo: false,
       chunkSize: 'string',
@@ -224,7 +224,7 @@ describe('validateConfig', () => {
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })
 
-  it('should not throw and print validation warnings for mixed config', () => {
+  it('should not throw and should print validation warnings for mixed config', () => {
     const invalidMixedConfig = {
       gitDir: './path/to/packagejson/',
       '*.js': ['eslint --fix', 'git add']
@@ -242,13 +242,13 @@ describe('validateConfig', () => {
   })
 
   it('should not throw and should print nothing for advanced valid config', () => {
-    const validSimpleConfig = {
+    const validAdvancedConfig = {
       gitDir: '.',
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
     }
-    expect(() => validateConfig(getConfig(validSimpleConfig))).not.toThrow()
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 })
