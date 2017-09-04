@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 
 import { makeConsoleMock } from 'consolemock'
+import { cloneDeep } from 'lodash'
 import { getConfig, validateConfig } from '../src/getConfig'
 
 describe('getConfig', () => {
@@ -205,7 +206,7 @@ describe('getConfig', () => {
       renderer: 'custom',
       verbose: true
     }
-    expect(getConfig(src)).toEqual(src)
+    expect(getConfig(cloneDeep(src))).toEqual(src)
   })
 })
 
