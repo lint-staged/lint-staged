@@ -1,10 +1,13 @@
 {
   "name": "lint-staged",
   "description": "Lint files staged by git",
-  "bin": "index.js",
+  "license": "MIT",
+  "repository": "https://github.com/okonet/lint-staged",
+  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
   "engines": {
     "node": ">=4"
   },
+  "bin": "index.js",
   "files": [
     "src"
   ],
@@ -18,34 +21,6 @@
     "deps": "npm-check -s",
     "deps:update": "npm-check -u"
   },
-  "pre-commit": "pre-commit",
-  "jest": {
-    "testEnvironment": "node",
-    "setupFiles": [
-      "./testSetup.js"
-    ]
-  },
-  "greenkeeper": {
-    "ignore": [
-      "cosmiconfig"
-    ]
-  },
-  "repository": "https://github.com/okonet/lint-staged",
-  "keywords": [
-    "lint",
-    "git",
-    "staged",
-    "javascript",
-    "css",
-    "scss",
-    "sass",
-    "eslint",
-    "stylelint",
-    "code",
-    "quality"
-  ],
-  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
-  "license": "MIT",
   "dependencies": {
     "app-root-path": "^2.0.0",
     "chalk": "^2.1.0",
@@ -85,5 +60,28 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "version": "0.0.0-development"
+  "pre-commit": "pre-commit",
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["./testSetup.js"]
+  },
+  "greenkeeper": {
+    "ignore": [
+      "cosmiconfig"
+    ]
+  },
+  "version": "0.0.0-development",
+  "keywords": [
+    "lint",
+    "git",
+    "staged",
+    "javascript",
+    "css",
+    "scss",
+    "sass",
+    "eslint",
+    "stylelint",
+    "code",
+    "quality"
+  ]
 }
