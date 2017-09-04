@@ -79,7 +79,7 @@
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^5.1.1",
     "jest": "^20.0.4",
-    "jest-cli": "^20.0.4",
+    "jest-cli": "^21.0.0",
     "jsonlint": "^1.6.2",
     "npm-check": "^5.2.2",
     "pre-commit": "^1.1.3",
