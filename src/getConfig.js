@@ -64,17 +64,17 @@ function unknownValidationReporter(config, example, option, options) {
   You are probably trying to mix simple and advanced config formats. Adding 
   
   ${chalk.bold(`"linters": {
-    "${option}": ${JSON.stringify(config[option], null, '\t    ')}
+    "${option}": ${JSON.stringify(config[option])}
   }`)}
    
   will fix it and remove this message.`
 
     const comment = options.comment
     const name = (options.title && options.title.warning) || 'WARNING'
-    logValidationWarning(name, message, comment)
+    return logValidationWarning(name, message, comment)
   }
-  // If it is not glob pattern, when use default jest-validate reporter
-  return unknownOptionWarning
+  // If it is not glob pattern, use default jest-validate reporter
+  return unknownOptionWarning(config, example, option, options)
 }
 
 /**
