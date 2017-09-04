@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runAll should throw when invalid config is provided 1`] = `"Invalid config provided to runAll! Use getConfig instead."`;
+
+exports[`runAll should throw when invalid config is provided 2`] = `"Invalid config provided to runAll! Use getConfig instead."`;

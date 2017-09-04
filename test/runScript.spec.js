@@ -1,18 +1,9 @@
 /* eslint no-underscore-dangle: 0 */
 
-import expect from 'expect'
-import isPromise from 'is-promise'
 import mockFn from 'execa'
 import runScript from '../src/runScript'
 
 jest.mock('execa')
-
-expect.extend({
-  toBeAPromise() {
-    expect.assert(isPromise(this.actual), 'expected %s to be a Promise', this.actual)
-    return this
-  }
-})
 
 const packageJSON = {
   scripts: {
@@ -29,7 +20,7 @@ describe('runScript', () => {
   })
 
   it('should return an array', () => {
-    expect(runScript('test', ['test.js'], packageJSON)).toBeA('array')
+    expect(runScript('test', ['test.js'], packageJSON)).toBeInstanceOf(Array)
   })
 
   it('should throw for non-existend script', () => {
@@ -42,9 +33,9 @@ describe('runScript', () => {
     const res = runScript('test', ['test.js'], packageJSON)
     expect(res.length).toBe(1)
     expect(res[0].title).toBe('test')
-    expect(res[0].task).toBeA('function')
+    expect(res[0].task).toBeInstanceOf(Function)
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
   })
 
@@ -55,12 +46,12 @@ describe('runScript', () => {
     expect(res[1].title).toBe('test2')
 
     let taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
     taskPromise = res[1].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
     expect(mockFn.mock.calls[1]).toEqual(['npm', ['run', '--silent', 'test2', '--', 'test.js'], {}])
@@ -68,10 +59,10 @@ describe('runScript', () => {
 
   it('should respect chunk size', async () => {
     const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
-      config: { chunkSize: 1 }
+      chunkSize: 1
     })
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
     expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test1.js'], {}])
@@ -85,14 +76,14 @@ describe('runScript', () => {
     expect(res[1].title).toBe('git add')
 
     let taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0][0]).toContain('node')
     expect(mockFn.mock.calls[0][1]).toEqual(['--arg=true', './myscript.js', 'test.js'])
 
     taskPromise = res[1].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
     expect(mockFn.mock.calls[1][0]).toContain('git')
@@ -102,13 +93,13 @@ describe('runScript', () => {
   it('should pass cwd to execa if gitDir option is set for non-npm tasks', async () => {
     const res = runScript(['test', 'git add'], ['test.js'], packageJSON, { gitDir: '../' })
     let taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
 
     taskPromise = res[1].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
     expect(mockFn.mock.calls[1][0]).toMatch(/git$/)
@@ -119,7 +110,7 @@ describe('runScript', () => {
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
     const res = runScript(['jest'], ['test.js'], packageJSON, { gitDir: '../' })
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0]).toEqual(['jest', ['test.js'], {}])
@@ -128,7 +119,7 @@ describe('runScript', () => {
   it('should use --silent in non-verbose mode', async () => {
     const res = runScript('test', ['test.js'], packageJSON, { verbose: false })
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
@@ -137,7 +128,7 @@ describe('runScript', () => {
   it('should not use --silent in verbose mode', async () => {
     const res = runScript('test', ['test.js'], packageJSON, { verbose: true })
     const taskPromise = res[0].task()
-    expect(taskPromise).toBeAPromise()
+    expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
     expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', 'test', '--', 'test.js'], {}])

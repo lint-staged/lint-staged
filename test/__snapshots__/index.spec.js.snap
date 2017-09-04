@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lintStaged should not output config in non verbose mode 1`] = `""`;
+
+exports[`lintStaged should ouput config in verbose mode 1`] = `
+"
+LOG 
+Running lint-staged with the following config:
+{
+	verbose: true,
+	linters: {
+		'*': 'mytask'
+	},
+	concurrent: true,
+	chunkSize: 9007199254740991,
+	gitDir: '.',
+	globOptions: {
+		matchBase: true,
+		dot: true
+	},
+	subTaskConcurrency: 1,
+	renderer: 'verbose'
+}
+"
+`;
