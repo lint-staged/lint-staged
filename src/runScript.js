@@ -1,23 +1,19 @@
 'use strict'
 
-const chunk = require('lodash.chunk')
+const chunk = require('lodash/chunk')
 const execa = require('execa')
 const pMap = require('p-map')
-
+const getConfig = require('./getConfig').getConfig
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
-const readConfigOption = require('./readConfigOption')
 
-module.exports = function runScript(commands, pathsToLint, packageJson, options) {
-  const config = readConfigOption(options, 'config', {})
+module.exports = function runScript(commands, pathsToLint, packageJson, config) {
+  const normalizedConfig = getConfig(config)
+  const chunkSize = normalizedConfig.chunkSize
+  const concurrency = normalizedConfig.subTaskConcurrency
+  const gitDir = normalizedConfig.gitDir
 
-  const concurrency = readConfigOption(config, 'subTaskConcurrency', 1)
-  const chunkSize = calcChunkSize(
-    pathsToLint,
-    readConfigOption(config, 'chunkSize', Number.MAX_SAFE_INTEGER)
-  )
-
-  const filePathChunks = chunk(pathsToLint, chunkSize)
+  const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
   const lintersArray = Array.isArray(commands) ? commands : [commands]
 
@@ -25,14 +21,14 @@ module.exports = function runScript(commands, pathsToLint, packageJson, options)
     title: linter,
     task: () => {
       try {
-        const res = findBin(linter, packageJson, options)
+        const res = findBin(linter, packageJson, config)
 
         const separatorArgs = /npm(\.exe)?$/i.test(res.bin) ? ['--'] : []
 
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
         const execaOptions =
-          /git(\.exe)?$/i.test(res.bin) && options && options.gitDir ? { cwd: options.gitDir } : {}
+          /git(\.exe)?$/i.test(res.bin) && config && gitDir ? { cwd: gitDir } : {}
 
         const errors = []
         const mapper = pathsChunk => {
