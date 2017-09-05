@@ -21,8 +21,10 @@ const files = [
   '.hidden/test.txt'
 ]
 
+const workDir = path.join(process.env.HOME, 'tmp-lint-staged')
+
 const config = {
-  gitDir: '/root',
+  gitDir: workDir,
   linters: {
     '*.js': 'root-js',
     '**/*.js': 'any-js',
@@ -98,7 +100,7 @@ describe('generateTasks', () => {
         `${relPath}/deeper/test2.js`,
         `${relPath}/even/deeper/test.js`,
         `${relPath}/.hidden/test.js`
-      ]
+      ].map(path.normalize)
     })
   })
 
@@ -109,12 +111,12 @@ describe('generateTasks', () => {
       pattern: '*.js',
       commands: 'root-js',
       fileList: [
-        '/root/test.js',
-        '/root/deeper/test.js',
-        '/root/deeper/test2.js',
-        '/root/even/deeper/test.js',
-        '/root/.hidden/test.js'
-      ]
+        `${workDir}/test.js`,
+        `${workDir}/deeper/test.js`,
+        `${workDir}/deeper/test2.js`,
+        `${workDir}/even/deeper/test.js`,
+        `${workDir}/.hidden/test.js`
+      ].map(path.normalize)
     })
   })
 
@@ -125,12 +127,12 @@ describe('generateTasks', () => {
       pattern: '**/*.js',
       commands: 'any-js',
       fileList: [
-        '/root/test.js',
-        '/root/deeper/test.js',
-        '/root/deeper/test2.js',
-        '/root/even/deeper/test.js',
-        '/root/.hidden/test.js'
-      ]
+        `${workDir}/test.js`,
+        `${workDir}/deeper/test.js`,
+        `${workDir}/deeper/test2.js`,
+        `${workDir}/even/deeper/test.js`,
+        `${workDir}/.hidden/test.js`
+      ].map(path.normalize)
     })
   })
 
@@ -140,7 +142,7 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: 'deeper/*.js',
       commands: 'deeper-js',
-      fileList: ['/root/deeper/test.js', '/root/deeper/test2.js']
+      fileList: [`${workDir}/deeper/test.js`, `${workDir}/deeper/test2.js`].map(path.normalize)
     })
   })
 
@@ -150,7 +152,7 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: '.hidden/*.js',
       commands: 'hidden-js',
-      fileList: ['/root/.hidden/test.js']
+      fileList: [path.normalize(`${workDir}/.hidden/test.js`)]
     })
   })
 
@@ -161,24 +163,24 @@ describe('generateTasks', () => {
       pattern: '*.{css,js}',
       commands: 'root-css-or-js',
       fileList: [
-        '/root/test.js',
-        '/root/deeper/test.js',
-        '/root/deeper/test2.js',
-        '/root/even/deeper/test.js',
-        '/root/.hidden/test.js',
-        '/root/test.css',
-        '/root/deeper/test.css',
-        '/root/deeper/test2.css',
-        '/root/even/deeper/test.css',
-        '/root/.hidden/test.css'
-      ]
+        `${workDir}/test.js`,
+        `${workDir}/deeper/test.js`,
+        `${workDir}/deeper/test2.js`,
+        `${workDir}/even/deeper/test.js`,
+        `${workDir}/.hidden/test.js`,
+        `${workDir}/test.css`,
+        `${workDir}/deeper/test.css`,
+        `${workDir}/deeper/test2.css`,
+        `${workDir}/even/deeper/test.css`,
+        `${workDir}/.hidden/test.css`
+      ].map(path.normalize)
     })
   })
 
   it('should support globOptions specified in advanced configuration', () => {
     const result = generateTasks(
       {
-        gitDir: '/root',
+        gitDir: workDir,
         globOptions: {
           matchBase: false,
           nocase: true
@@ -193,7 +195,9 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: 'TeSt.*',
       commands: 'lint',
-      fileList: ['/root/test.js', '/root/test.css', '/root/test.txt']
+      fileList: [`${workDir}/test.js`, `${workDir}/test.css`, `${workDir}/test.txt`].map(
+        path.normalize
+      )
     })
   })
 })
