@@ -15,6 +15,13 @@ describe('runAll', () => {
     expect(() => runAll(packageJson)).toThrowErrorMatchingSnapshot()
   })
 
+  it('should not throw when a valid config is provided', () => {
+    const config = getConfig({
+      concurrent: false
+    })
+    expect(() => runAll(packageJson, config)).not.toThrow()
+  })
+
   it('should return a promise', () => {
     expect(runAll(packageJson, getConfig({}))).toBeInstanceOf(Promise)
   })
