@@ -1,5 +1,7 @@
 # lint-staged [![Build Status](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![AppVeyor branch](https://img.shields.io/appveyor/ci/okonet/lint-staged/master.svg)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged)
 
+[![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+
 Run linters against staged git files and don't let :poop: slip into your code base!
 
 ## Why
