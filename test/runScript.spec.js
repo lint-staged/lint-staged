@@ -15,9 +15,8 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-  beforeEach(() => {
-    mockFn.mockReset()
-    mockFn.mockImplementation(() => Promise.resolve(true))
+  afterEach(() => {
+    mockFn.mockClear()
   })
 
   it('should return an array', () => {
@@ -136,10 +135,10 @@ describe('runScript', () => {
   })
 
   it('should throw error for failed linters', async () => {
-    const linteErr = new Error()
-    linteErr.stdout = 'Mock error'
-    linteErr.stderr = ''
-    mockFn.mockImplementation(() => Promise.reject(linteErr))
+    const linterErr = new Error()
+    linterErr.stdout = 'Mock error'
+    linterErr.stderr = ''
+    mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
 
     const res = runScript('mock-fail-linter', ['test.js'], packageJSON)
     const taskPromise = res[0].task()
@@ -148,8 +147,8 @@ describe('runScript', () => {
     } catch (err) {
       expect(err.message)
         .toMatch(`${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
-${linteErr.stdout}
-${linteErr.stderr}`)
+${linterErr.stdout}
+${linterErr.stderr}`)
     }
   })
 })
