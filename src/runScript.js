@@ -1,5 +1,6 @@
 'use strict'
 
+const assign = require('lodash/assign')
 const chunk = require('lodash/chunk')
 const isArray = require('lodash/isArray')
 const map = require('lodash/map')
@@ -37,7 +38,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
           const args = res.args.concat(separatorArgs, pathsChunk)
 
           return (
-            execa(res.bin, args, Object.assign({}, execaOptions))
+            execa(res.bin, args, assign({}, execaOptions))
               /* If we don't catch, pMap will terminate on first rejection */
               /* We want error information of all chunks */
               .catch(err => {
