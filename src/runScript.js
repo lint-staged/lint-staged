@@ -2,6 +2,7 @@
 
 const chunk = require('lodash/chunk')
 const isArray = require('lodash/isArray')
+const map = require('lodash/map')
 const execa = require('execa')
 const pMap = require('p-map')
 const getConfig = require('./getConfig').getConfig
@@ -18,7 +19,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
 
   const lintersArray = isArray(commands) ? commands : [commands]
 
-  return lintersArray.map(linter => ({
+  return map(lintersArray, linter => ({
     title: linter,
     task: () => {
       try {
@@ -54,8 +55,8 @@ ${err.message}`)
           .then(() => {
             if (errors.length === 0) return `✅ ${linter} passed!`
 
-            const errStdout = errors.map(err => err.stdout).join('')
-            const errStderr = errors.map(err => err.stderr).join('')
+            const errStdout = map(errors, 'stdout').join('')
+            const errStderr = map(errors, 'stderr').join('')
 
             throw new Error(`🚫 ${linter} found some errors. Please fix them and try committing again.
 ${errStdout}
