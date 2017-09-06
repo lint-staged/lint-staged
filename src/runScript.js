@@ -1,6 +1,7 @@
 'use strict'
 
 const chunk = require('lodash/chunk')
+const isArray = require('lodash/isArray')
 const execa = require('execa')
 const pMap = require('p-map')
 const getConfig = require('./getConfig').getConfig
@@ -15,7 +16,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
-  const lintersArray = Array.isArray(commands) ? commands : [commands]
+  const lintersArray = isArray(commands) ? commands : [commands]
 
   return lintersArray.map(linter => ({
     title: linter,
