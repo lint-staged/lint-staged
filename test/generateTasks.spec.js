@@ -1,4 +1,5 @@
 import path from 'path'
+import assign from 'lodash/assign'
 import forEach from 'lodash/forEach'
 import map from 'lodash/map'
 import generateTasks from '../src/generateTasks'
@@ -91,7 +92,7 @@ describe('generateTasks', () => {
 
   it('should match pattern "*.js" for relative path', () => {
     const relPath = path.resolve(path.join(process.cwd(), '..'))
-    const result = generateTasks(Object.assign({}, config, { gitDir: '..' }), files)
+    const result = generateTasks(assign({}, config, { gitDir: '..' }), files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
