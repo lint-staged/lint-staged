@@ -1,4 +1,5 @@
 import path from 'path'
+import forEach from 'lodash/forEach'
 import map from 'lodash/map'
 import generateTasks from '../src/generateTasks'
 
@@ -72,14 +73,14 @@ describe('generateTasks', () => {
       },
       files
     )
-    result[0].fileList.forEach(file => {
+    forEach(result[0].fileList, file => {
       expect(path.isAbsolute(file)).toBe(true)
     })
   })
 
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
-    result.forEach(task => {
+    forEach(result, task => {
       if (task.commands === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
