@@ -1,6 +1,7 @@
 'use strict'
 
 const npmWhich = require('npm-which')(process.cwd())
+const compact = require('lodash/compact')
 
 module.exports = function findBin(cmd, packageJson, options) {
   /*
@@ -9,7 +10,7 @@ module.exports = function findBin(cmd, packageJson, options) {
     */
   if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
     // Support for scripts from package.json
-    const args = ['run', options && options.verbose ? undefined : '--silent', cmd].filter(Boolean)
+    const args = compact(['run', options && options.verbose ? undefined : '--silent', cmd])
 
     return { bin: 'npm', args }
   }
