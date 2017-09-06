@@ -2,6 +2,7 @@
 
 const npmWhich = require('npm-which')(process.cwd())
 const compact = require('lodash/compact')
+const split = require('lodash/split')
 
 module.exports = function findBin(cmd, packageJson, options) {
   /*
@@ -33,7 +34,7 @@ module.exports = function findBin(cmd, packageJson, options) {
     *  }
     */
 
-  const parts = cmd.split(' ')
+  const parts = split(cmd, ' ')
   let bin = parts[0]
   const args = parts.splice(1)
 
