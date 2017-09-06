@@ -27,7 +27,7 @@ module.exports = function runAll(packageJson, config) {
   return new Promise((resolve, reject) => {
     sgf('ACM', (err, files) => {
       if (err) {
-        reject(err)
+        return reject(err)
       }
 
       /* files is an Object{ filename: String, status: String } */
@@ -50,7 +50,7 @@ module.exports = function runAll(packageJson, config) {
       }))
 
       if (tasks.length) {
-        new Listr(tasks, {
+        return new Listr(tasks, {
           concurrent,
           renderer,
           exitOnError: !concurrent // Wait for all errors when running concurrently
@@ -58,9 +58,8 @@ module.exports = function runAll(packageJson, config) {
           .run()
           .then(resolve)
           .catch(reject)
-      } else {
-        resolve('No tasks to run.')
       }
+      return resolve('No tasks to run.')
     })
   })
 }
