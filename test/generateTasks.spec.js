@@ -1,4 +1,5 @@
 import path from 'path'
+import map from 'lodash/map'
 import generateTasks from '../src/generateTasks'
 
 const files = [
@@ -43,7 +44,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const commands = map(result, 'commands')
     expect(commands).toEqual(['lint'])
   })
 
@@ -57,7 +58,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const commands = map(result, 'commands')
     expect(commands).toEqual(['lint'])
   })
 
