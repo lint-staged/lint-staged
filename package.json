@@ -24,7 +24,9 @@
   "pre-commit": "pre-commit",
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["./testSetup.js"]
+    "setupFiles": [
+      "./testSetup.js"
+    ]
   },
   "greenkeeper": {
     "ignore": [
@@ -77,6 +79,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.5.0",
     "eslint-config-okonet": "^5.0.1",
+    "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-node": "^5.1.1",
     "jest": "^20.0.4",
     "jest-cli": "^20.0.4",
