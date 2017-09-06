@@ -20,8 +20,9 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "remove-lockfiles && node index.js",
-    "pretest": "npm run lint",
-    "test": "jest --coverage"
+    "test": "jest",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch"
   },
   "dependencies": {
     "app-root-path": "^2.0.0",
