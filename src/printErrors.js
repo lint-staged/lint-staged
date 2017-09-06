@@ -2,9 +2,11 @@
 
 'use strict'
 
+const isArray = require('lodash/isArray')
+
 module.exports = function printErrors(errorInstance) {
-  if (Array.isArray(errorInstance.errors)) {
     errorInstance.errors.forEach(lintError => {
+  if (isArray(errorInstance.errors)) {
       console.error(lintError.message)
     })
   } else {
