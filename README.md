@@ -27,7 +27,7 @@ This project contains a script that will run arbitrary npm and shell tasks with 
       "precommit": "lint-staged"
     },
     "lint-staged": {
-      "*.js": ["eslint --fix", "git add"]
+      "*.js": ["eslint --no-ignore --fix", "git add"]
     }
   }
   ```
