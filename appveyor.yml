@@ -1,3 +1,8 @@
+branches:
+  only:
+    - master
+    - /^greenkeeper/.*$/
+
 environment:
   matrix:
     - nodejs_version: '8'
