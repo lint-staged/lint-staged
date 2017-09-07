@@ -24,7 +24,9 @@
   "pre-commit": "pre-commit",
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["./testSetup.js"]
+    "setupFiles": [
+      "./testSetup.js"
+    ]
   },
   "greenkeeper": {
     "ignore": [
@@ -63,6 +65,7 @@
     "jest-validate": "^21.0.0",
     "listr": "^0.12.0",
     "lodash": "^4.17.4",
+    "log-symbols": "^2.0.0",
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
     "p-map": "^1.1.1",

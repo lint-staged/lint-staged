@@ -18,7 +18,8 @@ describe('resolveGitDir', () => {
     expect(path.isAbsolute(resolveGitDir('..'))).toBe(true)
   })
   it('should resolve to absolute dir from config', () => {
-    expect(resolveGitDir('/path/to/some/dir')).toEqual('/path/to/some/dir')
-    expect(path.isAbsolute(resolveGitDir('/path/to/some/dir'))).toBe(true)
+    const workDir = path.join(process.env.HOME, 'tmp-lint-staged')
+    expect(resolveGitDir(workDir)).toEqual(workDir)
+    expect(path.isAbsolute(resolveGitDir(workDir))).toBe(true)
   })
 })

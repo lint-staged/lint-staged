@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: 0 */
 
 import mockFn from 'execa'
+import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
 
 jest.mock('execa')
@@ -14,9 +15,8 @@ const packageJSON = {
 }
 
 describe('runScript', () => {
-  beforeEach(() => {
-    mockFn.mockReset()
-    mockFn.mockImplementation(() => Promise.resolve(true))
+  afterEach(() => {
+    mockFn.mockClear()
   })
 
   it('should return an array', () => {
@@ -135,10 +135,10 @@ describe('runScript', () => {
   })
 
   it('should throw error for failed linters', async () => {
-    const linteErr = new Error()
-    linteErr.stdout = 'Mock error'
-    linteErr.stderr = ''
-    mockFn.mockImplementation(() => Promise.reject(linteErr))
+    const linterErr = new Error()
+    linterErr.stdout = 'Mock error'
+    linterErr.stderr = ''
+    mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
 
     const res = runScript('mock-fail-linter', ['test.js'], packageJSON)
     const taskPromise = res[0].task()
@@ -146,9 +146,9 @@ describe('runScript', () => {
       await taskPromise
     } catch (err) {
       expect(err.message)
-        .toMatch(`🚫 mock-fail-linter found some errors. Please fix them and try committing again.
-${linteErr.stdout}
-${linteErr.stderr}`)
+        .toMatch(`${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
+${linterErr.stdout}
+${linterErr.stderr}`)
     }
   })
 })

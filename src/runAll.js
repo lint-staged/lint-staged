@@ -2,6 +2,7 @@
 
 const sgf = require('staged-git-files')
 const Listr = require('listr')
+const has = require('lodash/has')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
@@ -9,12 +10,12 @@ const resolveGitDir = require('./resolveGitDir')
 /**
  * Executes all tasks and either resolves or rejects the promise
  * @param packageJson
- * @param config
+ * @param config {Object}
  * @returns {Promise}
  */
 module.exports = function runAll(packageJson, config) {
   // Config validation
-  if (!config || !config.gitDir || !config.concurrent || !config.renderer) {
+  if (!config || !has(config, 'gitDir') || !has(config, 'concurrent') || !has(config, 'renderer')) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 
@@ -26,7 +27,7 @@ module.exports = function runAll(packageJson, config) {
   return new Promise((resolve, reject) => {
     sgf('ACM', (err, files) => {
       if (err) {
-        reject(err)
+        return reject(err)
       }
 
       /* files is an Object{ filename: String, status: String } */
@@ -49,7 +50,7 @@ module.exports = function runAll(packageJson, config) {
       }))
 
       if (tasks.length) {
-        new Listr(tasks, {
+        return new Listr(tasks, {
           concurrent,
           renderer,
           exitOnError: !concurrent // Wait for all errors when running concurrently
@@ -57,9 +58,8 @@ module.exports = function runAll(packageJson, config) {
           .run()
           .then(resolve)
           .catch(reject)
-      } else {
-        resolve('No tasks to run.')
       }
+      return resolve('No tasks to run.')
     })
   })
 }

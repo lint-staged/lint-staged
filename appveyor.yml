@@ -1,19 +1,27 @@
+branches:
+  only:
+    - master
+    - /^greenkeeper/.*$/
+
 environment:
   matrix:
     - nodejs_version: '8'
     - nodejs_version: '6'
     - nodejs_version: '4'
+
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
   - npm install --global npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
-matrix:
-  fast_finish: true
-build: off
-shallow_clone: true
+
+cache:
+  - node_modules
+
 test_script:
   - node --version
   - npm --version
   - npm test
+
+build: off

@@ -6,20 +6,15 @@ import mockFn from 'execa'
 import runScript from '../src/runScript'
 
 jest.mock('execa')
-
 // Mock findBin to return an absolute path
-jest.mock(
-  '../src/findBin',
-  () => commands => {
-    const [bin, ...otherArgs] = commands.split(' ')
+jest.mock('../src/findBin', () => commands => {
+  const [bin, ...otherArgs] = commands.split(' ')
 
-    return {
-      bin: `/usr/local/bin/${bin}`,
-      args: otherArgs
-    }
-  },
-  { virtual: true }
-)
+  return {
+    bin: `/usr/local/bin/${bin}`,
+    args: otherArgs
+  }
+})
 
 const packageJSON = {
   scripts: {
@@ -30,9 +25,8 @@ const packageJSON = {
 }
 
 describe('runScript with absolute paths', () => {
-  beforeEach(() => {
-    mockFn.mockReset()
-    mockFn.mockImplementation(() => Promise.resolve(true))
+  afterEach(() => {
+    mockFn.mockClear()
   })
 
   it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
