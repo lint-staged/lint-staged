@@ -9,5 +9,6 @@ after_success:
   - npm install -g semantic-release
   - semantic-release pre && npm publish && semantic-release post
 branches:
-  except:
-    - /^v\d+\.\d+\.\d+$/
+  only:
+    - master
+    - /^greenkeeper/.*$/
