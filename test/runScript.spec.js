@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: 0 */
 
 import mockFn from 'execa'
+import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
 
 jest.mock('execa')
@@ -145,7 +146,7 @@ describe('runScript', () => {
       await taskPromise
     } catch (err) {
       expect(err.message)
-        .toMatch(`🚫 mock-fail-linter found some errors. Please fix them and try committing again.
+        .toMatch(`${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
 ${linterErr.stdout}
 ${linterErr.stderr}`)
     }
