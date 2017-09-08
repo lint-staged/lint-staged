@@ -16,10 +16,10 @@
     "src"
   ],
   "scripts": {
+    "pre-commit": "remove-lockfiles && node index.js",
     "commit": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "pre-commit": "remove-lockfiles && node index.js",
     "test": "jest",
     "test:coverage": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch"
