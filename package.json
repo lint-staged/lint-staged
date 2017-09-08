@@ -44,7 +44,7 @@
     "babel-jest": "^20.0.0",
     "babel-preset-env": "^1.6.0",
     "commitizen": "^2.9.6",
-    "consolemock": "^0.2.1",
+    "consolemock": "^0.2.2",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.5.0",
     "eslint-config-okonet": "^5.0.1",
