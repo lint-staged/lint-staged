@@ -127,13 +127,13 @@ describe('getConfig', () => {
   it('should set linters', () => {
     expect(getConfig()).toEqual(
       expect.objectContaining({
-        linters: {}
+        linters: []
       })
     )
 
     expect(getConfig({})).toEqual(
       expect.objectContaining({
-        linters: {}
+        linters: []
       })
     )
 
@@ -143,18 +143,22 @@ describe('getConfig', () => {
       })
     ).toEqual(
       expect.objectContaining({
-        linters: {
-          '*.js': 'eslint'
-        }
+        linters: [{ filters: ['*.js'], commands: 'eslint' }]
       })
     )
 
     expect(
       getConfig({
-        linters: {
-          '*.js': ['eslint --fix', 'git add'],
-          '.*rc': 'jsonlint'
-        }
+        linters: [
+          {
+            filters: ['*.js'],
+            commands: ['eslint --fix', 'git add']
+          },
+          {
+            filters: ['.*rc'],
+            commands: 'jsonlint'
+          }
+        ]
       })
     ).toMatchSnapshot()
   })
@@ -198,9 +202,7 @@ describe('getConfig', () => {
         matchBase: false,
         dot: true
       },
-      linters: {
-        '*.js': 'eslint'
-      },
+      linters: [{ filters: ['*.js'], commands: 'eslint' }],
       subTaskConcurrency: 10,
       renderer: 'custom',
       verbose: true

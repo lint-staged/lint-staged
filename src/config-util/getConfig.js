@@ -1,24 +1,62 @@
 'use strict'
 
-/* eslint no-prototype-builtins: 0 */
-
-const defaultsDeep = require('lodash/defaultsDeep')
-const intersection = require('lodash/intersection')
-const isObject = require('lodash/isObject')
+const _ = require('lodash')
 const defaultConfig = require('./defaultConfig')
 
 /**
- * Check if the config is "simple" i.e. doesn't contains any of full config keys
+ * Check if the config is "simple" i.e. doesn't contains any of full config keys.
+ *
+ * This check is not concerned with the validity of the config. For example,
+ * en empty object or array will satisfy the check.
  *
  * @param config
  * @returns {boolean}
  */
 function isSimple(config) {
+  /*
+    Scenarios which satisfy `isSimple` check:
+    - []
+    - {}
+    - [
+        {
+          "filters": ["src/*.js", "!src/*.ignore.js"],
+          "commands": ["eslint --fix", "git add"]
+        }
+      ]
+    - { "*.js": ["eslint --fix", "git add"] }
+
+    Scenario which do not satisfy the check:
+    - {
+        "linters": { "*.js": ["eslint --fix", "git add"] }
+      }
+    - {
+        "linters": []
+      }
+  */
   return (
-    isObject(config) &&
-    !config.hasOwnProperty('linters') &&
-    intersection(Object.keys(defaultConfig), Object.keys(config)).length === 0
+    Array.isArray(config) ||
+    (_.isObject(config) &&
+      !_.has(config, 'linters') &&
+      _.intersection(Object.keys(defaultConfig), Object.keys(config)).length === 0)
   )
+}
+
+/**
+ * Expand shorthand object format to the array format. If `linters` is an array, it is
+ * returned as is. If it is a plain object, it is converted from
+ * `{ "*.js": "eslint --fix" }` to `[ { filtes: ["*.js"], commands: "eslint --fix" } ]`
+ *
+ * @param {Array|Object|null|undefined} linters
+ */
+function expandShorthands(linters) {
+  if (_.isNil(linters) || _.isEmpty(linters)) return []
+
+  if (Array.isArray(linters)) return linters
+
+  return Object.keys(linters).reduce((expanded, filter) => {
+    expanded.push({ filters: [filter], commands: linters[filter] })
+    return expanded
+  }, [])
 }
 
 /**
@@ -34,14 +72,20 @@ function isSimple(config) {
  * }}
  */
 module.exports = function getConfig(sourceConfig) {
-  const config = defaultsDeep(
-    {}, // Do not mutate sourceConfig!!!
-    isSimple(sourceConfig) ? { linters: sourceConfig } : sourceConfig,
+  const isSimpleConfig = isSimple(sourceConfig)
+  // At this point, the config hasn't been validated.
+  const linters = expandShorthands(
+    // `_.get` is used because `linters` property might not be present.
+    isSimpleConfig ? sourceConfig : _.get(sourceConfig, 'linters')
+  )
+  const config = _.defaultsDeep(
+    { linters }, // Do not mutate sourceConfig!!!
+    isSimpleConfig ? null : sourceConfig,
     defaultConfig
   )
 
   // Check if renderer is set in sourceConfig and if not, set accordingly to verbose
-  if (isObject(sourceConfig) && !sourceConfig.hasOwnProperty('renderer')) {
+  if (_.isObject(sourceConfig) && !_.has(sourceConfig, 'renderer')) {
     config.renderer = config.verbose ? 'verbose' : 'update'
   }
 

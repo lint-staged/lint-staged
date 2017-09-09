@@ -7,10 +7,15 @@ exports[`lintStaged should ouput config in verbose mode 1`] = `
 LOG 
 Running lint-staged with the following config:
 {
+	linters: [
+		{
+			filters: [
+				'*'
+			],
+			commands: 'mytask'
+		}
+	],
 	verbose: true,
-	linters: {
-		'*': 'mytask'
-	},
 	concurrent: true,
 	chunkSize: 9007199254740991,
 	gitDir: '.',

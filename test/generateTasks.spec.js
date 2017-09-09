@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import generateTasks from '../src/generateTasks'
 
@@ -21,7 +22,7 @@ const files = [
   '.hidden/test.txt'
 ]
 
-const workDir = path.join(process.env.HOME, 'tmp-lint-staged')
+const workDir = path.join(os.tmpdir(), 'tmp-lint-staged')
 
 const config = {
   gitDir: workDir,
@@ -90,9 +91,9 @@ describe('generateTasks', () => {
   it('should match pattern "*.js" for relative path', () => {
     const relPath = path.resolve(path.join(process.cwd(), '..'))
     const result = generateTasks(Object.assign({}, config, { gitDir: '..' }), files)
-    const linter = result.find(item => item.pattern === '*.js')
+    const linter = result.find(item => item.title === '*.js')
     expect(linter).toEqual({
-      pattern: '*.js',
+      title: '*.js',
       commands: 'root-js',
       fileList: [
         `${relPath}/test.js`,
@@ -106,9 +107,9 @@ describe('generateTasks', () => {
 
   it('should match pattern "*.js"', () => {
     const result = generateTasks(config, files)
-    const linter = result.find(item => item.pattern === '*.js')
+    const linter = result.find(item => item.title === '*.js')
     expect(linter).toEqual({
-      pattern: '*.js',
+      title: '*.js',
       commands: 'root-js',
       fileList: [
         `${workDir}/test.js`,
@@ -122,9 +123,9 @@ describe('generateTasks', () => {
 
   it('should match pattern "**/*.js"', () => {
     const result = generateTasks(config, files)
-    const linter = result.find(item => item.pattern === '**/*.js')
+    const linter = result.find(item => item.title === '**/*.js')
     expect(linter).toEqual({
-      pattern: '**/*.js',
+      title: '**/*.js',
       commands: 'any-js',
       fileList: [
         `${workDir}/test.js`,
@@ -138,9 +139,9 @@ describe('generateTasks', () => {
 
   it('should match pattern "deeper/*.js"', () => {
     const result = generateTasks(config, files)
-    const linter = result.find(item => item.pattern === 'deeper/*.js')
+    const linter = result.find(item => item.title === 'deeper/*.js')
     expect(linter).toEqual({
-      pattern: 'deeper/*.js',
+      title: 'deeper/*.js',
       commands: 'deeper-js',
       fileList: [`${workDir}/deeper/test.js`, `${workDir}/deeper/test2.js`].map(path.normalize)
     })
@@ -148,9 +149,9 @@ describe('generateTasks', () => {
 
   it('should match pattern ".hidden/*.js"', () => {
     const result = generateTasks(config, files)
-    const linter = result.find(item => item.pattern === '.hidden/*.js')
+    const linter = result.find(item => item.title === '.hidden/*.js')
     expect(linter).toEqual({
-      pattern: '.hidden/*.js',
+      title: '.hidden/*.js',
       commands: 'hidden-js',
       fileList: [path.normalize(`${workDir}/.hidden/test.js`)]
     })
@@ -158,9 +159,9 @@ describe('generateTasks', () => {
 
   it('should match pattern "*.{css,js}"', () => {
     const result = generateTasks(config, files)
-    const linter = result.find(item => item.pattern === '*.{css,js}')
+    const linter = result.find(item => item.title === '*.{css,js}')
     expect(linter).toEqual({
-      pattern: '*.{css,js}',
+      title: '*.{css,js}',
       commands: 'root-css-or-js',
       fileList: [
         `${workDir}/test.js`,
@@ -191,9 +192,9 @@ describe('generateTasks', () => {
       },
       files
     )
-    const linter = result.find(item => item.pattern === 'TeSt.*')
+    const linter = result.find(item => item.title === 'TeSt.*')
     expect(linter).toEqual({
-      pattern: 'TeSt.*',
+      title: 'TeSt.*',
       commands: 'lint',
       fileList: [`${workDir}/test.js`, `${workDir}/test.css`, `${workDir}/test.txt`].map(
         path.normalize

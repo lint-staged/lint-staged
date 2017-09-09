@@ -13,7 +13,7 @@ module.exports = {
     matchBase: true,
     dot: true
   },
-  linters: {},
+  linters: [],
   subTaskConcurrency: 1,
   renderer: 'update',
   verbose: false

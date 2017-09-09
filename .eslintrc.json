@@ -10,6 +10,7 @@
   },
   "rules": {
     "strict": 0,
+    "id-length": [2, { "exceptions": ["_"] }],
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": ["**/*.spec.js"]
     }]

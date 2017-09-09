@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const minimatch = require('minimatch')
+const mm = require('micromatch')
 const getConfig = require('./config-util').getConfig
 const resolveGitDir = require('./resolveGitDir')
 
@@ -10,16 +10,17 @@ module.exports = function generateTasks(config, files) {
   const linters = normalizedConfig.linters
   const gitDir = normalizedConfig.gitDir
   const globOptions = normalizedConfig.globOptions
-  return Object.keys(linters).map(pattern => {
-    const commands = linters[pattern]
-    const filter = minimatch.filter(pattern, globOptions)
-    const fileList = files
+  const resolvedGitDir = resolveGitDir(gitDir)
+  return linters.map(linter => {
+    const filters = linter.filters
+    const commands = linter.commands
+    const fileList =
       // We want to filter before resolving paths
-      .filter(filter)
-      // Return absolute path after the filter is run
-      .map(file => path.resolve(resolveGitDir(gitDir), file))
+      mm(files, filters, globOptions)
+        // Return absolute path after the filter is run
+        .map(file => path.resolve(resolvedGitDir, file))
     return {
-      pattern,
+      title: filters.join(', '),
       commands,
       fileList
     }

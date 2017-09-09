@@ -2,11 +2,13 @@
 
 const chalk = require('chalk')
 const format = require('stringify-object')
-const validate = require('jest-validate').validate
-const logValidationWarning = require('jest-validate').logValidationWarning
+const jestValidate = require('jest-validate')
 const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
 const isGlob = require('is-glob')
 const defaultConfig = require('./defaultConfig')
+
+const validate = jestValidate.validate
+const logValidationWarning = jestValidate.logValidationWarning
 
 /**
  * Custom jest-validate reporter for unknown options
@@ -49,10 +51,10 @@ function unknownValidationReporter(config, example, option, options) {
  */
 module.exports = function validateConfig(config) {
   const exampleConfig = Object.assign({}, defaultConfig, {
-    linters: {
-      '*.js': ['eslint --fix', 'git add'],
-      '*.css': 'stylelint'
-    }
+    linters: [
+      { filtes: ['*.js'], commands: ['eslint --fix', 'git add'] },
+      { filtes: ['*.css'], commands: 'stylelint' }
+    ]
   })
 
   const validation = validate(config, {
