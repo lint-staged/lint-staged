@@ -6,10 +6,12 @@
 const appRoot = require('app-root-path')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const getConfig = require('./getConfig').getConfig
-const validateConfig = require('./getConfig').validateConfig
+const configUtil = require('./config-util')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
+
+const getConfig = configUtil.getConfig
+const validateConfig = configUtil.validateConfig
 
 // Find the right package.json at the root of the project
 // TODO: Test if it should be aware of `gitDir`

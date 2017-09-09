@@ -4,7 +4,7 @@ const chunk = require('lodash/chunk')
 const execa = require('execa')
 const logSymbols = require('log-symbols')
 const pMap = require('p-map')
-const getConfig = require('./getConfig').getConfig
+const getConfig = require('./config-util').getConfig
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 

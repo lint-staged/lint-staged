@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 
 import sgfMock from 'staged-git-files'
-import { getConfig } from '../src/getConfig'
+import { getConfig } from '../src/config-util'
 import runAll from '../src/runAll'
 
 jest.mock('staged-git-files')
