@@ -34,6 +34,13 @@ This project contains a script that will run arbitrary npm and shell tasks with 
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
+And this is how it looks like in action:
+
+<p align="center">
+  <img src="./screenshots/lint-staged-prettier.gif" alt="lint-staged with prettier example"
+       width="640" height="432">
+</p>
+
 See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
