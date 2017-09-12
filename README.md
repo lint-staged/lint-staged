@@ -23,11 +23,11 @@ This project contains a script that will run arbitrary npm and shell tasks with 
 ```diff json
 {
   "scripts": {
-+    "precommit": "lint-staged"
++   "precommit": "lint-staged"
   },
-+  "lint-staged": {
-+    "*.js": ["eslint --fix", "git add"]
-+  }
++ "lint-staged": {
++   "*.js": ["eslint --fix", "git add"]
++ }
 }
 ```
 
@@ -151,7 +151,7 @@ If your `package.json` is located in a subdirectory of the git root directory, y
 
 ```diff json
 {
-+    "gitDir": "../",
++   "gitDir": "../",
     "linters":{
         "*": "my-task"
     }
