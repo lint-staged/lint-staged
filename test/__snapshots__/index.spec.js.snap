@@ -9,7 +9,7 @@ Running lint-staged with the following config:
 {
 	linters: [
 		{
-			filters: [
+			includes: [
 				'*'
 			],
 			commands: 'mytask'

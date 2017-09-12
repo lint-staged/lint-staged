@@ -47,13 +47,13 @@ Object {
         "eslint --fix",
         "git add",
       ],
-      "filters": Array [
+      "includes": Array [
         "*.js",
       ],
     },
     Object {
       "commands": "jsonlint",
-      "filters": Array [
+      "includes": Array [
         ".*rc",
       ],
     },

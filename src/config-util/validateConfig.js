@@ -52,8 +52,12 @@ function unknownValidationReporter(config, example, option, options) {
 module.exports = function validateConfig(config) {
   const exampleConfig = Object.assign({}, defaultConfig, {
     linters: [
-      { filtes: ['*.js'], commands: ['eslint --fix', 'git add'] },
-      { filtes: ['*.css'], commands: 'stylelint' }
+      {
+        includes: ['*.js'],
+        excludes: ['*.ignore.js'],
+        commands: ['eslint --fix', 'git add']
+      },
+      { includes: ['*.css'], commands: 'stylelint' }
     ]
   })
 

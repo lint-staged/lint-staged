@@ -19,7 +19,8 @@ function isSimple(config) {
     - {}
     - [
         {
-          "filters": ["src/*.js", "!src/*.ignore.js"],
+          "includes": ["src/*.js"],
+          "excludes": ["!src/*.ignore.js"],
           "commands": ["eslint --fix", "git add"]
         }
       ]
@@ -44,7 +45,8 @@ function isSimple(config) {
 /**
  * Expand shorthand object format to the array format. If `linters` is an array, it is
  * returned as is. If it is a plain object, it is converted from
- * `{ "*.js": "eslint --fix" }` to `[ { filtes: ["*.js"], commands: "eslint --fix" } ]`
+ * `{ "*.js": "eslint --fix" }` to
+ * `[ { "includes": ["*.js"], "commands": "eslint --fix" } ]`
  *
  * @param {Array|Object|null|undefined} linters
  */
@@ -53,8 +55,8 @@ function expandShorthands(linters) {
 
   if (Array.isArray(linters)) return linters
 
-  return Object.keys(linters).reduce((expanded, filter) => {
-    expanded.push({ filters: [filter], commands: linters[filter] })
+  return Object.keys(linters).reduce((expanded, pattern) => {
+    expanded.push({ includes: [pattern], commands: linters[pattern] })
     return expanded
   }, [])
 }
