@@ -6,9 +6,6 @@ node_js:
   - '6'
   - '4'
 before_install: if [[ `npm -v` < 3* ]]; then npm i -g npm@^3; fi
-script:
-  - npm run lint
-  - npm run test:coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - npm install -g semantic-release
