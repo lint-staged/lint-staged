@@ -1,4 +1,7 @@
 import path from 'path'
+import assign from 'lodash/assign'
+import forEach from 'lodash/forEach'
+import map from 'lodash/map'
 import generateTasks from '../src/generateTasks'
 
 const files = [
@@ -43,7 +46,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const commands = map(result, 'commands')
     expect(commands).toEqual(['lint'])
   })
 
@@ -57,7 +60,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const commands = map(result, 'commands')
     expect(commands).toEqual(['lint'])
   })
 
@@ -71,14 +74,14 @@ describe('generateTasks', () => {
       },
       files
     )
-    result[0].fileList.forEach(file => {
+    forEach(result[0].fileList, file => {
       expect(path.isAbsolute(file)).toBe(true)
     })
   })
 
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
-    result.forEach(task => {
+    forEach(result, task => {
       if (task.commands === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
@@ -89,7 +92,7 @@ describe('generateTasks', () => {
 
   it('should match pattern "*.js" for relative path', () => {
     const relPath = path.resolve(path.join(process.cwd(), '..'))
-    const result = generateTasks(Object.assign({}, config, { gitDir: '..' }), files)
+    const result = generateTasks(assign({}, config, { gitDir: '..' }), files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',

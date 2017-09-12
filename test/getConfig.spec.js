@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 
 import { makeConsoleMock } from 'consolemock'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { getConfig, validateConfig } from '../src/getConfig'
 
 describe('getConfig', () => {

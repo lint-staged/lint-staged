@@ -3,6 +3,7 @@
 const sgf = require('staged-git-files')
 const Listr = require('listr')
 const has = require('lodash/has')
+const map = require('lodash/map')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
@@ -31,8 +32,8 @@ module.exports = function runAll(packageJson, config) {
       }
 
       /* files is an Object{ filename: String, status: String } */
-      const filenames = files.map(file => file.filename)
-      const tasks = generateTasks(config, filenames).map(task => ({
+      const filenames = map(files, 'filename')
+      const tasks = map(generateTasks(config, filenames), task => ({
         title: `Running tasks for ${task.pattern}`,
         task: () =>
           new Listr(runScript(task.commands, task.fileList, packageJson, config), {

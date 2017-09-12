@@ -1,3 +1,4 @@
+import fill from 'lodash/fill'
 import calcChunkSize from '../src/calcChunkSize'
 
 // This is only ever used for length so the contents do not matter much
@@ -14,13 +15,13 @@ describe('calcChunkSize', () => {
   })
 
   it('should not return chunk size which will fail max command length', () => {
-    const fakeFilePaths = Array(200).fill(testFilePath)
+    const fakeFilePaths = fill(Array(200), testFilePath)
     const chunkSize = calcChunkSize(fakeFilePaths, Number.MAX_SAFE_INTEGER)
     expect(chunkSize).toEqual(80)
   })
 
   it('should respect option chunkSize where ever possible', () => {
-    const fakeFilePaths = Array(200).fill(testFilePath)
+    const fakeFilePaths = fill(Array(200), testFilePath)
     const chunkSize = calcChunkSize(fakeFilePaths, 50)
     expect(chunkSize).toEqual(50)
   })

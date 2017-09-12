@@ -1,6 +1,9 @@
 'use strict'
 
+const assign = require('lodash/assign')
 const chunk = require('lodash/chunk')
+const isArray = require('lodash/isArray')
+const map = require('lodash/map')
 const execa = require('execa')
 const logSymbols = require('log-symbols')
 const pMap = require('p-map')
@@ -16,9 +19,9 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
-  const lintersArray = Array.isArray(commands) ? commands : [commands]
+  const lintersArray = isArray(commands) ? commands : [commands]
 
-  return lintersArray.map(linter => ({
+  return map(lintersArray, linter => ({
     title: linter,
     task: () => {
       try {
@@ -36,7 +39,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
           const args = res.args.concat(separatorArgs, pathsChunk)
 
           return (
-            execa(res.bin, args, Object.assign({}, execaOptions))
+            execa(res.bin, args, assign({}, execaOptions))
               /* If we don't catch, pMap will terminate on first rejection */
               /* We want error information of all chunks */
               .catch(err => {
@@ -54,8 +57,8 @@ ${err.message}`)
           .then(() => {
             if (errors.length === 0) return `${logSymbols.success} ${linter} passed!`
 
-            const errStdout = errors.map(err => err.stdout).join('')
-            const errStderr = errors.map(err => err.stderr).join('')
+            const errStdout = map(errors, 'stdout').join('')
+            const errStderr = map(errors, 'stderr').join('')
 
             throw new Error(`${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
 ${errStdout}

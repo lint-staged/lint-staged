@@ -1,6 +1,10 @@
 {
   "extends": [
-    "okonet"
+    "okonet",
+    "plugin:lodash/recommended"
+  ],
+  "plugins": [
+    "lodash"
   ],
   "env": {
     "browser": false,

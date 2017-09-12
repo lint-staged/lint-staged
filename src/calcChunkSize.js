@@ -1,5 +1,7 @@
 'use strict'
 
+const reduce = require('lodash/reduce')
+
 /**
  * Calculates and returns the chunk size for given file paths and `chunkSize`
  * option.
@@ -27,7 +29,8 @@
  */
 module.exports = function calcChunkSize(paths, idealChunkSize) {
   /* What is the longest file path? */
-  const maxPathLen = paths.reduce(
+  const maxPathLen = reduce(
+    paths,
     (maxLen, filePath) => Math.max(maxLen, filePath.length),
     20 // safe initial value
   )
