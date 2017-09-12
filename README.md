@@ -4,15 +4,14 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 ## Why
 
-[Read the Medium post](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
-
 Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
 This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
 ## Related blogs posts
 
-* [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+- [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
+- [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
 
 > If you've written one, please submit a PR with the link to it!
 
@@ -21,16 +20,16 @@ This project contains a script that will run arbitrary npm and shell tasks with 
 1. `npm install --save-dev lint-staged husky`
 1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc`, `.stylelintrc`, etc.
 1. Update your `package.json` like this:
-  ```json
-  {
-    "scripts": {
-      "precommit": "lint-staged"
-    },
-    "lint-staged": {
-      "*.js": ["eslint --fix", "git add"]
-    }
-  }
-  ```
+```diff json
+{
+  "scripts": {
++    "precommit": "lint-staged"
+  },
++  "lint-staged": {
++    "*.js": ["eslint --fix", "git add"]
++  }
+}
+```
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
@@ -150,9 +149,9 @@ Tools like ESLint/TSLint or stylefmt can reformat your code according to an appr
 
 If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
 
-```json
+```diff json
 {
-    "gitDir": "../",
++    "gitDir": "../",
     "linters":{
         "*": "my-task"
     }
@@ -216,14 +215,6 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 {
   "*.css": "stylelint",
   "*.scss": "stylelint --syntax=scss"
-}
-```
-
-### Automatically fix SCSS style with `stylefmt` and add to commit
-
-```json
-{
-  "*.scss": ["stylefmt", "stylelint --syntax scss", "git add"]
 }
 ```
 
