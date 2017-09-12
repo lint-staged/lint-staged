@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "precommit": "remove-lockfiles && node index.js",
-    "commit": "git-cz",
+    "cz": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
