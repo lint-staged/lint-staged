@@ -20,7 +20,7 @@ function isSimple(config) {
     - [
         {
           "includes": ["src/*.js"],
-          "excludes": ["!src/*.ignore.js"],
+          "excludes": ["src/*.ignore.js"],
           "commands": ["eslint --fix", "git add"]
         }
       ]
