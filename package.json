@@ -20,9 +20,8 @@
     "commit": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
-    "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --watch"
+    "pretest": "npm run lint",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "app-root-path": "^2.0.0",
