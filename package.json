@@ -79,8 +79,12 @@
     "git",
     "staged",
     "eslint",
+    "prettier",
     "stylelint",
     "code",
-    "quality"
+    "quality",
+    "check",
+    "format",
+    "validate"
   ]
 }
