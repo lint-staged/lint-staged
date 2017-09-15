@@ -23,3 +23,12 @@ Running lint-staged with the following config:
 }
 "
 `;
+
+exports[`lintStaged should print helpful error message when config file is not found 1`] = `
+"
+ERROR Config could not be found.
+ERROR 
+Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration.
+"
+`;

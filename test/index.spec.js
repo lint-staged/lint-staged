@@ -20,7 +20,7 @@ describe('lintStaged', () => {
         '*': 'mytask'
       }
     }
-    cosmiconfig.mockImplementation(() => Promise.resolve({ config }))
+    cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
     await lintStaged()
     expect(console.printHistory()).toMatchSnapshot()
   })
@@ -29,7 +29,13 @@ describe('lintStaged', () => {
     const config = {
       '*': 'mytask'
     }
-    cosmiconfig.mockImplementation(() => Promise.resolve({ config }))
+    cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
+    await lintStaged()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should print helpful error message when config file is not found', async () => {
+    cosmiconfig.mockImplementationOnce(() => Promise.resolve(null))
     await lintStaged()
     expect(console.printHistory()).toMatchSnapshot()
   })
