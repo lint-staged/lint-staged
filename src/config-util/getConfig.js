@@ -44,7 +44,7 @@ function isSimple(config) {
   )
 }
 
-function wrapToArray(value) {
+function asArray(value) {
   if (Array.isArray(value)) return value
   return [value]
 }
@@ -53,7 +53,7 @@ function wrapToArray(value) {
  * Expand shorthand object format to the array format. If `linters` is an array, it is
  * returned as is. If it is a plain object, it is converted from
  * `{ "*.js": "eslint --fix" }` to
- * `[ { "includes": ["*.js"], "commands": "eslint --fix" } ]`
+ * `[ { "includes": ["*.js"], "excludes": [], "commands": "eslint --fix" } ]`
  *
  * @param {Array|Object|null|undefined} sourceConfig
  * @returns {Array<Object>}
@@ -68,14 +68,14 @@ function expandShorthands(isSimpleConfig, sourceConfig) {
     return linters.map(linter => ({
       includes: linter.includes || [],
       excludes: linter.excludes || [],
-      commands: wrapToArray(linter.commands)
+      commands: asArray(linter.commands)
     }))
   }
 
   return Object.keys(linters).map(pattern => ({
     includes: [pattern],
     excludes: [],
-    commands: wrapToArray(linters[pattern])
+    commands: asArray(linters[pattern])
   }))
 }
 

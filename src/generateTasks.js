@@ -12,9 +12,6 @@ module.exports = function generateTasks(config, files) {
   const globOptions = normalizedConfig.globOptions
   const resolvedGitDir = resolveGitDir(gitDir)
   return linters.map(linter => {
-    // We need to concatenate `includes` patterns with negated patterns in
-    // `excludes`. We expect `includes` to be present. But `exludes` might not
-    // be. So we use `lodash/map` which handles this edge case.
     const patterns = linter.includes.concat(linter.excludes.map(pattern => `!${pattern}`))
     const commands = linter.commands
     const fileList =

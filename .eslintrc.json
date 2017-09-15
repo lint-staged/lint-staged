@@ -9,8 +9,6 @@
   },
   "rules": {
     "strict": 0,
-    "id-length": 2,
-    "import/no-extraneous-dependencies": 2,
     "no-prototype-builtins": 0,
     "no-console": 0
   }

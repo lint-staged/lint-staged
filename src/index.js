@@ -36,7 +36,6 @@ module.exports = function lintStaged() {
 
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
-
       const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {
