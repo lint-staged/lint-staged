@@ -1,5 +1,3 @@
-/* eslint no-console: 0 */
-
 import { cloneDeep } from 'lodash'
 import { getConfig } from '../src/config-util'
 
@@ -143,7 +141,13 @@ describe('getConfig', () => {
       })
     ).toEqual(
       expect.objectContaining({
-        linters: [{ includes: ['*.js'], commands: 'eslint' }]
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: [],
+            commands: ['eslint']
+          }
+        ]
       })
     )
 
@@ -152,11 +156,13 @@ describe('getConfig', () => {
         linters: [
           {
             includes: ['*.js'],
+            excludes: [],
             commands: ['eslint --fix', 'git add']
           },
           {
             includes: ['.*rc'],
-            commands: 'jsonlint'
+            excludes: [],
+            commands: ['jsonlint']
           }
         ]
       })
@@ -202,7 +208,7 @@ describe('getConfig', () => {
         matchBase: false,
         dot: true
       },
-      linters: [{ includes: ['*.js'], commands: 'eslint' }],
+      linters: [{ includes: ['*.js'], excludes: [], commands: ['eslint'] }],
       subTaskConcurrency: 10,
       renderer: 'custom',
       verbose: true

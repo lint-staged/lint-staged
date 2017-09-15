@@ -16,9 +16,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
-  const commandsArray = Array.isArray(commands) ? commands : [commands]
-
-  return commandsArray.map(cmd => ({
+  return commands.map(cmd => ({
     title: cmd,
     task: () => {
       try {

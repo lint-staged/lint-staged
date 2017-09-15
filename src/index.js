@@ -1,6 +1,3 @@
-/* eslint no-console: 0 */
-/* eslint import/no-dynamic-require: 0 */
-
 'use strict'
 
 const appRoot = require('app-root-path')
@@ -15,6 +12,7 @@ const validateConfig = configUtil.validateConfig
 
 // Find the right package.json at the root of the project
 // TODO: Test if it should be aware of `gitDir`
+// eslint-disable-next-line import/no-dynamic-require
 const packageJson = require(appRoot.resolve('package.json'))
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
@@ -38,6 +36,7 @@ module.exports = function lintStaged() {
 
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
+
       const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {

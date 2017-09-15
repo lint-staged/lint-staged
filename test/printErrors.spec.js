@@ -1,7 +1,3 @@
-/* eslint no-unused-expressions: 0 */
-/* eslint no-console: 0 */
-/* eslint no-global-assign: 0 */
-
 import Listr from 'listr'
 import { makeConsoleMock } from 'consolemock'
 import printErrors from '../src/printErrors'

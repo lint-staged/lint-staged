@@ -44,7 +44,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const [{ commands }] = result
     expect(commands).toEqual(['lint'])
   })
 
@@ -58,7 +58,7 @@ describe('generateTasks', () => {
       },
       ['test.js']
     )
-    const commands = result.map(match => match.commands)
+    const [{ commands }] = result
     expect(commands).toEqual(['lint'])
   })
 
@@ -72,7 +72,8 @@ describe('generateTasks', () => {
       },
       files
     )
-    result[0].fileList.forEach(file => {
+    const [{ fileList }] = result
+    fileList.forEach(file => {
       expect(path.isAbsolute(file)).toBe(true)
     })
   })
@@ -80,7 +81,7 @@ describe('generateTasks', () => {
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
     result.forEach(task => {
-      if (task.commands === 'unknown-js') {
+      if (task.commands[0] === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
         expect(task.fileList.length).not.toEqual(0)
@@ -94,7 +95,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === '*.js')
     expect(linter).toEqual({
       title: '*.js',
-      commands: 'root-js',
+      commands: ['root-js'],
       fileList: [
         `${relPath}/test.js`,
         `${relPath}/deeper/test.js`,
@@ -110,7 +111,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === '*.js')
     expect(linter).toEqual({
       title: '*.js',
-      commands: 'root-js',
+      commands: ['root-js'],
       fileList: [
         `${workDir}/test.js`,
         `${workDir}/deeper/test.js`,
@@ -126,7 +127,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === '**/*.js')
     expect(linter).toEqual({
       title: '**/*.js',
-      commands: 'any-js',
+      commands: ['any-js'],
       fileList: [
         `${workDir}/test.js`,
         `${workDir}/deeper/test.js`,
@@ -142,7 +143,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === 'deeper/*.js')
     expect(linter).toEqual({
       title: 'deeper/*.js',
-      commands: 'deeper-js',
+      commands: ['deeper-js'],
       fileList: [`${workDir}/deeper/test.js`, `${workDir}/deeper/test2.js`].map(path.normalize)
     })
   })
@@ -152,7 +153,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === '.hidden/*.js')
     expect(linter).toEqual({
       title: '.hidden/*.js',
-      commands: 'hidden-js',
+      commands: ['hidden-js'],
       fileList: [path.normalize(`${workDir}/.hidden/test.js`)]
     })
   })
@@ -162,7 +163,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === '*.{css,js}')
     expect(linter).toEqual({
       title: '*.{css,js}',
-      commands: 'root-css-or-js',
+      commands: ['root-css-or-js'],
       fileList: [
         `${workDir}/test.js`,
         `${workDir}/deeper/test.js`,
@@ -195,7 +196,7 @@ describe('generateTasks', () => {
     const linter = result.find(item => item.title === 'TeSt.*')
     expect(linter).toEqual({
       title: 'TeSt.*',
-      commands: 'lint',
+      commands: ['lint'],
       fileList: [`${workDir}/test.js`, `${workDir}/test.css`, `${workDir}/test.txt`].map(
         path.normalize
       )

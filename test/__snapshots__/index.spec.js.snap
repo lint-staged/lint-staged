@@ -12,7 +12,10 @@ Running lint-staged with the following config:
 			includes: [
 				'*'
 			],
-			commands: 'mytask'
+			excludes: [],
+			commands: [
+				'mytask'
+			]
 		}
 	],
 	verbose: true,

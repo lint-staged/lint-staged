@@ -5,7 +5,7 @@ const format = require('stringify-object')
 const jestValidate = require('jest-validate')
 const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
 const isGlob = require('is-glob')
-const defaultConfig = require('./defaultConfig')
+const exampleConfig = require('./defaultConfig').exampleConfig
 
 const validate = jestValidate.validate
 const logValidationWarning = jestValidate.logValidationWarning
@@ -50,17 +50,6 @@ function unknownValidationReporter(config, example, option, options) {
  * @returns config {Object}
  */
 module.exports = function validateConfig(config) {
-  const exampleConfig = Object.assign({}, defaultConfig, {
-    linters: [
-      {
-        includes: ['*.js'],
-        excludes: ['*.ignore.js'],
-        commands: ['eslint --fix', 'git add']
-      },
-      { includes: ['*.css'], commands: 'stylelint' }
-    ]
-  })
-
   const validation = validate(config, {
     exampleConfig,
     unknown: unknownValidationReporter,

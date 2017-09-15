@@ -5,14 +5,13 @@
   "env": {
     "browser": false,
     "node": true,
-    "jest": true,
     "es6": true
   },
   "rules": {
     "strict": 0,
-    "id-length": [2, { "exceptions": ["_"] }],
-    "import/no-extraneous-dependencies": [2, {
-      "devDependencies": ["**/*.spec.js"]
-    }]
+    "id-length": 2,
+    "import/no-extraneous-dependencies": 2,
+    "no-prototype-builtins": 0,
+    "no-console": 0
   }
 }

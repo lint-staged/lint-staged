@@ -2,11 +2,5 @@
   "plugins": ["node"],
   "extends": [
     "plugin:node/recommended"
-  ],
-  "rules": {
-    "node/exports-style": [
-      "error",
-      "module.exports"
-    ]
-  }
+  ]
 }
