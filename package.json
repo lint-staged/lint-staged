@@ -32,7 +32,7 @@
     "cosmiconfig": "^1.1.0",
     "execa": "^0.8.0",
     "is-glob": "^4.0.0",
-    "jest-validate": "^20.0.3",
+    "jest-validate": "^21.1.0",
     "listr": "^0.12.0",
     "lodash": "^4.17.4",
     "log-symbols": "^2.0.0",
@@ -43,7 +43,7 @@
     "stringify-object": "^3.2.0"
   },
   "devDependencies": {
-    "babel-jest": "^20.0.0",
+    "babel-jest": "^21.0.2",
     "babel-preset-env": "^1.6.0",
     "commitizen": "^2.9.6",
     "consolemock": "^0.2.2",
@@ -52,12 +52,11 @@
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^5.1.1",
     "husky": "^0.14.3",
-    "jest": "^20.0.4",
-    "jest-cli": "^20.0.4",
+    "jest": "^21.1.0",
+    "jest-cli": "^21.1.0",
     "jsonlint": "^1.6.2",
     "prettier": "1.5.3",
-    "remove-lockfiles": "^1.1.1",
-    "strip-ansi": "^3.0.1"
+    "remove-lockfiles": "^1.1.1"
   },
   "config": {
     "commitizen": {
