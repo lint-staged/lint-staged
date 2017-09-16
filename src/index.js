@@ -1,4 +1,3 @@
-/* eslint no-console: 0 */
 /* eslint import/no-dynamic-require: 0 */
 
 'use strict'

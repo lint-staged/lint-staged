@@ -1,5 +1,4 @@
 /* eslint no-unused-expressions: 0 */
-/* eslint no-console: 0 */
 /* eslint no-global-assign: 0 */
 
 import { makeConsoleMock } from 'consolemock'

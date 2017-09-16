@@ -12,6 +12,7 @@
   },
   "rules": {
     "strict": 0,
+    "no-console": "off",
     "node/exports-style": [
       "error",
       "module.exports"
