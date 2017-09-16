@@ -12,9 +12,6 @@
   },
   "rules": {
     "strict": 0,
-    "import/no-extraneous-dependencies": [2, {
-      "devDependencies": ["**/*.spec.js"]
-    }],
     "node/exports-style": [
       "error",
       "module.exports"
