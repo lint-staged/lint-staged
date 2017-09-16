@@ -1,7 +1,9 @@
 {
   "extends": [
-    "okonet"
+    "okonet",
+    "plugin:node/recommended"
   ],
+  "plugins": ["node"],
   "env": {
     "browser": false,
     "node": true,
@@ -12,6 +14,10 @@
     "strict": 0,
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": ["**/*.spec.js"]
-    }]
+    }],
+    "node/exports-style": [
+      "error",
+      "module.exports"
+    ]
   }
 }
