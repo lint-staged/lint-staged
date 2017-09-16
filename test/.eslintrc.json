@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "node/no-unsupported-features": "off"
+  }
+}
