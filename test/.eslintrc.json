@@ -1,4 +1,10 @@
 {
+  "env": {
+    "browser": false,
+    "node": true,
+    "jest": true,
+    "es6": true
+  },
   "rules": {
     "node/no-unsupported-features": "off"
   }

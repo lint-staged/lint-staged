@@ -4,12 +4,6 @@
     "plugin:node/recommended"
   ],
   "plugins": ["node"],
-  "env": {
-    "browser": false,
-    "node": true,
-    "jest": true,
-    "es6": true
-  },
   "rules": {
     "strict": "off",
     "no-console": "off",
