@@ -33,7 +33,7 @@ module.exports = function runAll(packageJson, config) {
       /* files is an Object{ filename: String, status: String } */
       const filenames = files.map(file => file.filename)
       const tasks = generateTasks(config, filenames).map(task => ({
-        title: `Running tasks for ${task.pattern}`,
+        title: `Running tasks for ${task.title}`,
         task: () =>
           new Listr(runScript(task.commands, task.fileList, packageJson, config), {
             // In sub-tasks we don't want to run concurrently
@@ -43,7 +43,7 @@ module.exports = function runAll(packageJson, config) {
           }),
         skip: () => {
           if (task.fileList.length === 0) {
-            return `No staged files match ${task.pattern}`
+            return `No staged files match ${task.title}`
           }
           return false
         }

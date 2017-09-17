@@ -64,7 +64,7 @@ Lint-staged supports simple and advanced config formats.
 
 ### Simple config format
 
-Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
+Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
 
 #### `package.json` example:
 ```json
@@ -92,22 +92,59 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 `npm run my-task -- file1.ext file2.ext`
 
+### Multiple glob patterns
+
+It is also possible to specify multiple file filter patterns using `includes` and `excludes`:
+
+#### `package.json` example:
+```json
+{
+  "scripts": {
+    "my-task": "your-command",
+  },
+  "lint-staged": [
+    {
+      "includes": ["*"],
+      "excludes": ["*.ignore.*"],
+      "commands": "my-task"
+    }
+  ]
+}
+```
+
+#### `.lintstagedrc` example
+
+```json
+[
+  {
+    "includes": ["*"],
+    "excludes": ["*.ignore.*"],
+    "commands": "my-task"
+  }
+]
+```
+
 ### Advanced config format
 To set options and keep lint-staged extensible, advanced format can be used. This should hold linters object in `linters` property.
 
 ## Options
 
-* `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
-* `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
-* `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
-* `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
-* `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
-* `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
+* **`linters`**
+  - **shorthand syntax** — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute. Note that this does not support multiple glob patterns.
+  - **expanded syntax** — `Array<Object>` — each object can have the following:
+    + `includes` — `Array<String>` — list of glob patterns to match against for including files.
+    + `excludes` — `Array<String>` — list of glob patterns to match against for excluding files. This is optional.
+    + `commands` — `Array<String> | String` — commands to execute.
+* **`gitDir`** — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
+* **`concurrent`** — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+* **`chunkSize`** — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
+* **`subTaskConcurrency`** — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
+* **`verbose`** — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
+* **`globOptions`** — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to customize how glob patterns match files.
 
 ## Filtering files
 
-It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns. The paths used for filtering via minimatch are relative to the directory that contains the `.git` directory. The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory, as would be the case when using the `gitDir` option.
+It is possible to run linters for certain paths only by using [micromatch](https://github.com/micromatch/micromatch) patterns. The paths used for filtering via micromatch are relative to the directory that contains the `.git` directory. The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory, as would be the case when using the `gitDir` option.
 
 ```js
 {
@@ -190,12 +227,36 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 }
 ```
 
+**Same as above but exclude some files**
+
+```json
+[
+  {
+    "includes": ["*.{js,jsx}"],
+    "excludes": ["*.ignore.{js,jsx}"],
+    "commands": "eslint"
+  }
+]
+```
+
 ### Automatically fix code style with `--fix` and add to commit
 
 ```json
 {
   "*.js": ["eslint --fix", "git add"]
 }
+```
+
+**Same as above but exclude some files**
+
+```json
+[
+  {
+    "includes": ["*.js"],
+    "excludes": ["*.autogen.js"],
+    "commands": ["eslint --fix", "git add"]
+  }
+]
 ```
 
 This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).

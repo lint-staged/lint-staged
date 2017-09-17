@@ -1,18 +1,18 @@
-/* eslint no-console: 0 */
-/* eslint import/no-dynamic-require: 0 */
-
 'use strict'
 
 const appRoot = require('app-root-path')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const getConfig = require('./getConfig').getConfig
-const validateConfig = require('./getConfig').validateConfig
+const configUtil = require('./config-util')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
+const getConfig = configUtil.getConfig
+const validateConfig = configUtil.validateConfig
+
 // Find the right package.json at the root of the project
 // TODO: Test if it should be aware of `gitDir`
+// eslint-disable-next-line import/no-dynamic-require
 const packageJson = require(appRoot.resolve('package.json'))
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color

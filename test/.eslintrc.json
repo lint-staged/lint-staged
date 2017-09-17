@@ -1,0 +1,9 @@
+{
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "no-global-assign": ["error", { "exceptions": ["console"] }],
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }]
+  }
+}

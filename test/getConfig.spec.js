@@ -1,8 +1,5 @@
-/* eslint no-console: 0 */
-
-import { makeConsoleMock } from 'consolemock'
 import { cloneDeep } from 'lodash'
-import { getConfig, validateConfig } from '../src/getConfig'
+import { getConfig } from '../src/config-util'
 
 describe('getConfig', () => {
   it('should return config with defaults for undefined', () => {
@@ -128,13 +125,13 @@ describe('getConfig', () => {
   it('should set linters', () => {
     expect(getConfig()).toEqual(
       expect.objectContaining({
-        linters: {}
+        linters: []
       })
     )
 
     expect(getConfig({})).toEqual(
       expect.objectContaining({
-        linters: {}
+        linters: []
       })
     )
 
@@ -144,18 +141,89 @@ describe('getConfig', () => {
       })
     ).toEqual(
       expect.objectContaining({
-        linters: {
-          '*.js': 'eslint'
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: [],
+            commands: ['eslint']
+          }
+        ]
+      })
+    )
+
+    expect(
+      getConfig([
+        {
+          includes: ['*.js'],
+          commands: 'eslint'
         }
+      ])
+    ).toEqual(
+      expect.objectContaining({
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: [],
+            commands: ['eslint']
+          }
+        ]
+      })
+    )
+
+    expect(
+      getConfig([
+        {
+          includes: ['*.js'],
+          excludes: ['*.ignore.js'],
+          commands: 'eslint'
+        },
+        {
+          includes: ['*.css'],
+          excludes: ['*.ignore.css'],
+          commands: ['postcss --config path/to/your/config --replace', 'stylelint', 'git add']
+        }
+      ])
+    ).toEqual(
+      expect.objectContaining({
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: ['*.ignore.js'],
+            commands: ['eslint']
+          },
+          {
+            includes: ['*.css'],
+            excludes: ['*.ignore.css'],
+            commands: ['postcss --config path/to/your/config --replace', 'stylelint', 'git add']
+          }
+        ]
       })
     )
 
     expect(
       getConfig({
-        linters: {
-          '*.js': ['eslint --fix', 'git add'],
-          '.*rc': 'jsonlint'
-        }
+        linters: [
+          {
+            includes: ['*.js'],
+            commands: ['eslint --fix', 'git add']
+          },
+          {
+            includes: ['.*rc'],
+            commands: ['jsonlint']
+          }
+        ]
+      })
+    ).toMatchSnapshot()
+
+    expect(
+      getConfig({
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: ['*.ignore.js', '*.autogen.js'],
+            commands: ['eslint --fix', 'git add']
+          }
+        ]
       })
     ).toMatchSnapshot()
   })
@@ -199,56 +267,11 @@ describe('getConfig', () => {
         matchBase: false,
         dot: true
       },
-      linters: {
-        '*.js': 'eslint'
-      },
+      linters: [{ includes: ['*.js'], excludes: [], commands: ['eslint'] }],
       subTaskConcurrency: 10,
       renderer: 'custom',
       verbose: true
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)
-  })
-})
-
-describe('validateConfig', () => {
-  beforeEach(() => {
-    global.console = makeConsoleMock()
-  })
-
-  it('should throw and should print validation errors for invalid config', () => {
-    const invalidAdvancedConfig = {
-      foo: false,
-      chunkSize: 'string',
-      gitDir: 111
-    }
-    expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
-  })
-
-  it('should not throw and should print validation warnings for mixed config', () => {
-    const invalidMixedConfig = {
-      gitDir: './path/to/packagejson/',
-      '*.js': ['eslint --fix', 'git add']
-    }
-    expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
-    expect(console.printHistory()).toMatchSnapshot()
-  })
-
-  it('should not throw and should print nothing for simple valid config', () => {
-    const validSimpleConfig = {
-      '*.js': ['eslint --fix', 'git add']
-    }
-    expect(() => validateConfig(getConfig(validSimpleConfig))).not.toThrow()
-    expect(console.printHistory()).toMatchSnapshot()
-  })
-
-  it('should not throw and should print nothing for advanced valid config', () => {
-    const validAdvancedConfig = {
-      gitDir: '.',
-      linters: {
-        '*.js': ['eslint --fix', 'git add']
-      }
-    }
-    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
-    expect(console.printHistory()).toMatchSnapshot()
   })
 })

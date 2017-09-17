@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `""`;
+
+exports[`validateConfig should not throw and should print nothing for simple valid config 1`] = `""`;
+
+exports[`validateConfig should not throw and should print validation warnings for mixed config 1`] = `
+"
+WARN ● Validation Warning:
+
+  Unknown option \\"*.js\\" with value ['eslint --fix', 'git add'] was found in the config root.
+
+  You are probably trying to mix simple and advanced config formats. Adding
+
+  \\"linters\\": {
+    \\"*.js\\": [\\"eslint --fix\\",\\"git add\\"]
+  }
+
+  will fix it and remove this message.
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+`;
+
+exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
+"● Validation Error:
+
+  Option \\"chunkSize\\" must be of type:
+    number
+  but instead received:
+    string
+
+  Example:
+  {
+    \\"chunkSize\\": 9007199254740991
+  }
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+`;

@@ -1,5 +1,3 @@
-/* eslint no-underscore-dangle: 0 */
-
 import mockFn from 'execa'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
@@ -20,17 +18,17 @@ describe('runScript', () => {
   })
 
   it('should return an array', () => {
-    expect(runScript('test', ['test.js'], packageJSON)).toBeInstanceOf(Array)
+    expect(runScript(['test'], ['test.js'], packageJSON)).toBeInstanceOf(Array)
   })
 
   it('should throw for non-existend script', () => {
     expect(() => {
-      runScript('missing-module', ['test.js'], packageJSON)[0].task()
+      runScript(['missing-module'], ['test.js'], packageJSON)[0].task()
     }).toThrow()
   })
 
   it('should work with a single command', async () => {
-    const res = runScript('test', ['test.js'], packageJSON)
+    const res = runScript(['test'], ['test.js'], packageJSON)
     expect(res.length).toBe(1)
     expect(res[0].title).toBe('test')
     expect(res[0].task).toBeInstanceOf(Function)
@@ -117,7 +115,7 @@ describe('runScript', () => {
   })
 
   it('should use --silent in non-verbose mode', async () => {
-    const res = runScript('test', ['test.js'], packageJSON, { verbose: false })
+    const res = runScript(['test'], ['test.js'], packageJSON, { verbose: false })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -126,7 +124,7 @@ describe('runScript', () => {
   })
 
   it('should not use --silent in verbose mode', async () => {
-    const res = runScript('test', ['test.js'], packageJSON, { verbose: true })
+    const res = runScript(['test'], ['test.js'], packageJSON, { verbose: true })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -140,7 +138,7 @@ describe('runScript', () => {
     linterErr.stderr = ''
     mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
 
-    const res = runScript('mock-fail-linter', ['test.js'], packageJSON)
+    const res = runScript(['mock-fail-linter'], ['test.js'], packageJSON)
     const taskPromise = res[0].task()
     try {
       await taskPromise

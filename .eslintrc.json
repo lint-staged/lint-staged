@@ -5,13 +5,11 @@
   "env": {
     "browser": false,
     "node": true,
-    "jest": true,
     "es6": true
   },
   "rules": {
     "strict": 0,
-    "import/no-extraneous-dependencies": [2, {
-      "devDependencies": ["**/*.spec.js"]
-    }]
+    "no-prototype-builtins": 0,
+    "no-console": 0
   }
 }
