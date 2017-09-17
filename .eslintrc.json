@@ -1,11 +1,18 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "script"
+  },
   "extends": [
     "okonet",
     "plugin:node/recommended"
   ],
   "plugins": ["node"],
   "rules": {
-    "strict": "off",
+    "strict": [
+      "error",
+      "global"
+    ],
     "no-console": "off",
     "node/exports-style": [
       "error",

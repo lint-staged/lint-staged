@@ -1,4 +1,7 @@
 /* eslint no-prototype-builtins: 0 */
+
+'use strict'
+
 const chalk = require('chalk')
 const format = require('stringify-object')
 const intersection = require('lodash/intersection')
