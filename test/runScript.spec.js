@@ -1,5 +1,3 @@
-/* eslint no-underscore-dangle: 0 */
-
 import mockFn from 'execa'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
