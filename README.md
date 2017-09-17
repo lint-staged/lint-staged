@@ -133,7 +133,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
   - **shorthand syntax** — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute. Note that this does not support multiple glob patterns.
   - **expanded syntax** — `Array<Object>` — each object can have the following:
     + `includes` — `Array<String>` — list of glob patterns to match against for including files.
-    + `excludes` — `Array<String>` — list of glob patterns to match against for excluding files.
+    + `excludes` — `Array<String>` — list of glob patterns to match against for excluding files. This is optional.
     + `commands` — `Array<String> | String` — commands to execute.
 * `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
