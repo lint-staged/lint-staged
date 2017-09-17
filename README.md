@@ -129,18 +129,18 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 
 ## Options
 
-* `linters`
+* **`linters`**
   - **shorthand syntax** — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute. Note that this does not support multiple glob patterns.
   - **expanded syntax** — `Array<Object>` — each object can have the following:
     + `includes` — `Array<String>` — list of glob patterns to match against for including files.
     + `excludes` — `Array<String>` — list of glob patterns to match against for excluding files. This is optional.
     + `commands` — `Array<String> | String` — commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
-* `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
-* `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
-* `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
-* `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
-* `globOptions` — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to customize how glob patterns match files.
+* **`gitDir`** — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
+* **`concurrent`** — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+* **`chunkSize`** — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
+* **`subTaskConcurrency`** — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
+* **`verbose`** — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
+* **`globOptions`** — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to customize how glob patterns match files.
 
 ## Filtering files
 
