@@ -67,3 +67,33 @@ Object {
   "verbose": false,
 }
 `;
+
+exports[`getConfig should set linters 2`] = `
+Object {
+  "chunkSize": 9007199254740991,
+  "concurrent": true,
+  "gitDir": ".",
+  "globOptions": Object {
+    "dot": true,
+    "matchBase": true,
+  },
+  "linters": Array [
+    Object {
+      "commands": Array [
+        "eslint --fix",
+        "git add",
+      ],
+      "excludes": Array [
+        "*.ignore.js",
+        "*.autogen.js",
+      ],
+      "includes": Array [
+        "*.js",
+      ],
+    },
+  ],
+  "renderer": "update",
+  "subTaskConcurrency": 1,
+  "verbose": false,
+}
+`;

@@ -152,17 +152,76 @@ describe('getConfig', () => {
     )
 
     expect(
-      getConfig({
+      getConfig([
+        {
+          includes: ['*.js'],
+          commands: 'eslint'
+        }
+      ])
+    ).toEqual(
+      expect.objectContaining({
         linters: [
           {
             includes: ['*.js'],
             excludes: [],
+            commands: ['eslint']
+          }
+        ]
+      })
+    )
+
+    expect(
+      getConfig([
+        {
+          includes: ['*.js'],
+          excludes: ['*.ignore.js'],
+          commands: 'eslint'
+        },
+        {
+          includes: ['*.css'],
+          excludes: ['*.ignore.css'],
+          commands: ['postcss --config path/to/your/config --replace', 'stylelint', 'git add']
+        }
+      ])
+    ).toEqual(
+      expect.objectContaining({
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: ['*.ignore.js'],
+            commands: ['eslint']
+          },
+          {
+            includes: ['*.css'],
+            excludes: ['*.ignore.css'],
+            commands: ['postcss --config path/to/your/config --replace', 'stylelint', 'git add']
+          }
+        ]
+      })
+    )
+
+    expect(
+      getConfig({
+        linters: [
+          {
+            includes: ['*.js'],
             commands: ['eslint --fix', 'git add']
           },
           {
             includes: ['.*rc'],
-            excludes: [],
             commands: ['jsonlint']
+          }
+        ]
+      })
+    ).toMatchSnapshot()
+
+    expect(
+      getConfig({
+        linters: [
+          {
+            includes: ['*.js'],
+            excludes: ['*.ignore.js', '*.autogen.js'],
+            commands: ['eslint --fix', 'git add']
           }
         ]
       })
