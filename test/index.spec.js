@@ -1,5 +1,3 @@
-/* eslint no-global-assign: 0 */
-
 import { makeConsoleMock } from 'consolemock'
 import cosmiconfig from 'cosmiconfig'
 import lintStaged from '../src/index'
