@@ -1,0 +1,14 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "no-global-assign": ["error", { "exceptions": ["console"] }],
+    "node/no-unsupported-features": "off"
+  }
+}

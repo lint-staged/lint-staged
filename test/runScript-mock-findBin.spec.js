@@ -1,6 +1,5 @@
 // This is in a separate test file because I was unable to get `jest.mock` working in a test block
 // `jest.mock` gets hoisted, but even with `jest.doMock` it wasn't working
-/* eslint no-underscore-dangle: 0 */
 
 import mockFn from 'execa'
 import runScript from '../src/runScript'
