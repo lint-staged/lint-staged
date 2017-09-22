@@ -44,7 +44,9 @@ ${stringifyObject(config)}
 `)
       }
 
-      runAll(packageJson, config)
+      const scripts = packageJson.scripts || {}
+
+      runAll(scripts, config)
         .then(() => {
           // No errors, exiting with 0
           process.exitCode = 0
