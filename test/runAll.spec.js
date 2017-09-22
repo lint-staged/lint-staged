@@ -8,35 +8,31 @@ sgfMock.mockImplementation((params, callback) => {
   callback(null, [])
 })
 
-const packageJson = {
-  scripts: {
-    mytask: 'echo "Running task"'
-  }
-}
+const scripts = { mytask: 'echo "Running task"' }
 
 describe('runAll', () => {
   afterEach(() => {
     sgfMock.mockClear()
   })
   it('should throw when invalid config is provided', () => {
-    expect(() => runAll(packageJson, {})).toThrowErrorMatchingSnapshot()
-    expect(() => runAll(packageJson)).toThrowErrorMatchingSnapshot()
+    expect(() => runAll(scripts, {})).toThrowErrorMatchingSnapshot()
+    expect(() => runAll(scripts)).toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw when a valid config is provided', () => {
     const config = getConfig({
       concurrent: false
     })
-    expect(() => runAll(packageJson, config)).not.toThrow()
+    expect(() => runAll(scripts, config)).not.toThrow()
   })
 
   it('should return a promise', () => {
-    expect(runAll(packageJson, getConfig({}))).toBeInstanceOf(Promise)
+    expect(runAll(scripts, getConfig({}))).toBeInstanceOf(Promise)
   })
 
   it('should resolve the promise with no tasks', () => {
     expect.assertions(1)
-    return expect(runAll(packageJson, getConfig({}))).resolves.toEqual('No tasks to run.')
+    return expect(runAll(scripts, getConfig({}))).resolves.toEqual('No tasks to run.')
   })
 
   it('should reject the promise when staged-git-files errors', () => {
@@ -44,6 +40,6 @@ describe('runAll', () => {
       callback('test', undefined)
     })
     expect.assertions(1)
-    return expect(runAll(packageJson, getConfig({}))).rejects.toEqual('test')
+    return expect(runAll(scripts, getConfig({}))).rejects.toEqual('test')
   })
 })

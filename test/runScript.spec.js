@@ -4,12 +4,9 @@ import runScript from '../src/runScript'
 
 jest.mock('execa')
 
-const packageJSON = {
-  scripts: {
-    test: 'noop',
-    test2: 'noop'
-  },
-  'lint-staged': {}
+const scripts = {
+  test: 'noop',
+  test2: 'noop'
 }
 
 describe('runScript', () => {
@@ -18,17 +15,17 @@ describe('runScript', () => {
   })
 
   it('should return an array', () => {
-    expect(runScript('test', ['test.js'], packageJSON)).toBeInstanceOf(Array)
+    expect(runScript('test', ['test.js'], scripts)).toBeInstanceOf(Array)
   })
 
   it('should throw for non-existend script', () => {
     expect(() => {
-      runScript('missing-module', ['test.js'], packageJSON)[0].task()
+      runScript('missing-module', ['test.js'], scripts)[0].task()
     }).toThrow()
   })
 
   it('should work with a single command', async () => {
-    const res = runScript('test', ['test.js'], packageJSON)
+    const res = runScript('test', ['test.js'], scripts)
     expect(res.length).toBe(1)
     expect(res[0].title).toBe('test')
     expect(res[0].task).toBeInstanceOf(Function)
@@ -38,7 +35,7 @@ describe('runScript', () => {
   })
 
   it('should work with multiple commands', async () => {
-    const res = runScript(['test', 'test2'], ['test.js'], packageJSON)
+    const res = runScript(['test', 'test2'], ['test.js'], scripts)
     expect(res.length).toBe(2)
     expect(res[0].title).toBe('test')
     expect(res[1].title).toBe('test2')
@@ -56,7 +53,7 @@ describe('runScript', () => {
   })
 
   it('should respect chunk size', async () => {
-    const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
+    const res = runScript(['test'], ['test1.js', 'test2.js'], scripts, {
       chunkSize: 1
     })
     const taskPromise = res[0].task()
@@ -68,7 +65,7 @@ describe('runScript', () => {
   })
 
   it('should support non npm scripts', async () => {
-    const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'], packageJSON)
+    const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'], scripts)
     expect(res.length).toBe(2)
     expect(res[0].title).toBe('node --arg=true ./myscript.js')
     expect(res[1].title).toBe('git add')
@@ -89,7 +86,7 @@ describe('runScript', () => {
   })
 
   it('should pass cwd to execa if gitDir option is set for non-npm tasks', async () => {
-    const res = runScript(['test', 'git add'], ['test.js'], packageJSON, { gitDir: '../' })
+    const res = runScript(['test', 'git add'], ['test.js'], scripts, { gitDir: '../' })
     let taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -106,7 +103,7 @@ describe('runScript', () => {
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
-    const res = runScript(['jest'], ['test.js'], packageJSON, { gitDir: '../' })
+    const res = runScript(['jest'], ['test.js'], scripts, { gitDir: '../' })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -115,7 +112,7 @@ describe('runScript', () => {
   })
 
   it('should use --silent in non-verbose mode', async () => {
-    const res = runScript('test', ['test.js'], packageJSON, { verbose: false })
+    const res = runScript('test', ['test.js'], scripts, { verbose: false })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -124,7 +121,7 @@ describe('runScript', () => {
   })
 
   it('should not use --silent in verbose mode', async () => {
-    const res = runScript('test', ['test.js'], packageJSON, { verbose: true })
+    const res = runScript('test', ['test.js'], scripts, { verbose: true })
     const taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
@@ -138,7 +135,7 @@ describe('runScript', () => {
     linterErr.stderr = ''
     mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
 
-    const res = runScript('mock-fail-linter', ['test.js'], packageJSON)
+    const res = runScript('mock-fail-linter', ['test.js'], scripts)
     const taskPromise = res[0].task()
     try {
       await taskPromise

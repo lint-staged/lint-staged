@@ -8,7 +8,7 @@ const getConfig = require('./getConfig').getConfig
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 
-module.exports = function runScript(commands, pathsToLint, packageJson, config) {
+module.exports = function runScript(commands, pathsToLint, scripts, config) {
   const normalizedConfig = getConfig(config)
   const chunkSize = normalizedConfig.chunkSize
   const concurrency = normalizedConfig.subTaskConcurrency
@@ -22,7 +22,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
     title: linter,
     task: () => {
       try {
-        const res = findBin(linter, packageJson, config)
+        const res = findBin(linter, scripts, config)
 
         const separatorArgs = /npm(\.exe)?$/i.test(res.bin) ? ['--'] : []
 
