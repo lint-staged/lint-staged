@@ -24,8 +24,6 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
       try {
         const res = findBin(linter, scripts, config)
 
-        const separatorArgs = /npm(\.exe)?$/i.test(res.bin) ? ['--'] : []
-
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
         const execaOptions =
@@ -33,7 +31,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
 
         const errors = []
         const mapper = pathsChunk => {
-          const args = res.args.concat(separatorArgs, pathsChunk)
+          const args = res.args.concat(pathsChunk)
 
           return (
             execa(res.bin, args, Object.assign({}, execaOptions))

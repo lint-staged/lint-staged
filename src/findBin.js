@@ -4,7 +4,7 @@ const npmWhich = require('npm-which')(process.cwd())
 
 module.exports = function findBin(cmd, scripts, options) {
   const npmArgs = (bin, args) =>
-    ['run', options && options.verbose ? undefined : '--silent', bin]
+    ['run', options && options.verbose ? undefined : '--silent', bin, '--']
       // args could be undefined but we filter that out.
       .concat(args)
       .filter(arg => arg !== undefined)
