@@ -8,25 +8,25 @@ describe('findBin', () => {
   it('should favor `npm run` command if exists in both package.json and .bin/', () => {
     const { bin, args } = findBin('my-linter', { 'my-linter': 'my-linter' })
     expect(bin).toEqual('npm')
-    expect(args).toEqual(['run', '--silent', 'my-linter'])
+    expect(args).toEqual(['run', '--silent', 'my-linter', '--'])
   })
 
   it('should return npm run command without --silent in verbose mode', () => {
     const { bin, args } = findBin('eslint', { eslint: 'eslint' }, { verbose: true })
     expect(bin).toEqual('npm')
-    expect(args).toEqual(['run', 'eslint'])
+    expect(args).toEqual(['run', 'eslint', '--'])
   })
 
   it('should resolve cmd defined in scripts with args', () => {
     const { bin, args } = findBin('kcd-scripts format', { 'kcd-scripts': 'node index.js' })
     expect(bin).toEqual('npm')
-    expect(args).toEqual(['run', '--silent', 'kcd-scripts', 'format'])
+    expect(args).toEqual(['run', '--silent', 'kcd-scripts', '--', 'format'])
   })
 
   it('should resolve cmd defined in scripts with space in name', () => {
     const { bin, args } = findBin('my cmd', { 'my cmd': 'echo deal-with-it' })
     expect(bin).toEqual('npm')
-    expect(args).toEqual(['run', '--silent', 'my cmd'])
+    expect(args).toEqual(['run', '--silent', 'my cmd', '--'])
   })
 
   it('should return path to bin if there is no `script` with name in package.json', () => {
