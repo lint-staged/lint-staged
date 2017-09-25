@@ -8,7 +8,7 @@ const getConfig = require('./getConfig').getConfig
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 
-module.exports = function runScript(commands, pathsToLint, packageJson, config) {
+module.exports = function runScript(commands, pathsToLint, scripts, config) {
   const normalizedConfig = getConfig(config)
   const chunkSize = normalizedConfig.chunkSize
   const concurrency = normalizedConfig.subTaskConcurrency
@@ -22,9 +22,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
     title: linter,
     task: () => {
       try {
-        const res = findBin(linter, packageJson, config)
-
-        const separatorArgs = /npm(\.exe)?$/i.test(res.bin) ? ['--'] : []
+        const res = findBin(linter, scripts, config)
 
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
@@ -33,7 +31,7 @@ module.exports = function runScript(commands, pathsToLint, packageJson, config) 
 
         const errors = []
         const mapper = pathsChunk => {
-          const args = res.args.concat(separatorArgs, pathsChunk)
+          const args = res.args.concat(pathsChunk)
 
           return (
             execa(res.bin, args, Object.assign({}, execaOptions))

@@ -1,5 +1,3 @@
-/* eslint no-console: 0 */
-
 import { makeConsoleMock } from 'consolemock'
 import { cloneDeep } from 'lodash'
 import { getConfig, validateConfig } from '../src/getConfig'
