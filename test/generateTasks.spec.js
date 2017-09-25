@@ -1,4 +1,5 @@
 import path from 'path'
+import os from 'os'
 import generateTasks from '../src/generateTasks'
 
 const files = [
@@ -21,7 +22,7 @@ const files = [
   '.hidden/test.txt'
 ]
 
-const workDir = path.join(process.env.HOME, 'tmp-lint-staged')
+const workDir = path.join(os.tmpdir(), 'tmp-lint-staged')
 
 const config = {
   gitDir: workDir,
