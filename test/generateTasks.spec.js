@@ -21,7 +21,7 @@ const files = [
   '.hidden/test.txt'
 ]
 
-const workDir = path.join(process.env.HOME, 'tmp-lint-staged')
+const workDir = path.join(require('os').homedir(), 'tmp-lint-staged')
 
 const config = {
   gitDir: workDir,
