@@ -2,16 +2,52 @@
 
 const npmWhich = require('npm-which')(process.cwd())
 
-module.exports = function findBin(cmd, packageJson, options) {
-  /*
-    * If package.json has script with cmd defined
-    * we want it to be executed first
-    */
-  if (packageJson.scripts && packageJson.scripts[cmd] !== undefined) {
-    // Support for scripts from package.json
-    const args = ['run', options && options.verbose ? undefined : '--silent', cmd].filter(Boolean)
+module.exports = function findBin(cmd, scripts, options) {
+  const npmArgs = (bin, args) =>
+    // We always add `--` even if args are not defined. This is required
+    // because we pass filenames later.
+    ['run', options && options.verbose ? undefined : '--silent', bin, '--']
+      // args could be undefined but we filter that out.
+      .concat(args)
+      .filter(arg => arg !== undefined)
 
-    return { bin: 'npm', args }
+  /*
+   * If package.json has script with cmd defined we want it to be executed
+   * first. For finding the bin from scripts defined in package.json, there
+   * are 2 possibilities. It's a command which does not have any arguments
+   * passed to it in the lint-staged config. Or it could be something like
+   * `kcd-scripts` which has arguments such as `format`, `lint` passed to it.
+   * But we always cannot assume that the cmd, which has a space in it, is of
+   * the format `bin argument` because it is legal to define a package.json
+   * script with space in it's name. So we do 2 types of lookup. First a naive
+   * lookup which just looks for the scripts entry with cmd. Then we split on
+   * space, parse the bin and args, and try again.
+   *
+   * Related:
+   *  - https://github.com/kentcdodds/kcd-scripts/pull/3
+   *  - https://github.com/okonet/lint-staged/issues/294
+   *
+   * Example:
+   *
+   *   "scripts": {
+   *     "my cmd": "echo deal-wth-it",
+   *     "demo-bin": "node index.js"
+   *   },
+   *   "lint-staged": {
+   *     "*.js": ["my cmd", "demo-bin hello"]
+   *   }
+   */
+  if (scripts[cmd] !== undefined) {
+    // Support for scripts from package.json
+    return { bin: 'npm', args: npmArgs(cmd) }
+  }
+
+  const parts = cmd.split(' ')
+  let bin = parts[0]
+  const args = parts.splice(1)
+
+  if (scripts[bin] !== undefined) {
+    return { bin: 'npm', args: npmArgs(bin, args) }
   }
 
   /*
@@ -31,10 +67,6 @@ module.exports = function findBin(cmd, packageJson, options) {
     *    "eslint": "eslint"
     *  }
     */
-
-  const parts = cmd.split(' ')
-  let bin = parts[0]
-  const args = parts.splice(1)
 
   try {
     /* npm-which tries to resolve the bin in local node_modules/.bin */

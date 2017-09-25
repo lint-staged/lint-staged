@@ -1,4 +1,3 @@
-/* eslint no-console: 0 */
 /* eslint import/no-dynamic-require: 0 */
 
 'use strict'
@@ -21,15 +20,19 @@ if (process.stdout.isTTY) {
   process.env.FORCE_COLOR = true
 }
 
+const errConfigNotFound = new Error('Config could not be found')
+
 /**
  * Root lint-staged function that is called from .bin
  */
 module.exports = function lintStaged() {
-  cosmiconfig('lint-staged', {
+  return cosmiconfig('lint-staged', {
     rc: '.lintstagedrc',
     rcExtensions: true
   })
     .then(result => {
+      if (result == null) throw errConfigNotFound
+
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
       const config = validateConfig(getConfig(result.config))
@@ -41,7 +44,9 @@ ${stringifyObject(config)}
 `)
       }
 
-      runAll(packageJson, config)
+      const scripts = packageJson.scripts || {}
+
+      runAll(scripts, config)
         .then(() => {
           // No errors, exiting with 0
           process.exitCode = 0
@@ -52,11 +57,19 @@ ${stringifyObject(config)}
           process.exitCode = 1
         })
     })
-    .catch(parsingError => {
-      console.error(`Could not parse lint-staged config.
-Make sure you have created it. See https://github.com/okonet/lint-staged#readme.
+    .catch(err => {
+      if (err === errConfigNotFound) {
+        console.error(`${err.message}.`)
+      } else {
+        // It was probably a parsing error
+        console.error(`Could not parse lint-staged config.
 
-${parsingError}
+${err}`)
+      }
+      // Print helpful message for all errors
+      console.error(`
+Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration.
 `)
       process.exitCode = 1
     })
