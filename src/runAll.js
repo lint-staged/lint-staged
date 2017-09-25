@@ -9,11 +9,11 @@ const resolveGitDir = require('./resolveGitDir')
 
 /**
  * Executes all tasks and either resolves or rejects the promise
- * @param packageJson
+ * @param scripts
  * @param config {Object}
  * @returns {Promise}
  */
-module.exports = function runAll(packageJson, config) {
+module.exports = function runAll(scripts, config) {
   // Config validation
   if (!config || !has(config, 'gitDir') || !has(config, 'concurrent') || !has(config, 'renderer')) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
@@ -35,7 +35,7 @@ module.exports = function runAll(packageJson, config) {
       const tasks = generateTasks(config, filenames).map(task => ({
         title: `Running tasks for ${task.pattern}`,
         task: () =>
-          new Listr(runScript(task.commands, task.fileList, packageJson, config), {
+          new Listr(runScript(task.commands, task.fileList, scripts, config), {
             // In sub-tasks we don't want to run concurrently
             // and we want to abort on errors
             concurrent: false,

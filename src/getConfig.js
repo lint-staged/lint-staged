@@ -1,5 +1,7 @@
-/* eslint no-console: 0 */
 /* eslint no-prototype-builtins: 0 */
+
+'use strict'
+
 const chalk = require('chalk')
 const format = require('stringify-object')
 const intersection = require('lodash/intersection')
@@ -60,13 +62,13 @@ function unknownValidationReporter(config, example, option, options) {
     const message = `  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
       format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
     )} was found in the config root.
-  
-  You are probably trying to mix simple and advanced config formats. Adding 
-  
+
+  You are probably trying to mix simple and advanced config formats. Adding
+
   ${chalk.bold(`"linters": {
     "${option}": ${JSON.stringify(config[option])}
   }`)}
-   
+
   will fix it and remove this message.`
 
     const comment = options.comment
