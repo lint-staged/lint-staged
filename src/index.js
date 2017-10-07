@@ -25,8 +25,9 @@ const errConfigNotFound = new Error('Config could not be found')
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged() {
+module.exports = function lintStaged(configPath) {
   return cosmiconfig('lint-staged', {
+    configPath,
     rc: '.lintstagedrc',
     rcExtensions: true
   })
