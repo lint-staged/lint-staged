@@ -35,6 +35,23 @@ describe('runAll', () => {
     return expect(runAll(scripts, getConfig({}))).resolves.toEqual('No tasks to run.')
   })
 
+  it('should resolve the promise with no files', () => {
+    expect.assertions(1)
+    return expect(
+      runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    ).resolves.toEqual({})
+  })
+
+  it('should not skip tasks if there are files', () => {
+    sgfMock.mockImplementation((params, callback) => {
+      callback(null, [{ filename: 'sample.js', status: 'sample' }])
+    })
+    expect.assertions(1)
+    return expect(
+      runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    ).resolves.toEqual({})
+  })
+
   it('should reject the promise when staged-git-files errors', () => {
     sgfMock.mockImplementation((params, callback) => {
       callback('test', undefined)
