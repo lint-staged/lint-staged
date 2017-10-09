@@ -1,3 +1,4 @@
+import { makeConsoleMock } from 'consolemock'
 import sgfMock from 'staged-git-files'
 import { getConfig } from '../src/getConfig'
 import runAll from '../src/runAll'
@@ -11,6 +12,9 @@ sgfMock.mockImplementation((params, callback) => {
 const scripts = { mytask: 'echo "Running task"' }
 
 describe('runAll', () => {
+  beforeEach(() => {
+    global.console = makeConsoleMock()
+  })
   afterEach(() => {
     sgfMock.mockClear()
   })
