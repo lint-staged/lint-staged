@@ -3,6 +3,11 @@ import cosmiconfig from 'cosmiconfig'
 import path from 'path'
 import lintStaged from '../src/index'
 
+const replaceSerializer = (from, to) => ({
+  test: val => typeof val === 'string' && from.test(val),
+  print: val => val.replace(from, to)
+})
+
 jest.mock('cosmiconfig')
 
 describe('lintStaged', () => {
@@ -43,7 +48,17 @@ describe('lintStaged', () => {
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
-    await lintStaged('fake-config-file.yml')
+    const nonExistentConfig = 'fake-config-file.yml'
+
+    // Serialize Windows, Linux and MacOS paths consistently
+    expect.addSnapshotSerializer(
+      replaceSerializer(
+        /Error: ENOENT: no such file or directory, open '([^']+)'/,
+        `Error: ENOENT: no such file or directory, open '${nonExistentConfig}'`
+      )
+    )
+
+    await lintStaged(nonExistentConfig)
     expect(console.printHistory()).toMatchSnapshot()
   })
 })
