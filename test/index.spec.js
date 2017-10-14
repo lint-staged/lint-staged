@@ -11,8 +11,9 @@ const replaceSerializer = (from, to) => ({
 jest.mock('cosmiconfig')
 
 describe('lintStaged', () => {
+  let logger
   beforeEach(() => {
-    console = makeConsoleMock()
+    logger = makeConsoleMock()
   })
 
   it('should output config in verbose mode', async () => {
@@ -23,8 +24,8 @@ describe('lintStaged', () => {
       }
     }
     cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
-    await lintStaged()
-    expect(console.printHistory()).toMatchSnapshot()
+    await lintStaged(undefined, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should not output config in non verbose mode', async () => {
@@ -32,19 +33,19 @@ describe('lintStaged', () => {
       '*': 'mytask'
     }
     cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
-    await lintStaged()
-    expect(console.printHistory()).toMatchSnapshot()
+    await lintStaged(undefined, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should load config file when specified', async () => {
-    await lintStaged(path.join(__dirname, '__mocks__', 'my-config.json'))
-    expect(console.printHistory()).toMatchSnapshot()
+    await lintStaged(path.join(__dirname, '__mocks__', 'my-config.json'), logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when config file is not found', async () => {
     cosmiconfig.mockImplementationOnce(() => Promise.resolve(null))
-    await lintStaged()
-    expect(console.printHistory()).toMatchSnapshot()
+    await lintStaged(undefined, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
@@ -58,7 +59,7 @@ describe('lintStaged', () => {
       )
     )
 
-    await lintStaged(nonExistentConfig)
-    expect(console.printHistory()).toMatchSnapshot()
+    await lintStaged(nonExistentConfig, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 })

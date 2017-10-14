@@ -10,4 +10,4 @@ cmdline
   .option('-c, --config [path]', 'Path to configuration file')
   .parse(process.argv)
 
-require('./src')(cmdline.config)
+require('./src')(cmdline.config, console)

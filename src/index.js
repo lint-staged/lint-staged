@@ -25,7 +25,7 @@ const errConfigNotFound = new Error('Config could not be found')
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged(configPath) {
+module.exports = function lintStaged(configPath, logger) {
   return cosmiconfig('lint-staged', {
     configPath,
     rc: '.lintstagedrc',
@@ -39,7 +39,7 @@ module.exports = function lintStaged(configPath) {
       const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {
-        console.log(`
+        logger.log(`
 Running lint-staged with the following config:
 ${stringifyObject(config)}
 `)
@@ -60,15 +60,15 @@ ${stringifyObject(config)}
     })
     .catch(err => {
       if (err === errConfigNotFound) {
-        console.error(`${err.message}.`)
+        logger.error(`${err.message}.`)
       } else {
         // It was probably a parsing error
-        console.error(`Could not parse lint-staged config.
+        logger.error(`Could not parse lint-staged config.
 
 ${err}`)
       }
       // Print helpful message for all errors
-      console.error(`
+      logger.error(`
 Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration.
 `)
