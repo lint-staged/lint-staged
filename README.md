@@ -57,6 +57,7 @@ Starting with v3.1 you can now use different ways of configuring it:
 * `lint-staged` object in your `package.json`
 * `.lintstagedrc` file in JSON or YML format
 * `lint-staged.config.js` file in JS format
+* Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
 

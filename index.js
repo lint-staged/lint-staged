@@ -2,4 +2,12 @@
 
 'use strict'
 
-require('./src')()
+const cmdline = require('commander')
+const pkg = require('./package.json')
+
+cmdline
+  .version(pkg.version)
+  .option('-c, --config [path]', 'Path to configuration file')
+  .parse(process.argv)
+
+require('./src')(cmdline.config, console)
