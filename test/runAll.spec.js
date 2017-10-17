@@ -43,7 +43,7 @@ describe('runAll', () => {
     expect.assertions(1)
     return expect(
       runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
-    ).resolves.toEqual({})
+    ).resolves.anything()
   })
 
   it('should not skip tasks if there are files', () => {
@@ -51,9 +51,9 @@ describe('runAll', () => {
       callback(null, [{ filename: 'sample.js', status: 'sample' }])
     })
     expect.assertions(1)
-    return expect(
-      runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
-    ).resolves.toEqual({})
+    return runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } })).then(() =>
+      expect(console.printHistory()).toMatchSnapshot()
+    )
   })
 
   it('should reject the promise when staged-git-files errors', () => {
