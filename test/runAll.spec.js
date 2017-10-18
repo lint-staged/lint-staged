@@ -43,7 +43,7 @@ describe('runAll', () => {
     expect.assertions(1)
     return expect(
       runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
-    ).resolves.anything()
+    ).resolves.toEqual(expect.anything())
   })
 
   it('should not skip tasks if there are files', () => {
