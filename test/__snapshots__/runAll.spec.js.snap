@@ -2,10 +2,10 @@
 
 exports[`runAll should not skip tasks if there are files 1`] = `
 "
-LOG [2m[10:32:05][22m Running tasks for *.js [started]
-LOG [2m[10:32:05][22m echo \\"sample\\" [started]
-LOG [2m[10:32:05][22m echo \\"sample\\" [completed]
-LOG [2m[10:32:05][22m Running tasks for *.js [completed]"
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [completed]
+LOG Running tasks for *.js [completed]"
 `;
 
 exports[`runAll should throw when invalid config is provided 1`] = `"Invalid config provided to runAll! Use getConfig instead."`;
