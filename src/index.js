@@ -25,7 +25,7 @@ const errConfigNotFound = new Error('Config could not be found')
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged(injectedLogger, configPath) {
+module.exports = function lintStaged(injectedLogger, configPath, verbose) {
   const logger = injectedLogger || console
 
   return cosmiconfig('lint-staged', {
@@ -36,9 +36,14 @@ module.exports = function lintStaged(injectedLogger, configPath) {
     .then(result => {
       if (result == null) throw errConfigNotFound
 
+      const configResult = {
+        verbose,
+        ...result.config
+      }
+
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
-      const config = validateConfig(getConfig(result.config))
+      const config = validateConfig(getConfig(configResult))
 
       if (config.verbose) {
         logger.log(`
