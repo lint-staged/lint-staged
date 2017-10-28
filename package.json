@@ -29,7 +29,8 @@
   "dependencies": {
     "app-root-path": "^2.0.0",
     "chalk": "^2.1.0",
-    "cosmiconfig": "^1.1.0",
+    "commander": "^2.11.0",
+    "cosmiconfig": "^3.1.0",
     "execa": "^0.8.0",
     "is-glob": "^4.0.0",
     "jest-validate": "^21.1.0",
@@ -46,7 +47,7 @@
     "babel-jest": "^21.0.2",
     "babel-preset-env": "^1.6.0",
     "commitizen": "^2.9.6",
-    "consolemock": "^0.2.2",
+    "consolemock": "^0.3.0",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.5.0",
     "eslint-config-okonet": "^5.0.1",
@@ -67,11 +68,6 @@
     "testEnvironment": "node",
     "setupFiles": [
       "./testSetup.js"
-    ]
-  },
-  "greenkeeper": {
-    "ignore": [
-      "cosmiconfig"
     ]
   },
   "keywords": [
