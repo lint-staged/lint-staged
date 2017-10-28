@@ -10,6 +10,10 @@ const replaceSerializer = (from, to) => ({
 
 jest.mock('cosmiconfig')
 
+const mockCosmiconfigWith = result => {
+  cosmiconfig.mockImplementationOnce(() => ({ load: () => Promise.resolve(result) }))
+}
+
 describe('lintStaged', () => {
   let logger
 
@@ -24,7 +28,7 @@ describe('lintStaged', () => {
         '*': 'mytask'
       }
     }
-    cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
+    mockCosmiconfigWith({ config })
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
@@ -33,7 +37,7 @@ describe('lintStaged', () => {
     const config = {
       '*': 'mytask'
     }
-    cosmiconfig.mockImplementationOnce(() => Promise.resolve({ config }))
+    mockCosmiconfigWith({ config })
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
@@ -44,7 +48,7 @@ describe('lintStaged', () => {
   })
 
   it('should print helpful error message when config file is not found', async () => {
-    cosmiconfig.mockImplementationOnce(() => Promise.resolve(null))
+    mockCosmiconfigWith(null)
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })

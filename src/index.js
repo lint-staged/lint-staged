@@ -28,11 +28,14 @@ const errConfigNotFound = new Error('Config could not be found')
 module.exports = function lintStaged(injectedLogger, configPath) {
   const logger = injectedLogger || console
 
-  return cosmiconfig('lint-staged', {
+  const explorer = cosmiconfig('lint-staged', {
     configPath,
     rc: '.lintstagedrc',
     rcExtensions: true
   })
+
+  return explorer
+    .load(process.cwd())
     .then(result => {
       if (result == null) throw errConfigNotFound
 
