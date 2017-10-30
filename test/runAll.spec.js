@@ -10,6 +10,7 @@ sgfMock.mockImplementation((params, callback) => {
 })
 
 const scripts = { mytask: 'echo "Running task"' }
+const globalConsoleTemp = global.console
 
 describe('runAll', () => {
   beforeEach(() => {
@@ -17,6 +18,9 @@ describe('runAll', () => {
   })
   afterEach(() => {
     sgfMock.mockClear()
+  })
+  afterAll(() => {
+    global.console = globalConsoleTemp
   })
   it('should throw when invalid config is provided', () => {
     expect(() => runAll(scripts, {})).toThrowErrorMatchingSnapshot()
