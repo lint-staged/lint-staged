@@ -1,0 +1,6 @@
+{
+  "verbose": true,
+  "linters": {
+    "*": "mytask"
+  }
+}
