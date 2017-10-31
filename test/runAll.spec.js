@@ -45,14 +45,12 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should not skip tasks if there are files', () => {
+  it('should not skip tasks if there are files', async () => {
     sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'sample' }])
     })
-    expect.assertions(1)
-    return runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } })).then(() =>
-      expect(console.printHistory()).toMatchSnapshot()
-    )
+    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    expect(console.printHistory()).toMatchSnapshot()
   })
 
   it('should reject the promise when staged-git-files errors', () => {
