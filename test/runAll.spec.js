@@ -16,9 +16,6 @@ describe('runAll', () => {
   beforeEach(() => {
     global.console = makeConsoleMock()
   })
-  afterEach(() => {
-    sgfMock.mockClear()
-  })
   afterAll(() => {
     global.console = globalConsoleTemp
   })
@@ -51,7 +48,7 @@ describe('runAll', () => {
   })
 
   it('should not skip tasks if there are files', () => {
-    sgfMock.mockImplementation((params, callback) => {
+    sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'sample' }])
     })
     expect.assertions(1)
@@ -61,7 +58,7 @@ describe('runAll', () => {
   })
 
   it('should reject the promise when staged-git-files errors', () => {
-    sgfMock.mockImplementation((params, callback) => {
+    sgfMock.mockImplementationOnce((params, callback) => {
       callback('test', undefined)
     })
     expect.assertions(1)
