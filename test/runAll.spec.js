@@ -40,11 +40,9 @@ describe('runAll', () => {
     return expect(runAll(scripts, getConfig({}))).resolves.toEqual('No tasks to run.')
   })
 
-  it('should resolve the promise with no files', () => {
-    expect.assertions(1)
-    return expect(
-      runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
-    ).resolves.toEqual(expect.anything())
+  it('should resolve the promise with no files', async () => {
+    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    expect(console.printHistory()).toMatchSnapshot()
   })
 
   it('should not skip tasks if there are files', () => {
