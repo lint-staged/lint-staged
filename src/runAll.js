@@ -38,6 +38,7 @@ module.exports = function runAll(scripts, config) {
           new Listr(runScript(task.commands, task.fileList, scripts, config), {
             // In sub-tasks we don't want to run concurrently
             // and we want to abort on errors
+            dateFormat: false,
             concurrent: false,
             exitOnError: true
           }),
@@ -51,6 +52,7 @@ module.exports = function runAll(scripts, config) {
 
       if (tasks.length) {
         return new Listr(tasks, {
+          dateFormat: false,
           concurrent,
           renderer,
           exitOnError: !concurrent // Wait for all errors when running concurrently
