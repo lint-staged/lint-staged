@@ -174,7 +174,6 @@ describe('getConfig', () => {
     const src = {
       concurrent: false,
       chunkSize: 2,
-      gitDir: '/to',
       globOptions: {
         matchBase: false,
         dot: true
@@ -198,15 +197,14 @@ describe('validateConfig', () => {
   it('should throw and should print validation errors for invalid config', () => {
     const invalidAdvancedConfig = {
       foo: false,
-      chunkSize: 'string',
-      gitDir: 111
+      chunkSize: 'string'
     }
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw and should print validation warnings for mixed config', () => {
     const invalidMixedConfig = {
-      gitDir: './path/to/packagejson/',
+      concurrent: false,
       '*.js': ['eslint --fix', 'git add']
     }
     expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
@@ -223,7 +221,7 @@ describe('validateConfig', () => {
 
   it('should not throw and should print nothing for advanced valid config', () => {
     const validAdvancedConfig = {
-      gitDir: '.',
+      concurrent: false,
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
