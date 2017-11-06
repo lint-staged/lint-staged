@@ -11,7 +11,6 @@ Running lint-staged with the following config:
 	},
 	concurrent: true,
 	chunkSize: 9007199254740991,
-	gitDir: '.',
 	globOptions: {
 		matchBase: true,
 		dot: true
@@ -35,7 +34,6 @@ Running lint-staged with the following config:
 	},
 	concurrent: true,
 	chunkSize: 9007199254740991,
-	gitDir: '.',
 	globOptions: {
 		matchBase: true,
 		dot: true

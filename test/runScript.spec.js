@@ -1,8 +1,10 @@
 import mockFn from 'execa'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
+import resolveGitDir from '../src/resolveGitDir'
 
 jest.mock('execa')
+jest.mock('../src/resolveGitDir')
 
 const scripts = {
   test: 'noop',
@@ -10,6 +12,11 @@ const scripts = {
 }
 
 describe('runScript', () => {
+  beforeEach(() => {
+    resolveGitDir.mockClear()
+    resolveGitDir.mockReturnValue(process.cwd())
+  })
+
   afterEach(() => {
     mockFn.mockClear()
   })
@@ -85,8 +92,9 @@ describe('runScript', () => {
     expect(mockFn.mock.calls[1][1]).toEqual(['add', 'test.js'])
   })
 
-  it('should pass cwd to execa if gitDir option is set for non-npm tasks', async () => {
-    const res = runScript(['test', 'git add'], ['test.js'], scripts, { gitDir: '../' })
+  it('should pass cwd to execa if gitDir is different than process.cwd for non-npm tasks', async () => {
+    resolveGitDir.mockReturnValue('../')
+    const res = runScript(['test', 'git add'], ['test.js'], scripts)
     let taskPromise = res[0].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise

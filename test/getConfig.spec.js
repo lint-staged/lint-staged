@@ -105,24 +105,6 @@ describe('getConfig', () => {
     )
   })
 
-  it('should set gitDir', () => {
-    expect(getConfig({})).toEqual(
-      expect.objectContaining({
-        gitDir: '.'
-      })
-    )
-
-    expect(
-      getConfig({
-        gitDir: '../path'
-      })
-    ).toEqual(
-      expect.objectContaining({
-        gitDir: '../path'
-      })
-    )
-  })
-
   it('should set linters', () => {
     expect(getConfig()).toEqual(
       expect.objectContaining({

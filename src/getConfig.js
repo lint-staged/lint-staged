@@ -15,12 +15,11 @@ const isGlob = require('is-glob')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
+ * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
  */
 const defaultConfig = {
   concurrent: true,
   chunkSize: Number.MAX_SAFE_INTEGER,
-  gitDir: '.',
   globOptions: {
     matchBase: true,
     dot: true
@@ -60,7 +59,9 @@ function unknownValidationReporter(config, example, option, options) {
    */
   if (isGlob(option)) {
     const message = `  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
-      format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+      format(config[option], {
+        inlineCharacterLimit: Number.POSITIVE_INFINITY
+      })
     )} was found in the config root.
 
   You are probably trying to mix simple and advanced config formats. Adding
@@ -88,7 +89,7 @@ function unknownValidationReporter(config, example, option, options) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
+ *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
  * }}
  */
 function getConfig(sourceConfig) {

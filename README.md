@@ -99,7 +99,6 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Options
 
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `gitDir` — Sets the relative path to the `.git` root. Useful when your `package.json` is located in a subdirectory. See [working from a subdirectory](#working-from-a-subdirectory)
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
@@ -152,19 +151,6 @@ Tools like ESLint/TSLint or stylefmt can reformat your code according to an appr
 ```
 
 ~~Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.~~ This is still [not resolved](https://github.com/okonet/lint-staged/issues/62)
-
-## Working from a subdirectory
-
-If your `package.json` is located in a subdirectory of the git root directory, you can use `gitDir` relative path to point there in order to make lint-staged work.
-
-```diff json
-{
-+   "gitDir": "../",
-    "linters":{
-        "*": "my-task"
-    }
-}
-```
 
 ## Examples
 

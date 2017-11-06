@@ -1,7 +1,7 @@
 'use strict'
 
-const path = require('path')
+const findParentDir = require('find-parent-dir')
 
-module.exports = function resolveGitDir(gitDir) {
-  return gitDir ? path.resolve(gitDir) : process.cwd()
+module.exports = function resolveGitDir() {
+  return findParentDir.sync(process.cwd(), '.git')
 }

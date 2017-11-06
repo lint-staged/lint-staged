@@ -4,7 +4,6 @@ exports[`getConfig should return config with defaults 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -20,7 +19,6 @@ exports[`getConfig should return config with defaults for undefined 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -36,7 +34,6 @@ exports[`getConfig should set linters 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -54,26 +51,19 @@ Object {
 }
 `;
 
-exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `""`;
-
-exports[`validateConfig should not throw and should print nothing for simple valid config 1`] = `""`;
-
-exports[`validateConfig should not throw and should print validation warnings for mixed config 1`] = `
+exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `
 "
 WARN ● Validation Warning:
 
-  Unknown option \\"*.js\\" with value ['eslint --fix', 'git add'] was found in the config root.
-
-  You are probably trying to mix simple and advanced config formats. Adding
-
-  \\"linters\\": {
-    \\"*.js\\": [\\"eslint --fix\\",\\"git add\\"]
-  }
-
-  will fix it and remove this message.
+  Unknown option \\"gitDir\\" with value \\".\\" was found.
+  This is probably a typing mistake. Fixing it will remove this message.
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
+
+exports[`validateConfig should not throw and should print nothing for simple valid config 1`] = `""`;
+
+exports[`validateConfig should not throw and should print validation warnings for mixed config 1`] = `""`;
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
 "● Validation Error:
