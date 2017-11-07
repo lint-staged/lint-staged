@@ -2,6 +2,7 @@
 
 const path = require('path')
 const minimatch = require('minimatch')
+const pathIsInside = require('path-is-inside')
 const getConfig = require('./getConfig').getConfig
 const resolveGitDir = require('./resolveGitDir')
 
@@ -20,7 +21,7 @@ module.exports = function generateTasks(config, relFiles) {
 
     const fileList = files
       // Only worry about children of the CWD
-      .filter(file => file.startsWith(cwd))
+      .filter(file => pathIsInside(file, cwd))
       // Make the paths relative to CWD for filtering
       .map(file => path.relative(cwd, file))
       // We want to filter before resolving paths
