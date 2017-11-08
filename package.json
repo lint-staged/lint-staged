@@ -31,6 +31,7 @@
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
     "cosmiconfig": "^3.1.0",
+    "dedent": "^0.7.0",
     "execa": "^0.8.0",
     "is-glob": "^4.0.0",
     "jest-validate": "^21.1.0",

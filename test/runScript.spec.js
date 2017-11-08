@@ -1,3 +1,4 @@
+import dedent from 'dedent'
 import mockFn from 'execa'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
@@ -140,10 +141,11 @@ describe('runScript', () => {
     try {
       await taskPromise
     } catch (err) {
-      expect(err.message)
-        .toMatch(`${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
-${linterErr.stdout}
-${linterErr.stderr}`)
+      expect(err.message).toMatch(dedent`
+        ${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
+        ${linterErr.stdout}
+        ${linterErr.stderr}
+      `)
     }
   })
 })

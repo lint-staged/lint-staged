@@ -3,6 +3,7 @@
 'use strict'
 
 const appRoot = require('app-root-path')
+const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
 const getConfig = require('./getConfig').getConfig
@@ -44,10 +45,8 @@ module.exports = function lintStaged(injectedLogger, configPath) {
       const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {
-        logger.log(`
-Running lint-staged with the following config:
-${stringifyObject(config)}
-`)
+        logger.log('Running lint-staged with the following config:')
+        logger.log(stringifyObject(config, { indent: '  ' }))
       }
 
       const scripts = packageJson.scripts || {}
@@ -68,15 +67,18 @@ ${stringifyObject(config)}
         logger.error(`${err.message}.`)
       } else {
         // It was probably a parsing error
-        logger.error(`Could not parse lint-staged config.
+        logger.error(dedent`
+          Could not parse lint-staged config.
 
-${err}`)
+          ${err}
+        `)
       }
+      logger.error() // empty line
       // Print helpful message for all errors
-      logger.error(`
-Please make sure you have created it correctly.
-See https://github.com/okonet/lint-staged#configuration.
-`)
+      logger.error(dedent`
+        Please make sure you have created it correctly.
+        See https://github.com/okonet/lint-staged#configuration.
+      `)
       process.exitCode = 1
     })
 }
