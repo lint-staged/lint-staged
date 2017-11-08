@@ -1,6 +1,7 @@
 'use strict'
 
 const chunk = require('lodash/chunk')
+const dedent = require('dedent')
 const execa = require('execa')
 const logSymbols = require('log-symbols')
 const pMap = require('p-map')
@@ -47,8 +48,10 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
         return pMap(filePathChunks, mapper, { concurrency })
           .catch(err => {
             /* This will probably never be called. But just in case.. */
-            throw new Error(`${logSymbols.error} ${linter} got an unexpected error.
-${err.message}`)
+            throw new Error(dedent`
+              ${logSymbols.error} ${linter} got an unexpected error.
+              ${err.message}
+            `)
           })
           .then(() => {
             if (errors.length === 0) return `${logSymbols.success} ${linter} passed!`
@@ -56,9 +59,11 @@ ${err.message}`)
             const errStdout = errors.map(err => err.stdout).join('')
             const errStderr = errors.map(err => err.stderr).join('')
 
-            throw new Error(`${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
-${errStdout}
-${errStderr}`)
+            throw new Error(dedent`
+              ${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
+              ${errStdout}
+              ${errStderr}
+            `)
           })
       } catch (err) {
         throw err
