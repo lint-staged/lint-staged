@@ -28,7 +28,9 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
         const execaOptions =
-          /git(\.exe)?$/i.test(res.bin) && config && gitDir ? { cwd: gitDir } : {}
+          /git(\.exe)?$/i.test(res.bin) && config && gitDir
+            ? { cwd: gitDir, stdio: 'inherit' }
+            : { stdio: 'inherit' }
 
         const errors = []
         const mapper = pathsChunk => {

@@ -45,12 +45,20 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual([
+      'npm',
+      ['run', '--silent', 'test', '--', 'test.js'],
+      { stdio: 'inherit' }
+    ])
     taskPromise = res[1].task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
-    expect(mockFn.mock.calls[1]).toEqual(['npm', ['run', '--silent', 'test2', '--', 'test.js'], {}])
+    expect(mockFn.mock.calls[1]).toEqual([
+      'npm',
+      ['run', '--silent', 'test2', '--', 'test.js'],
+      { stdio: 'inherit' }
+    ])
   })
 
   it('should respect chunk size', async () => {
@@ -61,8 +69,16 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(2)
-    expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test1.js'], {}])
-    expect(mockFn.mock.calls[1]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test2.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual([
+      'npm',
+      ['run', '--silent', 'test', '--', 'test1.js'],
+      { stdio: 'inherit' }
+    ])
+    expect(mockFn.mock.calls[1]).toEqual([
+      'npm',
+      ['run', '--silent', 'test', '--', 'test2.js'],
+      { stdio: 'inherit' }
+    ])
   })
 
   it('should support non npm scripts', async () => {
@@ -92,7 +108,11 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual([
+      'npm',
+      ['run', '--silent', 'test', '--', 'test.js'],
+      { stdio: 'inherit' }
+    ])
 
     taskPromise = res[1].task()
     expect(taskPromise).toBeInstanceOf(Promise)
@@ -100,7 +120,7 @@ describe('runScript', () => {
     expect(mockFn.mock.calls.length).toEqual(2)
     expect(mockFn.mock.calls[1][0]).toMatch(/git$/)
     expect(mockFn.mock.calls[1][1]).toEqual(['add', 'test.js'])
-    expect(mockFn.mock.calls[1][2]).toEqual({ cwd: '../' })
+    expect(mockFn.mock.calls[1][2]).toEqual({ cwd: '../', stdio: 'inherit' })
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
@@ -109,7 +129,7 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0]).toEqual(['jest', ['test.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual(['jest', ['test.js'], { stdio: 'inherit' }])
   })
 
   it('should use --silent in non-verbose mode', async () => {
@@ -118,7 +138,11 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', '--silent', 'test', '--', 'test.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual([
+      'npm',
+      ['run', '--silent', 'test', '--', 'test.js'],
+      { stdio: 'inherit' }
+    ])
   })
 
   it('should not use --silent in verbose mode', async () => {
@@ -127,7 +151,11 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn.mock.calls.length).toEqual(1)
-    expect(mockFn.mock.calls[0]).toEqual(['npm', ['run', 'test', '--', 'test.js'], {}])
+    expect(mockFn.mock.calls[0]).toEqual([
+      'npm',
+      ['run', 'test', '--', 'test.js'],
+      { stdio: 'inherit' }
+    ])
   })
 
   it('should throw error for failed linters', async () => {
