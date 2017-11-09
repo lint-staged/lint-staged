@@ -119,16 +119,12 @@ function validateConfig(config) {
     }
   })
 
-  const validation = validate(config, {
+  validate(config, {
     exampleConfig,
     unknown: unknownValidationReporter,
     comment:
       'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'
   })
-
-  if (!validation.isValid) {
-    throw new Error('lint-staged config is invalid... Aborting.')
-  }
 
   return config
 }
