@@ -211,14 +211,14 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should not throw and should print validation warnings for old config', () => {
-    const invalidMixedConfig = {
+  it('should print deprecation warning for gitDir option', () => {
+    const configWithDeprecatedOpt = {
       gitDir: '../',
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
     }
-    expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
+    expect(() => validateConfig(getConfig(configWithDeprecatedOpt))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 

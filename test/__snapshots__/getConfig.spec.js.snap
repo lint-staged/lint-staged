@@ -72,15 +72,15 @@ WARN ● Validation Warning:
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
 
-exports[`validateConfig should not throw and should print validation warnings for old config 1`] = `
+exports[`validateConfig should print deprecation warning for gitDir option 1`] = `
 "
 WARN ● Deprecation Warning:
 
 Option gitDir was removed.
 
-    lint-staged now automatically resolves '.git' directory.
+  lint-staged now automatically resolves '.git' directory.
 
-    Please remove gitDir from your configuration.
+  Please remove gitDir from your configuration.
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;

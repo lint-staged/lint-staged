@@ -122,9 +122,9 @@ function validateConfig(config) {
   const deprecatedConfig = {
     gitDir: () => `Option ${chalk.bold('gitDir')} was removed.
 
-    lint-staged now automatically resolves '.git' directory.
+  lint-staged now automatically resolves '.git' directory.
 
-    Please remove ${chalk.bold('gitDir')} from your configuration.`
+  Please remove ${chalk.bold('gitDir')} from your configuration.`
   }
 
   const validation = validate(config, {
