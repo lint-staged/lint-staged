@@ -8,12 +8,13 @@ const pMap = require('p-map')
 const getConfig = require('./getConfig').getConfig
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
+const resolveGitDir = require('./resolveGitDir')
 
 module.exports = function runScript(commands, pathsToLint, scripts, config) {
   const normalizedConfig = getConfig(config)
   const chunkSize = normalizedConfig.chunkSize
   const concurrency = normalizedConfig.subTaskConcurrency
-  const gitDir = normalizedConfig.gitDir
+  const gitDir = resolveGitDir()
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
 
@@ -28,7 +29,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
         const execaOptions =
-          /git(\.exe)?$/i.test(res.bin) && config && gitDir ? { cwd: gitDir } : {}
+          /git(\.exe)?$/i.test(res.bin) && gitDir !== process.cwd() ? { cwd: gitDir } : {}
 
         const errors = []
         const mapper = pathsChunk => {

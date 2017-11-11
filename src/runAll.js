@@ -16,7 +16,7 @@ const resolveGitDir = require('./resolveGitDir')
  */
 module.exports = function runAll(scripts, config) {
   // Config validation
-  if (!config || !has(config, 'gitDir') || !has(config, 'concurrent') || !has(config, 'renderer')) {
+  if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 

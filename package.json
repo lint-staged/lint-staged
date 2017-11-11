@@ -33,6 +33,7 @@
     "cosmiconfig": "^3.1.0",
     "dedent": "^0.7.0",
     "execa": "^0.8.0",
+    "find-parent-dir": "^0.3.0",
     "is-glob": "^4.0.0",
     "jest-validate": "^21.1.0",
     "listr": "^0.13.0",
@@ -41,6 +42,7 @@
     "minimatch": "^3.0.0",
     "npm-which": "^3.0.1",
     "p-map": "^1.1.1",
+    "path-is-inside": "^1.0.2",
     "pify": "^3.0.0",
     "staged-git-files": "0.0.4",
     "stringify-object": "^3.2.0"

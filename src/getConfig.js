@@ -15,12 +15,11 @@ const isGlob = require('is-glob')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
+ * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
  */
 const defaultConfig = {
   concurrent: true,
   chunkSize: Number.MAX_SAFE_INTEGER,
-  gitDir: '.',
   globOptions: {
     matchBase: true,
     dot: true
@@ -89,7 +88,7 @@ function unknownValidationReporter(config, example, option, options) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
+ *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
  * }}
  */
 function getConfig(sourceConfig) {
@@ -120,8 +119,17 @@ function validateConfig(config) {
     }
   })
 
+  const deprecatedConfig = {
+    gitDir: () => `  Option ${chalk.bold('gitDir')} was removed.
+
+  lint-staged now automatically resolves '.git' directory.
+
+  Please remove ${chalk.bold('gitDir')} from your configuration.`
+  }
+
   const validation = validate(config, {
     exampleConfig,
+    deprecatedConfig,
     unknown: unknownValidationReporter,
     comment:
       'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'

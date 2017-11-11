@@ -1,6 +1,7 @@
 import path from 'path'
 import os from 'os'
 import generateTasks from '../src/generateTasks'
+import resolveGitDir from '../src/resolveGitDir'
 
 const files = [
   'test.js',
@@ -22,10 +23,12 @@ const files = [
   '.hidden/test.txt'
 ]
 
+// Mocks get hoisted
+jest.mock('../src/resolveGitDir.js')
 const workDir = path.join(os.tmpdir(), 'tmp-lint-staged')
+resolveGitDir.mockReturnValue(workDir)
 
 const config = {
-  gitDir: workDir,
   linters: {
     '*.js': 'root-js',
     '**/*.js': 'any-js',
@@ -37,6 +40,14 @@ const config = {
 }
 
 describe('generateTasks', () => {
+  beforeEach(() => {
+    jest.spyOn(process, 'cwd').mockReturnValue(workDir)
+  })
+
+  afterEach(() => {
+    process.cwd.mockRestore()
+  })
+
   it('should work with simple configuration', () => {
     const result = generateTasks(
       {
@@ -77,31 +88,27 @@ describe('generateTasks', () => {
     })
   })
 
+  it('should not match non-children files', () => {
+    const relPath = path.resolve(path.join(process.cwd(), '..'))
+    resolveGitDir.mockReturnValueOnce(relPath)
+    const result = generateTasks(Object.assign({}, config), files)
+    const linter = result.find(item => item.pattern === '*.js')
+    expect(linter).toEqual({
+      pattern: '*.js',
+      commands: 'root-js',
+      fileList: []
+    })
+  })
+
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
+
     result.forEach(task => {
       if (task.commands === 'unknown-js') {
         expect(task.fileList.length).toEqual(0)
       } else {
         expect(task.fileList.length).not.toEqual(0)
       }
-    })
-  })
-
-  it('should match pattern "*.js" for relative path', () => {
-    const relPath = path.resolve(path.join(process.cwd(), '..'))
-    const result = generateTasks(Object.assign({}, config, { gitDir: '..' }), files)
-    const linter = result.find(item => item.pattern === '*.js')
-    expect(linter).toEqual({
-      pattern: '*.js',
-      commands: 'root-js',
-      fileList: [
-        `${relPath}/test.js`,
-        `${relPath}/deeper/test.js`,
-        `${relPath}/deeper/test2.js`,
-        `${relPath}/even/deeper/test.js`,
-        `${relPath}/.hidden/test.js`
-      ].map(path.normalize)
     })
   })
 

@@ -10,7 +10,6 @@ LOG {
   },
   concurrent: true,
   chunkSize: 9007199254740991,
-  gitDir: '.',
   globOptions: {
     matchBase: true,
     dot: true
@@ -32,7 +31,6 @@ LOG {
   },
   concurrent: true,
   chunkSize: 9007199254740991,
-  gitDir: '.',
   globOptions: {
     matchBase: true,
     dot: true
