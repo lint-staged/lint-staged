@@ -211,6 +211,17 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
+  it('should not throw and should print validation warnings for old config', () => {
+    const invalidMixedConfig = {
+      gitDir: '../',
+      linters: {
+        '*.js': ['eslint --fix', 'git add']
+      }
+    }
+    expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
   it('should not throw and should print nothing for simple valid config', () => {
     const validSimpleConfig = {
       '*.js': ['eslint --fix', 'git add']
