@@ -76,7 +76,7 @@ exports[`validateConfig should print deprecation warning for gitDir option 1`] =
 "
 WARN ● Deprecation Warning:
 
-Option gitDir was removed.
+  Option gitDir was removed.
 
   lint-staged now automatically resolves '.git' directory.
 
