@@ -149,6 +149,7 @@ describe('runScript', () => {
     try {
       await taskPromise
     } catch (err) {
+      // prettier-ignore
       expect(err.message).toMatch(dedent`
         ${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
         ${linterErr.stdout}

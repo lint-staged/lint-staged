@@ -1,5 +1,5 @@
 import Listr from 'listr'
-import { makeConsoleMock } from 'consolemock'
+import makeConsoleMock from 'consolemock'
 import printErrors from '../src/printErrors'
 
 describe('printErrors', () => {
