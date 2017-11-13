@@ -1,4 +1,4 @@
-import { makeConsoleMock } from 'consolemock'
+import makeConsoleMock from 'consolemock'
 import cosmiconfig from 'cosmiconfig'
 import path from 'path'
 import lintStaged from '../src/index'

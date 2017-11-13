@@ -59,6 +59,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
             const errStdout = errors.map(err => err.stdout).join('')
             const errStderr = errors.map(err => err.stderr).join('')
 
+            // prettier-ignore
             throw new Error(dedent`
               ${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
               ${errStdout}
