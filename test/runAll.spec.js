@@ -13,12 +13,18 @@ const scripts = { mytask: 'echo "Running task"' }
 const globalConsoleTemp = global.console
 
 describe('runAll', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     global.console = makeConsoleMock()
   })
+
+  beforeEach(() => {
+    global.console.clearHistory()
+  })
+
   afterAll(() => {
     global.console = globalConsoleTemp
   })
+
   it('should throw when invalid config is provided', () => {
     expect(() => runAll(scripts, {})).toThrowErrorMatchingSnapshot()
     expect(() => runAll(scripts)).toThrowErrorMatchingSnapshot()
