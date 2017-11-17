@@ -1,3 +1,4 @@
+import makeConsoleMock from 'consolemock'
 import sgfMock from 'staged-git-files'
 import { getConfig } from '../src/getConfig'
 import runAll from '../src/runAll'
@@ -9,10 +10,14 @@ sgfMock.mockImplementation((params, callback) => {
 })
 
 const scripts = { mytask: 'echo "Running task"' }
+const globalConsoleTemp = global.console
 
 describe('runAll', () => {
-  afterEach(() => {
-    sgfMock.mockClear()
+  beforeEach(() => {
+    global.console = makeConsoleMock()
+  })
+  afterAll(() => {
+    global.console = globalConsoleTemp
   })
   it('should throw when invalid config is provided', () => {
     expect(() => runAll(scripts, {})).toThrowErrorMatchingSnapshot()
@@ -35,8 +40,21 @@ describe('runAll', () => {
     return expect(runAll(scripts, getConfig({}))).resolves.toEqual('No tasks to run.')
   })
 
+  it('should resolve the promise with no files', async () => {
+    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not skip tasks if there are files', async () => {
+    sgfMock.mockImplementationOnce((params, callback) => {
+      callback(null, [{ filename: 'sample.js', status: 'sample' }])
+    })
+    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
   it('should reject the promise when staged-git-files errors', () => {
-    sgfMock.mockImplementation((params, callback) => {
+    sgfMock.mockImplementationOnce((params, callback) => {
       callback('test', undefined)
     })
     expect.assertions(1)

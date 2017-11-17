@@ -1,3 +1,4 @@
+import dedent from 'dedent'
 import pMapMock from 'p-map'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
@@ -39,8 +40,10 @@ describe('runScript', () => {
     try {
       await res[0].task()
     } catch (err) {
-      expect(err.message).toMatch(`${logSymbols.error} test got an unexpected error.
-Unexpected Error`)
+      expect(err.message).toMatch(dedent`
+        ${logSymbols.error} test got an unexpected error.
+        Unexpected Error
+      `)
     }
   })
 })

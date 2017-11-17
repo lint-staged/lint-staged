@@ -1,4 +1,4 @@
-import { makeConsoleMock } from 'consolemock'
+import makeConsoleMock from 'consolemock'
 import { cloneDeep } from 'lodash'
 import { getConfig, validateConfig } from '../src/getConfig'
 
@@ -105,24 +105,6 @@ describe('getConfig', () => {
     )
   })
 
-  it('should set gitDir', () => {
-    expect(getConfig({})).toEqual(
-      expect.objectContaining({
-        gitDir: '.'
-      })
-    )
-
-    expect(
-      getConfig({
-        gitDir: '../path'
-      })
-    ).toEqual(
-      expect.objectContaining({
-        gitDir: '../path'
-      })
-    )
-  })
-
   it('should set linters', () => {
     expect(getConfig()).toEqual(
       expect.objectContaining({
@@ -192,7 +174,6 @@ describe('getConfig', () => {
     const src = {
       concurrent: false,
       chunkSize: 2,
-      gitDir: '/to',
       globOptions: {
         matchBase: false,
         dot: true
@@ -216,18 +197,28 @@ describe('validateConfig', () => {
   it('should throw and should print validation errors for invalid config', () => {
     const invalidAdvancedConfig = {
       foo: false,
-      chunkSize: 'string',
-      gitDir: 111
+      chunkSize: 'string'
     }
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw and should print validation warnings for mixed config', () => {
     const invalidMixedConfig = {
-      gitDir: './path/to/packagejson/',
+      concurrent: false,
       '*.js': ['eslint --fix', 'git add']
     }
     expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should print deprecation warning for gitDir option', () => {
+    const configWithDeprecatedOpt = {
+      gitDir: '../',
+      linters: {
+        '*.js': ['eslint --fix', 'git add']
+      }
+    }
+    expect(() => validateConfig(getConfig(configWithDeprecatedOpt))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 
@@ -241,7 +232,7 @@ describe('validateConfig', () => {
 
   it('should not throw and should print nothing for advanced valid config', () => {
     const validAdvancedConfig = {
-      gitDir: '.',
+      concurrent: false,
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
