@@ -40,11 +40,11 @@ const config = {
 }
 
 describe('generateTasks', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     jest.spyOn(process, 'cwd').mockReturnValue(workDir)
   })
 
-  afterEach(() => {
+  afterAll(() => {
     process.cwd.mockRestore()
   })
 
@@ -74,7 +74,7 @@ describe('generateTasks', () => {
   })
 
   it('should return absolute paths', () => {
-    const result = generateTasks(
+    const [task] = generateTasks(
       {
         gitDir: '..',
         linters: {
@@ -83,7 +83,7 @@ describe('generateTasks', () => {
       },
       files
     )
-    result[0].fileList.forEach(file => {
+    task.fileList.forEach(file => {
       expect(path.isAbsolute(file)).toBe(true)
     })
   })

@@ -190,8 +190,17 @@ describe('getConfig', () => {
 })
 
 describe('validateConfig', () => {
-  beforeEach(() => {
+  const originalConsole = global.console
+  beforeAll(() => {
     global.console = makeConsoleMock()
+  })
+
+  beforeEach(() => {
+    global.console.clearHistory()
+  })
+
+  afterAll(() => {
+    global.console = originalConsole
   })
 
   it('should throw and should print validation errors for invalid config', () => {

@@ -17,8 +17,12 @@ const mockCosmiconfigWith = result => {
 describe('lintStaged', () => {
   let logger
 
-  beforeEach(() => {
+  beforeAll(() => {
     logger = makeConsoleMock()
+  })
+
+  beforeEach(() => {
+    logger.clearHistory()
   })
 
   it('should output config in verbose mode', async () => {
