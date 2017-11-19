@@ -1,5 +1,7 @@
-/* eslint no-console: 0 */
 /* eslint no-prototype-builtins: 0 */
+
+'use strict'
+
 const chalk = require('chalk')
 const format = require('stringify-object')
 const intersection = require('lodash/intersection')
@@ -13,12 +15,11 @@ const isGlob = require('is-glob')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
+ * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
  */
 const defaultConfig = {
   concurrent: true,
   chunkSize: Number.MAX_SAFE_INTEGER,
-  gitDir: '.',
   globOptions: {
     matchBase: true,
     dot: true
@@ -57,16 +58,17 @@ function unknownValidationReporter(config, example, option, options) {
    * a typical mistake of mixing simple and advanced configs
    */
   if (isGlob(option)) {
+    // prettier-ignore
     const message = `  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
-      format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
-    )} was found in the config root.
-  
-  You are probably trying to mix simple and advanced config formats. Adding 
-  
+    format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+  )} was found in the config root.
+
+  You are probably trying to mix simple and advanced config formats. Adding
+
   ${chalk.bold(`"linters": {
     "${option}": ${JSON.stringify(config[option])}
   }`)}
-   
+
   will fix it and remove this message.`
 
     const comment = options.comment
@@ -86,7 +88,7 @@ function unknownValidationReporter(config, example, option, options) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, gitDir: string, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
+ *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
  * }}
  */
 function getConfig(sourceConfig) {
@@ -117,8 +119,17 @@ function validateConfig(config) {
     }
   })
 
+  const deprecatedConfig = {
+    gitDir: () => `  Option ${chalk.bold('gitDir')} was removed.
+
+  lint-staged now automatically resolves '.git' directory.
+
+  Please remove ${chalk.bold('gitDir')} from your configuration.`
+  }
+
   const validation = validate(config, {
     exampleConfig,
+    deprecatedConfig,
     unknown: unknownValidationReporter,
     comment:
       'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'

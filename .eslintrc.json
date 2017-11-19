@@ -1,17 +1,18 @@
 {
-  "extends": [
-    "okonet"
-  ],
-  "env": {
-    "browser": false,
-    "node": true,
-    "jest": true,
-    "es6": true
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "script"
   },
+  "extends": [
+    "okonet",
+    "plugin:node/recommended"
+  ],
+  "plugins": ["node"],
   "rules": {
-    "strict": 0,
-    "import/no-extraneous-dependencies": [2, {
-      "devDependencies": ["**/*.spec.js"]
-    }]
+    "strict": [
+      "error",
+      "global"
+    ],
+    "no-console": "off"
   }
 }

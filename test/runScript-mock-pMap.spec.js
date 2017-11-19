@@ -1,3 +1,4 @@
+import dedent from 'dedent'
 import pMapMock from 'p-map'
 import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
@@ -17,30 +18,30 @@ describe('runScript', () => {
     pMapMock.mockClear()
   })
 
-  it('should respect concurrency', () => {
+  it('should respect concurrency', async () => {
     pMapMock.mockImplementation(() => Promise.resolve(true))
 
-    const res = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
+    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
       chunkSize: 1,
       subTaskConcurrency: 1
     })
-    res[0].task()
-    expect(pMapMock.mock.calls.length).toEqual(1)
-    const pMapArgs = pMapMock.mock.calls[0]
-    expect(pMapArgs[0]).toEqual([['test1.js'], ['test2.js']])
-    expect(pMapArgs[1]).toBeInstanceOf(Function)
-    expect(pMapArgs[2]).toEqual({ concurrency: 1 })
+    await linter.task()
+    const [[, mapper]] = pMapMock.mock.calls
+    expect(mapper).toBeInstanceOf(Function)
+    expect(pMapMock).toHaveBeenCalledWith([['test1.js'], ['test2.js']], mapper, { concurrency: 1 })
   })
 
   it('should handle unexpected error', async () => {
     pMapMock.mockImplementation(() => Promise.reject(new Error('Unexpected Error')))
 
-    const res = runScript(['test'], ['test.js'], packageJSON)
+    const [linter] = runScript(['test'], ['test.js'], packageJSON)
     try {
-      await res[0].task()
+      await linter.task()
     } catch (err) {
-      expect(err.message).toMatch(`${logSymbols.error} test got an unexpected error.
-Unexpected Error`)
+      expect(err.message).toMatch(dedent`
+        ${logSymbols.error} test got an unexpected error.
+        Unexpected Error
+      `)
     }
   })
 })
