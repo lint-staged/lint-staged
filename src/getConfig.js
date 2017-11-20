@@ -119,7 +119,6 @@ function validateConfig(config) {
     }
   })
 
-
   const deprecatedConfig = {
     gitDir: () => `  Option ${chalk.bold('gitDir')} was removed.
 
