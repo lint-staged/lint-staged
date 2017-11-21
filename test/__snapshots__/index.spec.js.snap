@@ -1,34 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`lintStaged should load config file when specified 1`] = `
+"
+LOG Running lint-staged with the following config:
+LOG {
+  verbose: true,
+  linters: {
+    '*': 'mytask'
+  },
+  concurrent: true,
+  chunkSize: 9007199254740991,
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
+  subTaskConcurrency: 1,
+  renderer: 'verbose'
+}"
+`;
+
 exports[`lintStaged should not output config in non verbose mode 1`] = `""`;
 
-exports[`lintStaged should ouput config in verbose mode 1`] = `
+exports[`lintStaged should output config in verbose mode 1`] = `
 "
-LOG 
-Running lint-staged with the following config:
-{
-	verbose: true,
-	linters: {
-		'*': 'mytask'
-	},
-	concurrent: true,
-	chunkSize: 9007199254740991,
-	gitDir: '.',
-	globOptions: {
-		matchBase: true,
-		dot: true
-	},
-	subTaskConcurrency: 1,
-	renderer: 'verbose'
-}
-"
+LOG Running lint-staged with the following config:
+LOG {
+  verbose: true,
+  linters: {
+    '*': 'mytask'
+  },
+  concurrent: true,
+  chunkSize: 9007199254740991,
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
+  subTaskConcurrency: 1,
+  renderer: 'verbose'
+}"
 `;
 
 exports[`lintStaged should print helpful error message when config file is not found 1`] = `
 "
 ERROR Config could not be found.
 ERROR 
-Please make sure you have created it correctly.
+ERROR Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration."
+`;
+
+exports[`lintStaged should print helpful error message when explicit config file is not found 1`] = `
+
+ERROR Could not parse lint-staged config.
+
+Error: ENOENT: no such file or directory, open 'fake-config-file.yml'
+ERROR 
+ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration.
-"
 `;

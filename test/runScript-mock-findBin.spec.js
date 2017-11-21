@@ -5,6 +5,8 @@ import mockFn from 'execa'
 import runScript from '../src/runScript'
 
 jest.mock('execa')
+jest.mock('../src/resolveGitDir', () => () => '../')
+
 // Mock findBin to return an absolute path
 jest.mock('../src/findBin', () => commands => {
   const [bin, ...otherArgs] = commands.split(' ')
@@ -28,11 +30,9 @@ describe('runScript with absolute paths', () => {
     mockFn.mockClear()
   })
 
-  it('can pass `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
-    const res = runScript(['git add'], ['test.js'], packageJSON, { gitDir: '../' })
-    const taskPromise = res[0].task()
-    expect(taskPromise).toBeInstanceOf(Promise)
-    await taskPromise
+  it('passes `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
+    const [linter] = runScript(['git add'], ['test.js'], packageJSON)
+    await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockFn).toHaveBeenCalledWith('/usr/local/bin/git', ['add', 'test.js'], { cwd: '../' })
   })

@@ -4,7 +4,6 @@ exports[`getConfig should return config with defaults 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -20,7 +19,6 @@ exports[`getConfig should return config with defaults for undefined 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -36,7 +34,6 @@ exports[`getConfig should set linters 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
-  "gitDir": ".",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -71,6 +68,19 @@ WARN ● Validation Warning:
   }
 
   will fix it and remove this message.
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+`;
+
+exports[`validateConfig should print deprecation warning for gitDir option 1`] = `
+"
+WARN ● Deprecation Warning:
+
+  Option gitDir was removed.
+
+  lint-staged now automatically resolves '.git' directory.
+
+  Please remove gitDir from your configuration.
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;

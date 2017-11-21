@@ -3,6 +3,7 @@
 'use strict'
 
 const appRoot = require('app-root-path')
+const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
 const getConfig = require('./getConfig').getConfig
@@ -25,11 +26,17 @@ const errConfigNotFound = new Error('Config could not be found')
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged() {
-  return cosmiconfig('lint-staged', {
+module.exports = function lintStaged(injectedLogger, configPath) {
+  const logger = injectedLogger || console
+
+  const explorer = cosmiconfig('lint-staged', {
+    configPath,
     rc: '.lintstagedrc',
     rcExtensions: true
   })
+
+  return explorer
+    .load(process.cwd())
     .then(result => {
       if (result == null) throw errConfigNotFound
 
@@ -38,10 +45,8 @@ module.exports = function lintStaged() {
       const config = validateConfig(getConfig(result.config))
 
       if (config.verbose) {
-        console.log(`
-Running lint-staged with the following config:
-${stringifyObject(config)}
-`)
+        logger.log('Running lint-staged with the following config:')
+        logger.log(stringifyObject(config, { indent: '  ' }))
       }
 
       const scripts = packageJson.scripts || {}
@@ -59,18 +64,21 @@ ${stringifyObject(config)}
     })
     .catch(err => {
       if (err === errConfigNotFound) {
-        console.error(`${err.message}.`)
+        logger.error(`${err.message}.`)
       } else {
         // It was probably a parsing error
-        console.error(`Could not parse lint-staged config.
+        logger.error(dedent`
+          Could not parse lint-staged config.
 
-${err}`)
+          ${err}
+        `)
       }
+      logger.error() // empty line
       // Print helpful message for all errors
-      console.error(`
-Please make sure you have created it correctly.
-See https://github.com/okonet/lint-staged#configuration.
-`)
+      logger.error(dedent`
+        Please make sure you have created it correctly.
+        See https://github.com/okonet/lint-staged#configuration.
+      `)
       process.exitCode = 1
     })
 }
