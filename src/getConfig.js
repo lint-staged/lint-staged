@@ -72,7 +72,7 @@ function unknownValidationReporter(config, example, option, options) {
   will fix it and remove this message.`
 
     const comment = options.comment
-    const name = options.title && options.title.warning
+    const name = options.title.warning
     return logValidationWarning(name, message, comment)
   }
   // If it is not glob pattern, use default jest-validate reporter
