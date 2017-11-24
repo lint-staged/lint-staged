@@ -72,7 +72,7 @@ function unknownValidationReporter(config, example, option, options) {
   will fix it and remove this message.`
 
     const comment = options.comment
-    const name = (options.title && options.title.warning) || 'WARNING'
+    const name = options.title.warning
     return logValidationWarning(name, message, comment)
   }
   // If it is not glob pattern, use default jest-validate reporter
@@ -127,17 +127,13 @@ function validateConfig(config) {
   Please remove ${chalk.bold('gitDir')} from your configuration.`
   }
 
-  const validation = validate(config, {
+  validate(config, {
     exampleConfig,
     deprecatedConfig,
     unknown: unknownValidationReporter,
     comment:
       'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'
   })
-
-  if (!validation.isValid) {
-    throw new Error('lint-staged config is invalid... Aborting.')
-  }
 
   return config
 }
