@@ -140,6 +140,15 @@ Pass arguments to your commands separated by space as you would do in the shell.
 
 Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
+## How to use `lint-staged` in a multi package monorepo?
+
+Starting with v5.0, `lint-staged` automatically resolves the git root **without any** additional configuration. You configure `lint-staged` as you normally would if your project root and git root were the same directory.
+
+If you wish to use `lint-staged` in a multi package monorepo, it is recommended to install [`husky`](https://github.com/typicode/husky) in the root package.json.
+[`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
+
+Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+
 ## Reformatting the code
 
 Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
