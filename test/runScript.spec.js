@@ -100,10 +100,13 @@ describe('runScript', () => {
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
-    const [linter] = runScript(['jest'], ['test.js'], scripts, { gitDir: '../' })
+    const processCwdBkp = process.cwd
+    process.cwd = () => __dirname
+    const [linter] = runScript(['jest'], ['test.js'], scripts, {})
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockFn).lastCalledWith('jest', ['test.js'], {})
+    process.cwd = processCwdBkp
   })
 
   it('should use --silent in non-verbose mode', async () => {

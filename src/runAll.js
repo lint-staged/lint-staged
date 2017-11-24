@@ -20,10 +20,9 @@ module.exports = function runAll(scripts, config) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 
-  const gitDir = config.gitDir
   const concurrent = config.concurrent
   const renderer = config.renderer
-  sgf.cwd = resolveGitDir(gitDir)
+  sgf.cwd = resolveGitDir()
 
   return pify(sgf)('ACM').then(files => {
     /* files is an Object{ filename: String, status: String } */
