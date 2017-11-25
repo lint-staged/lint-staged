@@ -2,14 +2,17 @@ import path from 'path'
 import resolveGitDir from '../src/resolveGitDir'
 
 describe('resolveGitDir', () => {
-  it('should resolve to current working dir if not set in config', () => {
-    const expected = path.resolve(process.cwd())
+  it('should resolve to current working dir when .git is in the same dir', () => {
+    const expected = process.cwd()
     expect(resolveGitDir()).toEqual(expected)
-    expect(path.isAbsolute(resolveGitDir())).toBe(true)
   })
-  it('should resolve to current working dir if set to default', () => {
-    const expected = path.resolve(process.cwd())
-    expect(resolveGitDir()).toEqual(expected)
-    expect(path.isAbsolute(resolveGitDir())).toBe(true)
+
+  it('should resolve to the parent dir when .git is in the parent dir', () => {
+    const expected = path.dirname(__dirname)
+    const processCwdBkp = process.cwd
+    process.cwd = () => __dirname
+    // path.resolve to strip trailing slash
+    expect(path.resolve(resolveGitDir())).toEqual(expected)
+    process.cwd = processCwdBkp
   })
 })
