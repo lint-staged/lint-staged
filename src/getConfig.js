@@ -12,6 +12,8 @@ const logValidationWarning = require('jest-validate').logValidationWarning
 const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
 const isGlob = require('is-glob')
 
+const debug = require('debug')('lint-staged:cfg')
+
 /**
  * Default config object
  *
@@ -92,6 +94,7 @@ function unknownValidationReporter(config, example, option, options) {
  * }}
  */
 function getConfig(sourceConfig) {
+  debug('Normalizing config')
   const config = defaultsDeep(
     {}, // Do not mutate sourceConfig!!!
     isSimple(sourceConfig) ? { linters: sourceConfig } : sourceConfig,
@@ -112,6 +115,7 @@ function getConfig(sourceConfig) {
  * @returns config {Object}
  */
 function validateConfig(config) {
+  debug('Validating config')
   const exampleConfig = Object.assign({}, defaultConfig, {
     linters: {
       '*.js': ['eslint --fix', 'git add'],

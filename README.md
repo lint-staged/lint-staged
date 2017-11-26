@@ -251,3 +251,17 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
   See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
 </details>
+
+## Troubleshooting
+
+`lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc.
+It can be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+It can also be specified inline by doing the following:
+
+```
+# on *nix
+$ DEBUG=lint-staged* git commit
+
+# on Windows
+λ set DEBUG=lint-staged* && git commit
+```

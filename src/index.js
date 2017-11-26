@@ -11,6 +11,8 @@ const validateConfig = require('./getConfig').validateConfig
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
+const debug = require('debug')('lint-staged')
+
 // Find the right package.json at the root of the project
 const packageJson = require(appRoot.resolve('package.json'))
 
@@ -26,6 +28,7 @@ const errConfigNotFound = new Error('Config could not be found')
  * Root lint-staged function that is called from .bin
  */
 module.exports = function lintStaged(injectedLogger, configPath) {
+  debug('Loading config using `cosmiconfig`')
   const logger = injectedLogger || console
 
   const explorer = cosmiconfig('lint-staged', {
@@ -39,19 +42,23 @@ module.exports = function lintStaged(injectedLogger, configPath) {
     .then(result => {
       if (result == null) throw errConfigNotFound
 
+      debug('Successfully loaded config from `%s`:\n%O', result.filepath, result.config)
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
       const config = validateConfig(getConfig(result.config))
 
+      debug('Normalized config:\n%O', config)
       if (config.verbose) {
         logger.log('Running lint-staged with the following config:')
         logger.log(stringifyObject(config, { indent: '  ' }))
       }
 
       const scripts = packageJson.scripts || {}
+      debug('Loaded scripts from package.json:\n%O', scripts)
 
       runAll(scripts, config)
         .then(() => {
+          debug('linters were executed successfully!')
           // No errors, exiting with 0
           process.exitCode = 0
         })

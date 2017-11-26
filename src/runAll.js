@@ -8,6 +8,8 @@ const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
 
+const debug = require('debug')('lint-staged:run')
+
 /**
  * Executes all tasks and either resolves or rejects the promise
  * @param scripts
@@ -15,6 +17,7 @@ const resolveGitDir = require('./resolveGitDir')
  * @returns {Promise}
  */
 module.exports = function runAll(scripts, config) {
+  debug('Running all linter scripts')
   // Config validation
   if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
@@ -22,11 +25,15 @@ module.exports = function runAll(scripts, config) {
 
   const concurrent = config.concurrent
   const renderer = config.renderer
-  sgf.cwd = resolveGitDir()
+  const gitDir = resolveGitDir()
+  debug('Resolved git directory to be `%s`', gitDir)
 
+  sgf.cwd = gitDir
   return pify(sgf)('ACM').then(files => {
     /* files is an Object{ filename: String, status: String } */
     const filenames = files.map(file => file.filename)
+    debug('Loaded list of staged files in git:\n%O', filenames)
+
     const tasks = generateTasks(config, filenames).map(task => ({
       title: `Running tasks for ${task.pattern}`,
       task: () =>
