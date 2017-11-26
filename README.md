@@ -232,3 +232,22 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
   ]
 }
 ```
+
+### Minify the images and add files to commit
+
+```json
+{
+  "*.{png,jpeg,jpg,gif,svg}": [
+    "imagemin-lint-staged",
+    "git add"
+  ]
+}
+```
+
+<details>
+  <summary>More about <code>imagemin-lint-staged</code></summary>
+
+  [imagemin-lint-staged](https://github.com/tomchentw/imagemin-lint-staged) is a CLI tool designed for lint-staged usage with sensible defaults.
+
+  See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
+</details>
