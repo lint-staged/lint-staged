@@ -12,7 +12,6 @@ const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
 // Find the right package.json at the root of the project
-// TODO: Test if it should be aware of `gitDir`
 const packageJson = require(appRoot.resolve('package.json'))
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color

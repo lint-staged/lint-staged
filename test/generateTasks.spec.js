@@ -62,7 +62,6 @@ describe('generateTasks', () => {
   it('should work with advanced configuration', () => {
     const result = generateTasks(
       {
-        gitDir: '../',
         linters: {
           '*.js': 'lint'
         }
@@ -76,7 +75,6 @@ describe('generateTasks', () => {
   it('should return absolute paths', () => {
     const [task] = generateTasks(
       {
-        gitDir: '..',
         linters: {
           '*': 'lint'
         }
@@ -188,7 +186,6 @@ describe('generateTasks', () => {
   it('should support globOptions specified in advanced configuration', () => {
     const result = generateTasks(
       {
-        gitDir: workDir,
         globOptions: {
           matchBase: false,
           nocase: true
