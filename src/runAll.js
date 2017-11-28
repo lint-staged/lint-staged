@@ -7,6 +7,7 @@ const pify = require('pify')
 const runScript = require('./runScript')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
+const git = require('./gitWorkflow')
 
 /**
  * Executes all tasks and either resolves or rejects the promise
@@ -46,12 +47,31 @@ module.exports = function runAll(scripts, config) {
     }))
 
     if (tasks.length) {
-      return new Listr(tasks, {
-        dateFormat: false,
-        concurrent,
-        renderer,
-        exitOnError: !concurrent // Wait for all errors when running concurrently
-      }).run()
+      return new Listr(
+        [
+          {
+            title: 'Stashing changes...',
+            task: () => git.gitStashSave()
+          },
+          {
+            title: 'Linters',
+            task: () =>
+              new Listr(tasks, {
+                dateFormat: false,
+                concurrent,
+                renderer,
+                exitOnError: !concurrent // Wait for all errors when running concurrently
+              })
+          },
+          {
+            title: 'Restoring local changes...',
+            task: () => git.gitStashPop()
+          }
+        ],
+        {
+          concurrent: false // Root tasks must run sequentially!
+        }
+      ).run()
     }
     return 'No tasks to run.'
   })
