@@ -1,11 +1,10 @@
 // my-serializer-module
 module.exports = {
-    print(val, serialize, indent) {
-        return val.stdout
-    },
+  print(val) {
+    return val.stdout
+  },
 
-    test(val) {
-        return val;
-    },
-
-};
+  test(val) {
+    return val
+  }
+}
