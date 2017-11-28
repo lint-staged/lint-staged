@@ -1,27 +1,23 @@
-module.exports = function (wallaby) {
-    return {
-        files: [
-            { pattern: 'test/__fixtures__/*', instrument: false },
-            { pattern: 'test/__fixtures__/**/*', instrument: false },
-            { pattern: 'test-setup.js', instrument: false },
-            'src/*.js',
-            'test/**/*.js',
-            '!test/*.spec.js'
-        ],
+'use strict'
 
-        tests: [
-            'test/*.spec.js'
-        ],
+module.exports = wallaby => ({
+  files: [
+    { pattern: 'test/__fixtures__/*', instrument: false },
+    'src/*.js',
+    'src/__mocks__/*.js',
+    '!test/*.spec.js'
+  ],
 
-        env: {
-            type: 'node',
-            runner: 'node'
-        },
+  tests: ['test/*.spec.js'],
 
-        compilers: {
-            '**/*.js': wallaby.compilers.babel()
-        },
+  env: {
+    type: 'node',
+    runner: 'node'
+  },
 
-        testFramework: 'jest'
-    }
-}
+  compilers: {
+    '**/*.js': wallaby.compilers.babel()
+  },
+
+  testFramework: 'jest'
+})

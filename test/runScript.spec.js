@@ -1,131 +1,144 @@
+import dedent from 'dedent'
 import mockFn from 'execa'
-import isPromise from 'is-promise'
+import logSymbols from 'log-symbols'
 import runScript from '../src/runScript'
+import resolveGitDir from '../src/resolveGitDir'
 
-expect.extend({
-    toBeAPromise(received) {
-        const pass = isPromise(received)
-        return {
-            message: () => (`expected ${ received } ${ pass ? 'not' : '' } to be a Promise`),
-            pass
-        }
-    }
-})
 jest.mock('execa')
+jest.mock('../src/resolveGitDir')
 
-const packageJSON = {
-    scripts: {
-        test: 'noop',
-        test2: 'noop'
-    },
-    'lint-staged': {}
+resolveGitDir.mockReturnValue(process.cwd())
+
+const scripts = {
+  test: 'noop',
+  test2: 'noop'
 }
 
 describe('runScript', () => {
+  beforeEach(() => {
+    resolveGitDir.mockClear()
+    mockFn.mockClear()
+  })
 
-    beforeEach(() => {
-        mockFn.mockReset()
+  it('should return an array', () => {
+    expect(runScript('test', ['test.js'], scripts)).toBeInstanceOf(Array)
+  })
+
+  it('should throw for non-existend script', () => {
+    expect(() => {
+      runScript('missing-module', ['test.js'], scripts)[0].task()
+    }).toThrow()
+  })
+
+  it('should work with a single command', async () => {
+    const res = runScript('test', ['test.js'], scripts)
+    expect(res.length).toBe(1)
+    const [linter] = res
+    expect(linter.title).toBe('test')
+    expect(linter.task).toBeInstanceOf(Function)
+    const taskPromise = linter.task()
+    expect(taskPromise).toBeInstanceOf(Promise)
+    await taskPromise
+  })
+
+  it('should work with multiple commands', async () => {
+    const res = runScript(['test', 'test2'], ['test.js'], scripts)
+    expect(res.length).toBe(2)
+    const [linter1, linter2] = res
+    expect(linter1.title).toBe('test')
+    expect(linter2.title).toBe('test2')
+
+    let taskPromise = linter1.task()
+    expect(taskPromise).toBeInstanceOf(Promise)
+    await taskPromise
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test', '--', 'test.js'], {})
+    taskPromise = linter2.task()
+    expect(taskPromise).toBeInstanceOf(Promise)
+    await taskPromise
+    expect(mockFn).toHaveBeenCalledTimes(2)
+    expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test2', '--', 'test.js'], {})
+  })
+
+  it('should respect chunk size', async () => {
+    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], scripts, {
+      chunkSize: 1
     })
+    await linter.task()
+    expect(mockFn).toHaveBeenCalledTimes(2)
+    expect(mockFn).toHaveBeenCalledWith('npm', ['run', '--silent', 'test', '--', 'test1.js'], {})
+    expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test', '--', 'test2.js'], {})
+  })
 
-    it('should return an array', () => {
-        expect(runScript('test', 'test.js', packageJSON)).toBeInstanceOf(Array)
-    })
+  it('should support non npm scripts', async () => {
+    const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'], scripts)
+    expect(res.length).toBe(2)
+    const [linter1, linter2] = res
+    expect(linter1.title).toBe('node --arg=true ./myscript.js')
+    expect(linter2.title).toBe('git add')
 
-    it('should throw for non-existend script', () => {
-        expect(() => {
-            runScript('missing-module', 'test.js', packageJSON)[0].task()
-        }).toThrow()
-    })
+    await linter1.task()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {})
 
-    it('should work with a single command', () => {
-        const res = runScript('test', 'test.js', packageJSON)
-        expect(res.length).toBe(1)
-        expect(res[0].title).toBe('test')
-        expect(res[0].task).toBeInstanceOf(Function)
-        expect(res[0].task()).toBeAPromise()
-    })
+    await linter2.task()
+    expect(mockFn).toHaveBeenCalledTimes(2)
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], {})
+  })
 
-    it('should work with multiple commands', () => {
-        const res = runScript(['test', 'test2'], 'test.js', packageJSON)
-        expect(res.length).toBe(2)
-        expect(res[0].title).toBe('test')
-        expect(res[1].title).toBe('test2')
+  it('should pass cwd to execa if gitDir is different than process.cwd for non-npm tasks', async () => {
+    resolveGitDir.mockReturnValueOnce('../')
+    const res = runScript(['test', 'git add'], ['test.js'], scripts)
+    const [linter1, linter2] = res
+    await linter1.task()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test', '--', 'test.js'], {})
 
-        expect(res[0].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
-        expect(res[1].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(2)
-        expect(mockFn.mock.calls[1]).toEqual(
-            ['npm', ['run', '--silent', 'test2', '--', 'test.js'], {}]
-        )
-    })
+    await linter2.task()
+    expect(mockFn).toHaveBeenCalledTimes(2)
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { cwd: '../' })
+  })
 
-    it('should support non npm scripts', () => {
-        const res = runScript(['node --arg=true ./myscript.js', 'git add'], 'test.js', packageJSON)
-        expect(res.length).toBe(2)
-        expect(res[0].title).toBe('node --arg=true ./myscript.js')
-        expect(res[1].title).toBe('git add')
+  it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
+    const processCwdBkp = process.cwd
+    process.cwd = () => __dirname
+    const [linter] = runScript(['jest'], ['test.js'], scripts, {})
+    await linter.task()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('jest', ['test.js'], {})
+    process.cwd = processCwdBkp
+  })
 
-        expect(res[0].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0][0]).toContain('node')
-        expect(mockFn.mock.calls[0][1]).toEqual(['--arg=true', './myscript.js', '--', 'test.js'])
+  it('should use --silent in non-verbose mode', async () => {
+    const [linter] = runScript('test', ['test.js'], scripts, { verbose: false })
+    await linter.task()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test', '--', 'test.js'], {})
+  })
 
-        expect(res[1].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(2)
-        expect(mockFn.mock.calls[1][0]).toContain('git')
-        expect(mockFn.mock.calls[1][1]).toEqual(['add', '--', 'test.js'])
-    })
+  it('should not use --silent in verbose mode', async () => {
+    const [linter] = runScript('test', ['test.js'], scripts, { verbose: true })
+    await linter.task()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+    expect(mockFn).lastCalledWith('npm', ['run', 'test', '--', 'test.js'], {})
+  })
 
-    it('should pass cwd to execa if gitDir option is set for non-npm tasks', () => {
-        const res = runScript(
-            ['test', 'git add'],
-            'test.js',
-            packageJSON,
-            { gitDir: '../' }
-        )
-        expect(res[0].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
+  it('should throw error for failed linters', async () => {
+    const linterErr = new Error()
+    linterErr.stdout = 'Mock error'
+    linterErr.stderr = ''
+    mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
 
-        expect(res[1].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(2)
-        expect(mockFn.mock.calls[1][0]).toMatch(/git$/)
-        expect(mockFn.mock.calls[1][1]).toEqual(['add', '--', 'test.js'])
-        expect(mockFn.mock.calls[1][2]).toEqual({ cwd: '../' })
-    })
-
-    it('should use --silent in non-verbose mode', () => {
-        const res = runScript(
-            'test',
-            'test.js',
-            packageJSON,
-            { verbose: false }
-        )
-        expect(res[0].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', '--silent', 'test', '--', 'test.js'], {}]
-        )
-    })
-
-    it('should not use --silent in verbose mode', () => {
-        const res = runScript(
-            'test',
-            'test.js',
-            packageJSON,
-            { verbose: true }
-        )
-        expect(res[0].task()).toBeAPromise()
-        expect(mockFn.mock.calls.length).toEqual(1)
-        expect(mockFn.mock.calls[0]).toEqual(
-            ['npm', ['run', 'test', '--', 'test.js'], {}]
-        )
-    })
+    const [linter] = runScript('mock-fail-linter', ['test.js'], scripts)
+    try {
+      await linter.task()
+    } catch (err) {
+      // prettier-ignore
+      expect(err.message).toMatch(dedent`
+        ${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
+        ${linterErr.stdout}
+        ${linterErr.stderr}
+      `)
+    }
+  })
 })
-

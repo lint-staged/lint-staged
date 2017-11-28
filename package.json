@@ -1,82 +1,92 @@
 {
   "name": "lint-staged",
+  "version": "0.0.0-development",
   "description": "Lint files staged by git",
-  "main": "index.js",
-  "bin": {
-    "lint-staged": "index.js",
-    "lint-staged-pre": "pre.js",
-    "lint-staged-post": "post.js"
+  "license": "MIT",
+  "repository": "https://github.com/okonet/lint-staged",
+  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
+  "maintainers": [
+    "Lufty Wiranda <lufty.wiranda@gmail.com>",
+    "Suhas Karanth <sudo.suhas@gmail.com>"
+  ],
+  "engines": {
+    "node": ">=4.2.0"
   },
+  "bin": "index.js",
+  "files": [
+    "index.js",
+    "src"
+  ],
   "scripts": {
-    "postinstall": "echo \"🚫💩 lint-staged installed! \nDo not forget to configure it. See https://github.com/okonet/lint-staged/blob/master/README.md\" && exit 0",
+    "precommit": "remove-lockfiles && node index.js",
+    "cz": "git-cz",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "precommit": "node pre.js && node index.js",
+    "pretest": "npm run lint",
     "test": "jest --coverage",
-    "deps": "npm-check -s",
-    "deps:update": "npm-check -u",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "app-root-path": "^2.0.0",
+    "chalk": "^2.1.0",
+    "commander": "^2.11.0",
+    "cosmiconfig": "^3.1.0",
+    "dedent": "^0.7.0",
+    "execa": "^0.8.0",
+    "find-parent-dir": "^0.3.0",
+    "is-glob": "^4.0.0",
+    "jest-validate": "^21.1.0",
+    "listr": "^0.13.0",
+    "lodash": "^4.17.4",
+    "log-symbols": "^2.0.0",
+    "minimatch": "^3.0.0",
+    "npm-which": "^3.0.1",
+    "p-map": "^1.1.1",
+    "path-is-inside": "^1.0.2",
+    "pify": "^3.0.0",
+    "staged-git-files": "0.0.4",
+    "stringify-object": "^3.2.0"
+  },
+  "devDependencies": {
+    "babel-jest": "^21.0.2",
+    "babel-preset-env": "^1.6.0",
+    "commitizen": "^2.9.6",
+    "consolemock": "^1.0.2",
+    "cz-conventional-changelog": "^2.0.0",
+    "eslint": "^4.5.0",
+    "eslint-config-okonet": "^5.0.1",
+    "eslint-plugin-node": "^5.1.1",
+    "fs-promise": "^2.0.3",
+    "husky": "^0.14.3",
+    "jest": "^21.1.0",
+    "jest-cli": "^21.1.0",
+    "jsonlint": "^1.6.2",
+    "prettier": "1.8.2",
+    "remove-lockfiles": "^1.1.1",
+    "tmp": "0.0.33"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "greenkeeper": {
-    "ignore": [
-      "cosmiconfig"
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "./testSetup.js"
     ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/okonet/lint-staged.git"
   },
   "keywords": [
     "lint",
     "git",
     "staged",
-    "javascript",
-    "css",
-    "scss",
-    "sass",
     "eslint",
+    "prettier",
     "stylelint",
     "code",
-    "quality"
-  ],
-  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/okonet/lint-staged/issues"
-  },
-  "homepage": "https://github.com/okonet/lint-staged#readme",
-  "dependencies": {
-    "app-root-path": "^2.0.0",
-    "cosmiconfig": "^1.1.0",
-    "execa": "^0.6.0",
-    "listr": "^0.11.0",
-    "minimatch": "^3.0.0",
-    "npm-which": "^3.0.1",
-    "staged-git-files": "0.0.4"
-  },
-  "devDependencies": {
-    "babel-core": "^6.10.4",
-    "babel-jest": "^19.0.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "babel-register": "^6.16.3",
-    "cz-conventional-changelog": "^1.2.0",
-    "eslint": "^3.9.1",
-    "eslint-config-okonet": "^1.1.1",
-    "fs-promise": "^0.5.0",
-    "husky": "^0.13.2",
-    "is-promise": "^2.1.0",
-    "jest": "^19.0.2",
-    "jsonlint": "^1.6.2",
-    "jsonlint-cli": "^1.0.1",
-    "npm-check": "^5.2.2",
-    "semantic-release": "^6.3.2",
-    "tmp": "^0.0.31"
-  },
-  "version": "0.0.0-development"
+    "quality",
+    "check",
+    "format",
+    "validate"
+  ]
 }
