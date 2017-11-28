@@ -20,6 +20,19 @@ function execGit(cmd, options) {
   return execa('git', getCmdArgs(gitDir).concat(cmd), { cwd: getAbsolutePath(cwd) })
 }
 
+function hasPartiallyStaged(options) {
+  return execGit(['write-tree'], options)
+    .then(res => {
+      const tree = res.stdout
+      if (tree) {
+        return execGit(['diff-index', '--exit-code', '--name-only', tree, '--'])
+      }
+      return false
+    })
+    .then(() => false) // No unstaged files found
+    .catch(() => true) // Found unstaged files
+}
+
 function gitStashSave(options) {
   return execGit(['stash', '--keep-index'], options)
 }
@@ -36,5 +49,6 @@ module.exports = {
   getCmdArgs,
   execGit,
   gitStashSave,
-  gitStashPop
+  gitStashPop,
+  hasPartiallyStaged
 }

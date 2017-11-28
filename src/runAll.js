@@ -51,7 +51,16 @@ module.exports = function runAll(scripts, config) {
         [
           {
             title: 'Stashing changes...',
-            task: () => git.gitStashSave()
+            task: (ctx, task) => {
+              git.hasPartiallyStaged().then(res => {
+                ctx.hasStash = res
+                if (res) {
+                  git.gitStashSave()
+                } else {
+                  task.skip('No unstaged files found...')
+                }
+              })
+            }
           },
           {
             title: 'Linters',
@@ -65,6 +74,7 @@ module.exports = function runAll(scripts, config) {
           },
           {
             title: 'Restoring local changes...',
+            enabled: ctx => ctx.hasStash,
             task: () => git.gitStashPop()
           }
         ],
