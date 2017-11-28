@@ -8,6 +8,7 @@ const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
 const getConfig = require('./getConfig').getConfig
 const validateConfig = require('./getConfig').validateConfig
+const git = require('./gitWorkflow')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
@@ -50,16 +51,24 @@ module.exports = function lintStaged(injectedLogger, configPath) {
 
       const scripts = packageJson.scripts || {}
 
-      runAll(scripts, config)
-        .then(() => {
-          // No errors, exiting with 0
-          process.exitCode = 0
-        })
-        .catch(error => {
-          // Errors detected, printing and exiting with non-zero
-          printErrors(error)
-          process.exitCode = 1
-        })
+      logger.info('Stashing partially staged files...')
+      git.gitStashSave().then(() => {
+        runAll(scripts, config)
+          .then(() => {
+            // No errors, exiting with 0
+            process.exitCode = 0
+            logger.info('Restoring unstaged files from stash...')
+            git.gitStashPop()
+          })
+          .catch(error => {
+            // Errors detected, printing and exiting with non-zero
+            printErrors(error)
+
+            logger.info('Restoring unstaged files from stash...')
+            git.gitStashPop()
+            process.exitCode = 1
+          })
+      })
     })
     .catch(err => {
       if (err === errConfigNotFound) {
