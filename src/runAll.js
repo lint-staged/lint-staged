@@ -46,6 +46,11 @@ module.exports = function runAll(scripts, config) {
       }
     }))
 
+    const listrBaseOptions = {
+      dateFormat: false,
+      renderer,
+    }
+
     if (tasks.length) {
       return new Listr(
         [
@@ -55,6 +60,7 @@ module.exports = function runAll(scripts, config) {
               git.hasPartiallyStaged().then(res => {
                 ctx.hasStash = res
                 if (res) {
+                  // TODO: Handle Ctrl+C before stashing
                   git.gitStashSave()
                 } else {
                   task.skip('No unstaged files found...')
@@ -63,14 +69,15 @@ module.exports = function runAll(scripts, config) {
             }
           },
           {
-            title: 'Linters',
+            title: 'Running linters...',
             task: () =>
-              new Listr(tasks, {
-                dateFormat: false,
-                concurrent,
-                renderer,
-                exitOnError: !concurrent // Wait for all errors when running concurrently
-              })
+              new Listr(tasks, Object.assign({},
+                listrBaseOptions,
+                {
+                  concurrent,
+                  exitOnError: !concurrent // Wait for all errors when running concurrently
+                }
+              ))
           },
           {
             title: 'Restoring local changes...',
@@ -78,9 +85,7 @@ module.exports = function runAll(scripts, config) {
             task: () => git.gitStashPop()
           }
         ],
-        {
-          concurrent: false // Root tasks must run sequentially!
-        }
+        listrBaseOptions
       ).run()
     }
     return 'No tasks to run.'
