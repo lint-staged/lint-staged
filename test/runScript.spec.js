@@ -109,15 +109,15 @@ describe('runScript', () => {
     process.cwd = processCwdBkp
   })
 
-  it('should use --silent in non-verbose mode', async () => {
-    const [linter] = runScript('test', ['test.js'], scripts, { verbose: false })
+  it('should use --silent in normal mode', async () => {
+    const [linter] = runScript('test', ['test.js'], scripts, {}, false)
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockFn).lastCalledWith('npm', ['run', '--silent', 'test', '--', 'test.js'], {})
   })
 
-  it('should not use --silent in verbose mode', async () => {
-    const [linter] = runScript('test', ['test.js'], scripts, { verbose: true })
+  it('should not use --silent in debug mode', async () => {
+    const [linter] = runScript('test', ['test.js'], scripts, {}, true)
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockFn).lastCalledWith('npm', ['run', 'test', '--', 'test.js'], {})

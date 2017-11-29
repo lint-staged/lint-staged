@@ -12,7 +12,7 @@ const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:run-script')
 
-module.exports = function runScript(commands, pathsToLint, scripts, config) {
+module.exports = function runScript(commands, pathsToLint, scripts, config, debugMode) {
   debug('Running script with commands %o', commands)
 
   const normalizedConfig = getConfig(config)
@@ -28,7 +28,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
     title: linter,
     task: () => {
       try {
-        const res = findBin(linter, scripts, config)
+        const res = findBin(linter, scripts, debugMode)
 
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD

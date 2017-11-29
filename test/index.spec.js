@@ -15,29 +15,24 @@ const mockCosmiconfigWith = result => {
 }
 
 describe('lintStaged', () => {
-  let logger
-
-  beforeAll(() => {
-    logger = makeConsoleMock()
-  })
+  const logger = makeConsoleMock()
 
   beforeEach(() => {
     logger.clearHistory()
   })
 
-  it('should output config in verbose mode', async () => {
+  it('should output config in debug mode', async () => {
     const config = {
-      verbose: true,
       linters: {
         '*': 'mytask'
       }
     }
     mockCosmiconfigWith({ config })
-    await lintStaged(logger)
+    await lintStaged(logger, undefined, true)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
-  it('should not output config in non verbose mode', async () => {
+  it('should not output config in normal mode', async () => {
     const config = {
       '*': 'mytask'
     }
@@ -47,7 +42,7 @@ describe('lintStaged', () => {
   })
 
   it('should load config file when specified', async () => {
-    await lintStaged(logger, path.join(__dirname, '__mocks__', 'my-config.json'))
+    await lintStaged(logger, path.join(__dirname, '__mocks__', 'my-config.json'), true)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 

@@ -50,6 +50,28 @@ See [examples](#examples) and [configuration](#configuration) below.
 >
 > To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
 
+## Command line flags
+
+```
+$ ./node_modules/.bin/lint-staged --help
+
+  Usage: lint-staged [options]
+
+
+  Options:
+
+    -V, --version        output the version number
+    -c, --config [path]  Path to configuration file
+    -d, --debug          Enable debug mode
+    -h, --help           output usage information
+```
+
+* **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search.
+* **`--debug`**: Enabling the debug mode does the following:
+  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
+  - Do not pass `--silent` to npm scripts.
+
 ## Configuration
 
 Starting with v3.1 you can now use different ways of configuring it:
@@ -102,7 +124,6 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
-* `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
 * `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
 
 ## Filtering files
@@ -251,17 +272,3 @@ This will run `eslint --fix` and automatically add changes to the commit. Please
 
   See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
 </details>
-
-## Troubleshooting
-
-`lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc.
-It can be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-It can also be specified inline by doing the following:
-
-```
-# on *nix
-$ DEBUG=lint-staged* git commit
-
-# on Windows
-λ set DEBUG=lint-staged* && git commit
-```

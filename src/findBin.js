@@ -4,12 +4,12 @@ const npmWhich = require('npm-which')(process.cwd())
 
 const debug = require('debug')('lint-staged:find-bin')
 
-module.exports = function findBin(cmd, scripts, options) {
+module.exports = function findBin(cmd, scripts, debugMode) {
   debug('Resolving binary for command `%s`', cmd)
   const npmArgs = (bin, args) =>
     // We always add `--` even if args are not defined. This is required
     // because we pass filenames later.
-    ['run', options && options.verbose ? undefined : '--silent', bin, '--']
+    ['run', debugMode ? undefined : '--silent', bin, '--']
       // args could be undefined but we filter that out.
       .concat(args)
       .filter(arg => arg !== undefined)
