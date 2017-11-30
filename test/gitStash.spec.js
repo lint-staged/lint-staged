@@ -24,6 +24,11 @@ async function gitStashList(opts = gitOpts) {
   return gitflow.execGit(['stash', 'list'], opts).then(res => res.stdout)
 }
 
+async function readFile(filepath, dir = wcDirPath) {
+  const content = await fsp.readFile(path.join(dir, filepath), { encoding: 'utf-8' })
+  return content
+}
+
 describe('git', () => {
   describe('gitStashSave/gitStashPop', () => {
     beforeEach(async () => {
@@ -132,11 +137,8 @@ describe('git', () => {
       // Expect stashed files to be back
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
-      const jsContent = await fsp.readFile(path.join(wcDirPath, 'test.js'), {
-        encoding: 'utf-8'
-      })
       // and modification are gone
-      expect(jsContent).toEqual(initialContent)
+      expect(await readFile('test.js')).toEqual(initialContent)
       // Expect no modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
@@ -191,11 +193,8 @@ describe('git', () => {
       // Expect stashed files to be back
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('MM test.js')
-      const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), {
-        encoding: 'utf-8'
-      })
       // and content is back to user modifications
-      expect(jsContent).toEqual(userContent)
+      expect(await readFile('test.js')).toEqual(userContent)
       // Expect no modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
@@ -244,11 +243,8 @@ describe('git', () => {
       // Expect stashed files to be back
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
-      const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), {
-        encoding: 'utf-8'
-      })
       // and content keeps linter modifications
-      expect(jsContent).toEqual(newContent)
+      expect(await readFile('test.js')).toEqual(newContent)
       // Expect modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
 
@@ -305,11 +301,8 @@ describe('git', () => {
       // Expect stashed files to be back
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('MM test.js')
-      const jsContent = await fsp.readFileSync(path.join(wcDirPath, 'test.js'), {
-        encoding: 'utf-8'
-      })
       // and content is back to user modifications
-      expect(jsContent).toEqual(userContent)
+      expect(await readFile('test.js')).toEqual(userContent)
       // Expect modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
 
