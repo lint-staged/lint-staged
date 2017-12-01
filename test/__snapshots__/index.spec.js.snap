@@ -4,7 +4,6 @@ exports[`lintStaged should load config file when specified 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  verbose: true,
   linters: {
     '*': 'mytask'
   },
@@ -19,13 +18,12 @@ LOG {
 }"
 `;
 
-exports[`lintStaged should not output config in non verbose mode 1`] = `""`;
+exports[`lintStaged should not output config in normal mode 1`] = `""`;
 
-exports[`lintStaged should output config in verbose mode 1`] = `
+exports[`lintStaged should output config in debug mode 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  verbose: true,
   linters: {
     '*': 'mytask'
   },

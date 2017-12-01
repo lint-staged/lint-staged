@@ -10,7 +10,11 @@ const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 const resolveGitDir = require('./resolveGitDir')
 
-module.exports = function runScript(commands, pathsToLint, scripts, config) {
+const debug = require('debug')('lint-staged:run-script')
+
+module.exports = function runScript(commands, pathsToLint, scripts, config, debugMode) {
+  debug('Running script with commands %o', commands)
+
   const normalizedConfig = getConfig(config)
   const chunkSize = normalizedConfig.chunkSize
   const concurrency = normalizedConfig.subTaskConcurrency
@@ -24,7 +28,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
     title: linter,
     task: () => {
       try {
-        const res = findBin(linter, scripts, config)
+        const res = findBin(linter, scripts, debugMode)
 
         // Only use gitDir as CWD if we are using the git binary
         // e.g `npm` should run tasks in the actual CWD
@@ -34,6 +38,10 @@ module.exports = function runScript(commands, pathsToLint, scripts, config) {
         const errors = []
         const mapper = pathsChunk => {
           const args = res.args.concat(pathsChunk)
+
+          debug('bin:', res.bin)
+          debug('args: %O', args)
+          debug('opts: %o', execaOptions)
 
           return (
             execa(res.bin, args, Object.assign({}, execaOptions))

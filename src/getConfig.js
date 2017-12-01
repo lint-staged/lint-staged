@@ -12,10 +12,12 @@ const logValidationWarning = require('jest-validate').logValidationWarning
 const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
 const isGlob = require('is-glob')
 
+const debug = require('debug')('lint-staged:cfg')
+
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean}}
+ * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string}}
  */
 const defaultConfig = {
   concurrent: true,
@@ -26,8 +28,7 @@ const defaultConfig = {
   },
   linters: {},
   subTaskConcurrency: 1,
-  renderer: 'update',
-  verbose: false
+  renderer: 'update'
 }
 
 /**
@@ -88,10 +89,11 @@ function unknownValidationReporter(config, example, option, options) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verbose: boolean
+ *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string
  * }}
  */
-function getConfig(sourceConfig) {
+function getConfig(sourceConfig, debugMode) {
+  debug('Normalizing config')
   const config = defaultsDeep(
     {}, // Do not mutate sourceConfig!!!
     isSimple(sourceConfig) ? { linters: sourceConfig } : sourceConfig,
@@ -100,11 +102,17 @@ function getConfig(sourceConfig) {
 
   // Check if renderer is set in sourceConfig and if not, set accordingly to verbose
   if (isObject(sourceConfig) && !sourceConfig.hasOwnProperty('renderer')) {
-    config.renderer = config.verbose ? 'verbose' : 'update'
+    config.renderer = debugMode ? 'verbose' : 'update'
   }
 
   return config
 }
+
+const optRmMsg = (opt, helpMsg) => `  Option ${chalk.bold(opt)} was removed.
+
+  ${helpMsg}
+
+  Please remove ${chalk.bold(opt)} from your configuration.`
 
 /**
  * Runs config validation. Throws error if the config is not valid.
@@ -112,6 +120,7 @@ function getConfig(sourceConfig) {
  * @returns config {Object}
  */
 function validateConfig(config) {
+  debug('Validating config')
   const exampleConfig = Object.assign({}, defaultConfig, {
     linters: {
       '*.js': ['eslint --fix', 'git add'],
@@ -120,11 +129,9 @@ function validateConfig(config) {
   })
 
   const deprecatedConfig = {
-    gitDir: () => `  Option ${chalk.bold('gitDir')} was removed.
-
-  lint-staged now automatically resolves '.git' directory.
-
-  Please remove ${chalk.bold('gitDir')} from your configuration.`
+    gitDir: () => optRmMsg('gitDir', "lint-staged now automatically resolves '.git' directory."),
+    verbose: () =>
+      optRmMsg('verbose', `Use the command line flag ${chalk.bold('--debug')} instead.`)
   }
 
   validate(config, {

@@ -11,34 +11,6 @@ describe('getConfig', () => {
     expect(getConfig({})).toMatchSnapshot()
   })
 
-  it('should set verbose', () => {
-    expect(getConfig({})).toEqual(
-      expect.objectContaining({
-        verbose: false
-      })
-    )
-
-    expect(
-      getConfig({
-        verbose: false
-      })
-    ).toEqual(
-      expect.objectContaining({
-        verbose: false
-      })
-    )
-
-    expect(
-      getConfig({
-        verbose: true
-      })
-    ).toEqual(
-      expect.objectContaining({
-        verbose: true
-      })
-    )
-  })
-
   it('should set concurrent', () => {
     expect(getConfig({})).toEqual(
       expect.objectContaining({
@@ -67,7 +39,7 @@ describe('getConfig', () => {
     )
   })
 
-  it('should set renderer based on verbose key', () => {
+  it('should set renderer based on debug mode', () => {
     expect(getConfig({})).toEqual(
       expect.objectContaining({
         renderer: 'update'
@@ -84,21 +56,7 @@ describe('getConfig', () => {
       })
     )
 
-    expect(
-      getConfig({
-        verbose: false
-      })
-    ).toEqual(
-      expect.objectContaining({
-        renderer: 'update'
-      })
-    )
-
-    expect(
-      getConfig({
-        verbose: true
-      })
-    ).toEqual(
+    expect(getConfig({}, true)).toEqual(
       expect.objectContaining({
         renderer: 'verbose'
       })
@@ -182,8 +140,7 @@ describe('getConfig', () => {
         '*.js': 'eslint'
       },
       subTaskConcurrency: 10,
-      renderer: 'custom',
-      verbose: true
+      renderer: 'custom'
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)
   })
@@ -220,14 +177,17 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should print deprecation warning for gitDir option', () => {
-    const configWithDeprecatedOpt = {
-      gitDir: '../',
+  it('should print deprecation warning for deprecated options', () => {
+    const baseConfig = {
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
     }
-    expect(() => validateConfig(getConfig(configWithDeprecatedOpt))).not.toThrow()
+    const opts = [{ gitDir: '../' }, { verbose: true }]
+    opts.forEach(opt => {
+      const configWithDeprecatedOpt = Object.assign(opt, baseConfig)
+      expect(() => validateConfig(getConfig(configWithDeprecatedOpt))).not.toThrow()
+    })
     expect(console.printHistory()).toMatchSnapshot()
   })
 

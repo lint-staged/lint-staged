@@ -11,8 +11,8 @@ describe('findBin', () => {
     expect(args).toEqual(['run', '--silent', 'my-linter', '--'])
   })
 
-  it('should return npm run command without --silent in verbose mode', () => {
-    const { bin, args } = findBin('eslint', { eslint: 'eslint' }, { verbose: true })
+  it('should return npm run command without --silent in debug mode', () => {
+    const { bin, args } = findBin('eslint', { eslint: 'eslint' }, true)
     expect(bin).toEqual('npm')
     expect(args).toEqual(['run', 'eslint', '--'])
   })

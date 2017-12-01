@@ -11,7 +11,6 @@ Object {
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
-  "verbose": false,
 }
 `;
 
@@ -26,7 +25,6 @@ Object {
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
-  "verbose": false,
 }
 `;
 
@@ -47,7 +45,6 @@ Object {
   },
   "renderer": "update",
   "subTaskConcurrency": 1,
-  "verbose": false,
 }
 `;
 
@@ -72,7 +69,7 @@ WARN ● Validation Warning:
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
 
-exports[`validateConfig should print deprecation warning for gitDir option 1`] = `
+exports[`validateConfig should print deprecation warning for deprecated options 1`] = `
 "
 WARN ● Deprecation Warning:
 
@@ -81,6 +78,15 @@ WARN ● Deprecation Warning:
   lint-staged now automatically resolves '.git' directory.
 
   Please remove gitDir from your configuration.
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...
+WARN ● Deprecation Warning:
+
+  Option verbose was removed.
+
+  Use the command line flag --debug instead.
+
+  Please remove verbose from your configuration.
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
