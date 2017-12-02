@@ -50,6 +50,10 @@ See [examples](#examples) and [configuration](#configuration) below.
 >
 > To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
 
+## Changelog
+
+[releases](https://github.com/okonet/lint-staged/releases)
+
 ## Command line flags
 
 ```
