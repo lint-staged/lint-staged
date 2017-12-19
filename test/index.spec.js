@@ -11,7 +11,9 @@ const replaceSerializer = (from, to) => ({
 jest.mock('cosmiconfig')
 
 const mockCosmiconfigWith = result => {
-  cosmiconfig.mockImplementationOnce(() => ({ load: () => Promise.resolve(result) }))
+  cosmiconfig.mockImplementationOnce(() => ({
+    load: () => Promise.resolve(result)
+  }))
 }
 
 describe('lintStaged', () => {
