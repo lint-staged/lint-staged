@@ -18,7 +18,9 @@ describe('findBin', () => {
   })
 
   it('should resolve cmd defined in scripts with args', () => {
-    const { bin, args } = findBin('kcd-scripts format', { 'kcd-scripts': 'node index.js' })
+    const { bin, args } = findBin('kcd-scripts format', {
+      'kcd-scripts': 'node index.js'
+    })
     expect(bin).toEqual('npm')
     expect(args).toEqual(['run', '--silent', 'kcd-scripts', '--', 'format'])
   })
