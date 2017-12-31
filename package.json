@@ -21,8 +21,8 @@
     "precommit": "node index.js",
     "cz": "git-cz",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
+    "lint:fix": "yarn lint --fix",
+    "pretest": "yarn lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
