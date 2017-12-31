@@ -5,11 +5,17 @@ node_js:
   - '8'
   - '6'
   - '4'
-before_install: if [[ `npm -v` < 3* ]]; then npm i -g npm@^3; fi
+
+before_install: yarn global add greenkeeper-lockfile@1
+
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - npm install -g semantic-release
   - semantic-release pre && npm publish && semantic-release post
+
 branches:
   only:
     - master
