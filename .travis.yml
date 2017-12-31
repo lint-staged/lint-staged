@@ -10,6 +10,7 @@ node_js:
   - '4'
 
 before_install: yarn global add greenkeeper-lockfile@1
+install: yarn install --ignore-engines
 
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload

@@ -16,7 +16,7 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
-  - yarn install
+  - yarn install --ignore-engines
 
 test_script:
   - node --version
