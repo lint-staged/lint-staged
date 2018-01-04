@@ -3,6 +3,10 @@ branches:
     - master
     - /^greenkeeper/.*$/
 
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%\\Yarn"
+
 environment:
   matrix:
     - nodejs_version: '8'
