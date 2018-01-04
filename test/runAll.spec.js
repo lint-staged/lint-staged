@@ -62,10 +62,10 @@ describe('runAll', () => {
   })
 
   it('should reject the promise when staged-git-files errors', () => {
+    expect.assertions(1)
     sgfMock.mockImplementationOnce((params, callback) => {
       callback('test', undefined)
     })
-    expect.assertions(1)
     return expect(runAll(scripts, getConfig({}))).rejects.toEqual('test')
   })
 })
