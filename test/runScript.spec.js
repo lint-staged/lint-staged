@@ -31,6 +31,7 @@ describe('runScript', () => {
   })
 
   it('should work with a single command', async () => {
+    expect.assertions(4)
     const res = runScript('test', ['test.js'], scripts)
     expect(res.length).toBe(1)
     const [linter] = res
@@ -42,6 +43,7 @@ describe('runScript', () => {
   })
 
   it('should work with multiple commands', async () => {
+    expect.assertions(9)
     const res = runScript(['test', 'test2'], ['test.js'], scripts)
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
@@ -61,6 +63,7 @@ describe('runScript', () => {
   })
 
   it('should respect chunk size', async () => {
+    expect.assertions(3)
     const [linter] = runScript(['test'], ['test1.js', 'test2.js'], scripts, {
       chunkSize: 1
     })
@@ -71,6 +74,7 @@ describe('runScript', () => {
   })
 
   it('should support non npm scripts', async () => {
+    expect.assertions(7)
     const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'], scripts)
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
@@ -87,6 +91,7 @@ describe('runScript', () => {
   })
 
   it('should pass cwd to execa if gitDir is different than process.cwd for non-npm tasks', async () => {
+    expect.assertions(4)
     resolveGitDir.mockReturnValueOnce('../')
     const res = runScript(['test', 'git add'], ['test.js'], scripts)
     const [linter1, linter2] = res
@@ -100,6 +105,7 @@ describe('runScript', () => {
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
+    expect.assertions(2)
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     const [linter] = runScript(['jest'], ['test.js'], scripts, {})
@@ -110,6 +116,7 @@ describe('runScript', () => {
   })
 
   it('should use --silent in normal mode', async () => {
+    expect.assertions(2)
     const [linter] = runScript('test', ['test.js'], scripts, {}, false)
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
@@ -117,6 +124,7 @@ describe('runScript', () => {
   })
 
   it('should not use --silent in debug mode', async () => {
+    expect.assertions(2)
     const [linter] = runScript('test', ['test.js'], scripts, {}, true)
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
@@ -124,6 +132,7 @@ describe('runScript', () => {
   })
 
   it('should throw error for failed linters', async () => {
+    expect.assertions(1)
     const linterErr = new Error()
     linterErr.stdout = 'Mock error'
     linterErr.stderr = ''

@@ -19,6 +19,7 @@ describe('runScript', () => {
   })
 
   it('should respect concurrency', async () => {
+    expect.assertions(2)
     pMapMock.mockImplementation(() => Promise.resolve(true))
 
     const [linter] = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
@@ -32,6 +33,7 @@ describe('runScript', () => {
   })
 
   it('should handle unexpected error', async () => {
+    expect.assertions(1)
     pMapMock.mockImplementation(() => Promise.reject(new Error('Unexpected Error')))
 
     const [linter] = runScript(['test'], ['test.js'], packageJSON)

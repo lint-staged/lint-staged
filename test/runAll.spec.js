@@ -47,11 +47,13 @@ describe('runAll', () => {
   })
 
   it('should resolve the promise with no files', async () => {
+    expect.assertions(1)
     await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(console.printHistory()).toMatchSnapshot()
   })
 
   it('should not skip tasks if there are files', async () => {
+    expect.assertions(1)
     sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'sample' }])
     })

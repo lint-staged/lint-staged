@@ -31,6 +31,7 @@ describe('runScript with absolute paths', () => {
   })
 
   it('passes `gitDir` as `cwd` to `execa()` when git is called via absolute path', async () => {
+    expect.assertions(2)
     const [linter] = runScript(['git add'], ['test.js'], packageJSON)
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
