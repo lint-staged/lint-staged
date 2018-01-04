@@ -17,8 +17,8 @@ after_script: greenkeeper-lockfile-upload
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - npm install -g semantic-release
-  - semantic-release pre && npm publish && semantic-release post
+  - yarn global add semantic-release@11
+  - semantic-release
 
 branches:
   only:
