@@ -1,6 +1,9 @@
 language: node_js
 notifications:
   email: false
+cache:
+  yarn: true
+  directories: node_modules
 node_js:
   - '8'
   - '6'
