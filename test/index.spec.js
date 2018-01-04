@@ -24,6 +24,7 @@ describe('lintStaged', () => {
   })
 
   it('should output config in debug mode', async () => {
+    expect.assertions(1)
     const config = {
       linters: {
         '*': 'mytask'
@@ -35,6 +36,7 @@ describe('lintStaged', () => {
   })
 
   it('should not output config in normal mode', async () => {
+    expect.assertions(1)
     const config = {
       '*': 'mytask'
     }
@@ -44,17 +46,20 @@ describe('lintStaged', () => {
   })
 
   it('should load config file when specified', async () => {
+    expect.assertions(1)
     await lintStaged(logger, path.join(__dirname, '__mocks__', 'my-config.json'), true)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when config file is not found', async () => {
+    expect.assertions(1)
     mockCosmiconfigWith(null)
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
+    expect.assertions(1)
     const nonExistentConfig = 'fake-config-file.yml'
 
     // Serialize Windows, Linux and MacOS paths consistently
