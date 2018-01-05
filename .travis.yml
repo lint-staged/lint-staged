@@ -17,7 +17,7 @@ after_script: greenkeeper-lockfile-upload
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - yarn global add semantic-release@11
+  - yarn global add --ignore-engines semantic-release@11
   - semantic-release
 
 branches:
