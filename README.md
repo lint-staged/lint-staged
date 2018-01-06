@@ -133,7 +133,8 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 ## Filtering files
 
 It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns.
-The file patterns should be relative to the project root(where `lint-staged` is installed).
+The file patterns should be specified relative to the package root (where `lint-staged` is installed).
+The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory.
 
 ```js
 {
@@ -149,8 +150,7 @@ The file patterns should be relative to the project root(where `lint-staged` is 
 ```
 
 **NOTE:** Prior to `lint-staged@5`, when the `gitDir` option was present, file patterns used for filtering via minimatch had to be relative to the git root.
-But that's no longer necessary and the `gitDir` option is deprecated.
-Instead, `lint-staged` will now do the following:
+But that's no longer necessary and the `gitDir` option is deprecated. Instead, `lint-staged` will now do the following:
 
 * Resolve the git root automatically, no configuration needed.
 * Pick the staged files which are present inside the project directory.
