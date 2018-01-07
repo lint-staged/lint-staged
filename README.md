@@ -132,9 +132,9 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 
 ## Filtering files
 
-It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns.
-The file patterns should be specified relative to the package root (where `lint-staged` is installed).
-The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory.
+It is possible to run linters for certain paths only using glob patterns using [minimatch](https://github.com/isaacs/minimatch) to match those patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
+
+**NOTE:** If you're using `lint-staged<5` globs have to be _relative to the git root_.
 
 ```js
 {
@@ -149,12 +149,15 @@ The paths passed to the linters are absolute to avoid confusion in case they're 
 }
 ```
 
-**NOTE:** Prior to `lint-staged@5`, when the `gitDir` option was present, file patterns used for filtering via minimatch had to be relative to the git root.
-But that's no longer necessary and the `gitDir` option is deprecated. Instead, `lint-staged` will now do the following:
+When mathcing, lint-staged will do the following
 
 * Resolve the git root automatically, no configuration needed.
 * Pick the staged files which are present inside the project directory.
 * Filter them using the specified glob patterns.
+* Resolve filtered paths relative to the git root and make them absolute.
+* Pass absolute paths to the linters as arguments
+
+**NOTE:** Lint-staged will pass _absolute_ paths to the linters commands to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
 
 Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
 
