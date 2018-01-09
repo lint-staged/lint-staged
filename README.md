@@ -132,8 +132,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 
 ## Filtering files
 
-It is possible to run linters for certain paths only by using glob patterns. [minimatch](https://github.com/isaacs/minimatch) is used to filter the staged files according to these patterns.
-File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
+It is possible to run linters for certain paths only by using glob patterns. [minimatch](https://github.com/isaacs/minimatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
 
 **NOTE:** If you're using `lint-staged<5` globs have to be _relative to the git root_.
 
