@@ -38,7 +38,7 @@ module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
   })
 
   return explorer
-    .load(process.cwd())
+    .load()
     .then(result => {
       if (result == null) throw errConfigNotFound
 
