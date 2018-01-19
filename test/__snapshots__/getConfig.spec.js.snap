@@ -8,6 +8,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
@@ -22,6 +23,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
@@ -36,6 +38,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {
     "*.js": Array [
       "eslint --fix",

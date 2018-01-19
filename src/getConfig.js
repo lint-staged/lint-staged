@@ -27,6 +27,7 @@ const defaultConfig = {
     dot: true
   },
   linters: {},
+  ignore: [],
   subTaskConcurrency: 1,
   renderer: 'update'
 }

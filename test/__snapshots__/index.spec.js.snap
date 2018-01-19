@@ -13,6 +13,7 @@ LOG {
     matchBase: true,
     dot: true
   },
+  ignore: [],
   subTaskConcurrency: 1,
   renderer: 'verbose'
 }"
@@ -33,6 +34,7 @@ LOG {
     matchBase: true,
     dot: true
   },
+  ignore: [],
   subTaskConcurrency: 1,
   renderer: 'verbose'
 }"

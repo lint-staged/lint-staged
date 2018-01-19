@@ -129,6 +129,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
 * `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
+* `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 
 ## Filtering files
 

@@ -139,6 +139,7 @@ describe('getConfig', () => {
       linters: {
         '*.js': 'eslint'
       },
+      ignore: ['docs/**/*.js'],
       subTaskConcurrency: 10,
       renderer: 'custom'
     }
