@@ -56,17 +56,15 @@ module.exports = function runAll(scripts, config) {
         [
           {
             title: 'Stashing changes...',
-            task: (ctx, task) => {
+            task: (ctx, task) =>
               git.hasUnstagedFiles().then(res => {
                 ctx.hasStash = res
                 if (res) {
                   // TODO: Handle Ctrl+C before stashing
-                  git.gitStashSave()
-                } else {
-                  task.skip('No unstaged files found...')
+                  return git.gitStashSave()
                 }
+                return task.skip('No unstaged files found...')
               })
-            }
           },
           {
             title: 'Running linters...',
