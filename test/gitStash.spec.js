@@ -127,6 +127,28 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
+    it('should not restore deleted files', async () => {
+      // Delete test.js
+      await gitflow.execGit(['checkout', 'test.js'], gitOpts)
+      await gitflow.execGit(['rm', 'test.js'], gitOpts)
+      expect(await gitStatus()).toContain(' M test.css')
+      expect(await gitStatus()).toContain('D  test.js')
+
+      // Stashing files
+      await gitflow.gitStashSave(gitOpts)
+      expect(await gitStatus()).not.toContain(' M test.css')
+      expect(await gitStatus()).toContain('D  test.js')
+
+      // Restoring state
+      await gitflow.gitStashPop(gitOpts)
+      expect(await gitStatus()).toContain(' M test.css')
+      expect(await gitStatus()).toContain('D  test.js')
+      expect(await gitStatus()).not.toContain('?? test.js')
+
+      // No stashed should left
+      expect(await gitStashList()).toEqual('')
+    })
+
     it('should drop linters modifications when aborted', async () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain(' M test.js')
