@@ -48,7 +48,7 @@ module.exports = function runAll(scripts, config) {
 
     const listrBaseOptions = {
       dateFormat: false,
-      renderer,
+      renderer
     }
 
     if (tasks.length) {
@@ -57,7 +57,7 @@ module.exports = function runAll(scripts, config) {
           {
             title: 'Stashing changes...',
             task: (ctx, task) => {
-              git.hasPartiallyStaged().then(res => {
+              git.hasUnstagedFiles().then(res => {
                 ctx.hasStash = res
                 if (res) {
                   // TODO: Handle Ctrl+C before stashing
@@ -71,13 +71,13 @@ module.exports = function runAll(scripts, config) {
           {
             title: 'Running linters...',
             task: () =>
-              new Listr(tasks, Object.assign({},
-                listrBaseOptions,
-                {
+              new Listr(
+                tasks,
+                Object.assign({}, listrBaseOptions, {
                   concurrent,
                   exitOnError: !concurrent // Wait for all errors when running concurrently
-                }
-              ))
+                })
+              )
           },
           {
             title: 'Restoring local changes...',

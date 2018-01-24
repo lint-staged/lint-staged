@@ -23,17 +23,36 @@ function execGit(cmd, options) {
   return execa('git', getCmdArgs(gitDir).concat(cmd), { cwd: getAbsolutePath(cwd) })
 }
 
-function hasPartiallyStaged(options) {
+function getUnstagedFiles(options) {
   return execGit(['write-tree'], options)
     .then(res => {
       const tree = res.stdout
       if (tree) {
-        return execGit(['diff-index', '--exit-code', '--name-only', tree, '--'], options)
+        return execGit(['diff-index', '--name-only', tree, '--'], options)
       }
-      return false
+      return []
     })
-    .then(() => false) // No unstaged files found
-    .catch(() => true) // Found unstaged files
+    .then(files => (files.stdout ? files.stdout.split('\n') : []))
+}
+
+function getStagedFiles(options) {
+  return execGit(['write-tree'], options)
+    .then(res => {
+      const tree = res.stdout
+      if (tree) {
+        return execGit(['diff-index', '--cached', '--name-only', tree, '--'], options)
+      }
+      return []
+    })
+    .then(files => (files.stdout ? files.stdout.split('\n') : []))
+}
+
+function hasUnstagedFiles(options) {
+  return getUnstagedFiles(options).then(files => files.length > 0)
+}
+
+function hasPartiallyStagedFiles(unstaged, staged) {
+  return unstaged.some(file => staged.includes(file))
 }
 
 function generatePatch(options) {
@@ -120,5 +139,8 @@ module.exports = {
   execGit,
   gitStashSave,
   gitStashPop,
-  hasPartiallyStaged
+  hasUnstagedFiles,
+  getUnstagedFiles,
+  getStagedFiles,
+  hasPartiallyStagedFiles
 }

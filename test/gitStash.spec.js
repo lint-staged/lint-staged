@@ -28,50 +28,82 @@ async function readFile(filepath, dir = wcDirPath) {
 }
 
 describe('git', () => {
-  describe('gitStashSave/gitStashPop', () => {
-    beforeEach(async () => {
-      wcDir = tmp.dirSync({ unsafeCleanup: true })
-      wcDirPath = wcDir.name
-      gitOpts = {
-        cwd: wcDirPath,
-        gitDir: path.join(wcDirPath, '.git')
-      }
+  beforeEach(async () => {
+    wcDir = tmp.dirSync({ unsafeCleanup: true })
+    wcDirPath = wcDir.name
+    gitOpts = {
+      cwd: wcDirPath,
+      gitDir: path.join(wcDirPath, '.git')
+    }
 
-      // Init repository
-      await gitflow.execGit('init', gitOpts)
-      // Create JS file
-      await fsp.writeFile(
-        path.join(wcDirPath, 'test.js'),
-        `module.exports = {
+    // Init repository
+    await gitflow.execGit('init', gitOpts)
+    // Create JS file
+    await fsp.writeFile(
+      path.join(wcDirPath, 'test.js'),
+      `module.exports = {
   test: 'test',
 
   foo: 'bar'
 }
 `
-      )
-      await fsp.writeFile(
-        path.join(wcDirPath, 'test.css'),
-        `.test {
+    )
+    await fsp.writeFile(
+      path.join(wcDirPath, 'test.css'),
+      `.test {
     border: 1px solid green;
 }
 `
-      )
-      await gitflow.execGit(['config', 'user.name', '"test"'], gitOpts)
-      await gitflow.execGit(['config', 'user.email', '"test@test.com"'], gitOpts)
-      // Track all files
-      await gitflow.execGit(['add', '.'], gitOpts)
-      // Create inital commit
-      await gitflow.execGit(['commit', '-m', '"Initial commit"'], gitOpts)
-      // Update one of the files
-      await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
-      // Update one of the files
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), initialContent)
-    })
+    )
+    await gitflow.execGit(['config', 'user.name', '"test"'], gitOpts)
+    await gitflow.execGit(['config', 'user.email', '"test@test.com"'], gitOpts)
+    // Track all files
+    await gitflow.execGit(['add', '.'], gitOpts)
+    // Create inital commit
+    await gitflow.execGit(['commit', '-m', '"Initial commit"'], gitOpts)
+    // Update one of the files
+    await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
+    // Update one of the files
+    await fsp.writeFile(path.join(wcDirPath, 'test.js'), initialContent)
+  })
 
-    afterEach(() => {
-      wcDir.removeCallback()
-    })
+  afterEach(() => {
+    wcDir.removeCallback()
+  })
 
+  describe('getUnstagedFiles', () => {
+    it('should return an array', async () => {
+      const res = await gitflow.getUnstagedFiles(gitOpts)
+      expect(res).toEqual(['test.css', 'test.js'])
+    })
+  })
+
+  describe('getStagedFiles', () => {
+    it('should return an array', async () => {
+      const res = await gitflow.getStagedFiles(gitOpts)
+      expect(res).toEqual([])
+    })
+  })
+
+  describe('hasUnstagedFiles', () => {
+    it('should return a Boolean', async () => {
+      const res = await gitflow.hasUnstagedFiles(gitOpts)
+      expect(res).toEqual(true)
+    })
+  })
+
+  describe('hasPartiallyStagedFiles', () => {
+    it('should return true', () => {
+      const res = gitflow.hasPartiallyStagedFiles(['a.txt'], ['a.txt'])
+      expect(res).toEqual(true)
+    })
+    it('should return false', () => {
+      const res = gitflow.hasPartiallyStagedFiles(['a.txt'], ['b.txt'])
+      expect(res).toEqual(false)
+    })
+  })
+
+  describe('gitStashSave/gitStashPop', () => {
     it('should stash and restore WC state without a commit', async () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain(' M test.js')
