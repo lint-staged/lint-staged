@@ -181,7 +181,7 @@ describe('git', () => {
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), eslintContent)
 
       // Expect both indexed and modified state on one file
-      // expect(await gitStatus()).not.toContain(' M test.css')
+      expect(await gitStatus()).not.toContain(' M test.css')
       expect(await gitStatus()).toContain('MM test.js')
       // and index isn't modified
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
@@ -318,7 +318,7 @@ describe('git', () => {
       // User does additional edits
       const userContent = `module.exports = {
     test: 'test2',
-    test: 'test3',
+    test: 'test3'
 }`
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), userContent)
 
@@ -338,7 +338,8 @@ describe('git', () => {
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-    test: 'test2',
+    test: "test2",
+    test: "test3",
 };`
       )
       // and add to index
@@ -364,7 +365,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should only perform hooks fixes on staged hunks of the file', async () => {
+    it('should undo hook fixes and abort if partially staged files present', async () => {
       await gitflow.execGit(['checkout', '--', '.'], gitOpts)
       // Create patch file
       const stagedHunk = `diff --git a/test.js b/test.js
@@ -381,7 +382,7 @@ index 74997b7..de2b4b3 100644
 `
       await fsp.writeFile(path.join(wcDirPath, 'test.js.patch'), stagedHunk)
 
-      // Create patch file
+      // Create second patch file
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js.patch2'),
         `--- a/test.js
@@ -389,17 +390,19 @@ index 74997b7..de2b4b3 100644
 @@ -1,5 +1,5 @@
  module.exports = {
 -  test: 'test',
-+  test: 'edited'
++  test: 'edited',
 
    foo: 'bar'
  }
 `
       )
 
-      // Apply second patch to the working copy
-      await gitflow.execGit(['apply', 'test.js.patch2'], gitOpts)
       // Apply patch with just a single hunk in index
+      // This imitates `git add -p` and adding only the first change
       await gitflow.execGit(['apply', '--cached', 'test.js.patch'], gitOpts)
+      // Apply second patch to the working copy
+      // This imitates editing the file in the editor but not selecting for commit
+      await gitflow.execGit(['apply', 'test.js.patch2'], gitOpts)
       expect(await gitStatus()).toContain('MM test.js')
       // Save diff for the reference
       const initialIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
@@ -412,32 +415,31 @@ index 74997b7..de2b4b3 100644
       expect(await gitStatus()).not.toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
 
-      // Do additional edits (imitate eslint --fix)
+      // Do additional edits (imitate running eslint --fix)
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-  test: "test",
+  test: "edited",
 
   foo: "baz"
 };`
       )
-      // and add to index
-      await gitflow.execGit(['add', 'test.js'], gitOpts)
+      // TODO: and add to index
+      // await gitflow.execGit(['add', 'test.js'], gitOpts)
 
       // Restoring state
       await gitflow.gitStashPop(gitOpts)
 
       // Expect stashed files to be back
       expect(await gitStatus()).toContain('MM test.js')
-      // and only staged content to have modifications
-      expect(
-        await gitflow.execGit(['diff', '--cached'], gitOpts).then(res => res.stdout)
-      ).not.toContain('-  test: \'test\',\n+  test: "test",\n')
-      // expect(await readFile('test.js')).toEqual(`module.exports = {
-      // test: 'edited'
-      //
-      // foo: "baz"
-      // };`)
+      // and all lint-staged modifications to be gone
+      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
+      expect(await readFile('test.js')).toEqual(`module.exports = {
+  test: 'edited',
+
+  foo: 'bar'
+}
+`)
 
       // No stashed should left
       expect(await gitStashList()).toEqual('')
