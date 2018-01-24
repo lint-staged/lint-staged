@@ -2,10 +2,8 @@ import path from 'path'
 import fsp from 'fs-promise'
 import tmp from 'tmp'
 import gitflow from '../src/gitWorkflow'
-import serializer from './jest-stdout-serializer'
 
 jest.unmock('execa')
-expect.addSnapshotSerializer(serializer)
 tmp.setGracefulCleanup()
 
 let wcDir
