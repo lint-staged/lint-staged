@@ -85,7 +85,7 @@ function gitPopWithConflicts(options) {
 }
 
 function cleanup(options) {
-  console.info('Patch applied! Cleaning up...')
+  debug('Patch applied! Cleaning up...')
   return execGit(['stash', 'drop'], options)
     .then(() => fsp.unlink(patchPath))
     .then(() => {
