@@ -18,7 +18,7 @@
     "src"
   ],
   "scripts": {
-    "precommit": "node index.js",
+    "precommit": "node index.js --debug",
     "cz": "git-cz",
     "lint": "eslint .",
     "lint:fix": "yarn lint --fix",
