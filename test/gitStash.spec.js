@@ -127,7 +127,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should not restore deleted files', async () => {
+    it.skip('should not restore deleted files', async () => {
       // Delete test.js
       await gitflow.execGit(['checkout', 'test.js'], gitOpts)
       await gitflow.execGit(['rm', 'test.js'], gitOpts)
@@ -425,7 +425,6 @@ index 74997b7..de2b4b3 100644
   foo: "baz"
 };`
       )
-      // TODO: and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
       const indexAfterEslint = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
