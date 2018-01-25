@@ -140,6 +140,7 @@ describe('getConfig', () => {
         '*.js': 'eslint'
       },
       subTaskConcurrency: 10,
+      stashUnstaged: true,
       renderer: 'custom'
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)

@@ -10,6 +10,7 @@ Object {
   },
   "linters": Object {},
   "renderer": "update",
+  "stashUnstaged": true,
   "subTaskConcurrency": 1,
 }
 `;
@@ -24,6 +25,7 @@ Object {
   },
   "linters": Object {},
   "renderer": "update",
+  "stashUnstaged": true,
   "subTaskConcurrency": 1,
 }
 `;
@@ -44,6 +46,7 @@ Object {
     ".*rc": "jsonlint",
   },
   "renderer": "update",
+  "stashUnstaged": true,
   "subTaskConcurrency": 1,
 }
 `;
