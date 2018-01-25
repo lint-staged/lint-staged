@@ -3,6 +3,7 @@
 const path = require('path')
 const execa = require('execa')
 const fsp = require('fs-promise')
+const debug = require('debug')('lint-staged:git')
 
 let patchPath
 
@@ -78,13 +79,13 @@ function generatePatch(options) {
       return Promise.resolve(null)
     })
     .then(() => {
-      console.log('Nothing to do...')
+      debug('Nothing to do...')
     })
     .catch(res => {
-      console.warn('Unstaged files detected.')
+      debug('Unstaged files detected.')
       const patch = res.stdout
       const filePath = path.join(cwd, '.lint-staged.patch')
-      console.log(`Stashing unstaged files to ${filePath}...`)
+      debug(`Stashing unstaged files to ${filePath}...`)
       return fsp.writeFile(filePath, patch).then(() => filePath) // Resolve with filePath
     })
 }
@@ -109,11 +110,11 @@ function cleanup(options) {
 }
 
 function gitApplyPatch(patch, options) {
-  console.log('Applying patch...')
+  debug('Applying patch...')
   return gitApply(patch, options)
     .then(() => cleanup(options))
     .catch(() => {
-      console.warn('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
+      debug('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
       return gitPopWithConflicts(options).then(() => cleanup(options))
     })
 }
