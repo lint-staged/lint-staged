@@ -119,11 +119,16 @@ function gitApplyPatch(patch, options) {
 }
 
 function gitStashSave(options) {
-  return generatePatch(options)
-    .then(res => {
-      patchPath = res // Save the reference to the path
-    })
-    .then(() => execGit(['stash', '--keep-index'], options))
+  return hasUnstagedFiles(options).then(hasUnstaged => {
+    if (hasUnstaged) {
+      return generatePatch(options)
+        .then(res => {
+          patchPath = res // Save the reference to the patch
+        })
+        .then(() => execGit(['stash', '--keep-index'], options))
+    }
+    return Promise.resolve(null)
+  })
 }
 
 function gitStashPop(options) {
