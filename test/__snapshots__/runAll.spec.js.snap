@@ -2,17 +2,27 @@
 
 exports[`runAll should not skip tasks if there are files 1`] = `
 "
+LOG Stashing changes... [started]
+LOG Stashing changes... [skipped]
+LOG → No unstaged files found...
+LOG Running linters... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
-LOG Running tasks for *.js [completed]"
+LOG Running tasks for *.js [completed]
+LOG Running linters... [completed]"
 `;
 
 exports[`runAll should resolve the promise with no files 1`] = `
 "
+LOG Stashing changes... [started]
+LOG Stashing changes... [skipped]
+LOG → No unstaged files found...
+LOG Running linters... [started]
 LOG Running tasks for *.js [started]
 LOG Running tasks for *.js [skipped]
-LOG → No staged files match *.js"
+LOG → No staged files match *.js
+LOG Running linters... [completed]"
 `;
 
 exports[`runAll should throw when invalid config is provided 1`] = `"Invalid config provided to runAll! Use getConfig instead."`;
