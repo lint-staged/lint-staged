@@ -18,11 +18,11 @@
     "src"
   ],
   "scripts": {
-    "precommit": "remove-lockfiles && node index.js",
+    "precommit": "node index.js",
     "cz": "git-cz",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
+    "lint:fix": "yarn lint --fix",
+    "pretest": "yarn lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
@@ -30,7 +30,8 @@
     "app-root-path": "^2.0.0",
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
-    "cosmiconfig": "^3.1.0",
+    "cosmiconfig": "^4.0.0",
+    "debug": "^3.1.0",
     "dedent": "^0.7.0",
     "execa": "^0.8.0",
     "find-parent-dir": "^0.3.0",
@@ -49,7 +50,6 @@
     "stringify-object": "^3.2.0"
   },
   "devDependencies": {
-    "babel-jest": "^21.0.2",
     "babel-preset-env": "^1.6.0",
     "commitizen": "^2.9.6",
     "consolemock": "^1.0.2",
@@ -58,11 +58,9 @@
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^5.1.1",
     "husky": "^0.14.3",
-    "jest": "^21.1.0",
-    "jest-cli": "^21.1.0",
+    "jest": "^22.0.4",
     "jsonlint": "^1.6.2",
-    "prettier": "1.8.2",
-    "remove-lockfiles": "^1.1.1",
+    "prettier": "1.9.2",
     "tmp": "0.0.33"
   },
   "config": {

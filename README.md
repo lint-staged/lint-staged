@@ -50,6 +50,32 @@ See [examples](#examples) and [configuration](#configuration) below.
 >
 > To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
 
+## Changelog
+
+[releases](https://github.com/okonet/lint-staged/releases)
+
+## Command line flags
+
+```
+$ ./node_modules/.bin/lint-staged --help
+
+  Usage: lint-staged [options]
+
+
+  Options:
+
+    -V, --version        output the version number
+    -c, --config [path]  Path to configuration file
+    -d, --debug          Enable debug mode
+    -h, --help           output usage information
+```
+
+* **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search.
+* **`--debug`**: Enabling the debug mode does the following:
+  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
+  - Do not pass `--silent` to npm scripts.
+
 ## Configuration
 
 Starting with v3.1 you can now use different ways of configuring it:
@@ -102,12 +128,13 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
-* `verbose` — *false* — runs lint-staged in verbose mode. When `true` it will use https://github.com/SamVerschueren/listr-verbose-renderer.
 * `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to customize how glob patterns match files.
 
 ## Filtering files
 
-It is possible to run linters for certain paths only by using [minimatch](https://github.com/isaacs/minimatch) patterns. The paths used for filtering via minimatch are relative to the directory that contains the `.git` directory. The paths passed to the linters are absolute to avoid confusion in case they're executed with a different working directory, as would be the case when using the `gitDir` option.
+It is possible to run linters for certain paths only by using glob patterns. [minimatch](https://github.com/isaacs/minimatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
+
+**NOTE:** If you're using `lint-staged<5` globs have to be _relative to the git root_.
 
 ```js
 {
@@ -121,6 +148,17 @@ It is possible to run linters for certain paths only by using [minimatch](https:
   "src/**/*.js": "eslint",
 }
 ```
+
+When matching, `lint-staged` will do the following
+
+* Resolve the git root automatically, no configuration needed.
+* Pick the staged files which are present inside the project directory.
+* Filter them using the specified glob patterns.
+* Pass absolute paths to the linters as arguments.
+
+**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
+
+Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
 
 ## What commands are supported?
 

@@ -2,11 +2,14 @@
 
 const npmWhich = require('npm-which')(process.cwd())
 
-module.exports = function findBin(cmd, scripts, options) {
+const debug = require('debug')('lint-staged:find-bin')
+
+module.exports = function findBin(cmd, scripts, debugMode) {
+  debug('Resolving binary for command `%s`', cmd)
   const npmArgs = (bin, args) =>
     // We always add `--` even if args are not defined. This is required
     // because we pass filenames later.
-    ['run', options && options.verbose ? undefined : '--silent', bin, '--']
+    ['run', debugMode ? undefined : '--silent', bin, '--']
       // args could be undefined but we filter that out.
       .concat(args)
       .filter(arg => arg !== undefined)
@@ -39,6 +42,7 @@ module.exports = function findBin(cmd, scripts, options) {
    */
   if (scripts[cmd] !== undefined) {
     // Support for scripts from package.json
+    debug('`%s` resolved to npm script - `%s`', cmd, scripts[cmd])
     return { bin: 'npm', args: npmArgs(cmd) }
   }
 
@@ -47,6 +51,7 @@ module.exports = function findBin(cmd, scripts, options) {
   const args = parts.splice(1)
 
   if (scripts[bin] !== undefined) {
+    debug('`%s` resolved to npm script - `%s`', bin, scripts[bin])
     return { bin: 'npm', args: npmArgs(bin, args) }
   }
 
@@ -76,5 +81,6 @@ module.exports = function findBin(cmd, scripts, options) {
     throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
   }
 
+  debug('Binary for `%s` resolved to `%s`', cmd, bin)
   return { bin, args }
 }

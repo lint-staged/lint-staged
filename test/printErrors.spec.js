@@ -24,6 +24,7 @@ describe('printErrors', () => {
   })
 
   it('should print Listr nested errors', async () => {
+    expect.assertions(1)
     const list = new Listr(
       [
         {

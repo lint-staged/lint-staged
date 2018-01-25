@@ -6,7 +6,11 @@ const pathIsInside = require('path-is-inside')
 const getConfig = require('./getConfig').getConfig
 const resolveGitDir = require('./resolveGitDir')
 
+const debug = require('debug')('lint-staged:gen-tasks')
+
 module.exports = function generateTasks(config, relFiles) {
+  debug('Generating linter tasks')
+
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
   const linters = normalizedConfig.linters
   const globOptions = normalizedConfig.globOptions
@@ -29,10 +33,9 @@ module.exports = function generateTasks(config, relFiles) {
       // Return absolute path after the filter is run
       .map(file => path.resolve(cwd, file))
 
-    return {
-      pattern,
-      commands,
-      fileList
-    }
+    const task = { pattern, commands, fileList }
+    debug('Generated task: \n%O', task)
+
+    return task
   })
 }

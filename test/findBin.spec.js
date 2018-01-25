@@ -11,14 +11,16 @@ describe('findBin', () => {
     expect(args).toEqual(['run', '--silent', 'my-linter', '--'])
   })
 
-  it('should return npm run command without --silent in verbose mode', () => {
-    const { bin, args } = findBin('eslint', { eslint: 'eslint' }, { verbose: true })
+  it('should return npm run command without --silent in debug mode', () => {
+    const { bin, args } = findBin('eslint', { eslint: 'eslint' }, true)
     expect(bin).toEqual('npm')
     expect(args).toEqual(['run', 'eslint', '--'])
   })
 
   it('should resolve cmd defined in scripts with args', () => {
-    const { bin, args } = findBin('kcd-scripts format', { 'kcd-scripts': 'node index.js' })
+    const { bin, args } = findBin('kcd-scripts format', {
+      'kcd-scripts': 'node index.js'
+    })
     expect(bin).toEqual('npm')
     expect(args).toEqual(['run', '--silent', 'kcd-scripts', '--', 'format'])
   })

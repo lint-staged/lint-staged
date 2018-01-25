@@ -3,6 +3,10 @@ branches:
     - master
     - /^greenkeeper/.*$/
 
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%\\Yarn"
+
 environment:
   matrix:
     - nodejs_version: '8'
@@ -12,13 +16,11 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
-  - npm install --global npm@latest
-  - set PATH=%APPDATA%\npm;%PATH%
-  - npm install
+  - yarn install --ignore-engines
 
 test_script:
   - node --version
-  - npm --version
-  - npm test
+  - yarn --version
+  - yarn test
 
 build: off
