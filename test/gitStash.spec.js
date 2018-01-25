@@ -78,28 +78,10 @@ describe('git', () => {
     })
   })
 
-  describe('getStagedFiles', () => {
-    it('should return an array', async () => {
-      const res = await gitflow.getStagedFiles(gitOpts)
-      expect(res).toEqual([])
-    })
-  })
-
   describe('hasUnstagedFiles', () => {
     it('should return a Boolean', async () => {
       const res = await gitflow.hasUnstagedFiles(gitOpts)
       expect(res).toEqual(true)
-    })
-  })
-
-  describe('hasPartiallyStagedFiles', () => {
-    it('should return true', () => {
-      const res = gitflow.hasPartiallyStagedFiles(['a.txt'], ['a.txt'])
-      expect(res).toEqual(true)
-    })
-    it('should return false', () => {
-      const res = gitflow.hasPartiallyStagedFiles(['a.txt'], ['b.txt'])
-      expect(res).toEqual(false)
     })
   })
 

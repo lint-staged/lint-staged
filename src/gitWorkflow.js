@@ -36,24 +36,8 @@ function getUnstagedFiles(options) {
     .then(files => (files.stdout ? files.stdout.split('\n') : []))
 }
 
-function getStagedFiles(options) {
-  return execGit(['write-tree'], options)
-    .then(res => {
-      const tree = res.stdout
-      if (tree) {
-        return execGit(['diff-index', '--cached', '--name-only', tree, '--'], options)
-      }
-      return []
-    })
-    .then(files => (files.stdout ? files.stdout.split('\n') : []))
-}
-
 function hasUnstagedFiles(options) {
   return getUnstagedFiles(options).then(files => files.length > 0)
-}
-
-function hasPartiallyStagedFiles(unstaged, staged) {
-  return unstaged.some(file => staged.includes(file))
 }
 
 function generatePatch(options) {
@@ -140,13 +124,10 @@ function gitStashPop(options) {
 }
 
 module.exports = {
-  getAbsolutePath,
   getCmdArgs,
   execGit,
   gitStashSave,
   gitStashPop,
   hasUnstagedFiles,
-  getUnstagedFiles,
-  getStagedFiles,
-  hasPartiallyStagedFiles
+  getUnstagedFiles
 }
