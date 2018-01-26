@@ -14,6 +14,12 @@ module.exports = function generateTasks(config, relFiles) {
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
   const linters = normalizedConfig.linters
   const globOptions = normalizedConfig.globOptions
+  const ignoreFilters = normalizedConfig.ignore.map(pattern => minimatch.filter(pattern))
+  // if there are filters, then return false if the input matches any
+  // if there are not, then return true for all input
+  const ignoreFilter = ignoreFilters.length
+    ? input => !ignoreFilters.some(filter => filter(input))
+    : () => true
 
   const gitDir = resolveGitDir()
   const cwd = process.cwd()
@@ -30,6 +36,7 @@ module.exports = function generateTasks(config, relFiles) {
       .map(file => path.relative(cwd, file))
       // We want to filter before resolving paths
       .filter(filter)
+      .filter(ignoreFilter)
       // Return absolute path after the filter is run
       .map(file => path.resolve(cwd, file))
 
