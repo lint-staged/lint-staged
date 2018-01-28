@@ -402,7 +402,7 @@ index 74997b7..de2b4b3 100644
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-  test: 'edited',
+  test: "edited",
 
   foo: "baz"
 };`
@@ -417,6 +417,11 @@ index 74997b7..de2b4b3 100644
       expect(await gitStatus()).toContain('MM test.js')
       // and all lint-staged modifications to be gone
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
+      expect(await readFile('test.js')).toEqual(`module.exports = {
+  test: 'edited',
+
+  foo: "baz"
+};`)
 
       // No stashed should left
       expect(await gitStashList()).toEqual('')
