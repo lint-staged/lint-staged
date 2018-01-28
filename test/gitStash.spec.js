@@ -347,7 +347,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should undo hook fixes and abort if partially staged files present', async () => {
+    it('should add hooks fixes to index and working copy on partially staged files', async () => {
       await gitflow.execGit(['checkout', '--', '.'], gitOpts)
       // Create patch file
       const stagedHunk = `diff --git a/test.js b/test.js
