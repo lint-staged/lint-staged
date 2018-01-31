@@ -1,6 +1,7 @@
 branches:
   only:
     - master
+    - next
     - /^greenkeeper/.*$/
 
 cache:
