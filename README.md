@@ -91,7 +91,7 @@ Lint-staged supports simple and advanced config formats.
 
 ### Simple config format
 
-Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [minimatch](https://github.com/isaacs/minimatch) for glob patterns.
+Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
 
 #### `package.json` example:
 ```json
@@ -126,7 +126,7 @@ To set options and keep lint-staged extensible, advanced format can be used. Thi
 
 * `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
-* `globOptions` — `{ matchBase: true, dot: true }` — [minimatch options](https://github.com/isaacs/minimatch#options) to 
+* `globOptions` — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to
 customize how glob patterns match files.
 * `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
@@ -134,7 +134,7 @@ customize how glob patterns match files.
 
 ## Filtering files
 
-It is possible to run linters for certain paths only by using glob patterns. [minimatch](https://github.com/isaacs/minimatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
+It is possible to run linters for certain paths only by using glob patterns. [micromatch](https://github.com/micromatch/micromatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
 
 **NOTE:** If you're using `lint-staged<5` globs have to be _relative to the git root_.
 
