@@ -27,7 +27,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "app-root-path": "^2.0.0",
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
     "cosmiconfig": "^4.0.0",

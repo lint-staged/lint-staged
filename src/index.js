@@ -2,7 +2,6 @@
 
 'use strict'
 
-const appRoot = require('app-root-path')
 const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
@@ -12,9 +11,6 @@ const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
 const debug = require('debug')('lint-staged')
-
-// Find the right package.json at the root of the project
-const packageJson = require(appRoot.resolve('package.json'))
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 // but do this only in TTY mode
@@ -56,10 +52,7 @@ module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
         debug('Normalized config:\n%O', config)
       }
 
-      const scripts = packageJson.scripts || {}
-      debug('Loaded scripts from package.json:\n%O', scripts)
-
-      runAll(scripts, config, debugMode)
+      runAll(config)
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0
