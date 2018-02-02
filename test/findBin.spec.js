@@ -1,3 +1,4 @@
+import makeConsoleMock from 'consolemock'
 import npmWhichMock from 'npm-which'
 import findBin from '../src/findBin'
 
@@ -22,6 +23,21 @@ describe('findBin', () => {
     expect(() => {
       findBin('my-missing-linter')
     }).toThrow('my-missing-linter could not be found. Try `npm install my-missing-linter`.')
+  })
+
+  it('should throw a helpful error if the cmd is present in pkg scripts', () => {
+    const originalConsole = global.console
+    global.console = makeConsoleMock()
+    npmWhichMock.mockFn.mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    expect(() => {
+      findBin('lint')
+    }).toThrow('Could not resolve binary for `lint`')
+    expect(console.printHistory()).toMatchSnapshot()
+
+    global.console = originalConsole
   })
 
   it('should parse cmd and add arguments to args', () => {
