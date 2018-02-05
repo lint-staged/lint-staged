@@ -6,7 +6,7 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
-This project contains a script that will run arbitrary npm and shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
+This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
 ## Related blogs posts
 
@@ -96,11 +96,8 @@ Should be an object where each value is a command to run and its key is a glob p
 #### `package.json` example:
 ```json
 {
-  "scripts": {
-    "my-task": "your-command",
-  },
   "lint-staged": {
-    "*": "my-task"
+    "*": "your-cmd"
   }
 }
 ```
@@ -109,15 +106,15 @@ Should be an object where each value is a command to run and its key is a glob p
 
 ```json
 {
-  "*": "my-task"
+  "*": "your-cmd"
 }
 ```
 
-This config will execute `npm run my-task` with the list of currently staged files passed as arguments.
+This config will execute `your-cmd` with the list of currently staged files passed as arguments.
 
 So, considering you did `git add file1.ext file2.ext`, lint-staged will run the following command:
 
-`npm run my-task -- file1.ext file2.ext`
+`your-cmd file1.ext file2.ext`
 
 ### Advanced config format
 To set options and keep lint-staged extensible, advanced format can be used. This should hold linters object in `linters` property.
@@ -164,11 +161,11 @@ Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lin
 
 ## What commands are supported?
 
-Supported are both local npm scripts (`npm run-script`), or any executables installed locally or globally via `npm` as well as any executable from your $PATH.
+Supported are any executables installed locally or globally via `npm` as well as any executable from your $PATH.
 
 > Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
 
-`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts, so you don't need to add `{ "eslint": "eslint" }` to the `scripts` section of your `package.json`. So  in your `.lintstagedrc` you can write:
+`lint-staged` is using [npm-which](https://github.com/timoxley/npm-which) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
 
 ```json
 {
@@ -210,13 +207,14 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
+    "my-custom-script": "linter --arg1 --arg2",
     "precommit": "lint-staged"
   },
   "lint-staged": {}
 }
 ```
 
-*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you. Please don’t reuse your tasks with paths from package.json.*
+*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you.*
 
 ### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
@@ -236,6 +234,23 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 
 This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
 
+### Reuse npm script
+
+If you wish to reuse a npm script defined in your package.json:
+
+```json
+{
+  "*.js": ["npm run my-custom-script --", "git add"]
+}
+```
+
+The following is equivalent:
+
+```json
+{
+  "*.js": ["linter --arg1 --arg2", "git add"]
+}
+```
 
 ### Automatically fix code style with `prettier` for javascript + flow or typescript
 

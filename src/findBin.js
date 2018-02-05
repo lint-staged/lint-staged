@@ -1,86 +1,47 @@
 'use strict'
 
+const appRoot = require('app-root-path')
 const npmWhich = require('npm-which')(process.cwd())
+const checkPkgScripts = require('./checkPkgScripts')
 
+// Find and load the package.json at the root of the project.
+const pkg = require(appRoot.resolve('package.json')) // eslint-disable-line import/no-dynamic-require
 const debug = require('debug')('lint-staged:find-bin')
 
-module.exports = function findBin(cmd, scripts, debugMode) {
+const cache = new Map()
+
+module.exports = function findBin(cmd) {
   debug('Resolving binary for command `%s`', cmd)
-  const npmArgs = (bin, args) =>
-    // We always add `--` even if args are not defined. This is required
-    // because we pass filenames later.
-    ['run', debugMode ? undefined : '--silent', bin, '--']
-      // args could be undefined but we filter that out.
-      .concat(args)
-      .filter(arg => arg !== undefined)
 
   /*
-   * If package.json has script with cmd defined we want it to be executed
-   * first. For finding the bin from scripts defined in package.json, there
-   * are 2 possibilities. It's a command which does not have any arguments
-   * passed to it in the lint-staged config. Or it could be something like
-   * `kcd-scripts` which has arguments such as `format`, `lint` passed to it.
-   * But we always cannot assume that the cmd, which has a space in it, is of
-   * the format `bin argument` because it is legal to define a package.json
-   * script with space in it's name. So we do 2 types of lookup. First a naive
-   * lookup which just looks for the scripts entry with cmd. Then we split on
-   * space, parse the bin and args, and try again.
+   *  Try to locate the binary in node_modules/.bin and if this fails, in
+   *  $PATH.
    *
-   * Related:
-   *  - https://github.com/kentcdodds/kcd-scripts/pull/3
-   *  - https://github.com/okonet/lint-staged/issues/294
+   *  This allows to use linters installed for the project:
    *
-   * Example:
-   *
-   *   "scripts": {
-   *     "my cmd": "echo deal-wth-it",
-   *     "demo-bin": "node index.js"
-   *   },
-   *   "lint-staged": {
-   *     "*.js": ["my cmd", "demo-bin hello"]
-   *   }
+   *  "lint-staged": {
+   *    "*.js": "eslint"
+   *  }
    */
-  if (scripts[cmd] !== undefined) {
-    // Support for scripts from package.json
-    debug('`%s` resolved to npm script - `%s`', cmd, scripts[cmd])
-    return { bin: 'npm', args: npmArgs(cmd) }
-  }
-
   const parts = cmd.split(' ')
-  let bin = parts[0]
+  const binName = parts[0]
   const args = parts.splice(1)
 
-  if (scripts[bin] !== undefined) {
-    debug('`%s` resolved to npm script - `%s`', bin, scripts[bin])
-    return { bin: 'npm', args: npmArgs(bin, args) }
+  if (cache.has(binName)) {
+    debug('Resolving binary for `%s` from cache', binName)
+    return { bin: cache.get(binName), args }
   }
-
-  /*
-    *  If cmd wasn't found in package.json scripts
-    *  we'll try to locate the binary in node_modules/.bin
-    *  and if this fails in $PATH.
-    *
-    *  This is useful for shorter configs like:
-    *
-    *  "lint-staged": {
-    *    "*.js": "eslint"
-    *  }
-    *
-    *  without adding
-    *
-    *  "scripts" {
-    *    "eslint": "eslint"
-    *  }
-    */
 
   try {
     /* npm-which tries to resolve the bin in local node_modules/.bin */
     /* and if this fails it look in $PATH */
-    bin = npmWhich.sync(bin)
+    const bin = npmWhich.sync(binName)
+    debug('Binary for `%s` resolved to `%s`', cmd, bin)
+    cache.set(binName, bin)
+    return { bin, args }
   } catch (err) {
-    throw new Error(`${bin} could not be found. Try \`npm install ${bin}\`.`)
+    // throw helpful error if matching script is present in package.json
+    checkPkgScripts(pkg, cmd, binName, args)
+    throw new Error(`${binName} could not be found. Try \`npm install ${binName}\`.`)
   }
-
-  debug('Binary for `%s` resolved to `%s`', cmd, bin)
-  return { bin, args }
 }
