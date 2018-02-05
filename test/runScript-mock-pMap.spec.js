@@ -5,14 +5,6 @@ import runScript from '../src/runScript'
 
 jest.mock('p-map')
 
-const packageJSON = {
-  scripts: {
-    test: 'noop',
-    test2: 'noop'
-  },
-  'lint-staged': {}
-}
-
 describe('runScript', () => {
   afterEach(() => {
     pMapMock.mockClear()
@@ -22,7 +14,7 @@ describe('runScript', () => {
     expect.assertions(2)
     pMapMock.mockImplementation(() => Promise.resolve(true))
 
-    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], packageJSON, {
+    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], {
       chunkSize: 1,
       subTaskConcurrency: 1
     })
@@ -36,7 +28,7 @@ describe('runScript', () => {
     expect.assertions(1)
     pMapMock.mockImplementation(() => Promise.reject(new Error('Unexpected Error')))
 
-    const [linter] = runScript(['test'], ['test.js'], packageJSON)
+    const [linter] = runScript(['test'], ['test.js'])
     try {
       await linter.task()
     } catch (err) {

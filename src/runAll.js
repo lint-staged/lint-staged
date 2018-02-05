@@ -12,11 +12,10 @@ const debug = require('debug')('lint-staged:run')
 
 /**
  * Executes all tasks and either resolves or rejects the promise
- * @param scripts
  * @param config {Object}
  * @returns {Promise}
  */
-module.exports = function runAll(scripts, config, debugMode) {
+module.exports = function runAll(config) {
   debug('Running all linter scripts')
   // Config validation
   if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
@@ -37,7 +36,7 @@ module.exports = function runAll(scripts, config, debugMode) {
     const tasks = generateTasks(config, filenames).map(task => ({
       title: `Running tasks for ${task.pattern}`,
       task: () =>
-        new Listr(runScript(task.commands, task.fileList, scripts, config, debugMode), {
+        new Listr(runScript(task.commands, task.fileList, config), {
           // In sub-tasks we don't want to run concurrently
           // and we want to abort on errors
           dateFormat: false,
