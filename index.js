@@ -2,9 +2,11 @@
 
 'use strict'
 
+const pkg = require('./package.json')
+require('please-upgrade-node')(pkg)
+
 const cmdline = require('commander')
 const debugLib = require('debug')
-const pkg = require('./package.json')
 
 const debug = debugLib('lint-staged:bin')
 

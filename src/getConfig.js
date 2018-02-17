@@ -7,9 +7,8 @@ const format = require('stringify-object')
 const intersection = require('lodash/intersection')
 const defaultsDeep = require('lodash/defaultsDeep')
 const isObject = require('lodash/isObject')
-const validate = require('jest-validate').validate
-const logValidationWarning = require('jest-validate').logValidationWarning
-const unknownOptionWarning = require('jest-validate/build/warnings').unknownOptionWarning
+const { validate, logValidationWarning } = require('jest-validate')
+const { unknownOptionWarning } = require('jest-validate/build/warnings')
 const isGlob = require('is-glob')
 
 const debug = require('debug')('lint-staged:cfg')
@@ -73,7 +72,7 @@ function unknownValidationReporter(config, example, option, options) {
 
   will fix it and remove this message.`
 
-    const comment = options.comment
+    const { comment } = options
     const name = options.title.warning
     return logValidationWarning(name, message, comment)
   }

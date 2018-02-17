@@ -10,7 +10,7 @@
     "Suhas Karanth <sudo.suhas@gmail.com>"
   ],
   "engines": {
-    "node": ">=4.2.0"
+    "node": ">=6"
   },
   "bin": "index.js",
   "files": [
@@ -45,6 +45,7 @@
     "p-map": "^1.1.1",
     "path-is-inside": "^1.0.2",
     "pify": "^3.0.0",
+    "please-upgrade-node": "^3.0.1",
     "staged-git-files": "1.0.0",
     "stringify-object": "^3.2.0"
   },
