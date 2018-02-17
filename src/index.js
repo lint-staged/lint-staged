@@ -5,8 +5,7 @@
 const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const getConfig = require('./getConfig').getConfig
-const validateConfig = require('./getConfig').validateConfig
+const { getConfig, validateConfig } = require('./getConfig')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
@@ -23,9 +22,8 @@ const errConfigNotFound = new Error('Config could not be found')
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
+module.exports = function lintStaged(logger = console, configPath, debugMode) {
   debug('Loading config using `cosmiconfig`')
-  const logger = injectedLogger || console
 
   const explorer = cosmiconfig('lint-staged', {
     configPath,

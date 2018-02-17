@@ -5,7 +5,7 @@ const dedent = require('dedent')
 const execa = require('execa')
 const logSymbols = require('log-symbols')
 const pMap = require('p-map')
-const getConfig = require('./getConfig').getConfig
+const { getConfig } = require('./getConfig')
 const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 const resolveGitDir = require('./resolveGitDir')
@@ -16,8 +16,7 @@ module.exports = function runScript(commands, pathsToLint, config) {
   debug('Running script with commands %o', commands)
 
   const normalizedConfig = getConfig(config)
-  const chunkSize = normalizedConfig.chunkSize
-  const concurrency = normalizedConfig.subTaskConcurrency
+  const { chunkSize, subTaskConcurrency: concurrency } = normalizedConfig
   const gitDir = resolveGitDir()
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))

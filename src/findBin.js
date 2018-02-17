@@ -23,9 +23,7 @@ module.exports = function findBin(cmd) {
    *    "*.js": "eslint"
    *  }
    */
-  const parts = cmd.split(' ')
-  const binName = parts[0]
-  const args = parts.splice(1)
+  const [binName, ...args] = cmd.split(' ')
 
   if (cache.has(binName)) {
     debug('Resolving binary for `%s` from cache', binName)

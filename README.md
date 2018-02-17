@@ -2,6 +2,8 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
+The latest versions of `lint-staged` require Node.js v6 or newer. (Versions of `lint-staged` prior to v7 still work with Node.js v4.)
+
 ## Why
 
 Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
