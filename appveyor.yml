@@ -12,12 +12,11 @@ environment:
   matrix:
     - nodejs_version: '8'
     - nodejs_version: '6'
-    - nodejs_version: '4'
 
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
-  - yarn install --ignore-engines
+  - yarn install
 
 test_script:
   - node --version

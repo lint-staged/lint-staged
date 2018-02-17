@@ -22,8 +22,7 @@ module.exports = function runAll(config) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 
-  const concurrent = config.concurrent
-  const renderer = config.renderer
+  const { concurrent, renderer } = config
   const gitDir = resolveGitDir()
   debug('Resolved git directory to be `%s`', gitDir)
 

@@ -13,6 +13,19 @@
       "error",
       "global"
     ],
-    "no-console": "off"
+    "no-console": "off",
+    "prefer-destructuring": [
+      "warn",
+      {
+          "VariableDeclarator": {
+              "array": true,
+              "object": true
+          },
+          "AssignmentExpression": {
+              "array": false,
+              "object": false
+          }
+      }
+  ]
   }
 }

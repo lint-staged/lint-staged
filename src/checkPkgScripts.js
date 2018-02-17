@@ -20,14 +20,15 @@ const warn = msg => {
  */
 module.exports = function checkPkgScripts(pkg, cmd, binName, args) {
   if (pkg && pkg.scripts) {
+    const { scripts } = pkg
     let scriptName
     let script
-    if (has(pkg.scripts, cmd)) {
+    if (has(scripts, cmd)) {
       scriptName = cmd
-      script = pkg.scripts[cmd]
-    } else if (has(pkg.scripts, binName)) {
+      script = scripts[cmd]
+    } else if (has(scripts, binName)) {
       scriptName = binName
-      script = pkg.scripts[binName]
+      script = scripts[binName]
     } else {
       return
     }

@@ -3,7 +3,7 @@
 const path = require('path')
 const micromatch = require('micromatch')
 const pathIsInside = require('path-is-inside')
-const getConfig = require('./getConfig').getConfig
+const { getConfig } = require('./getConfig')
 const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:gen-tasks')
@@ -12,8 +12,7 @@ module.exports = function generateTasks(config, relFiles) {
   debug('Generating linter tasks')
 
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
-  const linters = normalizedConfig.linters
-  const globOptions = normalizedConfig.globOptions
+  const { linters, globOptions } = normalizedConfig
   const ignorePatterns = normalizedConfig.ignore.map(pattern => `!${pattern}`)
 
   const gitDir = resolveGitDir()
