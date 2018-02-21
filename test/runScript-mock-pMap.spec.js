@@ -12,7 +12,17 @@ describe('runScript', () => {
 
   it('should respect concurrency', async () => {
     expect.assertions(2)
-    pMapMock.mockImplementation(() => Promise.resolve(true))
+    pMapMock.mockImplementation(() =>
+      Promise.resolve([
+        {
+          stdout: 'a-ok',
+          stderr: '',
+          code: 0,
+          failed: false,
+          cmd: 'mock cmd'
+        }
+      ])
+    )
 
     const [linter] = runScript(['test'], ['test1.js', 'test2.js'], {
       chunkSize: 1,

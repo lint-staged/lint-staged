@@ -3,29 +3,23 @@
     "ecmaVersion": 6,
     "sourceType": "script"
   },
-  "extends": [
-    "okonet",
-    "plugin:node/recommended"
-  ],
+  "extends": ["okonet", "plugin:node/recommended"],
   "plugins": ["node"],
   "rules": {
-    "strict": [
-      "error",
-      "global"
-    ],
+    "strict": ["error", "global"],
     "no-console": "off",
     "prefer-destructuring": [
       "error",
       {
-          "VariableDeclarator": {
-              "array": true,
-              "object": true
-          },
-          "AssignmentExpression": {
-              "array": false,
-              "object": false
-          }
+        "VariableDeclarator": {
+          "array": true,
+          "object": true
+        },
+        "AssignmentExpression": {
+          "array": false,
+          "object": false
+        }
       }
-  ]
+    ]
   }
 }

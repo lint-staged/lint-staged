@@ -27,6 +27,9 @@ describe('runScript with absolute paths', () => {
     const [linter] = runScript(['git add'], ['test.js'])
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
-    expect(mockFn).toHaveBeenCalledWith('/usr/local/bin/git', ['add', 'test.js'], { cwd: '../' })
+    expect(mockFn).toHaveBeenCalledWith('/usr/local/bin/git', ['add', 'test.js'], {
+      cwd: '../',
+      reject: false
+    })
   })
 })

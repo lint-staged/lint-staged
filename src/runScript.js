@@ -26,56 +26,47 @@ module.exports = function runScript(commands, pathsToLint, config) {
   return lintersArray.map(linter => ({
     title: linter,
     task: () => {
-      try {
-        const res = findBin(linter)
+      const { bin, args } = findBin(linter)
 
-        // Only use gitDir as CWD if we are using the git binary
-        // e.g `npm` should run tasks in the actual CWD
-        const execaOptions =
-          /git(\.exe)?$/i.test(res.bin) && gitDir !== process.cwd() ? { cwd: gitDir } : {}
+      const execaOptions = { reject: false }
+      // Only use gitDir as CWD if we are using the git binary
+      // e.g `npm` should run tasks in the actual CWD
+      if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {
+        execaOptions.cwd = gitDir
+      }
 
-        const errors = []
-        const mapper = pathsChunk => {
-          const args = res.args.concat(pathsChunk)
+      const mapper = pathsChunk => {
+        const binArgs = args.concat(pathsChunk)
 
-          debug('bin:', res.bin)
-          debug('args: %O', args)
-          debug('opts: %o', execaOptions)
+        debug('bin:', bin)
+        debug('args: %O', binArgs)
+        debug('opts: %o', execaOptions)
 
-          return (
-            execa(res.bin, args, Object.assign({}, execaOptions))
-              /* If we don't catch, pMap will terminate on first rejection */
-              /* We want error information of all chunks */
-              .catch(err => {
-                errors.push(err)
-              })
-          )
-        }
+        return execa(bin, binArgs, Object.assign({}, execaOptions))
+      }
 
-        return pMap(filePathChunks, mapper, { concurrency })
-          .catch(err => {
-            /* This will probably never be called. But just in case.. */
-            throw new Error(dedent`
+      return pMap(filePathChunks, mapper, { concurrency })
+        .catch(err => {
+          /* This will probably never be called. But just in case.. */
+          throw new Error(dedent`
               ${logSymbols.error} ${linter} got an unexpected error.
               ${err.message}
             `)
-          })
-          .then(() => {
-            if (errors.length === 0) return `${logSymbols.success} ${linter} passed!`
+        })
+        .then(results => {
+          const errors = results.filter(res => res.failed)
+          if (errors.length === 0) return `${logSymbols.success} ${linter} passed!`
 
-            const errStdout = errors.map(err => err.stdout).join('')
-            const errStderr = errors.map(err => err.stderr).join('')
+          const errStdout = errors.map(err => err.stdout).join('')
+          const errStderr = errors.map(err => err.stderr).join('')
 
-            // prettier-ignore
-            throw new Error(dedent`
+          // prettier-ignore
+          throw new Error(dedent`
               ${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
               ${errStdout}
               ${errStderr}
             `)
-          })
-      } catch (err) {
-        throw err
-      }
+        })
     }
   }))
 }

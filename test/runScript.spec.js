@@ -49,12 +49,12 @@ describe('runScript', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn).toHaveBeenCalledTimes(1)
-    expect(mockFn).lastCalledWith('test', ['test.js'], {})
+    expect(mockFn).lastCalledWith('test', ['test.js'], { reject: false })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).lastCalledWith('test2', ['test.js'], {})
+    expect(mockFn).lastCalledWith('test2', ['test.js'], { reject: false })
   })
 
   it('should respect chunk size', async () => {
@@ -64,8 +64,8 @@ describe('runScript', () => {
     })
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], {})
-    expect(mockFn).lastCalledWith('test', ['test2.js'], {})
+    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], { reject: false })
+    expect(mockFn).lastCalledWith('test', ['test2.js'], { reject: false })
   })
 
   it('should support non npm scripts', async () => {
@@ -78,11 +78,13 @@ describe('runScript', () => {
 
     await linter1.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
-    expect(mockFn).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {})
+    expect(mockFn).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      reject: false
+    })
 
     await linter2.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], {})
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { reject: false })
   })
 
   it('should pass cwd to execa if gitDir is different than process.cwd for non-npm tasks', async () => {
@@ -92,30 +94,35 @@ describe('runScript', () => {
     const [linter1, linter2] = res
     await linter1.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
-    expect(mockFn).lastCalledWith('test', ['test.js'], {})
+    expect(mockFn).lastCalledWith('test', ['test.js'], { reject: false })
 
     await linter2.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { cwd: '../' })
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { cwd: '../', reject: false })
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
     expect.assertions(2)
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
-    const [linter] = runScript(['jest'], ['test.js'], {})
+    const [linter] = runScript(['jest'], ['test.js'], { reject: false })
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
-    expect(mockFn).lastCalledWith('jest', ['test.js'], {})
+    expect(mockFn).lastCalledWith('jest', ['test.js'], { reject: false })
     process.cwd = processCwdBkp
   })
 
   it('should throw error for failed linters', async () => {
     expect.assertions(1)
-    const linterErr = new Error()
-    linterErr.stdout = 'Mock error'
-    linterErr.stderr = ''
-    mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
+    mockFn.mockImplementationOnce(() =>
+      Promise.resolve({
+        stdout: 'Mock error',
+        stderr: '',
+        code: 0,
+        failed: true,
+        cmd: 'mock cmd'
+      })
+    )
 
     const [linter] = runScript('mock-fail-linter', ['test.js'])
     try {
@@ -124,8 +131,7 @@ describe('runScript', () => {
       // prettier-ignore
       expect(err.message).toMatch(dedent`
         ${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
-        ${linterErr.stdout}
-        ${linterErr.stderr}
+        Mock error
       `)
     }
   })
