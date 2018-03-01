@@ -308,3 +308,21 @@ The following is equivalent:
 
   See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
 </details>
+
+### :warning: Important note for users of JetBrains IDEs *(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)*
+
+The JetBrains suite of IDEs [currently has a bug](https://youtrack.jetbrains.com/issue/IDEA-135454) that results in the IDE showing inconsistent changed state for those files changed by any of your `precommit` hooks. A `git diff` will show the results of your `precommit` script, even though using the IDE to compare your local file to the same branch shows that they are identical. This is due to [the IDE's use of the `--only` flag](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2352586) when committing in the UI. 
+
+From [Git's documentation on `--only`](https://git-scm.com/docs/git-commit#git-commit---only):
+> When files are given on the command line, the command commits the contents of the named files, without recording the changes already staged. The contents of these files are also staged for the next commit on top of what have been staged before.
+
+Luckily, until JetBrains are able to solve this issue you can easily get around it by using the [`update-index --again` command](https://git-scm.com/docs/git-update-index#git-update-index--g) in a `postcommit` hook with the following config:
+```js
+{
+  "scripts": {
+    "precommit": "lint-staged",
+    "postcommit": "git update-index --again"
+  }
+}
+```
+*Thanks to [Réda Housni Alaoui](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for this fix!*
