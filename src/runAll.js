@@ -55,6 +55,7 @@ module.exports = function runAll(config) {
         dateFormat: false,
         concurrent,
         renderer,
+        nonTTYRenderer: 'silent',
         exitOnError: !concurrent // Wait for all errors when running concurrently
       }).run()
     }
