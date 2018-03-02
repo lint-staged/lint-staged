@@ -21,6 +21,7 @@ function getCmdArgs(gitDir) {
 function execGit(cmd, options) {
   const cwd = options && options.cwd ? options.cwd : process.cwd()
   const gitDir = options && options.gitDir
+  debug('Running git command', cmd)
   return execa('git', getCmdArgs(gitDir).concat(cmd), { cwd: getAbsolutePath(cwd) })
 }
 
