@@ -63,6 +63,7 @@ module.exports = function runAll(scripts, config, debugMode) {
         [
           {
             title: 'Stashing changes...',
+            enabled: () => filenames.length > 0,
             task: (ctx, task) =>
               git.hasUnstagedFiles().then(res => {
                 ctx.hasStash = res
