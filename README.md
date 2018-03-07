@@ -324,4 +324,4 @@ Until the issue is resolved in the IDE, you can use the following config to work
   }
 }
 ```
-*Thanks to [Réda Housni Alaoui](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for this fix!*
+*Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!*
