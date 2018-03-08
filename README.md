@@ -308,3 +308,20 @@ The following is equivalent:
 
   See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
 </details>
+
+## Frequently Asked Questions
+
+### Using with JetBrains IDEs *(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)*
+
+When using the IDE's GUI to commit changes with the `precommit` hook, you might see inconsistencies in the IDE and command line. This is [known issue](https://youtrack.jetbrains.com/issue/IDEA-135454) at JetBrains so if you want this fixed, please vote for it on YouTrack.
+
+Until the issue is resolved in the IDE, you can use the following config to work around it:
+```js
+{
+  "scripts": {
+    "precommit": "lint-staged",
+    "postcommit": "git update-index --again"
+  }
+}
+```
+*Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!*
