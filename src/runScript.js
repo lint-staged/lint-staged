@@ -66,7 +66,7 @@ module.exports = function runScript(commands, pathsToLint, config) {
               ${errStdout}
               ${errStderr}
             `)
-          throw new Error('');
+          throw new Error('')
         })
     }
   }))
