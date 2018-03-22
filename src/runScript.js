@@ -61,11 +61,12 @@ module.exports = function runScript(commands, pathsToLint, config) {
           const errStderr = errors.map(err => err.stderr).join('')
 
           // prettier-ignore
-          throw new Error(dedent`
+          console.log(dedent`
               ${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
               ${errStdout}
               ${errStderr}
             `)
+          throw new Error('');
         })
     }
   }))
