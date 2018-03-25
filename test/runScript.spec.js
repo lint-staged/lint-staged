@@ -64,7 +64,9 @@ describe('runScript', () => {
     })
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], { reject: false })
+    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], {
+      reject: false
+    })
     expect(mockFn).lastCalledWith('test', ['test2.js'], { reject: false })
   })
 
@@ -98,7 +100,10 @@ describe('runScript', () => {
 
     await linter2.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { cwd: '../', reject: false })
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], {
+      cwd: '../',
+      reject: false
+    })
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
