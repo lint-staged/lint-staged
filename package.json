@@ -46,7 +46,7 @@
     "path-is-inside": "^1.0.2",
     "pify": "^3.0.0",
     "please-upgrade-node": "^3.0.1",
-    "staged-git-files": "1.1.0",
+    "staged-git-files": "1.1.1",
     "stringify-object": "^3.2.2"
   },
   "devDependencies": {
