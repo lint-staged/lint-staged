@@ -13,10 +13,7 @@
     "node": ">=6"
   },
   "bin": "index.js",
-  "files": [
-    "index.js",
-    "src"
-  ],
+  "files": ["index.js", "src"],
   "scripts": {
     "precommit": "node index.js",
     "cz": "git-cz",
@@ -30,6 +27,7 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "chalk": "^2.3.1",
+    "cli-command-parser": "^1.0.3",
     "commander": "^2.14.1",
     "cosmiconfig": "^4.0.0",
     "debug": "^3.1.0",
@@ -70,9 +68,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": [
-      "./testSetup.js"
-    ]
+    "setupFiles": ["./testSetup.js"]
   },
   "keywords": [
     "lint",
