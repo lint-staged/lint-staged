@@ -85,6 +85,13 @@ module.exports = function runAll(scripts, config, debugMode) {
                 })
               )
           },
+          // Update index with hook fixes only if all linters pass
+          {
+            title: 'Updating index...',
+            enabled: ctx => ctx.hasStash,
+            skip: ctx => ctx.hasErrors && 'Skipping index update since there are errors',
+            task: () => git.updateStash()
+          },
           {
             title: 'Restoring local changes...',
             enabled: ctx => ctx.hasStash,
