@@ -289,7 +289,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should add hooks fixes to index and leave user modifications in WC', async () => {
+    it('should add hooks fixes to index and keep user modifications when not aborted', async () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain(' M test.js')
 
