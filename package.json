@@ -20,7 +20,8 @@
   "scripts": {
     "precommit": "node index.js --debug",
     "cz": "git-cz",
-    "lint": "eslint .",
+    "lint:base": "eslint --rule 'prettier/prettier: 2'",
+    "lint": "yarn lint:base -- .",
     "lint:fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest --coverage",
