@@ -1,9 +1,7 @@
 {
-    "linters": {
-        "*.js": [
-            "yarn lint:base --fix",
-            "git add"
-        ],
-        ".*{rc, json}": "jsonlint"
-    }
+  "linters": {
+    "*.{js,json,md}": ["prettier --write", "git add"],
+    "*.js": ["yarn lint:base --fix", "git add"],
+    ".*{rc, json}": "jsonlint"
+  }
 }
