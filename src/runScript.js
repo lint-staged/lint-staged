@@ -26,7 +26,7 @@ module.exports = function runScript(commands, pathsToLint, scripts, config, debu
 
   return lintersArray.map(linter => ({
     title: linter,
-    task: () => {
+    task: (ctx = {}) => {
       try {
         const res = findBin(linter, scripts, debugMode)
 
@@ -66,6 +66,9 @@ module.exports = function runScript(commands, pathsToLint, scripts, config, debu
 
             const errStdout = errors.map(err => err.stdout).join('')
             const errStderr = errors.map(err => err.stderr).join('')
+
+            // Indicate that lint-stage will fail so we don't update the index with hook fixes
+            ctx.hasErrors = true
 
             // prettier-ignore
             throw new Error(dedent`

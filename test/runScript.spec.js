@@ -150,4 +150,25 @@ describe('runScript', () => {
       `)
     }
   })
+
+  it('should not set hasErrors on context if no error occur', async () => {
+    expect.assertions(1)
+    const context = {}
+    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], scripts, {
+      chunkSize: 1
+    })
+    await linter.task(context)
+    expect(context.hasErrors).toBeUndefined()
+  })
+
+  it('should set hasErrors on context to true on error', async () => {
+    expect.assertions(1)
+    const context = {}
+    const [linter] = runScript('mock-fail-linter', ['test.js'], scripts)
+    try {
+      await linter.task(context)
+    } catch (err) {
+      expect(context.hasErrors).toEqual(true)
+    }
+  })
 })
