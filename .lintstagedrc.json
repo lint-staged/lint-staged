@@ -1,7 +1,7 @@
 {
     "linters": {
         "*.js": [
-            "eslint --fix",
+            "yarn lint:base --fix",
             "git add"
         ],
         ".*rc": "jsonlint"

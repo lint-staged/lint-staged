@@ -20,6 +20,7 @@
           "object": false
         }
       }
-    ]
+    ],
+    "prettier/prettier": "off"
   }
 }
