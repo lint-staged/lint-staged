@@ -6,6 +6,10 @@ const fsp = require('fs-promise')
 const debug = require('debug')('lint-staged:git')
 
 let patchPath
+let indexTree = null
+let workTree = null
+let hooksTree = null
+let trees = []
 
 function getAbsolutePath(dir) {
   return path.isAbsolute(dir) ? dir : path.resolve(dir)
@@ -80,9 +84,67 @@ function gitApply(patch, options) {
 }
 
 function gitPopWithConflicts(options) {
-  return execGit(['stash'], options) // Stash auto-fixes
-    .then(() => execGit(['stash', 'pop', 'stash@{1}'], options)) // Apply initial stash first
-    .then(() => execGit(['read-tree', 'stash'], options)) // Merge with auto-fixes
+  return (
+    execGit(['stash'], options) // Stash auto-fixes
+      // .then((res) => console.log(res.stdout))
+      .then(() => execGit(['stash', 'pop', 'stash@{1}'], options)) // Apply initial stash first
+      // .then(() => execGit(['stash', 'pop', 'stash@{0}'], options)) // Apply initial stash first
+      // .then((res) => console.log(res.stdout))
+      .then(() => execGit(['read-tree', 'stash'], options))
+  ) // Merge with auto-fixes
+}
+
+async function writeTree(options) {
+  const { stdout } = await execGit(['write-tree'], options)
+  return stdout
+}
+
+async function gitStash(options) {
+  debug('Stashing files...')
+  // Save ref to the current index
+  trees = [await writeTree(options)]
+  // Add working copy changes to index
+  await execGit(['add', '.'], options)
+  // Save ref to the working copy index
+  workTree = await writeTree(options)
+  // Restore the current index
+  await execGit(['read-tree', trees[0]], options)
+  // Remove all modifications
+  await execGit(['checkout-index', '-af'], options)
+  // await execGit(['clean', '-dfx'], options)
+  debug('Done stashing files!')
+  return Promise.resolve(null)
+}
+
+async function updateStash(options) {
+  // patchPath = await generatePatch(options)
+  // await execGit(['update-index', '--refresh'], options)
+  trees = [...trees, await writeTree(options)]
+}
+
+async function gitPop(options) {
+  if (!workTree || !trees.length) {
+    throw new Error('Need 2 tree-ish to be set!')
+  }
+  // Restore working copy from the saved index
+  await execGit(['read-tree', workTree], options)
+  // Sync index to working copy
+  await execGit(['checkout-index', '-af'], options)
+  // Apply changes from previous current index
+  if (trees.length === 1) {
+    await execGit(['read-tree', trees[0]], options)
+  } else {
+    // await execGit(['read-tree', '-m', '-i', trees[0]], options)
+    // await execGit(['checkout-index', '-f'], options)
+    // await execGit(['clean', '-dfx'], options)
+    await execGit(['read-tree', trees[1]], options)
+  }
+  // Sync index to working copy
+  await execGit(['checkout-index'], options)
+  // await execGit(['read-tree', '-m', '-i', trees[1]], options)
+  // if (patchPath) {
+  //   await gitApply(patchPath, options)
+  // }
 }
 
 function cleanup(options) {
@@ -105,23 +167,27 @@ function gitApplyPatch(patch, options) {
 }
 
 function gitStashSave(options) {
+  debug('Checking if there are unstaged files in the working directory')
   return hasUnstagedFiles(options).then(hasUnstaged => {
     if (hasUnstaged) {
-      return generatePatch(options)
-        .then(res => {
-          patchPath = res // Save the reference to the patch
-        })
-        .then(() => execGit(['stash', '--keep-index'], options))
+      debug('Found unstaged files. Will need to stash them...')
+      return gitStash(options)
+      // return generatePatch(options)
+      //   .then(res => {
+      //     patchPath = res // Save the reference to the patch
+      //   })
+      //   .then(() => execGit(['stash', '--keep-index'], options))
     }
     return Promise.resolve(null)
   })
 }
 
 function gitStashPop(options) {
-  if (!patchPath) {
-    throw new Error('No patch found')
-  }
-  return execGit(['checkout', '--', '.'], options).then(() => gitApplyPatch(patchPath, options))
+  return gitPop(options)
+  // if (!patchPath) {
+  //   throw new Error('No patch found')
+  // }
+  // return execGit(['checkout', '--', '.'], options).then(() => gitApplyPatch(patchPath, options))
 }
 
 module.exports = {
@@ -130,5 +196,6 @@ module.exports = {
   gitStashSave,
   gitStashPop,
   hasUnstagedFiles,
-  getUnstagedFiles
+  getUnstagedFiles,
+  updateStash
 }
