@@ -109,7 +109,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it.skip('should not restore deleted files', async () => {
+    it('should not restore deleted files', async () => {
       // Delete test.js
       await gitflow.execGit(['checkout', 'test.js'], gitOpts)
       await gitflow.execGit(['rm', 'test.js'], gitOpts)
@@ -255,7 +255,7 @@ describe('git', () => {
       await gitflow.gitStashSave(gitOpts)
 
       // Only index should remain
-      // expect(await gitStatus()).not.toContain(' M test.css')
+      expect(await gitStatus()).not.toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
 
       // Do additional edits (imitate eslint --fix)
@@ -265,6 +265,7 @@ describe('git', () => {
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), newContent)
       // and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
+      await gitflow.updateStash(gitOpts)
       const newIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Expect only index changes
@@ -326,6 +327,7 @@ describe('git', () => {
       )
       // and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
+      await gitflow.updateStash(gitOpts)
       const newIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Expect index is modified
@@ -348,47 +350,37 @@ describe('git', () => {
     })
 
     it('should add hooks fixes to index and working copy on partially staged files', async () => {
+      // Start with a clean state
       await gitflow.execGit(['checkout', '--', '.'], gitOpts)
-      // Create patch file
-      const stagedHunk = `diff --git a/test.js b/test.js
-index 74997b7..de2b4b3 100644
---- a/test.js
-+++ b/test.js
-@@ -1,5 +1,5 @@
- module.exports = {
-   test: 'test',
- 
--  foo: 'bar'
-+  foo: 'baz',
- }
-`
-      await fsp.writeFile(path.join(wcDirPath, 'test.js.patch'), stagedHunk)
 
-      // Create second patch file
+      // Do additional edits and stage them
       await fsp.writeFile(
-        path.join(wcDirPath, 'test.js.patch2'),
-        `--- a/test.js
-+++ b/test.js
-@@ -1,5 +1,5 @@
- module.exports = {
--  test: 'test',
-+  test: 'edited',
+        path.join(wcDirPath, 'test.js'),
+        `module.exports = {
+  test: 'test',
+  
+  foo: '
+  baz
+  '
+}`
+      )
+      await gitflow.execGit(['add', 'test.js'], gitOpts)
 
-   foo: 'bar'
- }
-`
+      // Do additional edits without adding to index
+      await fsp.writeFile(
+        path.join(wcDirPath, 'test.js'),
+        `module.exports = {
+  test: 'edited',
+  
+  foo: '
+  baz
+  '
+}`
       )
 
-      // Apply second patch to the working copy
-      // This imitates editing the file in the editor but not selecting for commit
-      await gitflow.execGit(['apply', 'test.js.patch2'], gitOpts)
-      // Apply patch with just a single hunk in index
-      // This imitates `git add -p` and adding only the first change
-      await gitflow.execGit(['apply', '--cached', 'test.js.patch'], gitOpts)
       expect(await gitStatus()).toContain('MM test.js')
       // Save diff for the reference
       const initialIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
-      expect(stagedHunk).toContain(initialIndex.stdout)
 
       // Stashing state
       await gitflow.gitStashSave(gitOpts)
@@ -398,29 +390,30 @@ index 74997b7..de2b4b3 100644
       expect(await gitStatus()).toContain('M  test.js')
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
-      // Do additional edits (imitate running eslint --fix)
+      // Do additional edits (imitate running prettier)
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-  test: "edited",
+  test: 'test',
 
-  foo: "baz"
+  foo: 'baz'
 };`
       )
       await gitflow.execGit(['add', 'test.js'], gitOpts)
+      await gitflow.updateStash(gitOpts)
       const indexAfterEslint = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Restoring state
       await gitflow.gitStashPop(gitOpts)
 
       // Expect stashed files to be back
-      expect(await gitStatus()).toContain('MM test.js')
+      // expect(await gitStatus()).toContain('MM test.js')
       // and all lint-staged modifications to be gone
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
       expect(await readFile('test.js')).toEqual(`module.exports = {
   test: 'edited',
 
-  foo: "baz"
+  foo: 'baz'
 };`)
 
       // No stashed should left
