@@ -41,8 +41,8 @@ describe('findBin', () => {
   })
 
   it('should parse cmd and add arguments to args', () => {
-    const { bin, args } = findBin('my-linter task --fix')
+    const { bin, args } = findBin('my-linter task --fix --string "additional argument"')
     expect(bin).toEqual('my-linter')
-    expect(args).toEqual(['task', '--fix'])
+    expect(args).toEqual(['task', '--fix', '--string', 'additional argument'])
   })
 })

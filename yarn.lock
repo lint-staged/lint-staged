@@ -982,6 +982,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+cli-command-parser@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/cli-command-parser/-/cli-command-parser-1.0.3.tgz#377af3ce60ad2d8a34a7e5eae4b395d491b0d652"
+
 cli-cursor@^1.0.1, cli-cursor@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-1.0.2.tgz#64da3f7d56a54412e59794bd62dc35295e8f2987"
