@@ -6,9 +6,9 @@ const fsp = require('fs-promise')
 const debug = require('debug')('lint-staged:git')
 
 let patchPath
-let indexTree = null
+let indexTree = null // eslint-disable-line
 let workTree = null
-let hooksTree = null
+let hooksTree = null // eslint-disable-line
 let trees = []
 
 function getAbsolutePath(dir) {
@@ -83,15 +83,10 @@ function gitApply(patch, options) {
   return execGit(['apply', '--whitespace=nowarn', patch], options)
 }
 
-function gitPopWithConflicts(options) {
-  return (
-    execGit(['stash'], options) // Stash auto-fixes
-      // .then((res) => console.log(res.stdout))
-      .then(() => execGit(['stash', 'pop', 'stash@{1}'], options)) // Apply initial stash first
-      // .then(() => execGit(['stash', 'pop', 'stash@{0}'], options)) // Apply initial stash first
-      // .then((res) => console.log(res.stdout))
-      .then(() => execGit(['read-tree', 'stash'], options))
-  ) // Merge with auto-fixes
+async function gitPopWithConflicts(options) {
+  await execGit(['stash'], options) // Stash auto-fixes
+  await execGit(['stash', 'pop', 'stash@{1}'], options) // Apply initial stash first
+  return execGit(['read-tree', '-m', '-i', 'stash'], options) // Merge with auto-fixes
 }
 
 async function writeTree(options) {
@@ -99,6 +94,7 @@ async function writeTree(options) {
   return stdout
 }
 
+// eslint-disable-next-line
 async function gitStash(options) {
   debug('Stashing files...')
   // Save ref to the current index
@@ -122,6 +118,7 @@ async function updateStash(options) {
   trees = [...trees, await writeTree(options)]
 }
 
+// eslint-disable-next-line
 async function gitPop(options) {
   if (!workTree || !trees.length) {
     throw new Error('Need 2 tree-ish to be set!')
@@ -147,47 +144,44 @@ async function gitPop(options) {
   // }
 }
 
-function cleanup(options) {
+async function cleanup(options) {
   debug('Patch applied! Cleaning up...')
-  return execGit(['stash', 'drop'], options)
-    .then(() => fsp.unlink(patchPath))
-    .then(() => {
-      patchPath = null
-    })
+  await execGit(['stash', 'drop'], options)
+  await fsp.unlink(patchPath)
+  patchPath = null
+  debug('Clean up complete!')
 }
 
-function gitApplyPatch(patch, options) {
+async function gitApplyPatch(patch, options) {
   debug('Applying patch...')
-  return gitApply(patch, options)
-    .then(() => cleanup(options))
-    .catch(() => {
-      debug('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
-      return gitPopWithConflicts(options).then(() => cleanup(options))
-    })
+  try {
+    await execGit(['checkout', '--', '.'], options)
+    await gitApply(patch, options)
+  } catch (err) {
+    debug('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
+    console.log('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
+    await gitPopWithConflicts(options)
+  }
+  return cleanup(options)
 }
 
-function gitStashSave(options) {
+async function gitStashSave(options) {
   debug('Checking if there are unstaged files in the working directory')
-  return hasUnstagedFiles(options).then(hasUnstaged => {
-    if (hasUnstaged) {
-      debug('Found unstaged files. Will need to stash them...')
-      return gitStash(options)
-      // return generatePatch(options)
-      //   .then(res => {
-      //     patchPath = res // Save the reference to the patch
-      //   })
-      //   .then(() => execGit(['stash', '--keep-index'], options))
-    }
-    return Promise.resolve(null)
-  })
+  const hasUnstaged = await hasUnstagedFiles(options)
+  if (hasUnstaged) {
+    debug('Found unstaged files. Will need to stash them...')
+    patchPath = await generatePatch(options) // Save the reference to the patch
+    return execGit(['stash', '--keep-index'], options)
+  }
+  return Promise.resolve(null)
 }
 
 function gitStashPop(options) {
-  return gitPop(options)
-  // if (!patchPath) {
-  //   throw new Error('No patch found')
-  // }
-  // return execGit(['checkout', '--', '.'], options).then(() => gitApplyPatch(patchPath, options))
+  // return gitPop(options)
+  if (!patchPath) {
+    throw new Error('No patch found')
+  }
+  return gitApplyPatch(patchPath, options)
 }
 
 module.exports = {
