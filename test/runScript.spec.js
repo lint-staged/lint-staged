@@ -64,7 +64,9 @@ describe('runScript', () => {
     })
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], { reject: false })
+    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], {
+      reject: false
+    })
     expect(mockFn).lastCalledWith('test', ['test2.js'], { reject: false })
   })
 
@@ -98,7 +100,10 @@ describe('runScript', () => {
 
     await linter2.task()
     expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], { cwd: '../', reject: false })
+    expect(mockFn).lastCalledWith('git', ['add', 'test.js'], {
+      cwd: '../',
+      reject: false
+    })
   })
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
@@ -128,9 +133,10 @@ describe('runScript', () => {
     try {
       await linter.task()
     } catch (err) {
-      // prettier-ignore
-      expect(err.message).toMatch(dedent`
-        ${logSymbols.error} mock-fail-linter found some errors. Please fix them and try committing again.
+      expect(err.privateMsg).toMatch(dedent`
+        ${
+          logSymbols.error
+        } "mock-fail-linter" found some errors. Please fix them and try committing again.
         Mock error
       `)
     }

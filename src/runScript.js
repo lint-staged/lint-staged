@@ -60,12 +60,19 @@ module.exports = function runScript(commands, pathsToLint, config) {
           const errStdout = errors.map(err => err.stdout).join('')
           const errStderr = errors.map(err => err.stderr).join('')
 
-          // prettier-ignore
-          throw new Error(dedent`
-              ${logSymbols.error} ${linter} found some errors. Please fix them and try committing again.
-              ${errStdout}
-              ${errStderr}
-            `)
+          // If we set the message on the error instance, it gets logged
+          // multiple times(see #142). So we set the actual error message in a
+          // private field and extract it later, log only once.
+          const err = new Error()
+          err.privateMsg = dedent`
+            ${
+              logSymbols.error
+            } "${linter}" found some errors. Please fix them and try committing again.
+            ${errStdout}
+            ${errStderr}
+          `
+
+          throw err
         })
     }
   }))

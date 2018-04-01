@@ -210,7 +210,10 @@ describe('generateTasks', () => {
     const pattern = '**/*.js'
     const commands = 'lint'
     const result = generateTasks(
-      { ignore: ['**/ignore/**', '**/ignore.*'], linters: { [pattern]: commands } },
+      {
+        ignore: ['**/ignore/**', '**/ignore.*'],
+        linters: { [pattern]: commands }
+      },
       ['ignore/me.js', 'ignore.me.js', 'cool/js.js']
     )
     expect(result[0]).toEqual({
