@@ -131,7 +131,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should drop linters modifications when aborted', async () => {
+    it('should drop hooks fixes when aborted', async () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain(' M test.js')
 
@@ -182,7 +182,7 @@ describe('git', () => {
       expect(await gitStashList()).toEqual('')
     })
 
-    it('should revert to user modifications when aborted', async () => {
+    it('should drop hooks fixes and revert to user modifications when aborted', async () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain(' M test.js')
 
@@ -260,7 +260,7 @@ describe('git', () => {
 
       // Do additional edits (imitate eslint --fix)
       const newContent = `module.exports = {
-    test: 'test2',
+    test: "test2",
 };`
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), newContent)
       // and add to index
@@ -316,6 +316,7 @@ describe('git', () => {
       // Only index should remain
       expect(await gitStatus()).not.toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
+      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Do additional edits (imitate eslint --fix)
       await fsp.writeFile(
