@@ -27,7 +27,6 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "chalk": "^2.3.1",
-    "cli-command-parser": "^1.0.3",
     "commander": "^2.14.1",
     "cosmiconfig": "^4.0.0",
     "debug": "^3.1.0",
@@ -46,6 +45,7 @@
     "pify": "^3.0.0",
     "please-upgrade-node": "^3.0.1",
     "staged-git-files": "1.1.1",
+    "string-argv": "^0.0.2",
     "stringify-object": "^3.2.2"
   },
   "devDependencies": {
