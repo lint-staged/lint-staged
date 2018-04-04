@@ -1,6 +1,6 @@
 'use strict'
 
-const parse = require('cli-command-parser')
+const parse = require('string-argv')
 const appRoot = require('app-root-path')
 const npmWhich = require('npm-which')(process.cwd())
 const checkPkgScripts = require('./checkPkgScripts')
