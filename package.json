@@ -13,10 +13,7 @@
     "node": ">=8.0.0"
   },
   "bin": "index.js",
-  "files": [
-    "index.js",
-    "src"
-  ],
+  "files": ["index.js", "src"],
   "scripts": {
     "precommit": "node index.js --debug",
     "cz": "git-cz",
@@ -59,7 +56,7 @@
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^5.1.1",
     "husky": "^0.14.3",
-    "jest": "^22.0.4",
+    "jest": "^22.4.3",
     "jsonlint": "^1.6.2",
     "prettier": "1.9.2",
     "tmp": "0.0.33"
@@ -71,9 +68,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": [
-      "./testSetup.js"
-    ]
+    "setupFiles": ["./testSetup.js"]
   },
   "keywords": [
     "lint",
