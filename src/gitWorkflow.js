@@ -65,7 +65,6 @@ async function generatePatch(options) {
       ['diff-index', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff', tree, '--'],
       options
     )
-    console.log(patch)
     if (patch.length) {
       debug('Unstaged files detected.')
       const filePath = path.join(cwd, '.lint-staged.patch')
