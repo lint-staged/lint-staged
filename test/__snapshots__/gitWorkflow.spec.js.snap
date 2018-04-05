@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gitWorkflow execGit should return result from stdout 1`] = `"output"`;

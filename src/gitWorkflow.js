@@ -22,76 +22,67 @@ function getCmdArgs(gitDir) {
   return []
 }
 
-function execGit(cmd, options) {
+async function execGit(cmd, options) {
   const cwd = options && options.cwd ? options.cwd : process.cwd()
   const gitDir = options && options.gitDir
   debug('Running git command', cmd)
-  return execa('git', getCmdArgs(gitDir).concat(cmd), { cwd: getAbsolutePath(cwd) })
+  try {
+    const { stdout } = await execa('git', getCmdArgs(gitDir).concat(cmd), {
+      cwd: getAbsolutePath(cwd)
+    })
+    return stdout
+  } catch (err) {
+    throw new Error(err)
+  }
 }
 
-function getUnstagedFiles(options) {
+async function writeTree(options) {
   return execGit(['write-tree'], options)
-    .then(res => {
-      const tree = res.stdout
-      if (tree) {
-        return execGit(['diff-index', '--name-only', tree, '--'], options)
-      }
-      return []
-    })
-    .then(files => (files.stdout ? files.stdout.split('\n') : []))
+}
+
+async function getUnstagedFiles(options) {
+  const tree = await writeTree(options)
+  if (tree) {
+    const files = await execGit(['diff-index', '--name-only', tree, '--'], options)
+    return files.split('\n')
+  }
+  return []
 }
 
 function hasUnstagedFiles(options) {
   return getUnstagedFiles(options).then(files => files.length > 0)
 }
 
-function generatePatch(options) {
-  const cwd = options && options.cwd ? options.cwd : process.cwd()
-  return execGit(['write-tree'], options)
-    .then(res => {
-      const tree = res.stdout
-      if (tree) {
-        return execGit(
-          [
-            'diff-index',
-            '--exit-code',
-            '--ignore-submodules',
-            '--binary',
-            '--no-color',
-            '--no-ext-diff',
-            tree,
-            '--'
-          ],
-          options
-        )
-      }
-      return Promise.resolve(null)
-    })
-    .then(() => {
-      debug('Nothing to do...')
-    })
-    .catch(res => {
-      debug('Unstaged files detected.')
-      const patch = res.stdout
-      const filePath = path.join(cwd, '.lint-staged.patch')
-      debug(`Stashing unstaged files to ${filePath}...`)
-      return fsp.writeFile(filePath, patch).then(() => filePath) // Resolve with filePath
-    })
-}
-
 function gitApply(patch, options) {
   return execGit(['apply', '--whitespace=nowarn', patch], options)
+}
+
+async function generatePatch(options) {
+  const cwd = options && options.cwd ? options.cwd : process.cwd()
+  const tree = await writeTree(options)
+  if (tree) {
+    const patch = await execGit(
+      ['diff-index', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff', tree, '--'],
+      options
+    )
+    console.log(patch)
+    if (patch.length) {
+      debug('Unstaged files detected.')
+      const filePath = path.join(cwd, '.lint-staged.patch')
+      debug(`Stashing unstaged files to ${filePath}...`)
+      await fsp.writeFile(filePath, patch)
+      return filePath // Resolve with filePath
+    }
+    debug('Nothing to do...')
+    return null
+  }
+  return null
 }
 
 async function gitPopWithConflicts(options) {
   await execGit(['stash'], options) // Stash auto-fixes
   await execGit(['stash', 'pop', 'stash@{1}'], options) // Apply initial stash first
   return execGit(['read-tree', '-m', '-i', 'stash'], options) // Merge with auto-fixes
-}
-
-async function writeTree(options) {
-  const { stdout } = await execGit(['write-tree'], options)
-  return stdout
 }
 
 // eslint-disable-next-line
@@ -178,10 +169,11 @@ async function gitStashSave(options) {
 
 function gitStashPop(options) {
   // return gitPop(options)
-  if (!patchPath) {
-    throw new Error('No patch found')
+  if (patchPath) {
+    return gitApplyPatch(patchPath, options)
   }
-  return gitApplyPatch(patchPath, options)
+  debug('No patch found')
+  return null
 }
 
 module.exports = {

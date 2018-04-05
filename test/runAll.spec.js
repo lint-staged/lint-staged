@@ -4,6 +4,8 @@ import { getConfig } from '../src/getConfig'
 import runAll from '../src/runAll'
 
 jest.mock('staged-git-files')
+// TODO: Fix tests
+jest.mock('execa', () => jest.fn().mockImplementation(() => Promise.resolve(true)))
 
 sgfMock.mockImplementation((params, callback) => {
   callback(null, [])

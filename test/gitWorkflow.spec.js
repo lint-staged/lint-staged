@@ -2,9 +2,10 @@
 
 import path from 'path'
 import tmp from 'tmp'
-import execaMock from 'execa'
+import execa from 'execa'
 import gitflow from '../src/gitWorkflow'
 
+jest.mock('execa', () => jest.fn().mockImplementation(() => ({ stdout: 'output' })))
 tmp.setGracefulCleanup()
 
 describe('gitWorkflow', () => {
@@ -27,19 +28,19 @@ describe('gitWorkflow', () => {
 
   describe('execGit', () => {
     beforeEach(() => {
-      execaMock.mockReset()
+      // execa.mockReset()
     })
 
     it('should execute git in cwd if working copy is not specified', async () => {
       await gitflow.execGit(['init', 'param'])
-      expect(execaMock).toHaveBeenCalledWith('git', ['init', 'param'], {
+      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
         cwd: path.resolve(process.cwd())
       })
     })
 
     it('should execute git in a given working copy', async () => {
       await gitflow.execGit(['init', 'param'], { cwd: 'test/__fixtures__' })
-      expect(execaMock).toHaveBeenCalledWith('git', ['init', 'param'], {
+      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
         cwd: path.resolve(process.cwd(), 'test', '__fixtures__')
       })
     })
@@ -48,7 +49,7 @@ describe('gitWorkflow', () => {
       await gitflow.execGit(['init', 'param'], {
         gitDir: path.resolve('..')
       })
-      expect(execaMock).toHaveBeenCalledWith(
+      expect(execa).toHaveBeenCalledWith(
         'git',
         ['--git-dir', path.resolve(process.cwd(), '..'), 'init', 'param'],
         { cwd: path.resolve(process.cwd()) }
@@ -60,11 +61,16 @@ describe('gitWorkflow', () => {
         gitDir: '..',
         cwd: 'test/__fixtures__'
       })
-      expect(execaMock).toHaveBeenCalledWith(
+      expect(execa).toHaveBeenCalledWith(
         'git',
         ['--git-dir', path.resolve(process.cwd(), '..'), 'init', 'param'],
         { cwd: path.resolve(process.cwd(), 'test', '__fixtures__') }
       )
+    })
+
+    it('should return result from stdout', async () => {
+      const res = await gitflow.execGit(['branch', '--list'])
+      expect(res).toMatchSnapshot()
     })
   })
 })

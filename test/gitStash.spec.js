@@ -3,7 +3,6 @@ import fsp from 'fs-promise'
 import tmp from 'tmp'
 import gitflow from '../src/gitWorkflow'
 
-jest.unmock('execa')
 tmp.setGracefulCleanup()
 
 let wcDir
@@ -15,11 +14,11 @@ const initialContent = `module.exports = {
 `
 
 async function gitStatus(opts = gitOpts) {
-  return gitflow.execGit(['status', '--porcelain'], opts).then(res => res.stdout)
+  return gitflow.execGit(['status', '--porcelain'], opts)
 }
 
 async function gitStashList(opts = gitOpts) {
-  return gitflow.execGit(['stash', 'list'], opts).then(res => res.stdout)
+  return gitflow.execGit(['stash', 'list'], opts)
 }
 
 async function readFile(filepath, dir = wcDirPath) {
