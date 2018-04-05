@@ -163,7 +163,11 @@ describe('runScript', () => {
 
   it('should set hasErrors on context to true on error', async () => {
     expect.assertions(1)
+    const linterErr = new Error()
     const context = {}
+    linterErr.stdout = 'Mock error'
+    linterErr.stderr = ''
+    mockFn.mockImplementationOnce(() => Promise.reject(linterErr))
     const [linter] = runScript('mock-fail-linter', ['test.js'], scripts)
     try {
       await linter.task(context)
