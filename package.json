@@ -13,14 +13,12 @@
     "node": ">=6"
   },
   "bin": "index.js",
-  "files": [
-    "index.js",
-    "src"
-  ],
+  "files": ["index.js", "src"],
   "scripts": {
     "precommit": "node index.js",
     "cz": "git-cz",
-    "lint": "eslint .",
+    "lint:base": "eslint --rule \"prettier/prettier: 2\"",
+    "lint": "yarn lint:base -- .",
     "lint:fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest --coverage",
@@ -46,7 +44,8 @@
     "path-is-inside": "^1.0.2",
     "pify": "^3.0.0",
     "please-upgrade-node": "^3.0.1",
-    "staged-git-files": "1.1.0",
+    "staged-git-files": "1.1.1",
+    "string-argv": "^0.0.2",
     "stringify-object": "^3.2.2"
   },
   "devDependencies": {
@@ -69,9 +68,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": [
-      "./testSetup.js"
-    ]
+    "setupFiles": ["./testSetup.js"]
   },
   "keywords": [
     "lint",

@@ -1,9 +1,0 @@
-{
-    "linters": {
-        "*.js": [
-            "eslint --fix",
-            "git add"
-        ],
-        ".*rc": "jsonlint"
-    }
-}
