@@ -1,5 +1,3 @@
-/* eslint import/no-dynamic-require: 0 */
-
 'use strict'
 
 const dedent = require('dedent')
