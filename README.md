@@ -1,4 +1,4 @@
-# 🚫💩 lint-staged [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged)  [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+# 🚫💩 lint-staged [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -10,18 +10,20 @@ Linting makes more sense when running before committing your code. By doing that
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
-## Related blogs posts
+## Related blogs posts and talks
 
-- [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
-- [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+* [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
+* [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+* [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
 
 > If you've written one, please submit a PR with the link to it!
 
 ## Installation and setup
 
-1. `npm install --save-dev lint-staged husky`
-1. Install and setup your linters just like you would do normally. Add appropriate `.eslintrc`, `.stylelintrc`, etc.
-1. Update your `package.json` like this:
+1.  `npm install --save-dev lint-staged husky`
+1.  Install and setup your linters just like you would do normally. Add appropriate `.eslintrc`, `.stylelintrc`, etc.
+1.  Update your `package.json` like this:
+
 ```diff json
 {
   "scripts": {
@@ -74,9 +76,9 @@ $ ./node_modules/.bin/lint-staged --help
 
 * **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search.
 * **`--debug`**: Enabling the debug mode does the following:
-  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
-  - Do not pass `--silent` to npm scripts.
+  * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  * Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
+  * Do not pass `--silent` to npm scripts.
 
 ## Configuration
 
@@ -96,6 +98,7 @@ Lint-staged supports simple and advanced config formats.
 Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
 
 #### `package.json` example:
+
 ```json
 {
   "lint-staged": {
@@ -119,14 +122,15 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 `your-cmd file1.ext file2.ext`
 
 ### Advanced config format
+
 To set options and keep lint-staged extensible, advanced format can be used. This should hold linters object in `linters` property.
 
 ## Options
 
-* `concurrent` — *true* — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
+* `concurrent` — _true_ — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This is important on windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `globOptions` — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to
-customize how glob patterns match files.
+  customize how glob patterns match files.
 * `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
@@ -181,7 +185,7 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
 
 ## Reformatting the code
 
-Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config  by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
@@ -207,7 +211,7 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
 }
 ```
 
-*Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you.*
+_Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you._
 
 ### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
@@ -259,7 +263,6 @@ The following is equivalent:
 }
 ```
 
-
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
 
 ```json
@@ -273,11 +276,7 @@ The following is equivalent:
 
 ```json
 {
-  "*.scss": [
-    "postcss --config path/to/your/config --replace",
-    "stylelint",
-    "git add"
-  ]
+  "*.scss": ["postcss --config path/to/your/config --replace", "stylelint", "git add"]
 }
 ```
 
@@ -285,28 +284,27 @@ The following is equivalent:
 
 ```json
 {
-  "*.{png,jpeg,jpg,gif,svg}": [
-    "imagemin-lint-staged",
-    "git add"
-  ]
+  "*.{png,jpeg,jpg,gif,svg}": ["imagemin-lint-staged", "git add"]
 }
 ```
 
 <details>
   <summary>More about <code>imagemin-lint-staged</code></summary>
 
-  [imagemin-lint-staged](https://github.com/tomchentw/imagemin-lint-staged) is a CLI tool designed for lint-staged usage with sensible defaults.
+[imagemin-lint-staged](https://github.com/tomchentw/imagemin-lint-staged) is a CLI tool designed for lint-staged usage with sensible defaults.
 
-  See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
+See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
+
 </details>
 
 ## Frequently Asked Questions
 
-### Using with JetBrains IDEs *(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)*
+### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
 When using the IDE's GUI to commit changes with the `precommit` hook, you might see inconsistencies in the IDE and command line. This is [known issue](https://youtrack.jetbrains.com/issue/IDEA-135454) at JetBrains so if you want this fixed, please vote for it on YouTrack.
 
 Until the issue is resolved in the IDE, you can use the following config to work around it:
+
 ```js
 {
   "scripts": {
@@ -315,8 +313,8 @@ Until the issue is resolved in the IDE, you can use the following config to work
   }
 }
 ```
-*Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!*
 
+_Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!_
 
 ### How to use `lint-staged` in a multi package monorepo?
 
