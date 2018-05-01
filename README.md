@@ -20,6 +20,8 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Installation and setup
 
+> A fast way to perform the below is to run `npx mrm lint-staged`. It does most of the setup for you.
+
 1.  `npm install --save-dev lint-staged husky`
 1.  Install and setup your linters just like you would do normally. Add appropriate `.eslintrc`, `.stylelintrc`, etc.
 1.  Update your `package.json` like this:
