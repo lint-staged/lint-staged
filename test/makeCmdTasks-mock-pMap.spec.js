@@ -1,11 +1,12 @@
 import dedent from 'dedent'
 import pMapMock from 'p-map'
 import logSymbols from 'log-symbols'
-import runScript from '../src/runScript'
+import makeCmdTasks from '../src/makeCmdTasks'
 
+jest.mock('is-windows', () => jest.fn(() => true))
 jest.mock('p-map')
 
-describe('runScript', () => {
+describe('makeCmdTasks', () => {
   afterEach(() => {
     pMapMock.mockClear()
   })
@@ -24,7 +25,7 @@ describe('runScript', () => {
       ])
     )
 
-    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], {
+    const [linter] = makeCmdTasks(['test'], ['test1.js', 'test2.js'], {
       chunkSize: 1,
       subTaskConcurrency: 1
     })
@@ -38,7 +39,7 @@ describe('runScript', () => {
     expect.assertions(1)
     pMapMock.mockImplementation(() => Promise.reject(new Error('Unexpected Error')))
 
-    const [linter] = runScript(['test'], ['test.js'])
+    const [linter] = makeCmdTasks(['test'], ['test.js'])
     try {
       await linter.task()
     } catch (err) {

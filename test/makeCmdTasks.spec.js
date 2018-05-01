@@ -1,33 +1,32 @@
 import dedent from 'dedent'
 import mockFn from 'execa'
 import logSymbols from 'log-symbols'
-import runScript from '../src/runScript'
+import makeCmdTasks from '../src/makeCmdTasks'
 import resolveGitDir from '../src/resolveGitDir'
 
-jest.mock('execa')
 jest.mock('../src/resolveGitDir')
 
 resolveGitDir.mockReturnValue(process.cwd())
 
-describe('runScript', () => {
+describe('makeCmdTasks', () => {
   beforeEach(() => {
     resolveGitDir.mockClear()
     mockFn.mockClear()
   })
 
   it('should return an array', () => {
-    expect(runScript('test', ['test.js'])).toBeInstanceOf(Array)
+    expect(makeCmdTasks('test', ['test.js'])).toBeInstanceOf(Array)
   })
 
-  it('should throw for non-existend script', () => {
+  it('should throw for non-existent script', () => {
     expect(() => {
-      runScript('missing-module', ['test.js'])[0].task()
+      makeCmdTasks('missing-module', ['test.js'])[0].task()
     }).toThrow()
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = runScript('test', ['test.js'])
+    const res = makeCmdTasks('test', ['test.js'])
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -39,7 +38,7 @@ describe('runScript', () => {
 
   it('should work with multiple commands', async () => {
     expect.assertions(9)
-    const res = runScript(['test', 'test2'], ['test.js'])
+    const res = makeCmdTasks(['test', 'test2'], ['test.js'])
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
     expect(linter1.title).toBe('test')
@@ -57,22 +56,9 @@ describe('runScript', () => {
     expect(mockFn).lastCalledWith('test2', ['test.js'], { reject: false })
   })
 
-  it('should respect chunk size', async () => {
-    expect.assertions(3)
-    const [linter] = runScript(['test'], ['test1.js', 'test2.js'], {
-      chunkSize: 1
-    })
-    await linter.task()
-    expect(mockFn).toHaveBeenCalledTimes(2)
-    expect(mockFn).toHaveBeenCalledWith('test', ['test1.js'], {
-      reject: false
-    })
-    expect(mockFn).lastCalledWith('test', ['test2.js'], { reject: false })
-  })
-
   it('should support non npm scripts', async () => {
     expect.assertions(7)
-    const res = runScript(['node --arg=true ./myscript.js', 'git add'], ['test.js'])
+    const res = makeCmdTasks(['node --arg=true ./myscript.js', 'git add'], ['test.js'])
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
     expect(linter1.title).toBe('node --arg=true ./myscript.js')
@@ -92,7 +78,7 @@ describe('runScript', () => {
   it('should pass cwd to execa if gitDir is different than process.cwd for non-npm tasks', async () => {
     expect.assertions(4)
     resolveGitDir.mockReturnValueOnce('../')
-    const res = runScript(['test', 'git add'], ['test.js'])
+    const res = makeCmdTasks(['test', 'git add'], ['test.js'])
     const [linter1, linter2] = res
     await linter1.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
@@ -110,7 +96,7 @@ describe('runScript', () => {
     expect.assertions(2)
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
-    const [linter] = runScript(['jest'], ['test.js'], { reject: false })
+    const [linter] = makeCmdTasks(['jest'], ['test.js'], { reject: false })
     await linter.task()
     expect(mockFn).toHaveBeenCalledTimes(1)
     expect(mockFn).lastCalledWith('jest', ['test.js'], { reject: false })
@@ -129,7 +115,7 @@ describe('runScript', () => {
       })
     )
 
-    const [linter] = runScript('mock-fail-linter', ['test.js'])
+    const [linter] = makeCmdTasks('mock-fail-linter', ['test.js'])
     try {
       await linter.task()
     } catch (err) {

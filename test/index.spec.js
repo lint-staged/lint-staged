@@ -8,8 +8,6 @@ const replaceSerializer = (from, to) => ({
   print: val => val.replace(from, to)
 })
 
-jest.mock('cosmiconfig')
-
 const mockCosmiconfigWith = result => {
   cosmiconfig.mockImplementationOnce(() => ({
     load: () => Promise.resolve(result)
