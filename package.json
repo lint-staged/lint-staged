@@ -50,6 +50,7 @@
     "stringify-object": "^3.2.2"
   },
   "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "commitizen": "^2.9.6",
     "consolemock": "^1.0.2",
