@@ -2,8 +2,6 @@ import makeConsoleMock from 'consolemock'
 import npmWhichMock from 'npm-which'
 import findBin from '../src/findBin'
 
-jest.mock('npm-which')
-
 describe('findBin', () => {
   it('should return path to bin', () => {
     const { bin, args } = findBin('my-linter')

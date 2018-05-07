@@ -12,6 +12,7 @@ const debug = require('debug')('lint-staged')
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 // but do this only in TTY mode
 if (process.stdout.isTTY) {
+  // istanbul ignore next
   process.env.FORCE_COLOR = true
 }
 
