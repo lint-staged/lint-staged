@@ -18,20 +18,28 @@ if (process.stdout.isTTY) {
 
 const errConfigNotFound = new Error('Config could not be found')
 
+function loadConfig(configPath) {
+  const explorer = cosmiconfig('lint-staged', {
+    searchPlaces: [
+      'package.json',
+      `.lintstagedrc`,
+      `.lintstagedrc.json`,
+      `.lintstagedrc.yaml`,
+      `.lintstagedrc.yml`,
+      `lint-staged.config.js`
+    ]
+  })
+
+  return configPath ? explorer.load(configPath) : explorer.search()
+}
+
 /**
  * Root lint-staged function that is called from .bin
  */
 module.exports = function lintStaged(logger = console, configPath, debugMode) {
   debug('Loading config using `cosmiconfig`')
 
-  const explorer = cosmiconfig('lint-staged', {
-    configPath,
-    rc: '.lintstagedrc',
-    rcExtensions: true
-  })
-
-  return explorer
-    .load()
+  return loadConfig(configPath)
     .then(result => {
       if (result == null) throw errConfigNotFound
 
