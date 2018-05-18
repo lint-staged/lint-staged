@@ -5,6 +5,7 @@ cache:
   yarn: true
   directories: node_modules
 node_js:
+  - '10'
   - '8'
   - '6'
 
