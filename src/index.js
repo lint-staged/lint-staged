@@ -26,6 +26,7 @@ function loadConfig(configPath) {
       `.lintstagedrc.json`,
       `.lintstagedrc.yaml`,
       `.lintstagedrc.yml`,
+      `.lintstagedrc.js`,
       `lint-staged.config.js`
     ]
   })
