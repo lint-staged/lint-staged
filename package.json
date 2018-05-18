@@ -61,7 +61,8 @@
     "husky": "^0.14.3",
     "jest": "^22.4.0",
     "jsonlint": "^1.6.2",
-    "prettier": "1.11.1"
+    "prettier": "1.11.1",
+    "yarn": "^1.6.0"
   },
   "config": {
     "commitizen": {
