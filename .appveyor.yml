@@ -1,3 +1,7 @@
+###
+### .appveyor.yml
+###
+
 branches:
   only:
     - master
@@ -10,17 +14,24 @@ cache:
 
 environment:
   matrix:
+    - nodejs_version: '10'
     - nodejs_version: '8'
     - nodejs_version: '6'
+
+matrix:
+  fast_finish: true
 
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
   - yarn install
 
+build: off
+
 test_script:
   - node --version
   - yarn --version
   - yarn test
 
-build: off
+skip_commits:
+  message: /\[ci\s+skip\]/
