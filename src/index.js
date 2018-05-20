@@ -13,7 +13,7 @@ const debug = require('debug')('lint-staged')
 // but do this only in TTY mode
 if (process.stdout.isTTY) {
   // istanbul ignore next
-  process.env.FORCE_COLOR = true
+  process.env.FORCE_COLOR = '1'
 }
 
 const errConfigNotFound = new Error('Config could not be found')
@@ -53,15 +53,15 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0
-          process.exitCode = 0
         })
         .catch(error => {
           // Errors detected, printing and exiting with non-zero
-          printErrors(error)
           process.exitCode = 1
+          printErrors(error)
         })
     })
     .catch(err => {
+      process.exitCode = 1
       if (err === errConfigNotFound) {
         logger.error(`${err.message}.`)
       } else {
@@ -78,6 +78,5 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
         Please make sure you have created it correctly.
         See https://github.com/okonet/lint-staged#configuration.
       `)
-      process.exitCode = 1
     })
 }
