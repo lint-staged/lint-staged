@@ -6,5 +6,5 @@ WARN \`lint-staged\` no longer supports running scripts defined in package.json.
 
 The same behavior can be achieved by changing the command to any of the following:
   - \`npm run lint -- \`
-  - \`yarn lint:base -- . \`"
+  - \`npm run lint:base -- . \`"
 `;
