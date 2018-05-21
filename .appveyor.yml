@@ -2,16 +2,6 @@
 ### .appveyor.yml
 ###
 
-branches:
-  only:
-    - master
-    - next
-    - /^greenkeeper/.*$/
-
-cache:
-  - node_modules
-  - "%LOCALAPPDATA%\\Yarn"
-
 environment:
   matrix:
     - nodejs_version: '10'
@@ -28,10 +18,17 @@ install:
 
 build: off
 
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%\\Yarn"
+
 test_script:
   - node --version
   - yarn --version
   - yarn test
 
-skip_commits:
-  message: /\[ci\s+skip\]/
+branches:
+  only:
+    - master
+    - next
+    - /^greenkeeper/.*$/
