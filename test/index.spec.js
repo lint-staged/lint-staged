@@ -10,7 +10,7 @@ const replaceSerializer = (from, to) => ({
 
 const mockCosmiconfigWith = result => {
   cosmiconfig.mockImplementationOnce(() => ({
-    load: () => Promise.resolve(result)
+    search: () => Promise.resolve(result)
   }))
 }
 
