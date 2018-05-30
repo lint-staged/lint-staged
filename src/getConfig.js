@@ -89,7 +89,7 @@ function unknownValidationReporter(config, example, option, options) {
  * For simple config, only the `linters` configuration is provided.
  *
  * @param {Object} sourceConfig
- * @param {boolean} debugMode
+ * @param {Boolean} debugMode
  * @param {Boolean} verboseMode
  * @returns {{
  *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, verboseMode: Boolean

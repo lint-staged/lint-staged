@@ -25,6 +25,7 @@ describe('resolveTaskFn', () => {
 
   it('should support non npm scripts', async () => {
     expect.assertions(2)
+
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       linter: 'node --arg=true ./myscript.js'
@@ -35,6 +36,41 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       reject: false
     })
+  })
+
+  it('should print the output with the mode verbose', async () => {
+    expect.assertions(3)
+
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      verboseMode: true,
+      linter: 'echo "DEMO"'
+    })
+
+    global.console = { log: jest.fn() }
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('echo', ['DEMO', 'test.js'], {
+      reject: false
+    })
+    expect(console.log).toBeCalledWith('a-ok')
+  })
+
+  it('should not print the output without the mode verbose', async () => {
+    expect.assertions(3)
+
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      linter: 'echo "DEMO"'
+    })
+
+    global.console = { log: jest.fn() }
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('echo', ['DEMO', 'test.js'], {
+      reject: false
+    })
+    expect(console.log).not.toBeCalledWith('a-ok')
   })
 
   it('should pass `gitDir` as `cwd` to `execa()` gitDir !== process.cwd for git commands', async () => {

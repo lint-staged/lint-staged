@@ -12,6 +12,7 @@ Object {
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
+  "verboseMode": false,
 }
 `;
 
@@ -27,6 +28,7 @@ Object {
   "linters": Object {},
   "renderer": "update",
   "subTaskConcurrency": 1,
+  "verboseMode": false,
 }
 `;
 
@@ -48,6 +50,7 @@ Object {
   },
   "renderer": "update",
   "subTaskConcurrency": 1,
+  "verboseMode": false,
 }
 `;
 

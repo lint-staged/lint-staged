@@ -29,7 +29,41 @@ describe('lintStaged', () => {
       }
     }
     mockCosmiconfigWith({ config })
-    await lintStaged(logger, undefined, true)
+    await lintStaged(logger, { config: undefined, debug: true })
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not output config in normal mode', async () => {
+    expect.assertions(1)
+    const config = {
+      '*': 'mytask'
+    }
+    mockCosmiconfigWith({ config })
+    await lintStaged(logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should output config in verbose mode', async () => {
+    expect.assertions(1)
+    const config = {
+      linters: {
+        '*': 'mytask'
+      }
+    }
+    mockCosmiconfigWith({ config })
+    await lintStaged(logger, { config: undefined, verbose: true })
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should output config in verbose mode + debug mode', async () => {
+    expect.assertions(1)
+    const config = {
+      linters: {
+        '*': 'mytask'
+      }
+    }
+    mockCosmiconfigWith({ config })
+    await lintStaged(logger, { config: undefined, debug: true, verbose: true })
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -45,14 +79,17 @@ describe('lintStaged', () => {
 
   it('should load config file when specified', async () => {
     expect.assertions(1)
-    await lintStaged(logger, path.join(__dirname, '__mocks__', 'my-config.json'), true)
+    await lintStaged(logger, {
+      config: path.join(__dirname, '__mocks__', 'my-config.json'),
+      debug: true
+    })
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(1)
     mockCosmiconfigWith(null)
-    await lintStaged(logger)
+    await lintStaged(logger, { config: '' })
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -68,7 +105,8 @@ describe('lintStaged', () => {
       )
     )
 
-    await lintStaged(logger, nonExistentConfig)
+    await lintStaged(logger, { config: nonExistentConfig })
+    process.stdout.write(logger.printHistory())
     expect(logger.printHistory()).toMatchSnapshot()
   })
 })

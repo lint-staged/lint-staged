@@ -39,6 +39,20 @@ describe('getConfig', () => {
     )
   })
 
+  it('should set verboseMode', () => {
+    expect(getConfig({})).toEqual(
+      expect.objectContaining({
+        verboseMode: false
+      })
+    )
+
+    expect(getConfig({}, false, true)).toEqual(
+      expect.objectContaining({
+        verboseMode: true
+      })
+    )
+  })
+
   it('should set renderer based on debug mode', () => {
     expect(getConfig({})).toEqual(
       expect.objectContaining({
@@ -141,6 +155,7 @@ describe('getConfig', () => {
       },
       ignore: ['docs/**/*.js'],
       subTaskConcurrency: 10,
+      verboseMode: false,
       renderer: 'custom'
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)

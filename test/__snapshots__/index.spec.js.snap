@@ -7,6 +7,7 @@ LOG {
   linters: {
     '*': 'mytask'
   },
+  verboseMode: false,
   concurrent: true,
   chunkSize: 9007199254740991,
   globOptions: {
@@ -21,6 +22,8 @@ LOG {
 
 exports[`lintStaged should not output config in normal mode 1`] = `""`;
 
+exports[`lintStaged should not output config in normal mode 2`] = `""`;
+
 exports[`lintStaged should output config in debug mode 1`] = `
 "
 LOG Running lint-staged with the following config:
@@ -28,6 +31,7 @@ LOG {
   linters: {
     '*': 'mytask'
   },
+  verboseMode: false,
   concurrent: true,
   chunkSize: 9007199254740991,
   globOptions: {
@@ -39,6 +43,28 @@ LOG {
   renderer: 'verbose'
 }"
 `;
+
+exports[`lintStaged should output config in verbose mode + debug mode 1`] = `
+"
+LOG Running lint-staged with the following config:
+LOG {
+  linters: {
+    '*': 'mytask'
+  },
+  verboseMode: true,
+  concurrent: true,
+  chunkSize: 9007199254740991,
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
+  ignore: [],
+  subTaskConcurrency: 1,
+  renderer: 'verbose'
+}"
+`;
+
+exports[`lintStaged should output config in verbose mode 1`] = `""`;
 
 exports[`lintStaged should print helpful error message when config file is not found 1`] = `
 "

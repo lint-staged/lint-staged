@@ -39,7 +39,7 @@ function loadConfig(configPath) {
  */
 module.exports = function lintStaged(
   logger = console,
-  { config: configPath, debug: debugMode, verbose: verboseMode }
+  { config: configPath, debug: debugMode, verbose: verboseMode } = {}
 ) {
   debug('Loading config using `cosmiconfig`')
 
