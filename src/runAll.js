@@ -38,7 +38,8 @@ module.exports = function runAll(config) {
         new Listr(
           makeCmdTasks(task.commands, task.fileList, {
             chunkSize,
-            subTaskConcurrency
+            subTaskConcurrency,
+            verboseMode: config.verboseMode
           }),
           {
             // In sub-tasks we don't want to run concurrently

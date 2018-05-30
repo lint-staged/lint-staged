@@ -67,7 +67,7 @@ function makeErr(linter, errStdout, errStderr) {
  * @returns {function(): Promise<string>}
  */
 module.exports = function resolveTaskFn(options) {
-  const { linter, gitDir, pathsToLint } = options
+  const { linter, gitDir, pathsToLint, verboseMode } = options
   const { bin, args } = findBin(linter)
 
   const execaOptions = { reject: false }
@@ -81,6 +81,10 @@ module.exports = function resolveTaskFn(options) {
     debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
     return () =>
       execLinter(bin, args, execaOptions, pathsToLint).then(result => {
+        if (verboseMode) {
+          console.log(result.stdout)
+        }
+
         if (!result.failed) return successMsg(linter)
 
         throw makeErr(linter, result.stdout, result.stderr)

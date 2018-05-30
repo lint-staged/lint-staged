@@ -14,6 +14,7 @@ cmdline
   .version(pkg.version)
   .option('-c, --config [path]', 'Path to configuration file')
   .option('-d, --debug', 'Enable debug mode')
+  .option('--verbose', 'Enable verbose mode for commands')
   .parse(process.argv)
 
 if (cmdline.debug) {
@@ -22,4 +23,4 @@ if (cmdline.debug) {
 
 debug('Running `lint-staged@%s`', pkg.version)
 
-require('./src')(console, cmdline.config, cmdline.debug)
+require('./src')(console, cmdline)

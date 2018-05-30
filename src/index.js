@@ -37,7 +37,10 @@ function loadConfig(configPath) {
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged(logger = console, configPath, debugMode) {
+module.exports = function lintStaged(
+  logger = console,
+  { config: configPath, debug: debugMode, verbose: verboseMode }
+) {
   debug('Loading config using `cosmiconfig`')
 
   return loadConfig(configPath)
@@ -47,7 +50,7 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
       debug('Successfully loaded config from `%s`:\n%O', result.filepath, result.config)
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
-      const config = validateConfig(getConfig(result.config, debugMode))
+      const config = validateConfig(getConfig(result.config, debugMode, verboseMode))
       if (debugMode) {
         // Log using logger to be able to test through `consolemock`.
         logger.log('Running lint-staged with the following config:')
