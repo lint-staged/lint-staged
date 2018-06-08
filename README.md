@@ -71,12 +71,12 @@ $ ./node_modules/.bin/lint-staged --help
   Options:
 
     -V, --version        output the version number
-    -c, --config [path]  Path to configuration file
+    -c, --config [path]  Configuration file path or package
     -d, --debug          Enable debug mode
     -h, --help           output usage information
 ```
 
-* **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search.
+* **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
 * **`--debug`**: Enabling the debug mode does the following:
   * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   * Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
