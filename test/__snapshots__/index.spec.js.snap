@@ -1,5 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`lintStaged should load an npm config package when specified 1`] = `
+"
+LOG Running lint-staged with the following config:
+LOG {
+  linters: {
+    '*': 'mytask'
+  },
+  concurrent: true,
+  chunkSize: 9007199254740991,
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
+  ignore: [],
+  subTaskConcurrency: 1,
+  renderer: 'verbose'
+}"
+`;
+
 exports[`lintStaged should load config file when specified 1`] = `
 "
 LOG Running lint-staged with the following config:

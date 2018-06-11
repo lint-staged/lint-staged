@@ -49,6 +49,13 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
+  it('should load an npm config package when specified', async () => {
+    expect.assertions(1)
+    jest.mock('my-lint-staged-config')
+    await lintStaged(logger, 'my-lint-staged-config', true)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(1)
     mockCosmiconfigWith(null)

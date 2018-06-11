@@ -18,20 +18,28 @@ if (process.stdout.isTTY) {
 
 const errConfigNotFound = new Error('Config could not be found')
 
+function resolveConfig(configPath) {
+  try {
+    return require.resolve(configPath)
+  } catch (ignore) {
+    return configPath
+  }
+}
+
 function loadConfig(configPath) {
   const explorer = cosmiconfig('lint-staged', {
     searchPlaces: [
       'package.json',
-      `.lintstagedrc`,
-      `.lintstagedrc.json`,
-      `.lintstagedrc.yaml`,
-      `.lintstagedrc.yml`,
-      `.lintstagedrc.js`,
-      `lint-staged.config.js`
+      '.lintstagedrc',
+      '.lintstagedrc.json',
+      '.lintstagedrc.yaml',
+      '.lintstagedrc.yml',
+      '.lintstagedrc.js',
+      'lint-staged.config.js'
     ]
   })
 
-  return configPath ? explorer.load(configPath) : explorer.search()
+  return configPath ? explorer.load(resolveConfig(configPath)) : explorer.search()
 }
 
 /**
