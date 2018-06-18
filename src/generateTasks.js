@@ -20,7 +20,10 @@ module.exports = function generateTasks(config, relFiles) {
   const files = relFiles.map(file => path.resolve(gitDir, file))
 
   return Object.keys(linters).map(pattern => {
-    const patterns = [pattern].concat(ignorePatterns)
+    const patterns = pattern.includes(', ')
+      ? pattern.split(', ').concat(ignorePatterns)
+      : [pattern].concat(ignorePatterns)
+
     const commands = linters[pattern]
 
     const fileList = micromatch(
