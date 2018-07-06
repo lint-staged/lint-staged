@@ -125,7 +125,7 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ### Advanced config format
 
-To extend and customise lint-staged avanced options are available. To use this options the format should be as the following:
+To extend and customise lint-staged, avanced options are available. To use this options the format should be as the following:
 
 #### `package.json` example with `ignore` option:
 
@@ -145,7 +145,7 @@ To extend and customise lint-staged avanced options are available. To use this o
 }
 ```
 
-Notice that the linging commands now are nested into the `linters` object. The following options are available for advance configuration:
+Notice that the linting commands now are nested into the `linters` object. The following options are available for advance configuration:
 
 ## Options
 
