@@ -157,8 +157,6 @@ Notice that the linting commands now are nested into the `linters` object. The f
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. This option is only applicable on Windows. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
 
-
-
 ## Filtering files
 
 It is possible to run linters for certain paths only by using glob patterns. [micromatch](https://github.com/micromatch/micromatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
