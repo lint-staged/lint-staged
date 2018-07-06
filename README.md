@@ -125,9 +125,29 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ### Advanced config format
 
-To set options and keep lint-staged extensible, advanced format can be used. This should hold linters object in `linters` property.
+To extend and customise lint-staged, avanced options are available. To use this options the format should be as the following:
 
-## Options
+#### `package.json` example with `ignore` option:
+
+```json
+{
+  "lint-staged": {
+    "linters": {
+      "*.{js,scss}": [
+        "some command",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "**/dist/*.min.js"
+    ]
+  },
+}
+```
+
+Notice that the linting commands now are nested into the `linters` object. The following options are available for advance configuration:
+
+#### Options
 
 * `concurrent` — _true_ — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This option is only applicable on Windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
