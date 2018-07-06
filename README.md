@@ -147,7 +147,7 @@ To extend and customise lint-staged, avanced options are available. To use this 
 
 Notice that the linting commands now are nested into the `linters` object. The following options are available for advance configuration:
 
-## Options
+#### Options
 
 * `concurrent` — _true_ — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
 * `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This option is only applicable on Windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
