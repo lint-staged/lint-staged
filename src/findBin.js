@@ -1,12 +1,14 @@
 'use strict'
 
+const path = require('path')
 const parse = require('string-argv')
-const appRoot = require('app-root-path')
 const npmWhich = require('npm-which')(process.cwd())
 const checkPkgScripts = require('./checkPkgScripts')
 
 // Find and load the package.json at the root of the project.
-const pkg = require(appRoot.resolve('package.json')) // eslint-disable-line import/no-dynamic-require
+const packageJson = path.resolve(`${process.cwd()}/package.json`)
+const pkg = require(packageJson) // eslint-disable-line import/no-dynamic-require
+
 const debug = require('debug')('lint-staged:find-bin')
 
 const cache = new Map()
