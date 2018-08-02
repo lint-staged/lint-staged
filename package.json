@@ -1,9 +1,9 @@
 {
-  "name": "lint-staged",
+  "name": "lint-staged-outside",
   "version": "0.0.0-development",
-  "description": "Lint files staged by git",
+  "description": "Lint files staged by git forked version to work outside node_modules",
   "license": "MIT",
-  "repository": "https://github.com/okonet/lint-staged",
+  "repository": "https://github.com/ultrox/lint-staged",
   "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
   "maintainers": [
     "Lufty Wiranda <lufty.wiranda@gmail.com>",
@@ -25,7 +25,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "app-root-path": "^2.0.1",
     "chalk": "^2.3.1",
     "commander": "^2.14.1",
     "cosmiconfig": "^5.0.2",
