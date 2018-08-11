@@ -138,6 +138,7 @@ function validateConfig(config) {
     exampleConfig,
     deprecatedConfig,
     unknown: unknownValidationReporter,
+    recursive: false,
     comment:
       'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'
   })
