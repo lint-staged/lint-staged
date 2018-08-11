@@ -6,7 +6,7 @@ The latest versions of `lint-staged` require Node.js v6 or newer. (Versions of `
 
 ## Why
 
-Linting makes more sense when running before committing your code. By doing that you can ensure no errors are going into repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
+Linting makes more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
@@ -39,7 +39,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 Now change a few files, `git add` some of them to your commit and try to `git commit` them.
 
-And this is how it looks like in action:
+This is how it looks in action:
 
 <p align="center">
   <img src="./screenshots/lint-staged-prettier.gif" alt="lint-staged with prettier example"
@@ -78,7 +78,7 @@ $ ./node_modules/.bin/lint-staged --help
 
 * **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
 * **`--debug`**: Enabling the debug mode does the following:
-  * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   * Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
   * Do not pass `--silent` to npm scripts.
 
@@ -125,7 +125,7 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ### Advanced config format
 
-To extend and customise lint-staged, avanced options are available. To use this options the format should be as the following:
+To extend and customise lint-staged, advanced options are available. To use these options the format should be as the following:
 
 #### `package.json` example with `ignore` option:
 
