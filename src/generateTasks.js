@@ -2,7 +2,6 @@
 
 const path = require('path')
 const micromatch = require('micromatch')
-const pathIsInside = require('path-is-inside')
 const { getConfig } = require('./getConfig')
 const resolveGitDir = require('./resolveGitDir')
 
@@ -16,7 +15,6 @@ module.exports = function generateTasks(config, relFiles) {
   const ignorePatterns = normalizedConfig.ignore.map(pattern => `!${pattern}`)
 
   const gitDir = resolveGitDir()
-  const cwd = process.cwd()
   const files = relFiles.map(file => path.resolve(gitDir, file))
 
   return Object.keys(linters).map(pattern => {
@@ -25,15 +23,13 @@ module.exports = function generateTasks(config, relFiles) {
 
     const fileList = micromatch(
       files
-        // Only worry about children of the CWD
-        .filter(file => pathIsInside(file, cwd))
-        // Make the paths relative to CWD for filtering
-        .map(file => path.relative(cwd, file)),
+        // Make the paths relative to gitDir for filtering
+        .map(file => path.relative(gitDir, file)),
       patterns,
       globOptions
     )
       // Return absolute path after the filter is run
-      .map(file => path.resolve(cwd, file))
+      .map(file => path.resolve(gitDir, file))
 
     const task = { pattern, commands, fileList }
     debug('Generated task: \n%O', task)
