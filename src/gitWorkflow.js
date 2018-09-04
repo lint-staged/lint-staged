@@ -55,7 +55,9 @@ async function generatePatchForTrees(treesArray, options) {
   const tree = await writeTree(options)
   if (tree) {
     const patch = await execGit(
-      ['diff-tree', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff'].concat(treesArray),
+      ['diff-tree', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff'].concat(
+        treesArray
+      ),
       options
     )
     if (patch.length) {
@@ -90,7 +92,7 @@ async function gitStash(options) {
 }
 
 async function updateStash(options) {
-  const formattedTree = await writeTree(options);
+  const formattedTree = await writeTree(options)
   const patchLocation = await generatePatchForTrees([trees[0], formattedTree], options)
 
   if (patchLocation) {
@@ -101,17 +103,19 @@ async function updateStash(options) {
     try {
       await execGit(['apply', '--whitespace=nowarn', '-v', '--cached', patchLocation], options)
       // Update the tree sha reference
-      workTree = await writeTree(options);
+      workTree = await writeTree(options)
       // Get the formatted tree back
       await execGit(['read-tree', formattedTree], options)
       //  Delete patch file
       await fsp.unlink(patchLocation)
     } catch (err) {
-      debug('Oops! Could not apply patch to the working copy. There are conflicts between formatters and your changes. Will ignore formatters.')
+      debug(
+        'Oops! Could not apply patch to the working copy. There are conflicts between formatters and your changes. Will ignore formatters.'
+      )
       // In case patch can't be applied, this means a conflict going to occur between user modifications and formatter
       // In this case, we want to skip formatting and restore user modifications and previous index
       // To do so we won't add formmattedTree to the array so it's not restored in the index
-      return
+      // return
     }
   }
   trees = [...trees, formattedTree]
