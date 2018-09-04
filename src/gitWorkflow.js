@@ -104,13 +104,15 @@ async function updateStash(options) {
       workTree = await writeTree(options);
       // Get the formatted tree back
       await execGit(['read-tree', formattedTree], options)
+      //  Delete patch file
+      await fsp.unlink(patchLocation)
     } catch (err) {
+      debug('Oops! Could not apply patch to the working copy. There are conflicts between formatters and your changes. Will ignore formatters.')
       // In case patch can't be applied, this means a conflict going to occur between user modifications and formatter
       // In this case, we want to skip formatting and restore user modifications and previous index
       // To do so we won't add formmattedTree to the array so it's not restored in the index
       return
     }
-
   }
   trees = [...trees, formattedTree]
 }
