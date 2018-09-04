@@ -5,10 +5,7 @@ const execa = require('execa')
 const fsp = require('fs-promise')
 const debug = require('debug')('lint-staged:git')
 
-let patchPath
-let indexTree = null // eslint-disable-line
 let workTree = null
-let hooksTree = null // eslint-disable-line
 let trees = []
 
 function getAbsolutePath(dir) {
@@ -53,16 +50,12 @@ function hasUnstagedFiles(options) {
   return getUnstagedFiles(options).then(files => files.length > 0)
 }
 
-function gitApply(patch, options) {
-  return execGit(['apply', '--whitespace=nowarn', patch], options)
-}
-
-async function generatePatch(options) {
+async function generatePatchForTrees(treesArray, options) {
   const cwd = options && options.cwd ? options.cwd : process.cwd()
   const tree = await writeTree(options)
   if (tree) {
     const patch = await execGit(
-      ['diff-index', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff', tree, '--'],
+      ['diff-tree', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff'].concat(treesArray),
       options
     )
     if (patch.length) {
@@ -76,12 +69,6 @@ async function generatePatch(options) {
     return null
   }
   return null
-}
-
-async function gitPopWithConflicts(options) {
-  await execGit(['stash'], options) // Stash auto-fixes
-  await execGit(['stash', 'pop', 'stash@{1}'], options) // Apply initial stash first
-  return execGit(['read-tree', '-m', '-i', 'stash'], options) // Merge with auto-fixes
 }
 
 // eslint-disable-next-line
@@ -103,9 +90,29 @@ async function gitStash(options) {
 }
 
 async function updateStash(options) {
-  // patchPath = await generatePatch(options)
-  // await execGit(['update-index', '--refresh'], options)
-  trees = [...trees, await writeTree(options)]
+  const formattedTree = await writeTree(options);
+  const patchLocation = await generatePatchForTrees([trees[0], formattedTree], options)
+
+  if (patchLocation) {
+    // Apply formatter changes to the stashed tree
+    // Get the stashed tree
+    await execGit(['read-tree', workTree], options)
+    // Apply patch with only formatting changes
+    try {
+      await execGit(['apply', '--whitespace=nowarn', '-v', '--cached', patchLocation], options)
+      // Update the tree sha reference
+      workTree = await writeTree(options);
+      // Get the formatted tree back
+      await execGit(['read-tree', formattedTree], options)
+    } catch (err) {
+      // In case patch can't be applied, this means a conflict going to occur between user modifications and formatter
+      // In this case, we want to skip formatting and restore user modifications and previous index
+      // To do so we won't add formmattedTree to the array so it's not restored in the index
+      return
+    }
+
+  }
+  trees = [...trees, formattedTree]
 }
 
 // eslint-disable-next-line
@@ -113,66 +120,26 @@ async function gitPop(options) {
   if (!workTree || !trees.length) {
     throw new Error('Need 2 tree-ish to be set!')
   }
-  // Restore working copy from the saved index
+  // Restore the stashed files in the index
   await execGit(['read-tree', workTree], options)
-  // Sync index to working copy
+  // and sync it to working copy
   await execGit(['checkout-index', '-af'], options)
-  // Apply changes from previous current index
+
   if (trees.length === 1) {
+    // Restore changes that were in index
     await execGit(['read-tree', trees[0]], options)
   } else {
-    // await execGit(['read-tree', '-m', '-i', trees[0]], options)
-    // await execGit(['checkout-index', '-f'], options)
-    // await execGit(['clean', '-dfx'], options)
+    // Or, apply formatted changes
     await execGit(['read-tree', trees[1]], options)
   }
-  // Sync index to working copy
-  await execGit(['checkout-index'], options)
-  // await execGit(['read-tree', '-m', '-i', trees[1]], options)
-  // if (patchPath) {
-  //   await gitApply(patchPath, options)
-  // }
-}
-
-async function cleanup(options) {
-  debug('Patch applied! Cleaning up...')
-  await execGit(['stash', 'drop'], options)
-  await fsp.unlink(patchPath)
-  patchPath = null
-  debug('Clean up complete!')
-}
-
-async function gitApplyPatch(patch, options) {
-  debug('Applying patch...')
-  try {
-    await execGit(['checkout', '--', '.'], options)
-    await gitApply(patch, options)
-  } catch (err) {
-    debug('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
-    console.log('Stashed changes conflicted with hook auto-fixes! Restoring from conflicts...')
-    await gitPopWithConflicts(options)
-  }
-  return cleanup(options)
 }
 
 async function gitStashSave(options) {
-  debug('Checking if there are unstaged files in the working directory')
-  const hasUnstaged = await hasUnstagedFiles(options)
-  if (hasUnstaged) {
-    debug('Found unstaged files. Will need to stash them...')
-    patchPath = await generatePatch(options) // Save the reference to the patch
-    return execGit(['stash', '--keep-index'], options)
-  }
-  return Promise.resolve(null)
+  return gitStash(options)
 }
 
 function gitStashPop(options) {
-  // return gitPop(options)
-  if (patchPath) {
-    return gitApplyPatch(patchPath, options)
-  }
-  debug('No patch found')
-  return null
+  return gitPop(options)
 }
 
 module.exports = {
