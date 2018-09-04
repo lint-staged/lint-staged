@@ -321,8 +321,7 @@ describe('git', () => {
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-    test: "test2",
-    test: "test3",
+    test: "test2"
 };`
       )
       // and add to index
@@ -342,8 +341,8 @@ describe('git', () => {
       expect(await gitStatus()).toContain('MM test.js')
       // and content is back to user modifications
       expect(await readFile('test.js')).toEqual(userContent)
-      // Expect modifications in index
-      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
+      // Expect no formatting changes in index
+      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // No stashed should left
       expect(await gitStashList()).toEqual('')
@@ -359,6 +358,11 @@ describe('git', () => {
         `module.exports = {
   test: 'test',
   
+  
+  
+  
+  
+  
   foo: '
   baz
   '
@@ -371,6 +375,11 @@ describe('git', () => {
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'edited',
+  
+  
+  
+  
+  
   
   foo: '
   baz
@@ -390,11 +399,16 @@ describe('git', () => {
       expect(await gitStatus()).toContain('M  test.js')
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
-      // Do additional edits (imitate running prettier)
+      // Imitate running prettier on the version from the index
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'test',
+  
+  
+  
+  
+  
 
   foo: 'baz'
 };`
@@ -407,11 +421,16 @@ describe('git', () => {
       await gitflow.gitStashPop(gitOpts)
 
       // Expect stashed files to be back
-      // expect(await gitStatus()).toContain('MM test.js')
+      expect(await gitStatus()).toContain('MM test.js')
       // and all lint-staged modifications to be gone
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
       expect(await readFile('test.js')).toEqual(`module.exports = {
   test: 'edited',
+  
+  
+  
+  
+  
 
   foo: 'baz'
 };`)
