@@ -82,6 +82,19 @@ describe('git', () => {
       const res = await gitflow.hasUnstagedFiles(gitOpts)
       expect(res).toEqual(true)
     })
+
+    it('should return false if there are no modified files exist', async () => {
+      await gitflow.execGit(['checkout', '.'], gitOpts)
+      const res = await gitflow.hasUnstagedFiles(gitOpts)
+      expect(res).toEqual(false)
+    })
+
+    it('should return false if changes are already in the index', async () => {
+      await gitflow.execGit(['checkout', 'test.css'], gitOpts)
+      await gitflow.execGit(['add', 'test.js'], gitOpts)
+      const res = await gitflow.hasUnstagedFiles(gitOpts)
+      expect(res).toEqual(false)
+    })
   })
 
   describe('gitStashSave/gitStashPop', () => {

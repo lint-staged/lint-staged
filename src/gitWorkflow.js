@@ -41,7 +41,7 @@ async function getUnstagedFiles(options) {
   const tree = await writeTree(options)
   if (tree) {
     const files = await execGit(['diff-index', '--name-only', tree, '--'], options)
-    return files.split('\n')
+    return files.split('\n').filter(Boolean) // Remove empty strings
   }
   return []
 }
