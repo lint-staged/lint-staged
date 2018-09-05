@@ -416,14 +416,14 @@ describe('git', () => {
       await fsp.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
-  test: 'test',
+  test: "test",
   
   
   
   
   
 
-  foo: 'baz'
+  foo: "baz"
 };`
       )
       await gitflow.execGit(['add', 'test.js'], gitOpts)
@@ -445,7 +445,7 @@ describe('git', () => {
   
   
 
-  foo: 'baz'
+  foo: "baz"
 };`)
 
       // No stashed should left
