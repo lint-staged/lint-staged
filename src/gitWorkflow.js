@@ -37,6 +37,22 @@ async function writeTree(options) {
   return execGit(['write-tree'], options)
 }
 
+async function getDiffForTrees(tree1, tree2, options) {
+  return execGit(
+    [
+      'diff-tree',
+      '--ignore-submodules',
+      '--binary',
+      '--no-color',
+      '--no-ext-diff',
+      '--unified=0',
+      tree1,
+      tree2
+    ],
+    options
+  )
+}
+
 async function getUnstagedFiles(options) {
   const tree = await writeTree(options)
   if (tree) {
@@ -51,25 +67,16 @@ function hasUnstagedFiles(options) {
 }
 
 async function generatePatchForTrees(treesArray, options) {
+  // TODO: Use stdin instead of the file for patches
   const cwd = options && options.cwd ? options.cwd : process.cwd()
-  const tree = await writeTree(options)
-  if (tree) {
-    const patch = await execGit(
-      ['diff-tree', '--ignore-submodules', '--binary', '--no-color', '--no-ext-diff'].concat(
-        treesArray
-      ),
-      options
-    )
-    if (patch.length) {
-      debug('Unstaged files detected.')
-      const filePath = path.join(cwd, '.lint-staged.patch')
-      debug(`Stashing unstaged files to ${filePath}...`)
-      await fsp.writeFile(filePath, patch)
-      return filePath // Resolve with filePath
-    }
-    debug('Nothing to do...')
-    return null
+  const patch = await getDiffForTrees(treesArray[0], treesArray[1], options)
+  if (patch.length) {
+    const filePath = path.join(cwd, '.lint-staged.patch')
+    debug(`Stashing unstaged files to ${filePath}...`)
+    await fsp.writeFile(filePath, `${patch}\n`) // The new line is somehow required for patch to not be corrupted
+    return filePath // Resolve with filePath
   }
+  debug('Nothing to do...')
   return null
 }
 
@@ -95,45 +102,43 @@ async function updateStash(options) {
   trees = [...trees, await writeTree(options)]
 }
 
-async function trySyncWorkingCopyFromIndex(options) {
-  const formattedTree = trees[1]
-  const patchLocation = await generatePatchForTrees([trees[0], formattedTree], options)
-
-  if (patchLocation) {
-    // Apply formatter changes to the stashed tree
-    // Get the stashed tree
-    await execGit(['read-tree', workTree], options)
-    // Apply patch with only formatting changes
+async function applyPathFor(tree1, tree2, options) {
+  const patchPath = await generatePatchForTrees([tree1, tree2], options)
+  if (patchPath) {
     try {
-      await execGit(['apply', '--whitespace=nowarn', '-v', '--cached', patchLocation], options)
-      // Update the tree sha reference
-      workTree = await writeTree(options)
+      /**
+       * Apply patch to index. We will apply it with --reject so it it will try apply hunk by hunk
+       * We're not interested in failied hunks since this mean that formatting conflicts with user changes
+       * and we prioritize user changes over formatter's
+       */
+      await execGit(
+        [
+          'apply',
+          '-v',
+          '--whitespace=nowarn',
+          '--reject',
+          '--recount',
+          '--unidiff-zero',
+          patchPath
+        ],
+        options
+      )
     } catch (err) {
-      // In case patch can't be applied, this means a conflict going to occur between user modifications and formatter
-      // In this case, we want to skip formatting and restore user modifications and previous index
-      // To do so we won't add formmattedTree to the array so it's not restored in the index
+      debug('Could not apply patch to the stashed files cleanly')
+      debug(err)
+      debug('Patch content:')
+      debug(await fsp.readFile(patchPath, { encoding: 'utf-8' }))
       throw new Error('Could not apply patch to the stashed files cleanly.', err)
     } finally {
-      // Get the formatted tree back
-      await execGit(['read-tree', formattedTree], options)
       // Delete patch file
-      await fsp.unlink(patchLocation)
+      await fsp.unlink(patchPath)
     }
   }
 }
 
-// eslint-disable-next-line
 async function gitPop(options) {
   if (!workTree || !trees.length) {
     throw new Error('Need 2 tree-ish to be set!')
-  }
-
-  // Before restoring stashed files, we want to try applying formatting changes to those files as well
-  try {
-    await trySyncWorkingCopyFromIndex(options)
-  } catch (err) {
-    // TODO: Use debug
-    console.log('There are conflicts between formatters and your changes. Will ignore formatters.')
   }
 
   // Restore the stashed files in the index
@@ -143,11 +148,23 @@ async function gitPop(options) {
 
   // Then, restore the index after working copy is restored
   if (trees.length === 1) {
-    // Restore changes that were in index
+    // Restore changes that were in index if there are no formatting changes
     await execGit(['read-tree', trees[0]], options)
   } else {
-    // Or, apply formatted changes
+    /**
+     * There are formatting changes we want to restore in the index
+     * and in the working copy. So we start by restoring the index
+     * and after that we'll try to carry as many as possible changes
+     * to the working copy by applying the patch with --reject option.
+     */
     await execGit(['read-tree', trees[1]], options)
+    try {
+      await applyPathFor(trees[0], trees[1], options)
+    } catch (err) {
+      console.log(
+        'WARNING! Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
+      )
+    }
   }
 }
 
