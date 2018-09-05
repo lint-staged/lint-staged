@@ -92,7 +92,11 @@ async function gitStash(options) {
 }
 
 async function updateStash(options) {
-  const formattedTree = await writeTree(options)
+  trees = [...trees, await writeTree(options)]
+}
+
+async function trySyncWorkingCopyFromIndex(options) {
+  const formattedTree = trees[1]
   const patchLocation = await generatePatchForTrees([trees[0], formattedTree], options)
 
   if (patchLocation) {
@@ -104,21 +108,18 @@ async function updateStash(options) {
       await execGit(['apply', '--whitespace=nowarn', '-v', '--cached', patchLocation], options)
       // Update the tree sha reference
       workTree = await writeTree(options)
-      // Get the formatted tree back
-      await execGit(['read-tree', formattedTree], options)
-      //  Delete patch file
-      await fsp.unlink(patchLocation)
     } catch (err) {
-      debug(
-        'Oops! Could not apply patch to the working copy. There are conflicts between formatters and your changes. Will ignore formatters.'
-      )
       // In case patch can't be applied, this means a conflict going to occur between user modifications and formatter
       // In this case, we want to skip formatting and restore user modifications and previous index
       // To do so we won't add formmattedTree to the array so it's not restored in the index
-      // return
+      throw new Error('Could not apply patch to the stashed files cleanly.', err)
+    } finally {
+      // Get the formatted tree back
+      await execGit(['read-tree', formattedTree], options)
+      // Delete patch file
+      await fsp.unlink(patchLocation)
     }
   }
-  trees = [...trees, formattedTree]
 }
 
 // eslint-disable-next-line
@@ -126,11 +127,21 @@ async function gitPop(options) {
   if (!workTree || !trees.length) {
     throw new Error('Need 2 tree-ish to be set!')
   }
+
+  // Before restoring stashed files, we want to try applying formatting changes to those files as well
+  try {
+    await trySyncWorkingCopyFromIndex(options)
+  } catch (err) {
+    // TODO: Use debug
+    console.log('There are conflicts between formatters and your changes. Will ignore formatters.')
+  }
+
   // Restore the stashed files in the index
   await execGit(['read-tree', workTree], options)
-  // and sync it to working copy
+  // and sync it to the working copy (i.e. update files on fs)
   await execGit(['checkout-index', '-af'], options)
 
+  // Then, restore the index after working copy is restored
   if (trees.length === 1) {
     // Restore changes that were in index
     await execGit(['read-tree', trees[0]], options)
