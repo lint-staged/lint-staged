@@ -341,8 +341,8 @@ describe('git', () => {
       expect(await gitStatus()).toContain('MM test.js')
       // and content is back to user modifications
       expect(await readFile('test.js')).toEqual(userContent)
-      // Expect no formatting changes in index
-      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
+      // Expect formatting changes in the index
+      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
 
       // No stashed should left
       expect(await gitStashList()).toEqual('')
