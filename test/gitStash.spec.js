@@ -3,6 +3,7 @@ import fsp from 'fs-promise'
 import tmp from 'tmp'
 import gitflow from '../src/gitWorkflow'
 
+jest.dontMock('execa')
 tmp.setGracefulCleanup()
 
 let wcDir

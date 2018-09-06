@@ -8,13 +8,13 @@ const replaceSerializer = (from, to) => ({
   print: val => val.replace(from, to)
 })
 
-jest.mock('cosmiconfig')
-
 const mockCosmiconfigWith = result => {
   cosmiconfig.mockImplementationOnce(() => ({
-    load: () => Promise.resolve(result)
+    search: () => Promise.resolve(result)
   }))
 }
+
+// TODO: Never run tests in the project's WC because this might change source files git status
 
 describe('lintStaged', () => {
   const logger = makeConsoleMock()
@@ -48,6 +48,13 @@ describe('lintStaged', () => {
   it('should load config file when specified', async () => {
     expect.assertions(1)
     await lintStaged(logger, path.join(__dirname, '__mocks__', 'my-config.json'), true)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should load an npm config package when specified', async () => {
+    expect.assertions(1)
+    jest.mock('my-lint-staged-config')
+    await lintStaged(logger, 'my-lint-staged-config', true)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 

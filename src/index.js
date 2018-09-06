@@ -1,44 +1,54 @@
-/* eslint import/no-dynamic-require: 0 */
-
 'use strict'
 
-const appRoot = require('app-root-path')
 const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const getConfig = require('./getConfig').getConfig
-const validateConfig = require('./getConfig').validateConfig
+const { getConfig, validateConfig } = require('./getConfig')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 
 const debug = require('debug')('lint-staged')
 
-// Find the right package.json at the root of the project
-const packageJson = require(appRoot.resolve('package.json'))
-
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 // but do this only in TTY mode
 if (process.stdout.isTTY) {
-  process.env.FORCE_COLOR = true
+  // istanbul ignore next
+  process.env.FORCE_COLOR = '1'
 }
 
 const errConfigNotFound = new Error('Config could not be found')
 
+function resolveConfig(configPath) {
+  try {
+    return require.resolve(configPath)
+  } catch (ignore) {
+    return configPath
+  }
+}
+
+function loadConfig(configPath) {
+  const explorer = cosmiconfig('lint-staged', {
+    searchPlaces: [
+      'package.json',
+      '.lintstagedrc',
+      '.lintstagedrc.json',
+      '.lintstagedrc.yaml',
+      '.lintstagedrc.yml',
+      '.lintstagedrc.js',
+      'lint-staged.config.js'
+    ]
+  })
+
+  return configPath ? explorer.load(resolveConfig(configPath)) : explorer.search()
+}
+
 /**
  * Root lint-staged function that is called from .bin
  */
-module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
+module.exports = function lintStaged(logger = console, configPath, debugMode) {
   debug('Loading config using `cosmiconfig`')
-  const logger = injectedLogger || console
 
-  const explorer = cosmiconfig('lint-staged', {
-    configPath,
-    rc: '.lintstagedrc',
-    rcExtensions: true
-  })
-
-  return explorer
-    .load()
+  return loadConfig(configPath)
     .then(result => {
       if (result == null) throw errConfigNotFound
 
@@ -56,22 +66,19 @@ module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
         debug('Normalized config:\n%O', config)
       }
 
-      const scripts = packageJson.scripts || {}
-      debug('Loaded scripts from package.json:\n%O', scripts)
-
-      runAll(scripts, config, debugMode)
+      runAll(config)
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0
-          process.exitCode = 0
         })
         .catch(error => {
           // Errors detected, printing and exiting with non-zero
-          printErrors(error)
           process.exitCode = 1
+          printErrors(error)
         })
     })
     .catch(err => {
+      process.exitCode = 1
       if (err === errConfigNotFound) {
         logger.error(`${err.message}.`)
       } else {
@@ -88,6 +95,5 @@ module.exports = function lintStaged(injectedLogger, configPath, debugMode) {
         Please make sure you have created it correctly.
         See https://github.com/okonet/lint-staged#configuration.
       `)
-      process.exitCode = 1
     })
 }

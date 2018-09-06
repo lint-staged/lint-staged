@@ -8,6 +8,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {},
   "renderer": "update",
   "stashUnstaged": true,
@@ -23,6 +24,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {},
   "renderer": "update",
   "stashUnstaged": true,
@@ -38,6 +40,7 @@ Object {
     "dot": true,
     "matchBase": true,
   },
+  "ignore": Array [],
   "linters": Object {
     "*.js": Array [
       "eslint --fix",

@@ -10,8 +10,6 @@ jest.mock('execa', () => jest.fn().mockImplementation(() => Promise.resolve(true
 sgfMock.mockImplementation((params, callback) => {
   callback(null, [])
 })
-
-const scripts = { mytask: 'echo "Running task"' }
 const globalConsoleTemp = global.console
 
 describe('runAll', () => {
@@ -28,31 +26,31 @@ describe('runAll', () => {
   })
 
   it('should throw when invalid config is provided', () => {
-    expect(() => runAll(scripts, {})).toThrowErrorMatchingSnapshot()
-    expect(() => runAll(scripts)).toThrowErrorMatchingSnapshot()
+    expect(() => runAll({})).toThrowErrorMatchingSnapshot()
+    expect(() => runAll()).toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw when a valid config is provided', () => {
     const config = getConfig({
       concurrent: false
     })
-    expect(() => runAll(scripts, config)).not.toThrow()
+    expect(() => runAll(config)).not.toThrow()
   })
 
   it('should return a promise', () => {
-    expect(runAll(scripts, getConfig({}))).toBeInstanceOf(Promise)
+    expect(runAll(getConfig({}))).toBeInstanceOf(Promise)
   })
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    const res = await runAll(scripts, getConfig({}))
+    const res = await runAll(getConfig({}))
 
     expect(res).toEqual('No tasks to run.')
   })
 
   it('should resolve the promise with no files', async () => {
     expect.assertions(1)
-    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(console.printHistory()).toMatchSnapshot()
   })
 
@@ -61,7 +59,7 @@ describe('runAll', () => {
     sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'sample' }])
     })
-    await runAll(scripts, getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(console.printHistory()).toMatchSnapshot()
   })
 
@@ -72,7 +70,7 @@ describe('runAll', () => {
     })
 
     try {
-      await runAll(scripts, getConfig({}))
+      await runAll(getConfig({}))
     } catch (err) {
       expect(err).toEqual('test')
     }

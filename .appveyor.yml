@@ -1,0 +1,34 @@
+###
+### .appveyor.yml
+###
+
+environment:
+  matrix:
+    - nodejs_version: '10'
+    - nodejs_version: '8'
+    - nodejs_version: '6'
+
+matrix:
+  fast_finish: true
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - set CI=true
+  - yarn install
+
+build: off
+
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%\\Yarn"
+
+test_script:
+  - node --version
+  - yarn --version
+  - yarn test
+
+branches:
+  only:
+    - master
+    - next
+    - /^greenkeeper/.*$/

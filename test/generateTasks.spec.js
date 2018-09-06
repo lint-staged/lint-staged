@@ -205,4 +205,21 @@ describe('generateTasks', () => {
       )
     })
   })
+
+  it('should ignore patterns in the ignore array of configuration', () => {
+    const pattern = '**/*.js'
+    const commands = 'lint'
+    const result = generateTasks(
+      {
+        ignore: ['**/ignore/**', '**/ignore.*'],
+        linters: { [pattern]: commands }
+      },
+      ['ignore/me.js', 'ignore.me.js', 'cool/js.js']
+    )
+    expect(result[0]).toEqual({
+      pattern,
+      commands,
+      fileList: [`${workDir}/cool/js.js`].map(path.normalize)
+    })
+  })
 })
