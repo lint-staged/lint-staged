@@ -56,7 +56,7 @@ async function getDiffForTrees(tree1, tree2, options) {
 
 async function getFilesStatus(options) {
   const files = await execGit(['status', '--porcelain'], options)
-  return files.split('\n').filter(Boolean)
+  return files ? files.split('\n').filter(Boolean) : []
 }
 
 async function hasPartiallyStagedFiles(options) {
