@@ -69,7 +69,7 @@ module.exports = function runAll(config) {
             title: 'Stashing changes...',
             enabled: () => filenames.length > 0,
             task: (ctx, task) =>
-              git.hasUnstagedFiles().then(res => {
+              git.hasPartiallyStagedFiles().then(res => {
                 ctx.hasStash = res
                 if (res) {
                   // TODO: Handle Ctrl+C before stashing

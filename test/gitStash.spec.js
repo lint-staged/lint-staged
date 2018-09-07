@@ -71,30 +71,51 @@ describe('git', () => {
     wcDir.removeCallback()
   })
 
-  describe('getUnstagedFiles', () => {
-    it('should return an array', async () => {
-      const res = await gitflow.getUnstagedFiles(gitOpts)
-      expect(res).toEqual(['test.css', 'test.js'])
+  describe('getFilesStatus', () => {
+    it('should return empty array if no changed files', async () => {
+      await gitflow.execGit(['checkout', '.'], gitOpts)
+      const res = await gitflow.getFilesStatus(gitOpts)
+      expect(res).toMatchSnapshot()
+    })
+
+    it('should return an empty array for only modified files', async () => {
+      const res = await gitflow.getFilesStatus(gitOpts)
+      expect(res).toMatchSnapshot()
+    })
+
+    it('should return an array of partially staged files', async () => {
+      await gitflow.execGit(['add', '.'], gitOpts)
+      await fsp.writeFile(path.join(wcDirPath, 'test.js'), '')
+      const res = await gitflow.getFilesStatus(gitOpts)
+      expect(res).toMatchSnapshot()
     })
   })
 
-  describe('hasUnstagedFiles', () => {
-    it('should return a Boolean', async () => {
-      const res = await gitflow.hasUnstagedFiles(gitOpts)
-      expect(res).toEqual(true)
+  describe('hasPartiallyStagedFiles', () => {
+    it('should return false if files are not staged', async () => {
+      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
+      expect(res).toEqual(false)
     })
 
     it('should return false if there are no modified files exist', async () => {
       await gitflow.execGit(['checkout', '.'], gitOpts)
-      const res = await gitflow.hasUnstagedFiles(gitOpts)
+      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
       expect(res).toEqual(false)
     })
 
     it('should return false if changes are already in the index', async () => {
       await gitflow.execGit(['checkout', 'test.css'], gitOpts)
       await gitflow.execGit(['add', 'test.js'], gitOpts)
-      const res = await gitflow.hasUnstagedFiles(gitOpts)
+      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
       expect(res).toEqual(false)
+    })
+
+    it('should return true if files are modified and in the index', async () => {
+      await gitflow.execGit(['checkout', 'test.css'], gitOpts)
+      await gitflow.execGit(['add', 'test.js'], gitOpts)
+      await fsp.writeFile(path.join(wcDirPath, 'test.js'), '')
+      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
+      expect(res).toEqual(true)
     })
   })
 

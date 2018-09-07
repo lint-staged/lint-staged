@@ -53,17 +53,19 @@ async function getDiffForTrees(tree1, tree2, options) {
   )
 }
 
-async function getUnstagedFiles(options) {
+async function getFilesStatus(options) {
   const tree = await writeTree(options)
   if (tree) {
-    const files = await execGit(['diff-index', '--name-only', tree, '--'], options)
+    const files = await execGit(['status', '--porcelain'], options)
     return files.split('\n').filter(Boolean) // Remove empty strings
   }
   return []
 }
 
-function hasUnstagedFiles(options) {
-  return getUnstagedFiles(options).then(files => files.length > 0)
+async function hasPartiallyStagedFiles(options) {
+  const files = await getFilesStatus(options)
+  const partiallyStaged = files.filter(file => file.startsWith('MM'))
+  return partiallyStaged.length > 0
 }
 
 async function generatePatchForTrees(treesArray, options) {
@@ -181,7 +183,7 @@ module.exports = {
   execGit,
   gitStashSave,
   gitStashPop,
-  hasUnstagedFiles,
-  getUnstagedFiles,
+  hasPartiallyStagedFiles,
+  getFilesStatus,
   updateStash
 }
