@@ -28,7 +28,6 @@ const defaultConfig = {
   linters: {},
   ignore: [],
   subTaskConcurrency: 1,
-  stashUnstaged: true,
   renderer: 'update'
 }
 

@@ -15,7 +15,6 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  stashUnstaged: true,
   renderer: 'verbose'
 }"
 `;
@@ -35,7 +34,6 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  stashUnstaged: true,
   renderer: 'verbose'
 }"
 `;
@@ -57,7 +55,6 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  stashUnstaged: true,
   renderer: 'verbose'
 }"
 `;
