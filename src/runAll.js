@@ -4,6 +4,7 @@ const sgf = require('staged-git-files')
 const Listr = require('listr')
 const has = require('lodash/has')
 const pify = require('pify')
+const exitHook = require('async-exit-hook')
 const makeCmdTasks = require('./makeCmdTasks')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
@@ -68,15 +69,19 @@ module.exports = function runAll(config) {
           {
             title: 'Stashing changes...',
             enabled: () => filenames.length > 0,
-            task: (ctx, task) =>
-              git.hasPartiallyStagedFiles().then(res => {
-                ctx.hasStash = res
-                if (res) {
-                  // TODO: Handle Ctrl+C before stashing
-                  return git.gitStashSave()
-                }
-                return task.skip('No unstaged files found...')
-              })
+            task: async (ctx, task) => {
+              const hasPSF = await git.hasPartiallyStagedFiles()
+              if (hasPSF) {
+                ctx.hasStash = true
+                await git.gitStashSave()
+                // Restore working copy if we stashed but process has been terminated
+                // TODO: Use tree shas to compare trees and determine if restore is needed
+                exitHook(async () => {
+                  await git.gitStashPop()
+                })
+              }
+              return task.skip('No unstaged files found...')
+            }
           },
           {
             title: 'Running linters...',
