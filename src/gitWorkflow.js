@@ -5,8 +5,9 @@ const execa = require('execa')
 const fsp = require('fs-promise')
 const debug = require('debug')('lint-staged:git')
 
-let workTree = null
-let trees = []
+let workingCopyTree = null
+let indexTree = null
+let formattedIndexTree = null
 
 function getAbsolutePath(dir) {
   return path.isAbsolute(dir) ? dir : path.resolve(dir)
@@ -68,10 +69,10 @@ async function hasPartiallyStagedFiles(options) {
   return partiallyStaged.length > 0
 }
 
-async function generatePatchForTrees(treesArray, options) {
+async function generatePatchForTrees(tree1, tree2, options) {
   // TODO: Use stdin instead of the file for patches
   const cwd = options && options.cwd ? options.cwd : process.cwd()
-  const patch = await getDiffForTrees(treesArray[0], treesArray[1], options)
+  const patch = await getDiffForTrees(tree1, tree2, options)
   if (patch.length) {
     const filePath = path.join(cwd, '.lint-staged.patch')
     debug(`Stashing unstaged files to ${filePath}...`)
@@ -82,17 +83,24 @@ async function generatePatchForTrees(treesArray, options) {
   return null
 }
 
+function cleanup() {
+  // Clean up references
+  workingCopyTree = null
+  indexTree = null
+  formattedIndexTree = null
+}
+
 // eslint-disable-next-line
 async function gitStash(options) {
   debug('Stashing files...')
   // Save ref to the current index
-  trees = [await writeTree(options)]
+  indexTree = await writeTree(options)
   // Add working copy changes to index
   await execGit(['add', '.'], options)
   // Save ref to the working copy index
-  workTree = await writeTree(options)
+  workingCopyTree = await writeTree(options)
   // Restore the current index
-  await execGit(['read-tree', trees[0]], options)
+  await execGit(['read-tree', indexTree], options)
   // Remove all modifications
   await execGit(['checkout-index', '-af'], options)
   // await execGit(['clean', '-dfx'], options)
@@ -101,11 +109,11 @@ async function gitStash(options) {
 }
 
 async function updateStash(options) {
-  trees = [...trees, await writeTree(options)]
+  formattedIndexTree = await writeTree(options)
 }
 
 async function applyPathFor(tree1, tree2, options) {
-  const patchPath = await generatePatchForTrees([tree1, tree2], options)
+  const patchPath = await generatePatchForTrees(tree1, tree2, options)
   if (patchPath) {
     try {
       /**
@@ -139,19 +147,21 @@ async function applyPathFor(tree1, tree2, options) {
 }
 
 async function gitPop(options) {
-  if (!workTree || !trees.length) {
-    throw new Error('Need 2 tree-ish to be set!')
+  if (workingCopyTree === null) {
+    throw new Error('Trying to restore from stash but could not find working copy stash.')
   }
 
+  debug('Restoring working copy')
   // Restore the stashed files in the index
-  await execGit(['read-tree', workTree], options)
+  await execGit(['read-tree', workingCopyTree], options)
   // and sync it to the working copy (i.e. update files on fs)
   await execGit(['checkout-index', '-af'], options)
 
   // Then, restore the index after working copy is restored
-  if (trees.length === 1) {
+  if (indexTree !== null && formattedIndexTree === null) {
     // Restore changes that were in index if there are no formatting changes
-    await execGit(['read-tree', trees[0]], options)
+    debug('Restoring index')
+    await execGit(['read-tree', indexTree], options)
   } else {
     /**
      * There are formatting changes we want to restore in the index
@@ -159,15 +169,17 @@ async function gitPop(options) {
      * and after that we'll try to carry as many as possible changes
      * to the working copy by applying the patch with --reject option.
      */
-    await execGit(['read-tree', trees[1]], options)
+    debug('Restoring index with formatting changes')
+    await execGit(['read-tree', formattedIndexTree], options)
     try {
-      await applyPathFor(trees[0], trees[1], options)
+      await applyPathFor(indexTree, formattedIndexTree, options)
     } catch (err) {
-      console.log(
-        'WARNING! Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
+      debug(
+        'Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
       )
     }
   }
+  cleanup()
 }
 
 async function gitStashSave(options) {
