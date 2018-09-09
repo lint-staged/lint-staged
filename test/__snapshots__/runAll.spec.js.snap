@@ -10,7 +10,11 @@ LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
-LOG Running linters... [completed]"
+LOG Running linters... [completed]
+LOG Updating index... [started]
+LOG Updating index... [completed]
+LOG Restoring local changes... [started]
+LOG Restoring local changes... [completed]"
 `;
 
 exports[`runAll should resolve the promise with no files 1`] = `

@@ -7,6 +7,8 @@ jest.mock('staged-git-files')
 // TODO: Fix tests
 jest.mock('execa', () => jest.fn().mockImplementation(() => Promise.resolve(true)))
 
+jest.mock('../src/gitWorkflow')
+
 sgfMock.mockImplementation((params, callback) => {
   callback(null, [])
 })
