@@ -1208,6 +1208,12 @@ debug@^3.1.0:
   dependencies:
     ms "2.0.0"
 
+debug@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.0.0.tgz#ef7592a30b1c5e05a78e96926df2e6b36b5544e7"
+  dependencies:
+    ms "^2.1.1"
+
 decamelize@^1.0.0, decamelize@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
@@ -3302,6 +3308,10 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
+
+ms@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
 
 mute-stream@0.0.6:
   version "0.0.6"
