@@ -73,12 +73,12 @@ module.exports = function runAll(config) {
               const hasPSF = await git.hasPartiallyStagedFiles()
               if (hasPSF) {
                 ctx.hasStash = true
-                await git.gitStashSave()
                 // Restore working copy if we stashed but process has been terminated
                 // TODO: Use tree shas to compare trees and determine if restore is needed
                 exitHook(async () => {
                   await git.gitStashPop()
                 })
+                return git.gitStashSave()
               }
               return task.skip('No unstaged files found...')
             }

@@ -1,10 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runAll should not skip tasks if there are files 1`] = `
+exports[`runAll should not skip stashing and restoring if there are partially staged files 1`] = `
 "
 LOG Stashing changes... [started]
-LOG Stashing changes... [skipped]
-LOG → No unstaged files found...
+LOG Stashing changes... [completed]
 LOG Running linters... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
@@ -17,12 +16,38 @@ LOG Restoring local changes... [started]
 LOG Restoring local changes... [completed]"
 `;
 
+exports[`runAll should not skip tasks if there are files 1`] = `
+"
+LOG Stashing changes... [started]
+LOG Stashing changes... [skipped]
+LOG → No unstaged files found...
+LOG Running linters... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [completed]
+LOG Running tasks for *.js [completed]
+LOG Running linters... [completed]"
+`;
+
 exports[`runAll should resolve the promise with no files 1`] = `
 "
 LOG Running linters... [started]
 LOG Running tasks for *.js [started]
 LOG Running tasks for *.js [skipped]
 LOG → No staged files match *.js
+LOG Running linters... [completed]"
+`;
+
+exports[`runAll should skip stashing and restoring if there are no partially staged files 1`] = `
+"
+LOG Stashing changes... [started]
+LOG Stashing changes... [skipped]
+LOG → No unstaged files found...
+LOG Running linters... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [completed]
+LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]"
 `;
 
