@@ -14,6 +14,8 @@ const mockCosmiconfigWith = result => {
   }))
 }
 
+jest.mock('../src/gitWorkflow')
+
 // TODO: Never run tests in the project's WC because this might change source files git status
 
 describe('lintStaged', () => {
@@ -59,14 +61,15 @@ describe('lintStaged', () => {
   })
 
   it('should print helpful error message when config file is not found', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     mockCosmiconfigWith(null)
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
+    expect(process.exitCode).toEqual(1)
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     const nonExistentConfig = 'fake-config-file.yml'
 
     // Serialize Windows, Linux and MacOS paths consistently
@@ -79,5 +82,6 @@ describe('lintStaged', () => {
 
     await lintStaged(logger, nonExistentConfig)
     expect(logger.printHistory()).toMatchSnapshot()
+    expect(process.exitCode).toEqual(1)
   })
 })
