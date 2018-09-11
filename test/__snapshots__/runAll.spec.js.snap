@@ -51,6 +51,35 @@ LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]"
 `;
 
+exports[`runAll should skip updating stash if there are errors during linting 1`] = `
+"
+LOG Stashing changes... [started]
+LOG Stashing changes... [completed]
+LOG Running linters... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [failed]
+LOG → 
+LOG Running tasks for *.js [failed]
+LOG → 
+LOG Running linters... [failed]
+LOG Updating index... [started]
+LOG Updating index... [skipped]
+LOG → Skipping index update since there are errors
+LOG Restoring local changes... [started]
+LOG Restoring local changes... [completed]
+LOG {
+  name: 'ListrError',
+  errors: [
+    {
+      privateMsg: '✖ \\"echo \\"sample\\"\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
+      context: {hasStash: true, hasErrors: true}
+    }
+  ],
+  context: {hasStash: true, hasErrors: true}
+}"
+`;
+
 exports[`runAll should throw when invalid config is provided 1`] = `"Invalid config provided to runAll! Use getConfig instead."`;
 
 exports[`runAll should throw when invalid config is provided 2`] = `"Invalid config provided to runAll! Use getConfig instead."`;
