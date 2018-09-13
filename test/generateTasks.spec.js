@@ -98,6 +98,24 @@ describe('generateTasks', () => {
     })
   })
 
+  it('should match non-children files with matchAllFiles', () => {
+    const relPath = path.resolve(path.join(process.cwd(), '..'))
+    resolveGitDir.mockReturnValueOnce(relPath)
+    const result = generateTasks(Object.assign({ matchAllFiles: true }, config), files)
+    const linter = result.find(item => item.pattern === '*.js')
+    expect(linter).toEqual({
+      pattern: '*.js',
+      commands: 'root-js',
+      fileList: [
+        `${relPath}/test.js`,
+        `${relPath}/deeper/test.js`,
+        `${relPath}/deeper/test2.js`,
+        `${relPath}/even/deeper/test.js`,
+        `${relPath}/.hidden/test.js`
+      ].map(path.normalize)
+    })
+  })
+
   it('should return an empty file list for linters with no matches.', () => {
     const result = generateTasks(config, files)
 

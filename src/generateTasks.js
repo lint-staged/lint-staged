@@ -17,16 +17,19 @@ module.exports = function generateTasks(config, relFiles) {
 
   const gitDir = resolveGitDir()
   const cwd = process.cwd()
-  const files = relFiles.map(file => path.resolve(gitDir, file))
+  let files = relFiles.map(file => path.resolve(gitDir, file))
 
   return Object.keys(linters).map(pattern => {
     const patterns = [pattern].concat(ignorePatterns)
     const commands = linters[pattern]
 
+    if (!normalizedConfig.matchAllFiles) {
+      // Only worry about children of the CWD
+      files = files.filter(file => pathIsInside(file, cwd))
+    }
+
     const fileList = micromatch(
       files
-        // Only worry about children of the CWD
-        .filter(file => pathIsInside(file, cwd))
         // Make the paths relative to CWD for filtering
         .map(file => path.relative(cwd, file)),
       patterns,
