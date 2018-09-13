@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolveTaskFn chunked tasks should throw error for failed linters 1`] = `
+"
+
+
+[31m✖[39m [91mmock-fail-linter found some errors. Please fix them and try committing again.[39m
+Mock error"
+`;

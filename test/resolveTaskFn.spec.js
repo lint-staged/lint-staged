@@ -1,6 +1,4 @@
-import dedent from 'dedent'
 import execa from 'execa'
-import logSymbols from 'log-symbols'
 import resolveTaskFn from '../src/resolveTaskFn'
 
 jest.mock('execa', () =>
@@ -88,12 +86,7 @@ describe('resolveTaskFn', () => {
     try {
       await taskFn()
     } catch (err) {
-      expect(err.privateMsg).toMatch(dedent`
-        ${
-          logSymbols.error
-        } "mock-fail-linter" found some errors. Please fix them and try committing again.
-        Mock error
-      `)
+      expect(err.privateMsg).toMatchSnapshot()
     }
   })
 

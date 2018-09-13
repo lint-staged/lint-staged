@@ -4,6 +4,7 @@ const chunk = require('lodash/chunk')
 const dedent = require('dedent')
 const isWindows = require('is-windows')
 const execa = require('execa')
+const chalk = require('chalk')
 const symbols = require('log-symbols')
 const pMap = require('p-map')
 const calcChunkSize = require('./calcChunkSize')
@@ -50,7 +51,9 @@ function makeErr(linter, errStdout, errStderr, context = {}) {
   context.hasErrors = true // eslint-disable-line no-param-reassign
   const err = new Error()
   err.privateMsg = dedent`
-    ${symbols.error} "${linter}" found some errors. Please fix them and try committing again.
+    \n\n\n${symbols.error} ${chalk.redBright(
+    `${linter} found some errors. Please fix them and try committing again.`
+  )}
     ${errStdout}
     ${errStderr}
   `

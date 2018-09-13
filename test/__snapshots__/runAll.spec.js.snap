@@ -72,7 +72,7 @@ LOG {
   name: 'ListrError',
   errors: [
     {
-      privateMsg: '✖ \\"echo \\"sample\\"\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
+      privateMsg: '\\\\n\\\\n\\\\n[31m✖[39m [91mecho \\"sample\\" found some errors. Please fix them and try committing again.[39m\\\\n\\\\nLinter finished with error',
       context: {hasStash: true, hasErrors: true}
     }
   ],
