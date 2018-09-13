@@ -16,7 +16,7 @@ const debug = require('debug')('lint-staged:cfg')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string}}
+ * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string, matchAllFiles: boolean}}
  */
 const defaultConfig = {
   concurrent: true,
@@ -28,7 +28,8 @@ const defaultConfig = {
   linters: {},
   ignore: [],
   subTaskConcurrency: 1,
-  renderer: 'update'
+  renderer: 'update',
+  matchAllFiles: false
 }
 
 /**
