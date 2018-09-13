@@ -10,8 +10,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]
-LOG Updating index... [started]
-LOG Updating index... [completed]
+LOG Updating stash... [started]
+LOG Updating stash... [completed]
 LOG Restoring local changes... [started]
 LOG Restoring local changes... [completed]"
 `;
@@ -63,9 +63,9 @@ LOG →
 LOG Running tasks for *.js [failed]
 LOG → 
 LOG Running linters... [failed]
-LOG Updating index... [started]
-LOG Updating index... [skipped]
-LOG → Skipping index update since there are errors
+LOG Updating stash... [started]
+LOG Updating stash... [skipped]
+LOG → Skipping stash update since some tasks exited with errors
 LOG Restoring local changes... [started]
 LOG Restoring local changes... [completed]
 LOG {
