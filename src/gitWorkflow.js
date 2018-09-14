@@ -79,13 +79,6 @@ async function generatePatchForTrees(tree1, tree2, options) {
   return null
 }
 
-function cleanup() {
-  // Clean up references
-  workingCopyTree = null
-  indexTree = null
-  formattedIndexTree = null
-}
-
 // eslint-disable-next-line
 async function gitStash(options) {
   debug('Stashing files...')
@@ -101,11 +94,12 @@ async function gitStash(options) {
   await execGit(['checkout-index', '-af'], options)
   // await execGit(['clean', '-dfx'], options)
   debug('Done stashing files!')
-  return Promise.resolve(null)
+  return [workingCopyTree, indexTree]
 }
 
 async function updateStash(options) {
   formattedIndexTree = await writeTree(options)
+  return formattedIndexTree
 }
 
 async function applyPathFor(tree1, tree2, options) {
@@ -175,22 +169,19 @@ async function gitPop(options) {
       )
     }
   }
-  cleanup()
-}
+  // Clean up references
+  workingCopyTree = null
+  indexTree = null
+  formattedIndexTree = null
 
-async function gitStashSave(options) {
-  return gitStash(options)
-}
-
-function gitStashPop(options) {
-  return gitPop(options)
+  return null
 }
 
 module.exports = {
   getCmdArgs,
   execGit,
-  gitStashSave,
-  gitStashPop,
+  gitStashSave: gitStash,
+  gitStashPop: gitPop,
   hasPartiallyStagedFiles,
   getFilesStatus,
   updateStash
