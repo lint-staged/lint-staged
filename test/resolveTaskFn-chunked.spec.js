@@ -14,6 +14,8 @@ jest.mock('execa', () =>
       stderr: '',
       code: 0,
       failed: false,
+      killed: false,
+      signal: null,
       cmd: 'mock cmd'
     })
   )
@@ -100,6 +102,8 @@ describe('resolveTaskFn', () => {
           stderr: '',
           code: 0,
           failed: true,
+          killed: false,
+          signal: null,
           cmd: 'mock cmd'
         }
       ])
@@ -107,6 +111,31 @@ describe('resolveTaskFn', () => {
       const taskFn = resolveTaskFn({
         ...defaultOpts,
         linter: 'mock-fail-linter'
+      })
+      try {
+        await taskFn()
+      } catch (err) {
+        expect(err.privateMsg).toMatchSnapshot()
+      }
+    })
+
+    it('should throw error for killed processes', async () => {
+      expect.assertions(1)
+      pMap.mockResolvedValueOnce([
+        {
+          stdout: 'Mock error',
+          stderr: '',
+          code: 0,
+          failed: false,
+          killed: false,
+          signal: 'SIGINT',
+          cmd: 'mock cmd'
+        }
+      ])
+
+      const taskFn = resolveTaskFn({
+        ...defaultOpts,
+        linter: 'mock-killed-linter'
       })
       try {
         await taskFn()

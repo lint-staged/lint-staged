@@ -20,7 +20,7 @@ const debug = require('debug')('lint-staged:task')
  * @param {Array<string>} args
  * @param {Object} execaOptions
  * @param {Array<string>} pathsToLint
- * @return {Promise}
+ * @return {Promise} child_process
  */
 function execLinter(bin, args, execaOptions, pathsToLint) {
   const binArgs = args.concat(pathsToLint)
@@ -41,21 +41,33 @@ const successMsg = linter => `${symbols.success} ${linter} passed!`
  * log only once.
  *
  * @param {string} linter
- * @param {string} errStdout
- * @param {string} errStderr
+ * @param {Object} result
+ * @param {string} result.stdout
+ * @param {string} result.stderr
+ * @param {boolean} result.failed
+ * @param {boolean} result.killed
+ * @param {string} result.signal
  * @param {Object} context (see https://github.com/SamVerschueren/listr#context)
  * @returns {Error}
  */
-function makeErr(linter, errStdout, errStderr, context = {}) {
+function makeErr(linter, result, context = {}) {
   // Indicate that some linter will fail so we don't update the index with formatting changes
   context.hasErrors = true // eslint-disable-line no-param-reassign
+  const { stdout, stderr, failed, killed, signal } = result
+  let message = ''
+  if (failed) {
+    message = `${symbols.error} ${chalk.redBright(
+      `${linter} found some errors. Please fix them and try committing again.`
+    )}`
+  }
+  if (killed || signal != null) {
+    message = `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
+  }
   const err = new Error()
   err.privateMsg = dedent`
-    \n\n\n${symbols.error} ${chalk.redBright(
-    `${linter} found some errors. Please fix them and try committing again.`
-  )}
-    ${errStdout}
-    ${errStderr}
+    \n\n\n${message}
+    ${stdout}
+    ${stderr}
   `
   return err
 }
@@ -87,9 +99,11 @@ module.exports = function resolveTaskFn(options) {
     debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
     return ctx =>
       execLinter(bin, args, execaOptions, pathsToLint).then(result => {
-        if (!result.failed) return successMsg(linter)
+        if (result.failed || result.killed || result.signal != null) {
+          throw makeErr(linter, result, ctx)
+        }
 
-        throw makeErr(linter, result.stdout, result.stderr, ctx)
+        return successMsg(linter)
       })
   }
 
@@ -113,12 +127,23 @@ module.exports = function resolveTaskFn(options) {
       `)
       })
       .then(results => {
-        const errors = results.filter(res => res.failed)
-        if (errors.length === 0) return successMsg(linter)
+        const errors = results.filter(res => res.failed || res.killed)
+        const failed = results.some(res => res.failed)
+        const killed = results.some(res => res.killed)
+        const signals = results.map(res => res.signal).filter(Boolean)
 
-        const errStdout = errors.map(err => err.stdout).join('')
-        const errStderr = errors.map(err => err.stderr).join('')
+        if (failed || killed || signals.length > 0) {
+          const finalResult = {
+            stdout: errors.map(err => err.stdout).join(''),
+            stderr: errors.map(err => err.stderr).join(''),
+            failed,
+            killed,
+            signal: signals.join(', ')
+          }
 
-        throw makeErr(linter, errStdout, errStderr, ctx)
+          throw makeErr(linter, finalResult, ctx)
+        }
+
+        return successMsg(linter)
       })
 }
