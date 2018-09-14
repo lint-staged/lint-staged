@@ -132,6 +132,35 @@ describe('runAll', () => {
     expect(gitStashPop).toHaveBeenCalledTimes(1)
   })
 
+  it('should skip linters and stash update but perform working copy restore if terminated', async () => {
+    expect.assertions(4)
+    hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
+    sgfMock.mockImplementationOnce((params, callback) => {
+      callback(null, [{ filename: 'sample.js', status: 'Modified' }])
+    })
+    execa.mockImplementationOnce(() =>
+      Promise.resolve({
+        stdout: '',
+        stderr: '',
+        code: 0,
+        failed: false,
+        killed: true,
+        signal: 'SIGINT',
+        cmd: 'mock cmd'
+      })
+    )
+
+    try {
+      await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    } catch (err) {
+      console.log(err)
+    }
+    expect(console.printHistory()).toMatchSnapshot()
+    expect(gitStashSave).toHaveBeenCalledTimes(1)
+    expect(updateStash).toHaveBeenCalledTimes(0)
+    expect(gitStashPop).toHaveBeenCalledTimes(1)
+  })
+
   it('should reject promise when staged-git-files errors', async () => {
     expect.assertions(1)
     sgfMock.mockImplementationOnce((params, callback) => {
