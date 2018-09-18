@@ -87,7 +87,7 @@ describe('generateTasks', () => {
   })
 
   it('should not match non-children files', () => {
-    const relPath = path.resolve(path.join(process.cwd(), '..'))
+    const relPath = path.join(process.cwd(), '..')
     resolveGitDir.mockReturnValueOnce(relPath)
     const result = generateTasks(Object.assign({}, config), files)
     const linter = result.find(item => item.pattern === '*.js')
@@ -220,6 +220,33 @@ describe('generateTasks', () => {
       pattern,
       commands,
       fileList: [`${workDir}/cool/js.js`].map(path.normalize)
+    })
+  })
+
+  it('should not filter files for pattern which begins with `..`', () => {
+    jest.spyOn(process, 'cwd').mockReturnValueOnce(path.join(workDir, 'prj'))
+    const result = generateTasks(
+      {
+        linters: {
+          '*.js': 'my-cmd',
+          '../outside/*.js': 'my-cmd'
+        }
+      },
+      ['root.js', 'prj/test.js', 'outside/test.js', 'outside/test2.js']
+    )
+
+    const prjTask = result.find(item => item.pattern === '*.js')
+    expect(prjTask).toEqual({
+      pattern: '*.js',
+      commands: 'my-cmd',
+      fileList: [`${workDir}/prj/test.js`].map(path.normalize)
+    })
+
+    const parentFolderTask = result.find(item => item.pattern === '../outside/*.js')
+    expect(parentFolderTask).toEqual({
+      pattern: '../outside/*.js',
+      commands: 'my-cmd',
+      fileList: [`${workDir}/outside/test.js`, `${workDir}/outside/test2.js`].map(path.normalize)
     })
   })
 })
