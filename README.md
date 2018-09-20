@@ -133,15 +133,10 @@ To extend and customise lint-staged, advanced options are available. To use thes
 {
   "lint-staged": {
     "linters": {
-      "*.{js,scss}": [
-        "some command",
-        "git add"
-      ]
+      "*.{js,scss}": ["some command", "git add"]
     },
-    "ignore": [
-      "**/dist/*.min.js"
-    ]
-  },
+    "ignore": ["**/dist/*.min.js"]
+  }
 }
 ```
 
@@ -346,3 +341,16 @@ If you wish to use `lint-staged` in a multi package monorepo, it is recommended 
 [`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
 
 Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+
+### Can I lint files outside of the current project folder?
+
+tl;dr: Yes, but the pattern should start with `../`.
+
+By default, `lint-staged` executes linters only on the files present inside the project folder(where `lint-staged` is installed and run from).
+So this question is relevant _only_ when the project folder is a child folder inside the git repo.
+In certain project setups, it might be desirable to bypass this restriction. See [#425](https://github.com/okonet/lint-staged/issues/425), [#487](https://github.com/okonet/lint-staged/issues/487) for more context.
+
+`lint-staged` provides an escape hatch for the same(`>= v7.3.0`). For patterns that start with `../`, all the staged files are allowed to match against the pattern.
+Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
+
+Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).
