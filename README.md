@@ -28,9 +28,11 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ```diff json
 {
-  "scripts": {
-+   "precommit": "lint-staged"
-  },
++ "husky": {
++   "hooks": {  
++     "pre-commit": "lint-staged"
++   }
++ },
 + "lint-staged": {
 +   "*.js": ["eslint --fix", "git add"]
 + }
@@ -49,12 +51,6 @@ This is how it looks in action:
 See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
-
-> **NOTE:**
->
-> If you're using commitizen and having following npm-script `{ commit: git-cz }`, `precommit` hook will run twice before commitizen cli and after the commit. [This buggy behaviour is introduced by husky](https://github.com/okonet/lint-staged/issues/152#issuecomment-306046520).
->
-> To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
 
 ## Changelog
 
@@ -221,8 +217,12 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-    "my-custom-script": "linter --arg1 --arg2",
-    "precommit": "lint-staged"
+    "my-custom-script": "linter --arg1 --arg2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {}
 }
