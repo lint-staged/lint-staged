@@ -15,6 +15,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 * [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 * [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
 * [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
+* [SurviveJS Interview](https://survivejs.com/blog/lint-staged-interview/)
 
 > If you've written one, please submit a PR with the link to it!
 
