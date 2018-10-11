@@ -1,5 +1,3 @@
-'use strict'
-
 const hasPartiallyStagedFiles = jest.fn().mockImplementation(() => Promise.resolve(false))
 const gitStashSave = jest.fn().mockImplementation(() => Promise.resolve(null))
 const gitStashPop = jest.fn().mockImplementation(() => Promise.resolve(null))
