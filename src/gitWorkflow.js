@@ -2,6 +2,7 @@
 
 const path = require('path')
 const execa = require('execa')
+const gStatus = require('g-status')
 const fsp = require('fs-promise')
 const debug = require('debug')('lint-staged:git')
 
@@ -54,14 +55,9 @@ async function getDiffForTrees(tree1, tree2, options) {
   )
 }
 
-async function getFilesStatus(options) {
-  const files = await execGit(['status', '--porcelain'], options)
-  return files ? files.split('\n').filter(Boolean) : []
-}
-
 async function hasPartiallyStagedFiles(options) {
-  const files = await getFilesStatus(options)
-  const partiallyStaged = files.filter(file => file.startsWith('MM'))
+  const files = await gStatus(options)
+  const partiallyStaged = files.filter(file => file.index !== ' ' && file.workingTree !== ' ')
   return partiallyStaged.length > 0
 }
 
@@ -183,6 +179,5 @@ module.exports = {
   gitStashSave: gitStash,
   gitStashPop: gitPop,
   hasPartiallyStagedFiles,
-  getFilesStatus,
   updateStash
 }

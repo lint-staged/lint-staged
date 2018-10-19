@@ -34,6 +34,7 @@
     "execa": "^1.0.0",
     "find-parent-dir": "^0.3.0",
     "fs-promise": "^2.0.3",
+    "g-status": "^2.0.2",
     "is-glob": "^4.0.0",
     "is-windows": "^1.0.2",
     "jest-validate": "^23.5.0",

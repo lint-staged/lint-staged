@@ -71,26 +71,6 @@ describe('git', () => {
     wcDir.removeCallback()
   })
 
-  describe('getFilesStatus', () => {
-    it('should return empty array if no changed files', async () => {
-      await gitflow.execGit(['checkout', '.'], gitOpts)
-      const res = await gitflow.getFilesStatus(gitOpts)
-      expect(res).toMatchSnapshot()
-    })
-
-    it('should return an empty array for only modified files', async () => {
-      const res = await gitflow.getFilesStatus(gitOpts)
-      expect(res).toMatchSnapshot()
-    })
-
-    it('should return an array of partially staged files', async () => {
-      await gitflow.execGit(['add', '.'], gitOpts)
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), '')
-      const res = await gitflow.getFilesStatus(gitOpts)
-      expect(res).toMatchSnapshot()
-    })
-  })
-
   describe('hasPartiallyStagedFiles', () => {
     it('should return false if files are not staged', async () => {
       const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
