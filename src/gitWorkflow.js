@@ -14,19 +14,11 @@ function getAbsolutePath(dir) {
   return path.isAbsolute(dir) ? dir : path.resolve(dir)
 }
 
-function getCmdArgs(gitDir) {
-  if (gitDir) {
-    return ['--git-dir', getAbsolutePath(gitDir)]
-  }
-  return []
-}
-
 async function execGit(cmd, options) {
   const cwd = options && options.cwd ? options.cwd : process.cwd()
-  const gitDir = options && options.gitDir
   debug('Running git command', cmd)
   try {
-    const { stdout } = await execa('git', getCmdArgs(gitDir).concat(cmd), {
+    const { stdout } = await execa('git', [].concat(cmd), {
       cwd: getAbsolutePath(cwd)
     })
     return stdout
@@ -174,7 +166,6 @@ async function gitPop(options) {
 }
 
 module.exports = {
-  getCmdArgs,
   execGit,
   gitStashSave: gitStash,
   gitStashPop: gitPop,

@@ -32,8 +32,7 @@ describe('git', () => {
     wcDir = tmp.dirSync({ unsafeCleanup: true })
     wcDirPath = wcDir.name
     gitOpts = {
-      cwd: wcDirPath,
-      gitDir: path.join(wcDirPath, '.git')
+      cwd: wcDirPath
     }
 
     // Init repository
