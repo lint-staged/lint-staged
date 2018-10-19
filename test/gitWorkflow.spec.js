@@ -27,10 +27,6 @@ describe('gitWorkflow', () => {
   })
 
   describe('execGit', () => {
-    beforeEach(() => {
-      // execa.mockReset()
-    })
-
     it('should execute git in cwd if working copy is not specified', async () => {
       await gitflow.execGit(['init', 'param'])
       expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
@@ -66,11 +62,6 @@ describe('gitWorkflow', () => {
         ['--git-dir', path.resolve(process.cwd(), '..'), 'init', 'param'],
         { cwd: path.resolve(process.cwd(), 'test', '__fixtures__') }
       )
-    })
-
-    it('should return result from stdout', async () => {
-      const res = await gitflow.execGit(['branch', '--list'])
-      expect(res).toMatchSnapshot()
     })
   })
 })
