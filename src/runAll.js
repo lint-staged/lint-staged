@@ -77,7 +77,7 @@ module.exports = function runAll(config) {
                 ctx.hasStash = true
                 return git.gitStashSave()
               }
-              return task.skip('No unstaged files found...')
+              return task.skip('No partially staged files found...')
             }
           },
           {
