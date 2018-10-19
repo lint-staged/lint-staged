@@ -315,6 +315,14 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 </details>
 
+### Typecheck your staged files with flow
+
+```json
+{
+  "*.{js,jsx}": ["flow focus-check", "git add"]
+}
+```
+
 ## Frequently Asked Questions
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
