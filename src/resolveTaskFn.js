@@ -35,10 +35,22 @@ function execLinter(bin, args, execaOptions, pathsToLint) {
 const successMsg = linter => `${symbols.success} ${linter} passed!`
 
 /**
- * Create and returns an error instance with given stdout and stderr. If we set
- * the message on the error instance, it gets logged multiple times(see #142).
+ * Create and returns an error instance with a given message.
+ * If we set the message on the error instance, it gets logged multiple times(see #142).
  * So we set the actual error message in a private field and extract it later,
  * log only once.
+ *
+ * @param {string} message
+ * @returns {Error}
+ */
+function throwError(message) {
+  const err = new Error()
+  err.privateMsg = `\n\n\n${message}`
+  return err
+}
+
+/**
+ * Create a failure message dependding on process result.
  *
  * @param {string} linter
  * @param {Object} result
@@ -54,22 +66,23 @@ function makeErr(linter, result, context = {}) {
   // Indicate that some linter will fail so we don't update the index with formatting changes
   context.hasErrors = true // eslint-disable-line no-param-reassign
   const { stdout, stderr, failed, killed, signal } = result
-  let message = ''
   if (failed) {
-    message = `${symbols.error} ${chalk.redBright(
+    return throwError(dedent`${symbols.error} ${chalk.redBright(
       `${linter} found some errors. Please fix them and try committing again.`
-    )}`
-  }
-  if (killed || (signal && signal !== '')) {
-    message = `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
-  }
-  const err = new Error()
-  err.privateMsg = dedent`
-    \n\n\n${message}
+    )}
     ${stdout}
     ${stderr}
-  `
-  return err
+    `)
+  }
+  if (killed || (signal && signal !== '')) {
+    return throwError(
+      `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
+    )
+  }
+  return throwError(dedent`${symbols.error} ${chalk.redBright('Unexpected error occured')}
+  ${stdout}
+  ${stderr}
+  `)
 }
 
 /**

@@ -12,6 +12,5 @@ exports[`resolveTaskFn should throw error for killed processes 1`] = `
 "
 
 
-‼ mock-killed-linter was terminated with SIGINT
-Mock error"
+‼ mock-killed-linter was terminated with SIGINT"
 `;
