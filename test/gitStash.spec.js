@@ -1,7 +1,8 @@
-import path from 'path'
-import fsp from 'fs-promise'
-import tmp from 'tmp'
-import gitflow from '../src/gitWorkflow'
+const path = require('path')
+const tmp = require('tmp')
+const gitflow = require('../src/gitWorkflow')
+const pify = require('pify')
+const fsp = pify(require('fs'))
 
 jest.dontMock('execa')
 tmp.setGracefulCleanup()

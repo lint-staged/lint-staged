@@ -3,8 +3,9 @@
 const path = require('path')
 const execa = require('execa')
 const gStatus = require('g-status')
-const fsp = require('fs-promise')
+const pify = require('pify')
 const debug = require('debug')('lint-staged:git')
+const fsp = pify(require('fs'))
 
 let workingCopyTree = null
 let indexTree = null
