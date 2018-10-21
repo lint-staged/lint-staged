@@ -60,7 +60,7 @@ function makeErr(linter, result, context = {}) {
       `${linter} found some errors. Please fix them and try committing again.`
     )}`
   }
-  if (killed || signal != null) {
+  if (killed || (signal && signal !== '')) {
     message = `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
   }
   const err = new Error()
