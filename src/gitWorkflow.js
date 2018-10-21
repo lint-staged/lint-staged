@@ -90,7 +90,7 @@ async function updateStash(options) {
   return formattedIndexTree
 }
 
-async function applyPathFor(tree1, tree2, options) {
+async function applyPatchFor(tree1, tree2, options) {
   const patchPath = await generatePatchForTrees(tree1, tree2, options)
   if (patchPath) {
     try {
@@ -150,7 +150,7 @@ async function gitPop(options) {
     debug('Restoring index with formatting changes')
     await execGit(['read-tree', formattedIndexTree], options)
     try {
-      await applyPathFor(indexTree, formattedIndexTree, options)
+      await applyPatchFor(indexTree, formattedIndexTree, options)
     } catch (err) {
       debug(
         'Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
