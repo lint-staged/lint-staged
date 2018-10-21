@@ -8,13 +8,12 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
+  maxPathsToLint: 100,
   renderer: 'verbose'
 }"
 `;
@@ -27,13 +26,12 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
+  maxPathsToLint: 100,
   renderer: 'verbose'
 }"
 `;
@@ -48,13 +46,12 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
+  maxPathsToLint: 100,
   renderer: 'verbose'
 }"
 `;

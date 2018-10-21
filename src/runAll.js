@@ -22,7 +22,7 @@ module.exports = function runAll(config) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 
-  const { concurrent, renderer, chunkSize, subTaskConcurrency } = config
+  const { concurrent, renderer, maxPathsToLint } = config
   const gitDir = resolveGitDir()
   debug('Resolved git directory to be `%s`', gitDir)
 
@@ -35,19 +35,13 @@ module.exports = function runAll(config) {
     const tasks = generateTasks(config, filenames).map(task => ({
       title: `Running tasks for ${task.pattern}`,
       task: () =>
-        new Listr(
-          makeCmdTasks(task.commands, task.fileList, {
-            chunkSize,
-            subTaskConcurrency
-          }),
-          {
-            // In sub-tasks we don't want to run concurrently
-            // and we want to abort on errors
-            dateFormat: false,
-            concurrent: false,
-            exitOnError: true
-          }
-        ),
+        new Listr(makeCmdTasks(task.commands, task.fileList, { maxPathsToLint }), {
+          // In sub-tasks we don't want to run concurrently
+          // and we want to abort on errors
+          dateFormat: false,
+          concurrent: false,
+          exitOnError: true
+        }),
       skip: () => {
         if (task.fileList.length === 0) {
           return `No staged files match ${task.pattern}`

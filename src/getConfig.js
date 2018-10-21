@@ -5,6 +5,7 @@
 const chalk = require('chalk')
 const format = require('stringify-object')
 const intersection = require('lodash/intersection')
+const isWindows = require('is-windows')
 const defaultsDeep = require('lodash/defaultsDeep')
 const isObject = require('lodash/isObject')
 const { validate, logValidationWarning } = require('jest-validate')
@@ -16,18 +17,17 @@ const debug = require('debug')('lint-staged:cfg')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string}}
+ * @type {{concurrent: boolean, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, maxPathsToLint: number, renderer: string}}
  */
 const defaultConfig = {
   concurrent: true,
-  chunkSize: Number.MAX_SAFE_INTEGER,
   globOptions: {
     matchBase: true,
     dot: true
   },
   linters: {},
   ignore: [],
-  subTaskConcurrency: 1,
+  maxPathsToLint: isWindows() ? 40 : 100,
   renderer: 'update'
 }
 
@@ -89,7 +89,7 @@ function unknownValidationReporter(config, example, option, options) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string
+ *  concurrent: boolean, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, maxPathsToLint: number, renderer: string
  * }}
  */
 function getConfig(sourceConfig, debugMode) {

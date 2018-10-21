@@ -131,7 +131,6 @@ describe('getConfig', () => {
   it('should not change config if the whole config was passed', () => {
     const src = {
       concurrent: false,
-      chunkSize: 2,
       globOptions: {
         matchBase: false,
         dot: true
@@ -140,7 +139,7 @@ describe('getConfig', () => {
         '*.js': 'eslint'
       },
       ignore: ['docs/**/*.js'],
-      subTaskConcurrency: 10,
+      maxPathsToLint: 100,
       renderer: 'custom'
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)
@@ -164,7 +163,7 @@ describe('validateConfig', () => {
   it('should throw and should print validation errors for invalid config', () => {
     const invalidAdvancedConfig = {
       foo: false,
-      chunkSize: 'string'
+      maxPathsToLint: 'string'
     }
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })

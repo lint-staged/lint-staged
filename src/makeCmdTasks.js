@@ -11,14 +11,9 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
  * @param {Array<string>|string} commands
  * @param {Array<string>} pathsToLint
  * @param {Object} [options]
- * @param {number} options.chunkSize
- * @param {number} options.subTaskConcurrency
+ * @param {number} options.maxPathsToLint
  */
-module.exports = function makeCmdTasks(
-  commands,
-  pathsToLint,
-  { chunkSize = Number.MAX_SAFE_INTEGER, subTaskConcurrency = 1 } = {}
-) {
+module.exports = function makeCmdTasks(commands, pathsToLint, { maxPathsToLint = 40 } = {}) {
   debug('Creating listr tasks for commands %o', commands)
 
   const gitDir = resolveGitDir()
@@ -30,8 +25,7 @@ module.exports = function makeCmdTasks(
       linter,
       gitDir,
       pathsToLint,
-      chunkSize,
-      subTaskConcurrency
+      maxPathsToLint
     })
   }))
 }

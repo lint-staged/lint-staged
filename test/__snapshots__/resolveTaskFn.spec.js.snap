@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolveTaskFn should fail with a helpful error message if the paths to lint exceeds the limit 1`] = `
+"✖ \\"mock-fail-linter\\" found some errors. Please fix them and try committing again.
+The file pattern specified for mock-fail-linter matched 3 files.
+Attempting to run commands with too many arguments can result in cryptic
+errors on some platforms due to limitations on the total length of the command.
+Therefore, lint-staged will fail the task preemptively.
+
+It is recommended to run the linter on the entire project and commit the changes
+with --no-verify to bypass the pre-commit hook:
+
+\`git commit -m \\"Commit message\\" --no-verify\`
+
+Alternatively, the limit can be increased by specifying \`maxPathsToLint\`
+in the lint-staged config. See https://github.com/okonet/lint-staged#options.
+Number of matched files exceeds limit(2)."
+`;

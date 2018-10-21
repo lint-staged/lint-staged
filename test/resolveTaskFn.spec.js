@@ -1,13 +1,10 @@
 import dedent from 'dedent'
 import execa from 'execa'
+import isWindowsMock from 'is-windows'
 import logSymbols from 'log-symbols'
 import resolveTaskFn from '../src/resolveTaskFn'
 
-const defaultOpts = {
-  pathsToLint: ['test.js'],
-  chunkSize: 999,
-  subTaskConcurrency: 1
-}
+const defaultOpts = { pathsToLint: ['test.js'] }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
@@ -82,6 +79,21 @@ describe('resolveTaskFn', () => {
         } "mock-fail-linter" found some errors. Please fix them and try committing again.
         Mock error
       `)
+    }
+  })
+
+  it('should fail with a helpful error message if the paths to lint exceeds the limit', async () => {
+    expect.assertions(1)
+    isWindowsMock.mockReturnValueOnce(true)
+    const taskFn = resolveTaskFn({
+      linter: 'mock-fail-linter',
+      pathsToLint: ['test1.js', 'test2.js', 'test3.js'],
+      maxPathsToLint: 2
+    })
+    try {
+      await taskFn()
+    } catch (err) {
+      expect(err.privateMsg).toMatchSnapshot()
     }
   })
 })

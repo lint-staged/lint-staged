@@ -1,37 +1,11 @@
 'use strict'
 
-const chunk = require('lodash/chunk')
 const dedent = require('dedent')
-const isWindows = require('is-windows')
 const execa = require('execa')
 const symbols = require('log-symbols')
-const pMap = require('p-map')
-const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 
 const debug = require('debug')('lint-staged:task')
-
-/**
- * Execute the given linter binary with arguments and file paths using execa and
- * return the promise.
- *
- * @param {string} bin
- * @param {Array<string>} args
- * @param {Object} execaOptions
- * @param {Array<string>} pathsToLint
- * @return {Promise}
- */
-function execLinter(bin, args, execaOptions, pathsToLint) {
-  const binArgs = args.concat(pathsToLint)
-
-  debug('bin:', bin)
-  debug('args: %O', binArgs)
-  debug('opts: %o', execaOptions)
-
-  return execa(bin, binArgs, Object.assign({}, execaOptions))
-}
-
-const successMsg = linter => `${symbols.success} ${linter} passed!`
 
 /**
  * Create and returns an error instance with given stdout and stderr. If we set
@@ -62,12 +36,11 @@ function makeErr(linter, errStdout, errStderr) {
  * @param {string} options.linter
  * @param {string} options.gitDir
  * @param {Array<string>} options.pathsToLint
- * @param {number} options.chunkSize
- * @param {number} options.subTaskConcurrency
+ * @param {number} options.maxPathsToLint
  * @returns {function(): Promise<string>}
  */
 module.exports = function resolveTaskFn(options) {
-  const { linter, gitDir, pathsToLint } = options
+  const { linter, gitDir, pathsToLint, maxPathsToLint } = options
   const { bin, args } = findBin(linter)
 
   const execaOptions = { reject: false }
@@ -77,42 +50,41 @@ module.exports = function resolveTaskFn(options) {
     execaOptions.cwd = gitDir
   }
 
-  if (!isWindows()) {
-    debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
+  if (pathsToLint.length > maxPathsToLint) {
     return () =>
-      execLinter(bin, args, execaOptions, pathsToLint).then(result => {
-        if (!result.failed) return successMsg(linter)
+      Promise.reject(
+        makeErr(
+          linter,
+          dedent`The file pattern specified for ${linter} matched ${pathsToLint.length} files.
+            Attempting to run commands with too many arguments can result in cryptic
+            errors on some platforms due to limitations on the total length of the command.
+            Therefore, lint-staged will fail the task preemptively.
 
-        throw makeErr(linter, result.stdout, result.stderr)
-      })
+            It is recommended to run the linter on the entire project and commit the changes
+            with --no-verify to bypass the pre-commit hook:
+
+            \`git commit -m "Commit message" --no-verify\`
+
+            Alternatively, the limit can be increased by specifying \`maxPathsToLint\`
+            in the lint-staged config. See https://github.com/okonet/lint-staged#options.`,
+          `Number of matched files exceeds limit(${maxPathsToLint}).`
+        )
+      )
   }
 
-  const { chunkSize, subTaskConcurrency: concurrency } = options
+  return () => {
+    // Execute the given linter binary with arguments and file paths using execa
+    // and return the promise.
+    const binArgs = args.concat(pathsToLint)
 
-  const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
-  const mapper = execLinter.bind(null, bin, args, execaOptions)
+    debug('bin:', bin)
+    debug('args: %O', binArgs)
+    debug('opts: %o', execaOptions)
 
-  debug(
-    'OS: %s; Creating linter task with %d chunked file paths',
-    process.platform,
-    filePathChunks.length
-  )
-  return () =>
-    pMap(filePathChunks, mapper, { concurrency })
-      .catch(err => {
-        /* This will probably never be called. But just in case.. */
-        throw new Error(dedent`
-        ${symbols.error} ${linter} got an unexpected error.
-        ${err.message}
-      `)
-      })
-      .then(results => {
-        const errors = results.filter(res => res.failed)
-        if (errors.length === 0) return successMsg(linter)
+    return execa(bin, binArgs, execaOptions).then(result => {
+      if (!result.failed) return `${symbols.success} ${linter} passed!`
 
-        const errStdout = errors.map(err => err.stdout).join('')
-        const errStderr = errors.map(err => err.stderr).join('')
-
-        throw makeErr(linter, errStdout, errStderr)
-      })
+      throw makeErr(linter, result.stdout, result.stderr)
+    })
+  }
 }

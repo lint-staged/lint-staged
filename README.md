@@ -30,7 +30,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 ```diff json
 {
 + "husky": {
-+   "hooks": {  
++   "hooks": {
 +     "pre-commit": "lint-staged"
 +   }
 + },
@@ -142,12 +142,11 @@ Notice that the linting commands now are nested into the `linters` object. The f
 #### Options
 
 * `concurrent` — _true_ — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
-* `chunkSize` — Max allowed chunk size based on number of files for glob pattern. This option is only applicable on Windows based systems to avoid command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147)
 * `globOptions` — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to
   customize how glob patterns match files.
 * `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. This option is only applicable on Windows. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
+* `maxPathsToLint` — Windows: `40`, other: `100` — Maxinum number of matched files to pass to a linter. This limit is used to side step command length limitations. See [#147](https://github.com/okonet/lint-staged/issues/147), [#500](https://github.com/okonet/lint-staged/issues/500) for more context.
 
 ## Filtering files
 
