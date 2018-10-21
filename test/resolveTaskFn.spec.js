@@ -1,20 +1,6 @@
 import execa from 'execa'
 import resolveTaskFn from '../src/resolveTaskFn'
 
-jest.mock('execa', () =>
-  jest.fn(() =>
-    Promise.resolve({
-      stdout: 'a-ok',
-      stderr: '',
-      code: 0,
-      failed: false,
-      killed: false,
-      signal: null,
-      cmd: 'mock cmd'
-    })
-  )
-)
-
 const defaultOpts = {
   pathsToLint: ['test.js'],
   chunkSize: 999,

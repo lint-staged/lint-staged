@@ -5,7 +5,6 @@ import tmp from 'tmp'
 import execa from 'execa'
 import gitflow from '../src/gitWorkflow'
 
-jest.mock('execa', () => jest.fn().mockImplementation(() => ({ stdout: 'output' })))
 tmp.setGracefulCleanup()
 
 describe('gitWorkflow', () => {

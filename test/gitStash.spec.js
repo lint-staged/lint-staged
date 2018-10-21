@@ -1,10 +1,11 @@
+jest.dontMock('execa') // Must be before all requires to work
+
 const path = require('path')
 const tmp = require('tmp')
 const gitflow = require('../src/gitWorkflow')
 const pify = require('pify')
 const fsp = pify(require('fs'))
 
-jest.dontMock('execa')
 tmp.setGracefulCleanup()
 
 let wcDir

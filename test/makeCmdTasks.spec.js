@@ -1,18 +1,6 @@
 import execa from 'execa'
 import makeCmdTasks from '../src/makeCmdTasks'
 
-jest.mock('execa', () =>
-  jest.fn(() =>
-    Promise.resolve({
-      stdout: 'a-ok',
-      stderr: '',
-      code: 0,
-      failed: false,
-      cmd: 'mock cmd'
-    })
-  )
-)
-
 describe('makeCmdTasks', () => {
   beforeEach(() => {
     execa.mockClear()

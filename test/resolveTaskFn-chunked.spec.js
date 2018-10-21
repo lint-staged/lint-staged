@@ -5,19 +5,6 @@ import resolveTaskFn from '../src/resolveTaskFn'
 
 jest.mock('is-windows', () => jest.fn(() => true))
 jest.mock('p-map')
-jest.mock('execa', () =>
-  jest.fn(() =>
-    Promise.resolve({
-      stdout: 'a-ok',
-      stderr: '',
-      code: 0,
-      failed: false,
-      killed: false,
-      signal: null,
-      cmd: 'mock cmd'
-    })
-  )
-)
 
 const defaultOpts = {
   linter: 'test',

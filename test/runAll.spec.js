@@ -6,18 +6,6 @@ import runAll from '../src/runAll'
 import { hasPartiallyStagedFiles, gitStashSave, gitStashPop, updateStash } from '../src/gitWorkflow'
 
 jest.mock('staged-git-files')
-jest.mock('execa', () =>
-  jest.fn(() =>
-    Promise.resolve({
-      stdout: 'a-ok',
-      stderr: '',
-      code: 0,
-      failed: false,
-      cmd: 'mock cmd'
-    })
-  )
-)
-
 jest.mock('../src/gitWorkflow')
 
 sgfMock.mockImplementation((params, callback) => {
