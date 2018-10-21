@@ -24,7 +24,7 @@ async function gitStashList(opts = gitOpts) {
 
 async function readFile(filepath, dir = wcDirPath) {
   const content = await fsp.readFile(path.join(dir, filepath), { encoding: 'utf-8' })
-  return content
+  return content.replace(/\r\n/g, '\n')
 }
 
 describe('git', () => {
