@@ -15,6 +15,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 * [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 * [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
 * [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
+* [SurviveJS Interview](https://survivejs.com/blog/lint-staged-interview/)
 
 > If you've written one, please submit a PR with the link to it!
 
@@ -28,9 +29,11 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ```diff json
 {
-  "scripts": {
-+   "precommit": "lint-staged"
-  },
++ "husky": {
++   "hooks": {  
++     "pre-commit": "lint-staged"
++   }
++ },
 + "lint-staged": {
 +   "*.js": ["eslint --fix", "git add"]
 + }
@@ -49,12 +52,6 @@ This is how it looks in action:
 See [examples](#examples) and [configuration](#configuration) below.
 
 > I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
-
-> **NOTE:**
->
-> If you're using commitizen and having following npm-script `{ commit: git-cz }`, `precommit` hook will run twice before commitizen cli and after the commit. [This buggy behaviour is introduced by husky](https://github.com/okonet/lint-staged/issues/152#issuecomment-306046520).
->
-> To mitigate this rename your `commit` npm script to something non git hook namespace like, for example `{ cz: git-cz }`
 
 ## Changelog
 
@@ -221,8 +218,12 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
   "name": "My project",
   "version": "0.1.0",
   "scripts": {
-    "my-custom-script": "linter --arg1 --arg2",
-    "precommit": "lint-staged"
+    "my-custom-script": "linter --arg1 --arg2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {}
 }
@@ -314,6 +315,14 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 </details>
 
+### Typecheck your staged files with flow
+
+```json
+{
+  "*.{js,jsx}": ["flow focus-check", "git add"]
+}
+```
+
 ## Frequently Asked Questions
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
@@ -341,3 +350,16 @@ If you wish to use `lint-staged` in a multi package monorepo, it is recommended 
 [`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
 
 Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+
+### Can I lint files outside of the current project folder?
+
+tl;dr: Yes, but the pattern should start with `../`.
+
+By default, `lint-staged` executes linters only on the files present inside the project folder(where `lint-staged` is installed and run from).
+So this question is relevant _only_ when the project folder is a child folder inside the git repo.
+In certain project setups, it might be desirable to bypass this restriction. See [#425](https://github.com/okonet/lint-staged/issues/425), [#487](https://github.com/okonet/lint-staged/issues/487) for more context.
+
+`lint-staged` provides an escape hatch for the same(`>= v7.3.0`). For patterns that start with `../`, all the staged files are allowed to match against the pattern.
+Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
+
+Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).

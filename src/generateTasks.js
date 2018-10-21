@@ -8,7 +8,7 @@ const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:gen-tasks')
 
-module.exports = function generateTasks(config, relFiles) {
+module.exports = function generateTasks(config, stagedRelFiles) {
   debug('Generating linter tasks')
 
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
@@ -17,16 +17,18 @@ module.exports = function generateTasks(config, relFiles) {
 
   const gitDir = resolveGitDir()
   const cwd = process.cwd()
-  const files = relFiles.map(file => path.resolve(gitDir, file))
+  const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
 
   return Object.keys(linters).map(pattern => {
+    const isParentDirPattern = pattern.startsWith('../')
     const patterns = [pattern].concat(ignorePatterns)
     const commands = linters[pattern]
 
     const fileList = micromatch(
-      files
-        // Only worry about children of the CWD
-        .filter(file => pathIsInside(file, cwd))
+      stagedFiles
+        // Only worry about children of the CWD unless the pattern explicitly
+        // specifies that it concerns a parent directory.
+        .filter(file => isParentDirPattern || pathIsInside(file, cwd))
         // Make the paths relative to CWD for filtering
         .map(file => path.relative(cwd, file)),
       patterns,

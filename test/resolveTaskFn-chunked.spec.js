@@ -1,7 +1,5 @@
-import dedent from 'dedent'
 import execa from 'execa'
 import isWindows from 'is-windows'
-import logSymbols from 'log-symbols'
 import pMap from 'p-map'
 import resolveTaskFn from '../src/resolveTaskFn'
 
@@ -152,10 +150,7 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.message).toMatch(dedent`
-          ${logSymbols.error} test got an unexpected error.
-          Unexpected Error
-        `)
+        expect(err.message).toMatchSnapshot()
       }
     })
   })

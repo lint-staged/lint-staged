@@ -4,7 +4,7 @@ exports[`resolveTaskFn should throw error for failed linters 1`] = `
 "
 
 
-✖ mock-fail-linter found some errors. Please fix them and try committing again.
+× mock-fail-linter found some errors. Please fix them and try committing again.
 Mock error"
 `;
 
@@ -12,6 +12,6 @@ exports[`resolveTaskFn should throw error for killed processes 1`] = `
 "
 
 
-⚠ mock-killed-linter was terminated with SIGINT
+‼ mock-killed-linter was terminated with SIGINT
 Mock error"
 `;
