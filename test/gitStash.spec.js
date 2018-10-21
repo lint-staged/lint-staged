@@ -10,7 +10,7 @@ tmp.setGracefulCleanup()
 
 let wcDir
 let wcDirPath
-let gitOpts = { cwd: 'test/__fixtures__' }
+let gitOpts
 const initialContent = `module.exports = {
     test: 'test2'
 }
@@ -18,10 +18,6 @@ const initialContent = `module.exports = {
 
 async function gitStatus(opts = gitOpts) {
   return gitflow.execGit(['status', '--porcelain'], opts)
-}
-
-async function gitStashList(opts = gitOpts) {
-  return gitflow.execGit(['stash', 'list'], opts)
 }
 
 async function readFile(filepath, dir = wcDirPath) {
@@ -119,9 +115,6 @@ describe('git', () => {
       await gitflow.gitStashPop(gitOpts)
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('M  test.js')
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should not restore deleted files', async () => {
@@ -141,9 +134,6 @@ describe('git', () => {
       expect(await gitStatus()).toContain(' M test.css')
       expect(await gitStatus()).toContain('D  test.js')
       expect(await gitStatus()).not.toContain('?? test.js')
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should drop hooks fixes when aborted', async () => {
@@ -192,9 +182,6 @@ describe('git', () => {
       expect(await readFile('test.js')).toEqual(initialContent)
       // Expect no modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should drop hooks fixes and revert to user modifications when aborted', async () => {
@@ -248,9 +235,6 @@ describe('git', () => {
       expect(await readFile('test.js')).toEqual(userContent)
       // Expect no modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should add hooks fixes to index when not aborted', async () => {
@@ -299,9 +283,6 @@ describe('git', () => {
       expect(await readFile('test.js')).toEqual(newContent)
       // Expect modifications in index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should add hooks fixes to index and keep user modifications when not aborted', async () => {
@@ -359,9 +340,6 @@ describe('git', () => {
       expect(await readFile('test.js')).toEqual(userContent)
       // Expect formatting changes in the index
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
 
     it('should add hooks fixes to index and working copy on partially staged files', async () => {
@@ -450,9 +428,6 @@ describe('git', () => {
 
   foo: "baz"
 };`)
-
-      // No stashed should left
-      expect(await gitStashList()).toEqual('')
     })
   })
 })
