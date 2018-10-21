@@ -70,14 +70,16 @@ module.exports = function runAll(config) {
         [
           {
             title: 'Stashing changes...',
-            enabled: () => filenames.length > 0,
-            task: async (ctx, task) => {
+            skip: async () => {
               const hasPSF = await git.hasPartiallyStagedFiles()
-              if (hasPSF) {
-                ctx.hasStash = true
-                return git.gitStashSave()
+              if (!hasPSF) {
+                return 'No partially staged files found...'
               }
-              return task.skip('No partially staged files found...')
+              return false
+            },
+            task: ctx => {
+              ctx.hasStash = true
+              return git.gitStashSave()
             }
           },
           {
