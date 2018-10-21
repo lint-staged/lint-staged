@@ -122,7 +122,7 @@ M  test.js"
 `)
     })
 
-    it('should not restore deleted files', async () => {
+    it('should not re-create deleted files as untracked files', async () => {
       // Delete test.js
       await gitflow.execGit(['checkout', 'test.js'], gitOpts)
       await gitflow.execGit(['rm', 'test.js'], gitOpts)
@@ -140,6 +140,50 @@ D  test.js"
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
 D  test.js"
+`)
+    })
+
+    it('should handle renamed files', async () => {
+      // Delete test.js
+      await gitflow.execGit(['checkout', 'test.js'], gitOpts)
+      await gitflow.execGit(['mv', 'test.js', 'test-renamed.js'], gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+"R  test.js -> test-renamed.js
+ M test.css"
+`)
+
+      // Stashing files
+      await gitflow.gitStashSave(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`"R  test.js -> test-renamed.js"`)
+
+      // Restoring state
+      await gitflow.gitStashPop(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+"R  test.js -> test-renamed.js
+ M test.css"
+`)
+    })
+
+    it('should handle rename and reset (both deleted and untracked) files', async () => {
+      // Delete test.js
+      await gitflow.execGit(['checkout', 'test.js'], gitOpts)
+      await gitflow.execGit(['mv', 'test.js', 'test-renamed.js'], gitOpts)
+      await gitflow.execGit(['reset', '.'], gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+ D test.js
+?? test-renamed.js"
+`)
+
+      // Stashing files
+      await gitflow.gitStashSave(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`"?? test-renamed.js"`)
+
+      // Restoring state
+      await gitflow.gitStashPop(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+?? test-renamed.js"
 `)
     })
 
