@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolveTaskFn should throw error for failed linters 1`] = `
+"× \\"mock-fail-linter\\" found some errors. Please fix them and try committing again.
+Mock error"
+`;
