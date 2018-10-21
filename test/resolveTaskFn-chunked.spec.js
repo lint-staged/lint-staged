@@ -100,7 +100,13 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.privateMsg).toMatchSnapshot()
+        expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+× mock-fail-linter found some errors. Please fix them and try committing again.
+Mock error"
+`)
       }
     })
 
@@ -125,7 +131,12 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.privateMsg).toMatchSnapshot()
+        expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+‼ mock-killed-linter was terminated with SIGINT"
+`)
       }
     })
 
@@ -137,7 +148,10 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.message).toMatchSnapshot()
+        expect(err.message).toMatchInlineSnapshot(`
+"× test got an unexpected error.
+Unexpected Error"
+`)
       }
     })
   })
