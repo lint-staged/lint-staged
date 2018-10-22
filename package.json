@@ -1,6 +1,6 @@
 {
   "name": "lint-staged",
-  "version": "8.0.0-beta.2",
+  "version": "8.0.0-beta.3",
   "description": "Lint files staged by git",
   "license": "MIT",
   "repository": "https://github.com/okonet/lint-staged",
