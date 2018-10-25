@@ -25,7 +25,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "async-exit-hook": "^2.0.1",
     "chalk": "^2.3.1",
     "commander": "^2.14.1",
     "cosmiconfig": "^5.0.2",
