@@ -10,7 +10,7 @@
     "Suhas Karanth <sudo.suhas@gmail.com>"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=8.6.0"
   },
   "bin": "index.js",
   "files": ["index.js", "src"],
