@@ -3,6 +3,7 @@
 const path = require('path')
 const execa = require('execa')
 const gStatus = require('g-status')
+const del = require('del')
 const debug = require('debug')('lint-staged:git')
 
 let workingCopyTree = null
@@ -134,6 +135,16 @@ async function gitPop(options) {
       debug(
         'Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
       )
+      /**
+       * Clean up working directory from *.rej files that contain conflicted hanks.
+       * These hunks are coming from formatters so we'll just delete them since they are irrelevant.
+       */
+      try {
+        const rejFiles = await del(['*.rej'], options)
+        debug('Deleted files and folders:\n', rejFiles.join('\n'))
+      } catch (delErr) {
+        debug('Error deleting *.rej files', delErr)
+      }
     }
   }
   // Clean up references

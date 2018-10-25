@@ -403,8 +403,7 @@ MM test.js"
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
-MM test.js
-?? test.js.rej"
+MM test.js"
 `)
       // and content is back to user modifications
       expect(await readFile('test.js')).toEqual(userContent)
@@ -484,10 +483,7 @@ MM test.js
       await gitflow.gitStashPop(gitOpts)
 
       // Expect stashed files to be back
-      expect(await gitStatus()).toMatchInlineSnapshot(`
-"MM test.js
-?? test.js.rej"
-`)
+      expect(await gitStatus()).toMatchInlineSnapshot(`"MM test.js"`)
       // and all lint-staged modifications to be gone
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
       expect(await readFile('test.js')).toEqual(`module.exports = {
