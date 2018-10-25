@@ -79,7 +79,14 @@ async function updateStash(options) {
 }
 
 async function applyPatchFor(tree1, tree2, options) {
-  const patch = await getDiffForTrees(tree1, tree2, options)
+  const diff = await getDiffForTrees(tree1, tree2, options)
+  /**
+   * This is crucial for patch to work
+   * For some reason, git-apply requires that the patch ends with the newline symbol
+   * See http://git.661346.n2.nabble.com/Bug-in-Git-Gui-Creates-corrupt-patch-td2384251.html
+   * and https://stackoverflow.com/questions/13223868/how-to-stage-line-by-line-in-git-gui-although-no-newline-at-end-of-file-warnin
+   */
+  const patch = `${diff}\n` // This should also work on Windows
   if (patch) {
     try {
       /**
