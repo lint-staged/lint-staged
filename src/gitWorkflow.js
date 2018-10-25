@@ -3,9 +3,7 @@
 const path = require('path')
 const execa = require('execa')
 const gStatus = require('g-status')
-const pify = require('pify')
 const debug = require('debug')('lint-staged:git')
-const fsp = pify(require('fs'))
 
 let workingCopyTree = null
 let indexTree = null
@@ -20,6 +18,7 @@ async function execGit(cmd, options) {
   debug('Running git command', cmd)
   try {
     const { stdout } = await execa('git', [].concat(cmd), {
+      ...options,
       cwd: getAbsolutePath(cwd)
     })
     return stdout
@@ -33,6 +32,7 @@ async function writeTree(options) {
 }
 
 async function getDiffForTrees(tree1, tree2, options) {
+  debug(`Generating diff between trees ${tree1} and ${tree2}...`)
   return execGit(
     [
       'diff-tree',
@@ -52,20 +52,6 @@ async function hasPartiallyStagedFiles(options) {
   const files = await gStatus(options)
   const partiallyStaged = files.filter(file => file.index !== ' ' && file.workingTree !== ' ')
   return partiallyStaged.length > 0
-}
-
-async function generatePatchForTrees(tree1, tree2, options) {
-  // TODO: Use stdin instead of the file for patches
-  const cwd = options && options.cwd ? options.cwd : process.cwd()
-  const patch = await getDiffForTrees(tree1, tree2, options)
-  if (patch.length) {
-    const filePath = path.join(cwd, '.lint-staged.patch')
-    debug(`Stashing unstaged files to ${filePath}...`)
-    await fsp.writeFile(filePath, `${patch}\n`) // The new line is somehow required for patch to not be corrupted
-    return filePath // Resolve with filePath
-  }
-  debug('Nothing to do...')
-  return null
 }
 
 // eslint-disable-next-line
@@ -92,8 +78,8 @@ async function updateStash(options) {
 }
 
 async function applyPatchFor(tree1, tree2, options) {
-  const patchPath = await generatePatchForTrees(tree1, tree2, options)
-  if (patchPath) {
+  const patch = await getDiffForTrees(tree1, tree2, options)
+  if (patch) {
     try {
       /**
        * Apply patch to index. We will apply it with --reject so it it will try apply hunk by hunk
@@ -101,26 +87,18 @@ async function applyPatchFor(tree1, tree2, options) {
        * and we prioritize user changes over formatter's
        */
       await execGit(
-        [
-          'apply',
-          '-v',
-          '--whitespace=nowarn',
-          '--reject',
-          '--recount',
-          '--unidiff-zero',
-          patchPath
-        ],
-        options
+        ['apply', '-v', '--whitespace=nowarn', '--reject', '--recount', '--unidiff-zero'],
+        {
+          ...options,
+          input: patch
+        }
       )
     } catch (err) {
       debug('Could not apply patch to the stashed files cleanly')
       debug(err)
       debug('Patch content:')
-      debug(await fsp.readFile(patchPath, { encoding: 'utf-8' }))
+      debug(patch)
       throw new Error('Could not apply patch to the stashed files cleanly.', err)
-    } finally {
-      // Delete patch file
-      await fsp.unlink(patchPath)
     }
   }
 }
