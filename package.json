@@ -13,7 +13,10 @@
     "node": ">=6"
   },
   "bin": "index.js",
-  "files": ["index.js", "src"],
+  "files": [
+    "index.js",
+    "src"
+  ],
   "scripts": {
     "precommit": "node index.js",
     "cz": "git-cz",
@@ -22,7 +25,8 @@
     "lint:fix": "npm run lint --fix",
     "pretest": "npm run lint",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "opencollective-postinstall"
   },
   "dependencies": {
     "chalk": "^2.3.1",
@@ -40,13 +44,15 @@
     "log-symbols": "^2.2.0",
     "micromatch": "^3.1.8",
     "npm-which": "^3.0.1",
+    "opencollective-postinstall": "^2.0.1",
     "p-map": "^1.1.1",
     "path-is-inside": "^1.0.2",
     "pify": "^3.0.0",
     "please-upgrade-node": "^3.0.2",
     "staged-git-files": "1.1.1",
     "string-argv": "^0.0.2",
-    "stringify-object": "^3.2.2"
+    "stringify-object": "^3.2.2",
+    "opencollective": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -71,7 +77,9 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["./testSetup.js"]
+    "setupFiles": [
+      "./testSetup.js"
+    ]
   },
   "keywords": [
     "lint",
@@ -85,5 +93,9 @@
     "check",
     "format",
     "validate"
-  ]
+  ],
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/lint-staged"
+  }
 }
