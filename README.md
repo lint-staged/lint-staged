@@ -1,4 +1,4 @@
-# 🚫💩 lint-staged [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+# 🚫💩 lint-staged [![Backers on Open Collective](https://opencollective.com/lint-staged/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/lint-staged/sponsors/badge.svg)](#sponsors) [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -363,3 +363,33 @@ In certain project setups, it might be desirable to bypass this restriction. See
 Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
 
 Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).
+
+## Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/undefined/undefinedgraphs/contributors"><img src="https://opencollective.com/lint-staged/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/lint-staged#backer)]
+
+<a href="https://opencollective.com/lint-staged#backers" target="_blank"><img src="https://opencollective.com/lint-staged/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/lint-staged#sponsor)]
+
+<a href="https://opencollective.com/lint-staged/sponsor/0/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/1/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/2/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/3/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/4/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/5/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/6/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/7/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/8/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/lint-staged/sponsor/9/website" target="_blank"><img src="https://opencollective.com/lint-staged/sponsor/9/avatar.svg"></a>
+
+
