@@ -58,7 +58,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^4.18.1",
     "eslint-config-okonet": "^5.0.1",
-    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-node": "^8.0.0",
     "husky": "^0.14.3",
     "jest": "^23.6.0",
     "jsonlint": "^1.6.2",
