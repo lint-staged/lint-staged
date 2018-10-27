@@ -1,5 +1,6 @@
 jest.dontMock('execa') // Must be before all requires to work
 
+const execa = require('execa')
 const path = require('path')
 const tmp = require('tmp')
 const gitflow = require('../src/gitWorkflow')
@@ -83,6 +84,12 @@ describe('git', () => {
     it('should return false if changes are already in the index', async () => {
       await gitflow.execGit(['checkout', 'test.css'], gitOpts)
       await gitflow.execGit(['add', 'test.js'], gitOpts)
+      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
+      expect(res).toEqual(false)
+    })
+
+    it('should return false if there are untracked files', async () => {
+      await execa('touch', ['untracked.file'], gitOpts)
       const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
       expect(res).toEqual(false)
     })
