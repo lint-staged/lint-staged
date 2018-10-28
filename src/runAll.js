@@ -85,13 +85,11 @@ module.exports = function runAll(config) {
           {
             title: 'Running linters...',
             task: () =>
-              new Listr(
-                tasks,
-                Object.assign({}, listrBaseOptions, {
-                  concurrent,
-                  exitOnError: !concurrent // Wait for all errors when running concurrently
-                })
-              )
+              new Listr(tasks, {
+                ...listrBaseOptions,
+                concurrent,
+                exitOnError: !concurrent // Wait for all errors when running concurrently
+              })
           },
           {
             title: 'Updating stash...',
