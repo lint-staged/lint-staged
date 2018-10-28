@@ -92,7 +92,8 @@ async function applyPatchFor(tree1, tree2, options) {
    * See http://git.661346.n2.nabble.com/Bug-in-Git-Gui-Creates-corrupt-patch-td2384251.html
    * and https://stackoverflow.com/questions/13223868/how-to-stage-line-by-line-in-git-gui-although-no-newline-at-end-of-file-warnin
    */
-  const patch = `${diff}\n` // This should also work on Windows
+  // TODO: Figure out how to test this. For some reason tests were working but in the real env it was failing
+  const patch = `${diff}\n` // TODO: This should also work on Windows but test would be good
   if (patch) {
     try {
       /**
