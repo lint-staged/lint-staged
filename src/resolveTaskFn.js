@@ -65,21 +65,15 @@ function throwError(message) {
 function makeErr(linter, result, context = {}) {
   // Indicate that some linter will fail so we don't update the index with formatting changes
   context.hasErrors = true // eslint-disable-line no-param-reassign
-  const { stdout, stderr, failed, killed, signal } = result
-  if (failed) {
-    return throwError(dedent`${symbols.error} ${chalk.redBright(
-      `${linter} found some errors. Please fix them and try committing again.`
-    )}
-    ${stdout}
-    ${stderr}
-    `)
-  }
+  const { stdout, stderr, killed, signal } = result
   if (killed || (signal && signal !== '')) {
     return throwError(
       `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
     )
   }
-  return throwError(dedent`${symbols.error} ${chalk.redBright('Unexpected error occured')}
+  return throwError(dedent`${symbols.error} ${chalk.redBright(
+    `${linter} found some errors. Please fix them and try committing again.`
+  )}
   ${stdout}
   ${stderr}
   `)
