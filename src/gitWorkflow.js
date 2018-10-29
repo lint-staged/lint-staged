@@ -62,7 +62,7 @@ async function hasPartiallyStagedFiles(options) {
 }
 
 // eslint-disable-next-line
-async function gitStash(options) {
+async function gitStashSave(options) {
   debug('Stashing files...')
   // Save ref to the current index
   indexTree = await writeTree(options)
@@ -118,7 +118,7 @@ async function applyPatchFor(tree1, tree2, options) {
   }
 }
 
-async function gitPop(options) {
+async function gitStashPop(options) {
   if (workingCopyTree === null) {
     throw new Error('Trying to restore from stash but could not find working copy stash.')
   }
@@ -171,8 +171,8 @@ async function gitPop(options) {
 
 module.exports = {
   execGit,
-  gitStashSave: gitStash,
-  gitStashPop: gitPop,
+  gitStashSave,
+  gitStashPop,
   hasPartiallyStagedFiles,
   updateStash
 }
