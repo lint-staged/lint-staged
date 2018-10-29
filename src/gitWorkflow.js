@@ -51,7 +51,8 @@ async function getDiffForTrees(tree1, tree2, options) {
 }
 
 async function hasPartiallyStagedFiles(options) {
-  const files = await gStatus(options)
+  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
+  const files = await gStatus({ cwd })
   const partiallyStaged = files.filter(
     file =>
       file.index !== ' ' &&
