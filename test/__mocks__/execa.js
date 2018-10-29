@@ -3,7 +3,9 @@ module.exports = jest.fn(() =>
     stdout: 'a-ok',
     stderr: '',
     code: 0,
+    cmd: 'mock cmd',
     failed: false,
-    cmd: 'mock cmd'
+    killed: false,
+    signal: null
   })
 )

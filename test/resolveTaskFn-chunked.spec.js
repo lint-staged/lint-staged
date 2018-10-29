@@ -1,7 +1,5 @@
-import dedent from 'dedent'
 import execa from 'execa'
 import isWindows from 'is-windows'
-import logSymbols from 'log-symbols'
 import pMap from 'p-map'
 import resolveTaskFn from '../src/resolveTaskFn'
 
@@ -89,6 +87,8 @@ describe('resolveTaskFn', () => {
           stderr: '',
           code: 0,
           failed: true,
+          killed: false,
+          signal: null,
           cmd: 'mock cmd'
         }
       ])
@@ -100,12 +100,43 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.privateMsg).toMatch(dedent`
-          ${
-            logSymbols.error
-          } "mock-fail-linter" found some errors. Please fix them and try committing again.
-          Mock error
-        `)
+        expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+× mock-fail-linter found some errors. Please fix them and try committing again.
+Mock error"
+`)
+      }
+    })
+
+    it('should throw error for killed processes', async () => {
+      expect.assertions(1)
+      pMap.mockResolvedValueOnce([
+        {
+          stdout: 'Mock error',
+          stderr: '',
+          code: 0,
+          failed: false,
+          killed: false,
+          signal: 'SIGINT',
+          cmd: 'mock cmd'
+        }
+      ])
+
+      const taskFn = resolveTaskFn({
+        ...defaultOpts,
+        linter: 'mock-killed-linter'
+      })
+      try {
+        await taskFn()
+      } catch (err) {
+        expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+‼ mock-killed-linter was terminated with SIGINT"
+`)
       }
     })
 
@@ -117,10 +148,10 @@ describe('resolveTaskFn', () => {
       try {
         await taskFn()
       } catch (err) {
-        expect(err.message).toMatch(dedent`
-          ${logSymbols.error} test got an unexpected error.
-          Unexpected Error
-        `)
+        expect(err.message).toMatchInlineSnapshot(`
+"× test got an unexpected error.
+Unexpected Error"
+`)
       }
     })
   })
