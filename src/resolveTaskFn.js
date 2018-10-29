@@ -4,6 +4,7 @@ const chunk = require('lodash/chunk')
 const dedent = require('dedent')
 const isWindows = require('is-windows')
 const execa = require('execa')
+const chalk = require('chalk')
 const symbols = require('log-symbols')
 const pMap = require('p-map')
 const calcChunkSize = require('./calcChunkSize')
@@ -19,7 +20,7 @@ const debug = require('debug')('lint-staged:task')
  * @param {Array<string>} args
  * @param {Object} execaOptions
  * @param {Array<string>} pathsToLint
- * @return {Promise}
+ * @return {Promise} child_process
  */
 function execLinter(bin, args, execaOptions, pathsToLint) {
   const binArgs = args.concat(pathsToLint)
@@ -34,24 +35,48 @@ function execLinter(bin, args, execaOptions, pathsToLint) {
 const successMsg = linter => `${symbols.success} ${linter} passed!`
 
 /**
- * Create and returns an error instance with given stdout and stderr. If we set
- * the message on the error instance, it gets logged multiple times(see #142).
+ * Create and returns an error instance with a given message.
+ * If we set the message on the error instance, it gets logged multiple times(see #142).
  * So we set the actual error message in a private field and extract it later,
  * log only once.
  *
- * @param {string} linter
- * @param {string} errStdout
- * @param {string} errStderr
+ * @param {string} message
  * @returns {Error}
  */
-function makeErr(linter, errStdout, errStderr) {
+function throwError(message) {
   const err = new Error()
-  err.privateMsg = dedent`
-    ${symbols.error} "${linter}" found some errors. Please fix them and try committing again.
-    ${errStdout}
-    ${errStderr}
-  `
+  err.privateMsg = `\n\n\n${message}`
   return err
+}
+
+/**
+ * Create a failure message dependding on process result.
+ *
+ * @param {string} linter
+ * @param {Object} result
+ * @param {string} result.stdout
+ * @param {string} result.stderr
+ * @param {boolean} result.failed
+ * @param {boolean} result.killed
+ * @param {string} result.signal
+ * @param {Object} context (see https://github.com/SamVerschueren/listr#context)
+ * @returns {Error}
+ */
+function makeErr(linter, result, context = {}) {
+  // Indicate that some linter will fail so we don't update the index with formatting changes
+  context.hasErrors = true // eslint-disable-line no-param-reassign
+  const { stdout, stderr, killed, signal } = result
+  if (killed || (signal && signal !== '')) {
+    return throwError(
+      `${symbols.warning} ${chalk.yellow(`${linter} was terminated with ${signal}`)}`
+    )
+  }
+  return throwError(dedent`${symbols.error} ${chalk.redBright(
+    `${linter} found some errors. Please fix them and try committing again.`
+  )}
+  ${stdout}
+  ${stderr}
+  `)
 }
 
 /**
@@ -79,11 +104,13 @@ module.exports = function resolveTaskFn(options) {
 
   if (!isWindows()) {
     debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
-    return () =>
+    return ctx =>
       execLinter(bin, args, execaOptions, pathsToLint).then(result => {
-        if (!result.failed) return successMsg(linter)
+        if (result.failed || result.killed || result.signal != null) {
+          throw makeErr(linter, result, ctx)
+        }
 
-        throw makeErr(linter, result.stdout, result.stderr)
+        return successMsg(linter)
       })
   }
 
@@ -97,7 +124,7 @@ module.exports = function resolveTaskFn(options) {
     process.platform,
     filePathChunks.length
   )
-  return () =>
+  return ctx =>
     pMap(filePathChunks, mapper, { concurrency })
       .catch(err => {
         /* This will probably never be called. But just in case.. */
@@ -107,12 +134,23 @@ module.exports = function resolveTaskFn(options) {
       `)
       })
       .then(results => {
-        const errors = results.filter(res => res.failed)
-        if (errors.length === 0) return successMsg(linter)
+        const errors = results.filter(res => res.failed || res.killed)
+        const failed = results.some(res => res.failed)
+        const killed = results.some(res => res.killed)
+        const signals = results.map(res => res.signal).filter(Boolean)
 
-        const errStdout = errors.map(err => err.stdout).join('')
-        const errStderr = errors.map(err => err.stderr).join('')
+        if (failed || killed || signals.length > 0) {
+          const finalResult = {
+            stdout: errors.map(err => err.stdout).join(''),
+            stderr: errors.map(err => err.stderr).join(''),
+            failed,
+            killed,
+            signal: signals.join(', ')
+          }
 
-        throw makeErr(linter, errStdout, errStderr)
+          throw makeErr(linter, finalResult, ctx)
+        }
+
+        return successMsg(linter)
       })
 }

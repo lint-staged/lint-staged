@@ -66,7 +66,7 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
         debug('Normalized config:\n%O', config)
       }
 
-      runAll(config)
+      return runAll(config)
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0

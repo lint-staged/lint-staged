@@ -7,6 +7,7 @@ const pify = require('pify')
 const makeCmdTasks = require('./makeCmdTasks')
 const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
+const git = require('./gitWorkflow')
 
 const debug = require('debug')('lint-staged:run')
 
@@ -56,13 +57,55 @@ module.exports = function runAll(config) {
       }
     }))
 
+    const listrBaseOptions = {
+      dateFormat: false,
+      renderer
+    }
+
     if (tasks.length) {
-      return new Listr(tasks, {
-        dateFormat: false,
-        concurrent,
-        renderer,
-        exitOnError: !concurrent // Wait for all errors when running concurrently
-      }).run()
+      // Do not terminate main Listr process on SIGINT
+      process.on('SIGINT', () => {})
+
+      return new Listr(
+        [
+          {
+            title: 'Stashing changes...',
+            skip: async () => {
+              const hasPSF = await git.hasPartiallyStagedFiles()
+              if (!hasPSF) {
+                return 'No partially staged files found...'
+              }
+              return false
+            },
+            task: ctx => {
+              ctx.hasStash = true
+              return git.gitStashSave()
+            }
+          },
+          {
+            title: 'Running linters...',
+            task: () =>
+              new Listr(tasks, {
+                ...listrBaseOptions,
+                concurrent,
+                exitOnError: !concurrent // Wait for all errors when running concurrently
+              })
+          },
+          {
+            title: 'Updating stash...',
+            enabled: ctx => ctx.hasStash,
+            skip: ctx =>
+              ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
+            task: () => git.updateStash()
+          },
+          {
+            title: 'Restoring local changes...',
+            enabled: ctx => ctx.hasStash,
+            task: () => git.gitStashPop()
+          }
+        ],
+        listrBaseOptions
+      ).run()
     }
     return 'No tasks to run.'
   })
