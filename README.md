@@ -199,7 +199,7 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
 
 ## Reformatting the code
 
-Tools like ESLint/TSLint or stylefmt can reformat your code according to an appropriate config by running `eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylefmt can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
@@ -207,7 +207,7 @@ Tools like ESLint/TSLint or stylefmt can reformat your code according to an appr
 }
 ```
 
-~~Starting from v3.1, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards. This allows you to create partial commits with hunks using `git add --patch`.~~ This is still [not resolved](https://github.com/okonet/lint-staged/issues/62)
+Starting from v8, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards if there are partially staged files detected. This allows you to create partial commits with hunks using `git add --patch`. See the [blog post](https://medium.com/@okonetchnikov/announcing-lint-staged-with-support-for-partially-staged-files-abc24a40d3ff)
 
 ## Examples
 
