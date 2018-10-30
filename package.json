@@ -9,9 +9,6 @@
     "Lufty Wiranda <lufty.wiranda@gmail.com>",
     "Suhas Karanth <sudo.suhas@gmail.com>"
   ],
-  "engines": {
-    "node": ">=8.6.0"
-  },
   "bin": "index.js",
   "files": ["index.js", "src"],
   "scripts": {
