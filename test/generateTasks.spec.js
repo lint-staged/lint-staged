@@ -89,7 +89,7 @@ describe('generateTasks', () => {
   it('should not match non-children files', () => {
     const relPath = path.join(process.cwd(), '..')
     resolveGitDir.mockReturnValueOnce(relPath)
-    const result = generateTasks(Object.assign({}, config), files)
+    const result = generateTasks({ ...config }, files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',

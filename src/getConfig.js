@@ -121,12 +121,13 @@ const optRmMsg = (opt, helpMsg) => `  Option ${chalk.bold(opt)} was removed.
  */
 function validateConfig(config) {
   debug('Validating config')
-  const exampleConfig = Object.assign({}, defaultConfig, {
+  const exampleConfig = {
+    ...defaultConfig,
     linters: {
       '*.js': ['eslint --fix', 'git add'],
       '*.css': 'stylelint'
     }
-  })
+  }
 
   const deprecatedConfig = {
     gitDir: () => optRmMsg('gitDir', "lint-staged now automatically resolves '.git' directory."),

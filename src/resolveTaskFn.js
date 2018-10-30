@@ -29,7 +29,7 @@ function execLinter(bin, args, execaOptions, pathsToLint) {
   debug('args: %O', binArgs)
   debug('opts: %o', execaOptions)
 
-  return execa(bin, binArgs, Object.assign({}, execaOptions))
+  return execa(bin, binArgs, { ...execaOptions })
 }
 
 const successMsg = linter => `${symbols.success} ${linter} passed!`
