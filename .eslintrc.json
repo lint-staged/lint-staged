@@ -21,6 +21,7 @@
         }
       }
     ],
-    "prettier/prettier": "off"
+    "prettier/prettier": "off",
+    "node/no-unsupported-features": ["error", "8.6.0"]
   }
 }
