@@ -74,7 +74,64 @@ describe('resolveTaskFn', () => {
     try {
       await taskFn()
     } catch (err) {
-      expect(err.privateMsg).toMatchSnapshot()
+      expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+× mock-fail-linter found some errors. Please fix them and try committing again.
+Mock error"
+`)
+    }
+  })
+
+  it('should throw error for killed processes', async () => {
+    expect.assertions(1)
+    execa.mockResolvedValueOnce({
+      stdout: 'Mock error',
+      stderr: '',
+      code: 0,
+      failed: false,
+      killed: false,
+      signal: 'SIGINT',
+      cmd: 'mock cmd'
+    })
+
+    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-killed-linter' })
+    try {
+      await taskFn()
+    } catch (err) {
+      expect(err.privateMsg).toMatchInlineSnapshot(`
+"
+
+
+‼ mock-killed-linter was terminated with SIGINT"
+`)
+    }
+  })
+
+  it('should not set hasErrors on context if no error occur', async () => {
+    expect.assertions(1)
+    const context = {}
+    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'jest', gitDir: '../' })
+    await taskFn(context)
+    expect(context.hasErrors).toBeUndefined()
+  })
+
+  it('should set hasErrors on context to true on error', async () => {
+    expect.assertions(1)
+    execa.mockResolvedValueOnce({
+      stdout: 'Mock error',
+      stderr: '',
+      code: 0,
+      failed: true,
+      cmd: 'mock cmd'
+    })
+    const context = {}
+    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-fail-linter' })
+    try {
+      await taskFn(context)
+    } catch (err) {
+      expect(context.hasErrors).toEqual(true)
     }
   })
 })
