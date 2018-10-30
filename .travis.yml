@@ -4,9 +4,10 @@
 
 language: node_js
 node_js:
+  - 'node'
   - '10'
-  - '9'
   - '8'
+  - '6'
 
 before_install: yarn global add greenkeeper-lockfile@1
 install: yarn install
