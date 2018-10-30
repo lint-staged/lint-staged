@@ -5,6 +5,7 @@ const execa = require('execa')
 const gStatus = require('g-status')
 const del = require('del')
 const debug = require('debug')('lint-staged:git')
+const resolveGitDir = require('./resolveGitDir')
 
 let workingCopyTree = null
 let indexTree = null
@@ -15,7 +16,7 @@ function getAbsolutePath(dir) {
 }
 
 async function execGit(cmd, options) {
-  const cwd = options && options.cwd ? options.cwd : process.cwd()
+  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
   debug('Running git command', cmd)
   try {
     const { stdout } = await execa('git', [].concat(cmd), {
@@ -50,7 +51,8 @@ async function getDiffForTrees(tree1, tree2, options) {
 }
 
 async function hasPartiallyStagedFiles(options) {
-  const files = await gStatus(options)
+  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
+  const files = await gStatus({ cwd })
   const partiallyStaged = files.filter(
     file =>
       file.index !== ' ' &&

@@ -207,7 +207,7 @@ Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylefmt can refor
 }
 ```
 
-Starting from v8, lint-staged will stash you remaining changes (not added to the index) and restore them from stash afterwards if there are partially staged files detected. This allows you to create partial commits with hunks using `git add --patch`. See the [blog post](https://medium.com/@okonetchnikov/announcing-lint-staged-with-support-for-partially-staged-files-abc24a40d3ff)
+Starting from v8, lint-staged will stash your remaining changes (not added to the index) and restore them from stash afterwards if there are partially staged files detected. This allows you to create partial commits with hunks using `git add --patch`. See the [blog post](https://medium.com/@okonetchnikov/announcing-lint-staged-with-support-for-partially-staged-files-abc24a40d3ff)
 
 ## Examples
 
