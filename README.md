@@ -1,4 +1,4 @@
-# 🚫💩 lint-staged [![Backers on Open Collective](https://opencollective.com/lint-staged/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/lint-staged/sponsors/badge.svg)](#sponsors) [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+# 🚫💩 lint-staged [![Build Status for Linux](https://travis-ci.org/okonet/lint-staged.svg?branch=master)](https://travis-ci.org/okonet/lint-staged) [![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/okonet/lint-staged?branch=master&svg=true)](https://ci.appveyor.com/project/okonet/lint-staged) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)[![Backers on Open Collective](https://opencollective.com/lint-staged/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/lint-staged/sponsors/badge.svg)](#sponsors) 
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -367,7 +367,7 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 ## Contributors
 
 This project exists thanks to all the people who contribute. 
-<a href="https://github.com/undefined/undefinedgraphs/contributors"><img src="https://opencollective.com/lint-staged/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/okonet/lint-staged/contributors"><img src="https://opencollective.com/lint-staged/contributors.svg?width=890&button=false" /></a>
 
 
 ## Backers
