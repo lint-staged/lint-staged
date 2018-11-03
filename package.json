@@ -51,8 +51,7 @@
     "please-upgrade-node": "^3.0.2",
     "staged-git-files": "1.1.1",
     "string-argv": "^0.0.2",
-    "stringify-object": "^3.2.2",
-    "opencollective": "^1.0.3"
+    "stringify-object": "^3.2.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
