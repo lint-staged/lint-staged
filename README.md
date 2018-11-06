@@ -148,6 +148,7 @@ Notice that the linting commands now are nested into the `linters` object. The f
 * `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. This option is only applicable on Windows. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
+* `relative` — `false` — if `true` it will give the relative path from your `package.json` directory to your linter arguments.
 
 ## Filtering files
 
@@ -278,6 +279,17 @@ The following is equivalent:
 ```json
 {
   "*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
+}
+```
+
+### Use ng lint with angular cli >= 7.0.0
+
+```json
+{
+  "linters": {
+    "*.ts": "ng lint myProjectName --files"
+  },
+  "relative": true
 }
 ```
 
