@@ -137,7 +137,7 @@ To extend and customise lint-staged, advanced options are available. To use thes
 }
 ```
 
-Notice that the linting commands now are nested into the `linters` object. The following options are available for advance configuration:
+Notice that the linting commands now are nested into the `linters` object. The following options are available for advanced configuration:
 
 #### Options
 
