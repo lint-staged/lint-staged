@@ -140,7 +140,7 @@ D  test.js"
 
       // Stashing files
       await gitflow.gitStashSave(gitOpts)
-      expect(await gitStatus()).toMatchInlineSnapshot(`"D  test.js"`)
+      expect(await gitStatus()).toMatchInlineSnapshot(`""`)
 
       // Restoring state
       await gitflow.gitStashPop(gitOpts)
