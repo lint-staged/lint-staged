@@ -22,6 +22,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@iamstarkov/listr-update-renderer": "0.4.1",
     "chalk": "^2.3.1",
     "commander": "^2.14.1",
     "cosmiconfig": "^5.0.2",
@@ -35,8 +36,6 @@
     "is-windows": "^1.0.2",
     "jest-validate": "^23.5.0",
     "listr": "^0.14.2",
-    "listr-update-renderer":
-      "https://github.com/okonet/listr-update-renderer/tarball/upgrade-log-update",
     "lodash": "^4.17.5",
     "log-symbols": "^2.2.0",
     "micromatch": "^3.1.8",
