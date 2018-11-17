@@ -12,7 +12,6 @@
   "bin": "index.js",
   "files": ["index.js", "src"],
   "scripts": {
-    "precommit": "node index.js",
     "cz": "git-cz",
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
     "lint": "npm run lint:base -- .",
@@ -20,6 +19,11 @@
     "pretest": "npm run lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "node index.js"
+    }
   },
   "dependencies": {
     "@iamstarkov/listr-update-renderer": "0.4.1",
@@ -59,7 +63,7 @@
     "eslint": "^4.18.1",
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^6.0.0",
-    "husky": "^0.14.3",
+    "husky": "^1.1.4",
     "jest": "^23.6.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "jsonlint": "^1.6.2",
