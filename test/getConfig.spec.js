@@ -141,7 +141,8 @@ describe('getConfig', () => {
       },
       ignore: ['docs/**/*.js'],
       subTaskConcurrency: 10,
-      renderer: 'custom'
+      renderer: 'custom',
+      relative: true
     }
     expect(getConfig(cloneDeep(src))).toEqual(src)
   })

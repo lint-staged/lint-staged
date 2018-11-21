@@ -28,7 +28,8 @@ const defaultConfig = {
   linters: {},
   ignore: [],
   subTaskConcurrency: 1,
-  renderer: 'update'
+  renderer: 'update',
+  relative: false
 }
 
 /**

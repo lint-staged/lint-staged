@@ -15,7 +15,8 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  renderer: 'verbose'
+  renderer: 'verbose',
+  relative: false
 }"
 `;
 
@@ -34,7 +35,8 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  renderer: 'verbose'
+  renderer: 'verbose',
+  relative: false
 }"
 `;
 
@@ -55,7 +57,8 @@ LOG {
   },
   ignore: [],
   subTaskConcurrency: 1,
-  renderer: 'verbose'
+  renderer: 'verbose',
+  relative: false
 }"
 `;
 
