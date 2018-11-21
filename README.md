@@ -199,7 +199,7 @@ Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0)
 
 ## Reformatting the code
 
-Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylefmt can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`/`stylelint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
 
 ```json
 {
@@ -267,17 +267,23 @@ The following is equivalent:
 }
 ```
 
-### Automatically fix code style with `prettier` for javascript + flow or typescript
+### Automatically fix code style with `prettier` for javascript + flow, typescript, markdown or html
 
 ```json
 {
-  "*.{js,jsx}": ["prettier --parser flow --write", "git add"]
+  "*.{js,jsx}": ["prettier --write", "git add"]
 }
 ```
 
 ```json
 {
-  "*.{ts,tsx}": ["prettier --parser typescript --write", "git add"]
+  "*.{ts,tsx}": ["prettier --write", "git add"]
+}
+```
+
+```json
+{
+  "*.{md,html}": ["prettier --write", "git add"]
 }
 ```
 
