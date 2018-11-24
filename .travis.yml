@@ -21,7 +21,7 @@ after_script: greenkeeper-lockfile-upload
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - yarn global add travis-deploy-once@4
-  - travis-deploy-once "yarn global add semantic-release@12 && semantic-release"
+  - travis-deploy-once "yarn global add semantic-release@15 && semantic-release"
 
 notifications:
   email: false
