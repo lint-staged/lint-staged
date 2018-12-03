@@ -7,7 +7,7 @@ jest.unmock('execa')
 // eslint-disable-next-line import/first
 import getStagedFiles from '../src/getStagedFiles'
 // eslint-disable-next-line import/first
-import lintStaged from '../src/index'
+import { lintStaged } from '../src/index'
 
 jest.mock('../src/getStagedFiles')
 
