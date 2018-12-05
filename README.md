@@ -345,6 +345,8 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
+_**Update**_: The latest version of JetBrains IDEs now support running hooks as you would expect.
+
 When using the IDE's GUI to commit changes with the `precommit` hook, you might see inconsistencies in the IDE and command line. This is [known issue](https://youtrack.jetbrains.com/issue/IDEA-135454) at JetBrains so if you want this fixed, please vote for it on YouTrack.
 
 Until the issue is resolved in the IDE, you can use the following config to work around it:
