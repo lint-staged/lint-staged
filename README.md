@@ -248,7 +248,7 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 }
 ```
 
-This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
+This will run `eslint --fix` and automatically add changes to the commit.
 
 ### Reuse npm script
 
