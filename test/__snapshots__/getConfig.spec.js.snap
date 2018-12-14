@@ -4,6 +4,7 @@ exports[`getConfig should return config with defaults 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
+  "fileFlag": "",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -20,6 +21,7 @@ exports[`getConfig should return config with defaults for undefined 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
+  "fileFlag": "",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,
@@ -36,6 +38,7 @@ exports[`getConfig should set linters 1`] = `
 Object {
   "chunkSize": 9007199254740991,
   "concurrent": true,
+  "fileFlag": "",
   "globOptions": Object {
     "dot": true,
     "matchBase": true,

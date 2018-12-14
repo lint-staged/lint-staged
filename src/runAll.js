@@ -23,7 +23,7 @@ module.exports = function runAll(config) {
     throw new Error('Invalid config provided to runAll! Use getConfig instead.')
   }
 
-  const { concurrent, renderer, chunkSize, subTaskConcurrency } = config
+  const { concurrent, renderer, chunkSize, subTaskConcurrency, fileFlag } = config
   const gitDir = resolveGitDir()
   debug('Resolved git directory to be `%s`', gitDir)
 
@@ -39,7 +39,8 @@ module.exports = function runAll(config) {
         new Listr(
           makeCmdTasks(task.commands, task.fileList, {
             chunkSize,
-            subTaskConcurrency
+            subTaskConcurrency,
+            fileFlag
           }),
           {
             // In sub-tasks we don't want to run concurrently

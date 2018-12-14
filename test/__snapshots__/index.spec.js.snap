@@ -16,7 +16,8 @@ LOG {
   ignore: [],
   subTaskConcurrency: 1,
   renderer: 'verbose',
-  relative: false
+  relative: false,
+  fileFlag: ''
 }"
 `;
 
@@ -36,7 +37,8 @@ LOG {
   ignore: [],
   subTaskConcurrency: 1,
   renderer: 'verbose',
-  relative: false
+  relative: false,
+  fileFlag: ''
 }"
 `;
 
@@ -58,7 +60,8 @@ LOG {
   ignore: [],
   subTaskConcurrency: 1,
   renderer: 'verbose',
-  relative: false
+  relative: false,
+  fileFlag: ''
 }"
 `;
 

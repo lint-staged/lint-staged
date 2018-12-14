@@ -23,7 +23,14 @@ const debug = require('debug')('lint-staged:task')
  * @return {Promise} child_process
  */
 function execLinter(bin, args, execaOptions, pathsToLint) {
-  const binArgs = args.concat(pathsToLint)
+  let argsForLint = pathsToLint
+  if (execaOptions.fileFlag) {
+    argsForLint = pathsToLint.reduce(
+      (pathsArgs, currentPath) => [...pathsArgs, execaOptions.fileFlag, currentPath],
+      []
+    )
+  }
+  const binArgs = args.concat(argsForLint)
 
   debug('bin:', bin)
   debug('args: %O', binArgs)
@@ -89,13 +96,14 @@ function makeErr(linter, result, context = {}) {
  * @param {Array<string>} options.pathsToLint
  * @param {number} options.chunkSize
  * @param {number} options.subTaskConcurrency
+ * @param {string} options.fileFlag
  * @returns {function(): Promise<string>}
  */
 module.exports = function resolveTaskFn(options) {
   const { linter, gitDir, pathsToLint } = options
   const { bin, args } = findBin(linter)
 
-  const execaOptions = { reject: false }
+  const execaOptions = { reject: false, fileFlag: options.fileFlag }
   // Only use gitDir as CWD if we are using the git binary
   // e.g `npm` should run tasks in the actual CWD
   if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {

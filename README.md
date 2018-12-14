@@ -149,6 +149,7 @@ Notice that the linting commands now are nested into the `linters` object. The f
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. This option is only applicable on Windows. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
 * `relative` — `false` — if `true` it will give the relative path from your `package.json` directory to your linter arguments.
+* `fileFlag` — _empty_ — if `--files` it will give the flag `--files` for each files passed to your command line.
 
 ## Filtering files
 
@@ -293,9 +294,10 @@ The following is equivalent:
 ```json
 {
   "linters": {
-    "*.ts": "ng lint myProjectName --files"
+    "*.ts": "ng lint myProjectName"
   },
-  "relative": true
+  "relative": true,
+  "fileFlag": "--files"
 }
 ```
 

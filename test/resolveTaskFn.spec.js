@@ -60,6 +60,25 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('jest', ['test.js'], { reject: false })
   })
 
+  it('should use right file flag', async () => {
+    expect.assertions(2)
+    const opts = {
+      ...defaultOpts,
+      fileFlag: '--files',
+      linter: 'ng lint',
+      gitDir: '../'
+    }
+    opts.pathsToLint.push('test2.js')
+    const taskFn = resolveTaskFn(opts)
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('ng', ['lint', '--files', 'test.js', '--files', 'test2.js'], {
+      fileFlag: '--files',
+      reject: false
+    })
+  })
+
   it('should throw error for failed linters', async () => {
     expect.assertions(1)
     execa.mockResolvedValueOnce({
