@@ -1,5 +1,3 @@
-jest.dontMock('execa') // Must be before all requires to work
-
 const execa = require('execa')
 const path = require('path')
 const tmp = require('tmp')
@@ -8,6 +6,7 @@ const pify = require('pify')
 const fsp = pify(require('fs'))
 
 tmp.setGracefulCleanup()
+jest.unmock('execa')
 
 let wcDir
 let wcDirPath
