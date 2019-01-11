@@ -8,15 +8,15 @@ const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:gen-tasks')
 
-module.exports = function generateTasks(config, stagedRelFiles) {
+module.exports = async function generateTasks(config, stagedRelFiles) {
   debug('Generating linter tasks')
 
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
   const { linters, globOptions } = normalizedConfig
   const ignorePatterns = normalizedConfig.ignore.map(pattern => `!${pattern}`)
 
-  const gitDir = resolveGitDir()
   const cwd = process.cwd()
+  const gitDir = await resolveGitDir()
   const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
 
   return Object.keys(linters).map(pattern => {

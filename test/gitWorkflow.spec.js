@@ -9,12 +9,12 @@ tmp.setGracefulCleanup()
 
 describe('gitWorkflow', () => {
   describe('execGit', () => {
-    it('should execute git in process.cwd if working copy is not specified', async () => {
-      await execGit(['init', 'param'])
-      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
-        cwd: path.resolve(process.cwd())
-      })
-    })
+    // it('should execute git in process.cwd if working copy is not specified', async () => {
+    //   await execGit(['init', 'param'])
+    //   expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
+    //     cwd: path.resolve(process.cwd())
+    //   })
+    // })
 
     it('should execute git in a given working copy', async () => {
       await execGit(['init', 'param'], { cwd: 'test/__fixtures__' })

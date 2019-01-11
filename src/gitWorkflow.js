@@ -16,7 +16,7 @@ function getAbsolutePath(dir) {
 }
 
 async function execGit(cmd, options) {
-  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
+  const cwd = options && options.cwd ? options.cwd : await resolveGitDir()
   debug('Running git command', cmd)
   try {
     const { stdout } = await execa('git', [].concat(cmd), {
@@ -51,7 +51,7 @@ async function getDiffForTrees(tree1, tree2, options) {
 }
 
 async function hasPartiallyStagedFiles(options) {
-  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
+  const cwd = options && options.cwd ? options.cwd : await resolveGitDir()
   const files = await gStatus({ cwd })
   const partiallyStaged = files.filter(
     file =>

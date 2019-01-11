@@ -16,7 +16,7 @@ const debug = require('debug')('lint-staged:run')
  * @param config {Object}
  * @returns {Promise}
  */
-module.exports = function runAll(config) {
+module.exports = async function runAll(config) {
   debug('Running all linter scripts')
   // Config validation
   if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
@@ -24,20 +24,21 @@ module.exports = function runAll(config) {
   }
 
   const { concurrent, renderer, chunkSize, subTaskConcurrency } = config
-  const gitDir = resolveGitDir()
+  const gitDir = await resolveGitDir()
   debug('Resolved git directory to be `%s`', gitDir)
 
   sgf.cwd = gitDir
-  return pify(sgf)('ACM').then(files => {
+  return async function() {
+    const files = await pify(sgf)('ACM')
     /* files is an Object{ filename: String, status: String } */
     const filenames = files.map(file => file.filename)
     debug('Loaded list of staged files in git:\n%O', filenames)
 
-    const tasks = generateTasks(config, filenames).map(task => ({
+    const tasks = (await generateTasks(config, filenames)).map(task => ({
       title: `Running tasks for ${task.pattern}`,
-      task: () =>
+      task: async () =>
         new Listr(
-          makeCmdTasks(task.commands, task.fileList, {
+          await makeCmdTasks(task.commands, task.fileList, {
             chunkSize,
             subTaskConcurrency
           }),
@@ -108,5 +109,5 @@ module.exports = function runAll(config) {
       ).run()
     }
     return 'No tasks to run.'
-  })
+  }
 }

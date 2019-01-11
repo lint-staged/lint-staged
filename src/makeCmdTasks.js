@@ -14,14 +14,14 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
  * @param {number} options.chunkSize
  * @param {number} options.subTaskConcurrency
  */
-module.exports = function makeCmdTasks(
+module.exports = async function makeCmdTasks(
   commands,
   pathsToLint,
   { chunkSize = Number.MAX_SAFE_INTEGER, subTaskConcurrency = 1 } = {}
 ) {
   debug('Creating listr tasks for commands %o', commands)
 
-  const gitDir = resolveGitDir()
+  const gitDir = await resolveGitDir()
   const lintersArray = Array.isArray(commands) ? commands : [commands]
 
   return lintersArray.map(linter => ({

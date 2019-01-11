@@ -1,7 +1,9 @@
 'use strict'
 
-const findParentDir = require('find-parent-dir')
+const execa = require('execa')
 
-module.exports = function resolveGitDir() {
-  return findParentDir.sync(process.cwd(), '.git')
+async function resolveGitDir() {
+  return (await execa('git', ['rev-parse', '--show-toplevel'])).stdout
 }
+
+module.exports = resolveGitDir
