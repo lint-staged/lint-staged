@@ -268,6 +268,18 @@ The following is equivalent:
 }
 ```
 
+### Use environment variables with linting commands
+
+Linting commands _do not_ support the shell convention of expanding environment variables. To enable the convention yourself, use a tool like [`cross-env`](https://github.com/kentcdodds/cross-env).
+
+For example, here is `jest` running on all `.js` files with the `NODE_ENV` variable being set to `"test"`:
+
+```json
+{
+  "*.js": ["cross-env NODE_ENV=test jest --bail --findRelatedTests"]
+}
+```
+
 ### Automatically fix code style with `prettier` for javascript + flow, typescript, markdown or html
 
 ```json
