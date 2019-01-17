@@ -363,11 +363,13 @@ When using the IDE's GUI to commit changes with the `precommit` hook, you might 
 
 Until the issue is resolved in the IDE, you can use the following config to work around it:
 
-```js
+```json
 {
-  "scripts": {
-    "precommit": "lint-staged",
-    "postcommit": "git update-index --again"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again"
+    }
   }
 }
 ```
