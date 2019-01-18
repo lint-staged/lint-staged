@@ -86,6 +86,21 @@ describe('generateTasks', () => {
     })
   })
 
+  it('should return relative paths', () => {
+    const [task] = generateTasks(
+      {
+        linters: {
+          '*': 'lint'
+        },
+        relative: true
+      },
+      files
+    )
+    task.fileList.forEach(file => {
+      expect(path.isAbsolute(file)).toBe(false)
+    })
+  })
+
   it('should not match non-children files', () => {
     const relPath = path.join(process.cwd(), '..')
     resolveGitDir.mockReturnValueOnce(relPath)
@@ -126,6 +141,22 @@ describe('generateTasks', () => {
     })
   })
 
+  it('should match pattern "*.js" and return relative path', () => {
+    const result = generateTasks(Object.assign({}, config, { relative: true }), files)
+    const linter = result.find(item => item.pattern === '*.js')
+    expect(linter).toEqual({
+      pattern: '*.js',
+      commands: 'root-js',
+      fileList: [
+        `test.js`,
+        `deeper/test.js`,
+        `deeper/test2.js`,
+        `even/deeper/test.js`,
+        `.hidden/test.js`
+      ].map(path.normalize)
+    })
+  })
+
   it('should match pattern "**/*.js"', () => {
     const result = generateTasks(config, files)
     const linter = result.find(item => item.pattern === '**/*.js')
@@ -138,6 +169,22 @@ describe('generateTasks', () => {
         `${workDir}/deeper/test2.js`,
         `${workDir}/even/deeper/test.js`,
         `${workDir}/.hidden/test.js`
+      ].map(path.normalize)
+    })
+  })
+
+  it('should match pattern "**/*.js" with relative path', () => {
+    const result = generateTasks(Object.assign({}, config, { relative: true }), files)
+    const linter = result.find(item => item.pattern === '**/*.js')
+    expect(linter).toEqual({
+      pattern: '**/*.js',
+      commands: 'any-js',
+      fileList: [
+        `test.js`,
+        `deeper/test.js`,
+        `deeper/test2.js`,
+        `even/deeper/test.js`,
+        `.hidden/test.js`
       ].map(path.normalize)
     })
   })

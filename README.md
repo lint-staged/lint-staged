@@ -137,7 +137,7 @@ To extend and customise lint-staged, advanced options are available. To use thes
 }
 ```
 
-Notice that the linting commands now are nested into the `linters` object. The following options are available for advance configuration:
+Notice that the linting commands now are nested into the `linters` object. The following options are available for advanced configuration:
 
 #### Options
 
@@ -148,6 +148,7 @@ Notice that the linting commands now are nested into the `linters` object. The f
 * `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `subTaskConcurrency` — `1` — Controls concurrency for processing chunks generated for each linter. This option is only applicable on Windows. Execution is **not** concurrent by default(see [#225](https://github.com/okonet/lint-staged/issues/225))
+* `relative` — `false` — if `true` it will give the relative path from your `package.json` directory to your linter arguments.
 
 ## Filtering files
 
@@ -247,7 +248,7 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 }
 ```
 
-This will run `eslint --fix` and automatically add changes to the commit. Please note, that it doesn’t work well with committing hunks (`git add -p`).
+This will run `eslint --fix` and automatically add changes to the commit.
 
 ### Reuse npm script
 
@@ -264,6 +265,18 @@ The following is equivalent:
 ```json
 {
   "*.js": ["linter --arg1 --arg2", "git add"]
+}
+```
+
+### Use environment variables with linting commands
+
+Linting commands _do not_ support the shell convention of expanding environment variables. To enable the convention yourself, use a tool like [`cross-env`](https://github.com/kentcdodds/cross-env).
+
+For example, here is `jest` running on all `.js` files with the `NODE_ENV` variable being set to `"test"`:
+
+```json
+{
+  "*.js": ["cross-env NODE_ENV=test jest --bail --findRelatedTests"]
 }
 ```
 
@@ -284,6 +297,17 @@ The following is equivalent:
 ```json
 {
   "*.{md,html}": ["prettier --write", "git add"]
+}
+```
+
+### Use ng lint with angular cli >= 7.0.0
+
+```json
+{
+  "linters": {
+    "*.ts": "ng lint myProjectName --files"
+  },
+  "relative": true
 }
 ```
 
@@ -332,6 +356,8 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 ## Frequently Asked Questions
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
+
+_**Update**_: The latest version of JetBrains IDEs now support running hooks as you would expect.
 
 When using the IDE's GUI to commit changes with the `precommit` hook, you might see inconsistencies in the IDE and command line. This is [known issue](https://youtrack.jetbrains.com/issue/IDEA-135454) at JetBrains so if you want this fixed, please vote for it on YouTrack.
 
