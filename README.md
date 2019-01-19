@@ -363,6 +363,7 @@ When using the IDE's GUI to commit changes with the `precommit` hook, you might 
 
 Until the issue is resolved in the IDE, you can use the following config to work around it:
 
+husky v1.x
 ```json
 {
   "husky": {
@@ -373,6 +374,17 @@ Until the issue is resolved in the IDE, you can use the following config to work
   }
 }
 ```
+
+husky v0.x
+```json
+{
+  "scripts": {
+     "precommit": "lint-staged",
+     "postcommit": "git update-index --again"
+  }
+}
+```
+
 
 _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!_
 
