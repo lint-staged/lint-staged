@@ -100,15 +100,11 @@ Please refer to https://github.com/okonet/lint-staged#configuration for more inf
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
 "● Validation Error:
 
-  Option \\"chunkSize\\" must be of type:
-    number
-  but instead received:
-    string
+  Invalid value for 'chunkSize'.
 
-  Example:
-  {
-    \\"chunkSize\\": 9007199254740991
-  }
+  Should be a number.
+ 
+  Configured value is: 'string'
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
