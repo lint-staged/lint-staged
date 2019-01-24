@@ -54,7 +54,8 @@ module.exports = function runAll(config) {
           return `No staged files match ${task.pattern}`
         }
         return false
-      }
+      },
+      hasStagedFiles: () => task.fileList.length > 0
     }))
 
     const listrBaseOptions = {
@@ -62,7 +63,12 @@ module.exports = function runAll(config) {
       renderer
     }
 
-    if (tasks.length) {
+    let hasStagedTaskFiles = false
+    tasks.forEach(task => {
+      hasStagedTaskFiles = hasStagedTaskFiles || task.hasStagedFiles()
+    })
+
+    if (hasStagedTaskFiles) {
       // Do not terminate main Listr process on SIGINT
       process.on('SIGINT', () => {})
 

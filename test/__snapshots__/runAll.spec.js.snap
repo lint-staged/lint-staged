@@ -83,6 +83,8 @@ LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]"
 `;
 
+exports[`runAll should skip stashing changes if no lint-staged files are changed 1`] = `""`;
+
 exports[`runAll should skip updating stash if there are errors during linting 1`] = `
 "
 LOG Stashing changes... [started]
