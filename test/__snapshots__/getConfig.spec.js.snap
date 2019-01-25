@@ -56,6 +56,8 @@ Object {
 
 exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `""`;
 
+exports[`validateConfig should not throw and should print nothing for custom renderer 1`] = `""`;
+
 exports[`validateConfig should not throw and should print nothing for simple valid config 1`] = `""`;
 
 exports[`validateConfig should not throw and should print validation warnings for mixed config 1`] = `
@@ -100,11 +102,19 @@ Please refer to https://github.com/okonet/lint-staged#configuration for more inf
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
 "● Validation Error:
 
-  Invalid value for 'chunkSize'.
+  chunkSize must be a \`number\` type, but the final value was: \`\\"string\\"\`.
 
-  Should be a number.
+Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+`;
+
+exports[`validateConfig should throw and should print validation errors for invalid linter config 1`] = `
+"● Validation Error:
+
+  Invalid value for 'linters[*.js]'.
+
+  Should be a string or an array of strings.
  
-  Configured value is: 'string'
+  Configured value is: '*.js'
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;

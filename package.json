@@ -49,7 +49,8 @@
     "please-upgrade-node": "^3.0.2",
     "staged-git-files": "1.1.2",
     "string-argv": "^0.0.2",
-    "stringify-object": "^3.2.2"
+    "stringify-object": "^3.2.2",
+    "yup": "^0.26.10"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

@@ -7,12 +7,11 @@ const format = require('stringify-object')
 const intersection = require('lodash/intersection')
 const defaultsDeep = require('lodash/defaultsDeep')
 const isArray = require('lodash/isArray')
-const isBoolean = require('lodash/isBoolean')
 const isFunction = require('lodash/isFunction')
-const isInteger = require('lodash/isNumber')
 const isObject = require('lodash/isObject')
 const isString = require('lodash/isString')
 const isGlob = require('is-glob')
+const yup = require('yup')
 
 const debug = require('debug')('lint-staged:cfg')
 
@@ -36,6 +35,36 @@ const defaultConfig = {
 }
 
 /**
+ * Configuration schema to validate configuration
+ */
+const schema = yup.object().shape({
+  concurrent: yup.boolean().default(defaultConfig.concurrent),
+  chunkSize: yup
+    .number()
+    .positive()
+    .default(defaultConfig.chunkSize),
+  globOptions: yup.object().shape({
+    matchBase: yup.boolean().default(defaultConfig.globOptions.matchBase),
+    dot: yup.boolean().default(defaultConfig.globOptions.dot)
+  }),
+  linters: yup.object(),
+  ignore: yup.array().of(yup.string()),
+  subTaskConcurrency: yup
+    .number()
+    .positive()
+    .integer()
+    .default(defaultConfig.subTaskConcurrency),
+  renderer: yup
+    .mixed()
+    .test(
+      'renderer',
+      "Should be 'update', 'verbose' or a function.",
+      value => value === 'update' || value === 'verbose' || isFunction(value)
+    ),
+  relative: yup.boolean().default(defaultConfig.relative)
+})
+
+/**
  * Check if the config is "simple" i.e. doesn't contains any of full config keys
  *
  * @param config
@@ -49,7 +78,8 @@ function isSimple(config) {
   )
 }
 
-const logDeprecation = (opt, helpMsg) => `● Deprecation Warning:
+const logDeprecation = (opt, helpMsg) =>
+  console.warn(`● Deprecation Warning:
 
   Option ${chalk.bold(opt)} was removed.
 
@@ -57,29 +87,33 @@ const logDeprecation = (opt, helpMsg) => `● Deprecation Warning:
 
   Please remove ${chalk.bold(opt)} from your configuration.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...`
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...`)
 
-const logUnknown = (opt, helpMsg, value) => `● Validation Warning:
+const logUnknown = (opt, helpMsg, value) =>
+  console.warn(`● Validation Warning:
 
   Unknown option ${chalk.bold(`"${opt}"`)} with value ${chalk.bold(
-  format(value, { inlineCharacterLimit: Number.POSITIVE_INFINITY })
-)} was found in the config root.
+    format(value, { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+  )} was found in the config root.
+
+  ${helpMsg}
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...`)
+
+const formatError = helpMsg => `● Validation Error:
 
   ${helpMsg}
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information...`
 
-const logError = (opt, helpMsg, value) => `● Validation Error:
-
-  Invalid value for '${chalk.bold(opt)}'.
+const createError = (opt, helpMsg, value) =>
+  formatError(`Invalid value for '${chalk.bold(opt)}'.
 
   ${helpMsg}.
  
   Configured value is: ${chalk.bold(
     format(value, { inlineCharacterLimit: Number.POSITIVE_INFINITY })
-  )}
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...`
+  )}`)
 
 /**
  * Reporter for unknown options
@@ -145,93 +179,42 @@ function getConfig(sourceConfig, debugMode) {
 function validateConfig(config) {
   debug('Validating config')
 
+  const deprecatedConfig = {
+    gitDir: "lint-staged now automatically resolves '.git' directory.",
+    verbose: `Use the command line flag ${chalk.bold('--debug')} instead.`
+  }
+
   const errors = []
-  const warnings = []
 
-  if (!isBoolean(config.concurrent)) {
-    errors.push(logError('concurrent', 'Should be true or false', config.concurrent))
-  }
-
-  if (!isInteger(config.chunkSize)) {
-    errors.push(logError('chunkSize', 'Should be a number', config.chunkSize))
-  }
-
-  if (isObject(config.globOptions)) {
-    if (!isBoolean(config.globOptions.matchBase)) {
-      errors.push(
-        logError('globOptions.matchBase', 'Should be true or false', config.globOptions.matchBase)
-      )
-    }
-
-    if (!isBoolean(config.globOptions.dot)) {
-      errors.push(logError('globOptions.dot', 'Should be true or false', config.globOptions.dot))
-    }
-  } else {
-    errors.push(logError('chunkSize', 'Should be a number', config.chunkSize))
+  try {
+    schema.validateSync(config, { abortEarly: false, strict: true })
+  } catch (error) {
+    error.errors.forEach(message => errors.push(formatError(message)))
   }
 
   if (isObject(config.linters)) {
     Object.keys(config.linters).forEach(key => {
-      if (!isGlob(key)) {
-        errors.push(logError(`linters[${key}]`, 'Key should be a glob pattern', key))
-      }
-
       if (
         (!isArray(config.linters[key]) || config.linters[key].some(item => !isString(item))) &&
         !isString(config.linters[key])
       ) {
-        errors.push(logError(`linters[${key}]`, 'Should be a string or an array of strings', key))
+        errors.push(
+          createError(`linters[${key}]`, 'Should be a string or an array of strings', key)
+        )
       }
     })
-  } else {
-    errors.push(logError('linters', 'Should be an object', config.linters))
-  }
-
-  if (!isArray(config.ignore) || config.ignore.some(item => !isString(item))) {
-    errors.push(logError('ignore', 'Should be an array of strings', config.ignore))
-  }
-
-  if (!isInteger(config.subTaskConcurrency)) {
-    errors.push(logError('subTaskConcurrency', 'Should be a number', config.subTaskConcurrency))
-  }
-
-  if (
-    config.renderer !== 'update' &&
-    config.renderer !== 'verbose' &&
-    !isFunction(config.renderer)
-  ) {
-    errors.push(
-      logError('renderer', "Should be 'update', 'verbose' or a function.", config.renderer)
-    )
-  }
-
-  if (!isBoolean(config.relative)) {
-    errors.push(logError('relative', 'Should be true or false', config.relative))
   }
 
   Object.keys(config)
     .filter(key => !defaultConfig.hasOwnProperty(key))
     .forEach(option => {
-      if (option === 'gitDir') {
-        warnings.push(
-          logDeprecation('gitDir', "lint-staged now automatically resolves '.git' directory.")
-        )
+      if (deprecatedConfig.hasOwnProperty(option)) {
+        logDeprecation(option, deprecatedConfig[option])
         return
       }
 
-      if (option === 'verbose') {
-        warnings.push(
-          logDeprecation('verbose', `Use the command line flag ${chalk.bold('--debug')} instead.`)
-        )
-        return
-      }
-
-      warnings.push(unknownValidationReporter(config, option))
+      unknownValidationReporter(config, option)
     })
-
-  warnings.forEach(message => {
-    console.warn(message)
-  })
 
   if (errors.length) {
     throw new Error(errors.join('\n'))
