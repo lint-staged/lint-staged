@@ -54,8 +54,7 @@ module.exports = function runAll(config) {
           return `No staged files match ${task.pattern}`
         }
         return false
-      },
-      hasStagedFiles: () => task.fileList.length > 0
+      }
     }))
 
     const listrBaseOptions = {
@@ -63,12 +62,16 @@ module.exports = function runAll(config) {
       renderer
     }
 
-    let hasStagedTaskFiles = false
+    // If all of the configured "linters" should be skipped
+    // avoid executing any "stashing changes..." logic
+    let isSkippingAllLinters = true
     tasks.forEach(task => {
-      hasStagedTaskFiles = hasStagedTaskFiles || task.hasStagedFiles()
+      if (!task.skip()) {
+        isSkippingAllLinters = false
+      }
     })
 
-    if (hasStagedTaskFiles) {
+    if (!isSkippingAllLinters) {
       // Do not terminate main Listr process on SIGINT
       process.on('SIGINT', () => {})
 

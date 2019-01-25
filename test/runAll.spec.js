@@ -162,7 +162,7 @@ describe('runAll', () => {
     }
   })
 
-  it.only('should skip stashing changes if no lint-staged files are changed', async () => {
+  it('should skip stashing changes if no lint-staged files are changed', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
     sgfMock.mockImplementationOnce((params, callback) => {
