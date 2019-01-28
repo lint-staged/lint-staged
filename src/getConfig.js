@@ -6,10 +6,12 @@ const chalk = require('chalk')
 const format = require('stringify-object')
 const intersection = require('lodash/intersection')
 const defaultsDeep = require('lodash/defaultsDeep')
+const isArray = require('lodash/isArray')
+const isFunction = require('lodash/isFunction')
 const isObject = require('lodash/isObject')
-const { validate, logValidationWarning } = require('jest-validate')
-const { unknownOptionWarning } = require('jest-validate/build/warnings')
+const isString = require('lodash/isString')
 const isGlob = require('is-glob')
+const yup = require('yup')
 
 const debug = require('debug')('lint-staged:cfg')
 
@@ -33,6 +35,36 @@ const defaultConfig = {
 }
 
 /**
+ * Configuration schema to validate configuration
+ */
+const schema = yup.object().shape({
+  concurrent: yup.boolean().default(defaultConfig.concurrent),
+  chunkSize: yup
+    .number()
+    .positive()
+    .default(defaultConfig.chunkSize),
+  globOptions: yup.object().shape({
+    matchBase: yup.boolean().default(defaultConfig.globOptions.matchBase),
+    dot: yup.boolean().default(defaultConfig.globOptions.dot)
+  }),
+  linters: yup.object(),
+  ignore: yup.array().of(yup.string()),
+  subTaskConcurrency: yup
+    .number()
+    .positive()
+    .integer()
+    .default(defaultConfig.subTaskConcurrency),
+  renderer: yup
+    .mixed()
+    .test(
+      'renderer',
+      "Should be 'update', 'verbose' or a function.",
+      value => value === 'update' || value === 'verbose' || isFunction(value)
+    ),
+  relative: yup.boolean().default(defaultConfig.relative)
+})
+
+/**
  * Check if the config is "simple" i.e. doesn't contains any of full config keys
  *
  * @param config
@@ -46,26 +78,57 @@ function isSimple(config) {
   )
 }
 
+const logDeprecation = (opt, helpMsg) =>
+  console.warn(`● Deprecation Warning:
+
+  Option ${chalk.bold(opt)} was removed.
+
+  ${helpMsg}
+
+  Please remove ${chalk.bold(opt)} from your configuration.
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...`)
+
+const logUnknown = (opt, helpMsg, value) =>
+  console.warn(`● Validation Warning:
+
+  Unknown option ${chalk.bold(`"${opt}"`)} with value ${chalk.bold(
+    format(value, { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+  )} was found in the config root.
+
+  ${helpMsg}
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...`)
+
+const formatError = helpMsg => `● Validation Error:
+
+  ${helpMsg}
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information...`
+
+const createError = (opt, helpMsg, value) =>
+  formatError(`Invalid value for '${chalk.bold(opt)}'.
+
+  ${helpMsg}.
+ 
+  Configured value is: ${chalk.bold(
+    format(value, { inlineCharacterLimit: Number.POSITIVE_INFINITY })
+  )}`)
+
 /**
- * Custom jest-validate reporter for unknown options
+ * Reporter for unknown options
  * @param config
- * @param example
  * @param option
- * @param options
  * @returns {void}
  */
-function unknownValidationReporter(config, example, option, options) {
+function unknownValidationReporter(config, option) {
   /**
    * If the unkonwn property is a glob this is probably
    * a typical mistake of mixing simple and advanced configs
    */
   if (isGlob(option)) {
     // prettier-ignore
-    const message = `  Unknown option ${chalk.bold(`"${option}"`)} with value ${chalk.bold(
-    format(config[option], { inlineCharacterLimit: Number.POSITIVE_INFINITY })
-  )} was found in the config root.
-
-  You are probably trying to mix simple and advanced config formats. Adding
+    const message = `You are probably trying to mix simple and advanced config formats. Adding
 
   ${chalk.bold(`"linters": {
     "${option}": ${JSON.stringify(config[option])}
@@ -73,12 +136,11 @@ function unknownValidationReporter(config, example, option, options) {
 
   will fix it and remove this message.`
 
-    const { comment } = options
-    const name = options.title.warning
-    return logValidationWarning(name, message, comment)
+    return logUnknown(option, message, config[option])
   }
-  // If it is not glob pattern, use default jest-validate reporter
-  return unknownOptionWarning(config, example, option, options)
+
+  // If it is not glob pattern, simply notify of unknown value
+  return logUnknown(option, '', config[option])
 }
 
 /**
@@ -109,12 +171,6 @@ function getConfig(sourceConfig, debugMode) {
   return config
 }
 
-const optRmMsg = (opt, helpMsg) => `  Option ${chalk.bold(opt)} was removed.
-
-  ${helpMsg}
-
-  Please remove ${chalk.bold(opt)} from your configuration.`
-
 /**
  * Runs config validation. Throws error if the config is not valid.
  * @param config {Object}
@@ -122,28 +178,47 @@ const optRmMsg = (opt, helpMsg) => `  Option ${chalk.bold(opt)} was removed.
  */
 function validateConfig(config) {
   debug('Validating config')
-  const exampleConfig = {
-    ...defaultConfig,
-    linters: {
-      '*.js': ['eslint --fix', 'git add'],
-      '*.css': 'stylelint'
-    }
-  }
 
   const deprecatedConfig = {
-    gitDir: () => optRmMsg('gitDir', "lint-staged now automatically resolves '.git' directory."),
-    verbose: () =>
-      optRmMsg('verbose', `Use the command line flag ${chalk.bold('--debug')} instead.`)
+    gitDir: "lint-staged now automatically resolves '.git' directory.",
+    verbose: `Use the command line flag ${chalk.bold('--debug')} instead.`
   }
 
-  validate(config, {
-    exampleConfig,
-    deprecatedConfig,
-    unknown: unknownValidationReporter,
-    recursive: false,
-    comment:
-      'Please refer to https://github.com/okonet/lint-staged#configuration for more information...'
-  })
+  const errors = []
+
+  try {
+    schema.validateSync(config, { abortEarly: false, strict: true })
+  } catch (error) {
+    error.errors.forEach(message => errors.push(formatError(message)))
+  }
+
+  if (isObject(config.linters)) {
+    Object.keys(config.linters).forEach(key => {
+      if (
+        (!isArray(config.linters[key]) || config.linters[key].some(item => !isString(item))) &&
+        !isString(config.linters[key])
+      ) {
+        errors.push(
+          createError(`linters[${key}]`, 'Should be a string or an array of strings', key)
+        )
+      }
+    })
+  }
+
+  Object.keys(config)
+    .filter(key => !defaultConfig.hasOwnProperty(key))
+    .forEach(option => {
+      if (deprecatedConfig.hasOwnProperty(option)) {
+        logDeprecation(option, deprecatedConfig[option])
+        return
+      }
+
+      unknownValidationReporter(config, option)
+    })
+
+  if (errors.length) {
+    throw new Error(errors.join('\n'))
+  }
 
   return config
 }
