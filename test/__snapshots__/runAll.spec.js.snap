@@ -31,7 +31,7 @@ LOG Running linters... [completed]"
 
 exports[`runAll should resolve the promise with no files 1`] = `
 "
-LOG No linters executed. No staged files match any of provided globs in \\"lint-staged.linters\\"."
+LOG No staged files match any of provided globs."
 `;
 
 exports[`runAll should skip linters and stash update but perform working copy restore if terminated 1`] = `
@@ -78,7 +78,7 @@ LOG Running linters... [completed]"
 
 exports[`runAll should skip stashing changes if no lint-staged files are changed 1`] = `
 "
-LOG No linters executed. No staged files match any of provided globs in \\"lint-staged.linters\\"."
+LOG No staged files match any of provided globs."
 `;
 
 exports[`runAll should skip updating stash if there are errors during linting 1`] = `

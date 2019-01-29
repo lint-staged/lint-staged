@@ -65,9 +65,7 @@ module.exports = function runAll(config) {
     // If all of the configured "linters" should be skipped
     // avoid executing any lint-staged logic
     if (tasks.every(task => task.skip())) {
-      console.log(
-        'No linters executed. No staged files match any of provided globs in "lint-staged.linters".'
-      )
+      console.log('No staged files match any of provided globs.')
       return 'No tasks to run.'
     }
 
