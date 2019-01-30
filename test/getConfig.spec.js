@@ -170,6 +170,16 @@ describe('validateConfig', () => {
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })
 
+  it('should throw and should print validation errors for invalid linter config', () => {
+    const invalidAdvancedConfig = {
+      foo: false,
+      linters: {
+        '*.js': 1
+      }
+    }
+    expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
+  })
+
   it('should not throw and should print validation warnings for mixed config', () => {
     const invalidMixedConfig = {
       concurrent: false,
@@ -207,6 +217,14 @@ describe('validateConfig', () => {
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }
+    }
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for custom renderer', () => {
+    const validAdvancedConfig = {
+      renderer: () => {}
     }
     expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
