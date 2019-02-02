@@ -31,14 +31,7 @@ LOG Running linters... [completed]"
 
 exports[`runAll should resolve the promise with no files 1`] = `
 "
-LOG Stashing changes... [started]
-LOG Stashing changes... [skipped]
-LOG → No partially staged files found...
-LOG Running linters... [started]
-LOG Running tasks for *.js [started]
-LOG Running tasks for *.js [skipped]
-LOG → No staged files match *.js
-LOG Running linters... [completed]"
+LOG No staged files match any of provided globs."
 `;
 
 exports[`runAll should skip linters and stash update but perform working copy restore if terminated 1`] = `
@@ -81,6 +74,40 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]"
+`;
+
+exports[`runAll should skip stashing changes if no lint-staged files are changed 1`] = `
+"
+LOG No staged files match any of provided globs."
+`;
+
+exports[`runAll should skip updating stash if there are errors during linting 1`] = `
+"
+LOG Stashing changes... [started]
+LOG Stashing changes... [completed]
+LOG Running linters... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [failed]
+LOG →
+LOG Running tasks for *.js [failed]
+LOG →
+LOG Running linters... [failed]
+LOG Updating stash... [started]
+LOG Updating stash... [skipped]
+LOG → Skipping stash update since some tasks exited with errors
+LOG Restoring local changes... [started]
+LOG Restoring local changes... [completed]
+LOG {
+  name: 'ListrError',
+  errors: [
+    {
+      privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
+      context: {hasStash: true, hasErrors: true}
+    }
+  ],
+  context: {hasStash: true, hasErrors: true}
+}"
 `;
 
 exports[`runAll should skip updating stash if there are errors during linting 1`] = `

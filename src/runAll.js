@@ -62,51 +62,54 @@ module.exports = function runAll(config) {
       renderer
     }
 
-    if (tasks.length) {
-      // Do not terminate main Listr process on SIGINT
-      process.on('SIGINT', () => {})
-
-      return new Listr(
-        [
-          {
-            title: 'Stashing changes...',
-            skip: async () => {
-              const hasPSF = await git.hasPartiallyStagedFiles()
-              if (!hasPSF) {
-                return 'No partially staged files found...'
-              }
-              return false
-            },
-            task: ctx => {
-              ctx.hasStash = true
-              return git.gitStashSave()
-            }
-          },
-          {
-            title: 'Running linters...',
-            task: () =>
-              new Listr(tasks, {
-                ...listrBaseOptions,
-                concurrent,
-                exitOnError: !concurrent // Wait for all errors when running concurrently
-              })
-          },
-          {
-            title: 'Updating stash...',
-            enabled: ctx => ctx.hasStash,
-            skip: ctx =>
-              ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
-            task: () => git.updateStash()
-          },
-          {
-            title: 'Restoring local changes...',
-            enabled: ctx => ctx.hasStash,
-            task: () => git.gitStashPop()
-          }
-        ],
-        listrBaseOptions
-      ).run()
+    // If all of the configured "linters" should be skipped
+    // avoid executing any lint-staged logic
+    if (tasks.every(task => task.skip())) {
+      console.log('No staged files match any of provided globs.')
+      return 'No tasks to run.'
     }
-    return 'No tasks to run.'
+
+    // Do not terminate main Listr process on SIGINT
+    process.on('SIGINT', () => {})
+
+    return new Listr(
+      [
+        {
+          title: 'Stashing changes...',
+          skip: async () => {
+            const hasPSF = await git.hasPartiallyStagedFiles()
+            if (!hasPSF) {
+              return 'No partially staged files found...'
+            }
+            return false
+          },
+          task: ctx => {
+            ctx.hasStash = true
+            return git.gitStashSave()
+          }
+        },
+        {
+          title: 'Running linters...',
+          task: () =>
+            new Listr(tasks, {
+              ...listrBaseOptions,
+              concurrent,
+              exitOnError: !concurrent // Wait for all errors when running concurrently
+            })
+        },
+        {
+          title: 'Updating stash...',
+          enabled: ctx => ctx.hasStash,
+          skip: ctx => ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
+          task: () => git.updateStash()
+        },
+        {
+          title: 'Restoring local changes...',
+          enabled: ctx => ctx.hasStash,
+          task: () => git.gitStashPop()
+        }
+      ],
+      listrBaseOptions
+    ).run()
   })
 }

@@ -161,4 +161,31 @@ describe('runAll', () => {
       expect(err).toEqual('test')
     }
   })
+
+  it('should skip stashing changes if no lint-staged files are changed', async () => {
+    expect.assertions(4)
+    hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
+    sgfMock.mockImplementationOnce((params, callback) => {
+      callback(null, [{ filename: 'sample.java', status: 'Modified' }])
+    })
+    execa.mockImplementationOnce(() =>
+      Promise.resolve({
+        stdout: '',
+        stderr: 'Linter finished with error',
+        code: 1,
+        failed: true,
+        cmd: 'mock cmd'
+      })
+    )
+
+    try {
+      await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    } catch (err) {
+      console.log(err)
+    }
+    expect(console.printHistory()).toMatchSnapshot()
+    expect(gitStashSave).toHaveBeenCalledTimes(0)
+    expect(updateStash).toHaveBeenCalledTimes(0)
+    expect(gitStashPop).toHaveBeenCalledTimes(0)
+  })
 })
