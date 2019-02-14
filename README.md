@@ -2,7 +2,7 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
-The latest versions of `lint-staged` require Node.js v6 or newer. (Versions of `lint-staged` prior to v7 still work with Node.js v4.)
+The latest versions of `lint-staged` require Node.js v8.6 or newer. (Versions of `lint-staged` prior to v7 still work with Node.js v4.)
 
 ## Why
 
