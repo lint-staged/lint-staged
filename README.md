@@ -2,7 +2,7 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
-The latest versions of `lint-staged` require Node.js v8.6 or newer. (Versions of `lint-staged` prior to v7 still work with Node.js v4.)
+[![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
 
 ## Why
 
@@ -21,41 +21,23 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Installation and setup
 
-> A fast way to perform the below is to run `npx mrm lint-staged`. It does most of the setup for you.
+The fastest way to start using lint-staged is to run following command in your terminal:
 
-1.  `npm install --save-dev lint-staged husky`
-1.  Install and setup your linters just like you would do normally. Add appropriate `.eslintrc`, `.stylelintrc`, etc.
-1.  Update your `package.json` like this:
+```bash
+npx mrm lint-staged
+``` 
 
-```diff json
-{
-+ "husky": {
-+   "hooks": {  
-+     "pre-commit": "lint-staged"
-+   }
-+ },
-+ "lint-staged": {
-+   "*.js": ["eslint --fix", "git add"]
-+ }
-}
-```
+It will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
 
-Now change a few files, `git add` some of them to your commit and try to `git commit` them.
+Don't forget to commit changes to `package.json` to share this setup with your team!
 
-This is how it looks in action:
+Now change a few files, `git add` or `git add --patch` some of them to your commit and try to `git commit` them.
 
-<p align="center">
-  <img src="./screenshots/lint-staged-prettier.gif" alt="lint-staged with prettier example"
-       width="640" height="432">
-</p>
-
-See [examples](#examples) and [configuration](#configuration) below.
-
-> I recommend using [husky](https://github.com/typicode/husky) to manage git hooks but you can use any other tool.
+See [examples](#examples) and [configuration](#configuration) for more information.
 
 ## Changelog
 
-[releases](https://github.com/okonet/lint-staged/releases)
+See [Releases](https://github.com/okonet/lint-staged/releases)
 
 ## Command line flags
 
@@ -204,7 +186,7 @@ Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can refo
 
 ```json
 {
-  "*.js": ["eslint --fix", "git add"]
+  "*.js": ["prettier --write", "git add"]
 }
 ```
 
