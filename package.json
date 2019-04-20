@@ -10,7 +10,10 @@
     "Suhas Karanth <sudo.suhas@gmail.com>"
   ],
   "bin": "index.js",
-  "files": ["index.js", "src"],
+  "files": [
+    "index.js",
+    "src"
+  ],
   "scripts": {
     "cz": "git-cz",
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
@@ -56,18 +59,22 @@
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
+    "babel-eslint": "^10.0.1",
     "babel-jest": "^24.7.1",
     "commitizen": "^3.1.1",
     "consolemock": "^1.0.2",
     "cz-conventional-changelog": "^2.0.0",
     "eslint": "^5.16.0",
     "eslint-config-okonet": "^7.0.2",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-prettier": "^3.0.1",
     "husky": "^1.3.1",
     "jest": "^24.7.1",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "jsonlint": "^1.6.2",
-    "prettier": "1.11.1",
+    "prettier": "^1.17.0",
     "tmp": "0.0.33"
   },
   "config": {
@@ -77,8 +84,12 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["./testSetup.js"],
-    "snapshotSerializers": ["jest-snapshot-serializer-ansi"]
+    "setupFiles": [
+      "./testSetup.js"
+    ],
+    "snapshotSerializers": [
+      "jest-snapshot-serializer-ansi"
+    ]
   },
   "keywords": [
     "lint",

@@ -9,6 +9,6 @@
   },
   "rules": {
     "no-global-assign": ["error", { "exceptions": ["console"] }],
-    "node/no-unsupported-features": "off"
+    "node/no-unsupported-features/es-syntax": ["off"]
   }
 }

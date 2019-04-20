@@ -1,4 +1,6 @@
 {
+  "parser": "babel-eslint",
+  "env": { "es6": true },
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "script"
@@ -22,6 +24,12 @@
       }
     ],
     "prettier/prettier": "off",
-    "node/no-unsupported-features": ["error", "8.6.0"]
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "version": ">=8.6.0",
+        "ignores": []
+      }
+    ]
   }
 }
