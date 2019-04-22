@@ -15,7 +15,7 @@
     "cz": "git-cz",
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
     "lint": "npm run lint:base -- .",
-    "lint:fix": "npm run lint --fix",
+    "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
