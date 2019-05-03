@@ -50,7 +50,7 @@
     "staged-git-files": "1.1.2",
     "string-argv": "^0.0.2",
     "stringify-object": "^3.2.2",
-    "yup": "^0.26.10"
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
