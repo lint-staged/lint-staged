@@ -140,7 +140,7 @@ It is possible to run linters for certain paths only by using glob patterns. [mi
 
 ```js
 {
-  // .js files anywhere in the project
+  // .js files anywhere in the root directory of the project
   "*.js": "eslint",
   // .js files anywhere in the project
   "**/*.js": "eslint",
