@@ -6,13 +6,13 @@ describe('makeCmdTasks', () => {
     execa.mockClear()
   })
 
-  it('should return an array', () => {
-    expect(makeCmdTasks('test', ['test.js'])).toBeInstanceOf(Array)
+  it('should return an array', async () => {
+    expect(await makeCmdTasks('test', ['test.js'])).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = makeCmdTasks('test', ['test.js'])
+    const res = await makeCmdTasks('test', ['test.js'])
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -24,7 +24,7 @@ describe('makeCmdTasks', () => {
 
   it('should work with multiple commands', async () => {
     expect.assertions(9)
-    const res = makeCmdTasks(['test', 'test2'], ['test.js'])
+    const res = await makeCmdTasks(['test', 'test2'], ['test.js'])
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
     expect(linter1.title).toBe('test')
@@ -33,12 +33,12 @@ describe('makeCmdTasks', () => {
     let taskPromise = linter1.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
-    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).toHaveBeenCalledTimes(2)
     expect(execa).lastCalledWith('test', ['test.js'], { reject: false })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
-    expect(execa).toHaveBeenCalledTimes(2)
+    expect(execa).toHaveBeenCalledTimes(3)
     expect(execa).lastCalledWith('test2', ['test.js'], { reject: false })
   })
 })

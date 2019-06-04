@@ -16,7 +16,7 @@ const debug = require('debug')('lint-staged:run')
  * @param config {Object}
  * @returns {Promise}
  */
-module.exports = function runAll(config) {
+module.exports = async function runAll(config) {
   debug('Running all linter scripts')
   // Config validation
   if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
@@ -24,92 +24,92 @@ module.exports = function runAll(config) {
   }
 
   const { concurrent, renderer, chunkSize, subTaskConcurrency } = config
-  const gitDir = resolveGitDir()
+  const gitDir = await resolveGitDir()
   debug('Resolved git directory to be `%s`', gitDir)
 
   sgf.cwd = gitDir
-  return pify(sgf)('ACM').then(files => {
-    /* files is an Object{ filename: String, status: String } */
-    const filenames = files.map(file => file.filename)
-    debug('Loaded list of staged files in git:\n%O', filenames)
 
-    const tasks = generateTasks(config, filenames).map(task => ({
-      title: `Running tasks for ${task.pattern}`,
-      task: () =>
-        new Listr(
-          makeCmdTasks(task.commands, task.fileList, {
-            chunkSize,
-            subTaskConcurrency
-          }),
-          {
-            // In sub-tasks we don't want to run concurrently
-            // and we want to abort on errors
-            dateFormat: false,
-            concurrent: false,
-            exitOnError: true
-          }
-        ),
-      skip: () => {
-        if (task.fileList.length === 0) {
-          return `No staged files match ${task.pattern}`
+  /* files is an Object{ filename: String, status: String } */
+  const files = await pify(sgf)('ACM')
+  const filenames = files.map(file => file.filename)
+  debug('Loaded list of staged files in git:\n%O', filenames)
+
+  const tasks = (await generateTasks(config, filenames)).map(task => ({
+    title: `Running tasks for ${task.pattern}`,
+    task: async () =>
+      new Listr(
+        await makeCmdTasks(task.commands, task.fileList, {
+          chunkSize,
+          subTaskConcurrency
+        }),
+        {
+          // In sub-tasks we don't want to run concurrently
+          // and we want to abort on errors
+          dateFormat: false,
+          concurrent: false,
+          exitOnError: true
         }
-        return false
+      ),
+    skip: () => {
+      if (task.fileList.length === 0) {
+        return `No staged files match ${task.pattern}`
       }
-    }))
-
-    const listrBaseOptions = {
-      dateFormat: false,
-      renderer
+      return false
     }
+  }))
 
-    // If all of the configured "linters" should be skipped
-    // avoid executing any lint-staged logic
-    if (tasks.every(task => task.skip())) {
-      console.log('No staged files match any of provided globs.')
-      return 'No tasks to run.'
-    }
+  const listrBaseOptions = {
+    dateFormat: false,
+    renderer
+  }
 
-    // Do not terminate main Listr process on SIGINT
-    process.on('SIGINT', () => {})
+  // If all of the configured "linters" should be skipped
+  // avoid executing any lint-staged logic
+  if (tasks.every(task => task.skip())) {
+    console.log('No staged files match any of provided globs.')
+    return 'No tasks to run.'
+  }
 
-    return new Listr(
-      [
-        {
-          title: 'Stashing changes...',
-          skip: async () => {
-            const hasPSF = await git.hasPartiallyStagedFiles()
-            if (!hasPSF) {
-              return 'No partially staged files found...'
-            }
-            return false
-          },
-          task: ctx => {
-            ctx.hasStash = true
-            return git.gitStashSave()
+  // Do not terminate main Listr process on SIGINT
+  process.on('SIGINT', () => {})
+
+  return new Listr(
+    [
+      {
+        title: 'Stashing changes...',
+        skip: async () => {
+          const hasPSF = await git.hasPartiallyStagedFiles({ cwd: gitDir })
+          if (!hasPSF) {
+            return 'No partially staged files found...'
           }
+          return false
         },
-        {
-          title: 'Running linters...',
-          task: () =>
-            new Listr(tasks, {
-              ...listrBaseOptions,
-              concurrent,
-              exitOnError: !concurrent // Wait for all errors when running concurrently
-            })
-        },
-        {
-          title: 'Updating stash...',
-          enabled: ctx => ctx.hasStash,
-          skip: ctx => ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
-          task: () => git.updateStash()
-        },
-        {
-          title: 'Restoring local changes...',
-          enabled: ctx => ctx.hasStash,
-          task: () => git.gitStashPop()
+        task: ctx => {
+          ctx.hasStash = true
+          return git.gitStashSave({ cwd: gitDir })
         }
-      ],
-      listrBaseOptions
-    ).run()
-  })
+      },
+      {
+        title: 'Running linters...',
+        task: () =>
+          new Listr(tasks, {
+            ...listrBaseOptions,
+            concurrent,
+            exitOnError: !concurrent // Wait for all errors when running concurrently
+          })
+      },
+      {
+        title: 'Updating stash...',
+        enabled: ctx => ctx.hasStash,
+        skip: ctx => ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
+        task: () => git.updateStash({ cwd: gitDir })
+      },
+      {
+        title: 'Restoring local changes...',
+        enabled: ctx => ctx.hasStash,
+        task: () => git.gitStashPop({ cwd: gitDir })
+      }
+    ],
+    listrBaseOptions
+  ).run()
 }

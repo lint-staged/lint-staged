@@ -30,8 +30,8 @@ describe('runAll', () => {
   })
 
   it('should throw when invalid config is provided', () => {
-    expect(() => runAll({})).toThrowErrorMatchingSnapshot()
-    expect(() => runAll()).toThrowErrorMatchingSnapshot()
+    expect(runAll({})).rejects.toThrowErrorMatchingSnapshot()
+    expect(runAll()).rejects.toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw when a valid config is provided', () => {
@@ -99,7 +99,7 @@ describe('runAll', () => {
     sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'Modified' }])
     })
-    execa.mockImplementationOnce(() =>
+    execa.mockImplementation(() =>
       Promise.resolve({
         stdout: '',
         stderr: 'Linter finished with error',
@@ -126,7 +126,7 @@ describe('runAll', () => {
     sgfMock.mockImplementationOnce((params, callback) => {
       callback(null, [{ filename: 'sample.js', status: 'Modified' }])
     })
-    execa.mockImplementationOnce(() =>
+    execa.mockImplementation(() =>
       Promise.resolve({
         stdout: '',
         stderr: '',
