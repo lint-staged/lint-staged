@@ -118,7 +118,6 @@ Mock error"
   })
 
   it('should set hasErrors on context to true on error', async () => {
-    expect.assertions(1)
     execa.mockResolvedValueOnce({
       stdout: 'Mock error',
       stderr: '',
@@ -128,6 +127,7 @@ Mock error"
     })
     const context = {}
     const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-fail-linter' })
+    expect.assertions(1)
     try {
       await taskFn(context)
     } catch (err) {
