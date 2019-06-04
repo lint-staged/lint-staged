@@ -24,7 +24,12 @@ module.exports = async function runAll(config) {
   }
 
   const { concurrent, renderer, chunkSize, subTaskConcurrency } = config
-  const gitDir = await resolveGitDir()
+  const gitDir = await resolveGitDir(config)
+
+  if (!gitDir) {
+    throw new Error('Current directory is not a git directory!')
+  }
+
   debug('Resolved git directory to be `%s`', gitDir)
 
   sgf.cwd = gitDir
