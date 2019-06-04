@@ -34,7 +34,7 @@ module.exports = async function runAll(config) {
   const filenames = files.map(file => file.filename)
   debug('Loaded list of staged files in git:\n%O', filenames)
 
-  const tasks = (await generateTasks(config, filenames)).map(task => ({
+  const tasks = (await generateTasks(config, gitDir, filenames)).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(

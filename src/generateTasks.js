@@ -4,17 +4,15 @@ const path = require('path')
 const micromatch = require('micromatch')
 const pathIsInside = require('path-is-inside')
 const { getConfig } = require('./getConfig')
-const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:gen-tasks')
 
-module.exports = async function generateTasks(config, stagedRelFiles) {
+module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
   debug('Generating linter tasks')
 
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
   const { linters, globOptions, ignore } = normalizedConfig
 
-  const gitDir = await resolveGitDir()
   const cwd = process.cwd()
   const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
 
