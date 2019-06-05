@@ -12,8 +12,7 @@ module.exports = function generateTasks(config, stagedRelFiles) {
   debug('Generating linter tasks')
 
   const normalizedConfig = getConfig(config) // Ensure we have a normalized config
-  const { linters, globOptions } = normalizedConfig
-  const ignorePatterns = normalizedConfig.ignore.map(pattern => `!${pattern}`)
+  const { linters, globOptions, ignore } = normalizedConfig
 
   const gitDir = resolveGitDir()
   const cwd = process.cwd()
@@ -21,7 +20,6 @@ module.exports = function generateTasks(config, stagedRelFiles) {
 
   return Object.keys(linters).map(pattern => {
     const isParentDirPattern = pattern.startsWith('../')
-    const patterns = [pattern].concat(ignorePatterns)
     const commands = linters[pattern]
 
     const fileList = micromatch(
@@ -31,8 +29,11 @@ module.exports = function generateTasks(config, stagedRelFiles) {
         .filter(file => isParentDirPattern || pathIsInside(file, cwd))
         // Make the paths relative to CWD for filtering
         .map(file => path.relative(cwd, file)),
-      patterns,
-      globOptions
+      pattern,
+      {
+        ...globOptions,
+        ignore
+      }
     ).map(file => {
       // if you set relative option, then the file path will be relative to your package.json
       if (config.relative) {
