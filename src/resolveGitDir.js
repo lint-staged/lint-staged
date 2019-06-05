@@ -1,7 +1,14 @@
 'use strict'
 
-const execa = require('execa')
+const execGit = require('./execGit')
+const printErrors = require('./printErrors')
 
 module.exports = async function resolveGitDir() {
-  return (await execa('git', ['rev-parse', '--show-toplevel'])).stdout
+  try {
+    const gitDir = await execGit(['rev-parse', '--show-toplevel'])
+    return gitDir
+  } catch (error) {
+    printErrors(error)
+    return null
+  }
 }
