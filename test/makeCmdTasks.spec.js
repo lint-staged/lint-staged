@@ -9,7 +9,8 @@ describe('makeCmdTasks', () => {
   })
 
   it('should return an array', async () => {
-    expect(await makeCmdTasks('test', ['test.js'])).toBeInstanceOf(Array)
+    const array = await makeCmdTasks('test', gitDir, ['test.js'])
+    expect(array).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
