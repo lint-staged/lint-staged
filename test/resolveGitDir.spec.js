@@ -20,4 +20,9 @@ describe('resolveGitDir', () => {
     expect(path.resolve(await resolveGitDir())).toEqual(expected)
     process.cwd = processCwdBkp
   })
+
+  it('should return null when not in a git directory', async () => {
+    const gitDir = await resolveGitDir({ cwd: '/' }) // assume root is not a git directory
+    expect(gitDir).toEqual(null)
+  })
 })
