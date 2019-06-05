@@ -29,9 +29,9 @@ describe('runAll', () => {
     global.console = globalConsoleTemp
   })
 
-  it('should throw when invalid config is provided', () => {
-    expect(runAll({})).rejects.toThrowErrorMatchingSnapshot()
-    expect(runAll()).rejects.toThrowErrorMatchingSnapshot()
+  it('should throw when invalid config is provided', async () => {
+    await expect(runAll({})).rejects.toThrowErrorMatchingSnapshot()
+    await expect(runAll()).rejects.toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw when a valid config is provided', () => {
