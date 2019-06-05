@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runAll should throw when not in a git directory 1`] = `"Current directory is not a git directory!"`;
