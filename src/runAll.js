@@ -43,7 +43,7 @@ module.exports = async function runAll(config) {
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(
-        await makeCmdTasks(task.commands, task.fileList, {
+        await makeCmdTasks(task.commands, gitDir, task.fileList, {
           chunkSize,
           subTaskConcurrency
         }),
