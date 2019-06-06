@@ -28,7 +28,7 @@
   "dependencies": {
     "chalk": "^2.3.1",
     "commander": "^2.14.1",
-    "cosmiconfig": "^5.0.2",
+    "cosmiconfig": "^5.2.0",
     "debug": "^3.1.0",
     "dedent": "^0.7.0",
     "del": "^3.0.0",
@@ -50,7 +50,7 @@
     "staged-git-files": "1.1.2",
     "string-argv": "^0.0.2",
     "stringify-object": "^3.2.2",
-    "yup": "^0.26.10"
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
