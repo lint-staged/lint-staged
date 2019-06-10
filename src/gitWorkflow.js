@@ -1,33 +1,14 @@
 'use strict'
 
-const path = require('path')
-const execa = require('execa')
 const gStatus = require('g-status')
 const del = require('del')
 const debug = require('debug')('lint-staged:git')
-const resolveGitDir = require('./resolveGitDir')
+
+const execGit = require('./execGit')
 
 let workingCopyTree = null
 let indexTree = null
 let formattedIndexTree = null
-
-function getAbsolutePath(dir) {
-  return path.isAbsolute(dir) ? dir : path.resolve(dir)
-}
-
-async function execGit(cmd, options) {
-  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
-  debug('Running git command', cmd)
-  try {
-    const { stdout } = await execa('git', [].concat(cmd), {
-      ...options,
-      cwd: getAbsolutePath(cwd)
-    })
-    return stdout
-  } catch (err) {
-    throw new Error(err)
-  }
-}
 
 async function writeTree(options) {
   return execGit(['write-tree'], options)
@@ -51,7 +32,7 @@ async function getDiffForTrees(tree1, tree2, options) {
 }
 
 async function hasPartiallyStagedFiles(options) {
-  const cwd = options && options.cwd ? options.cwd : resolveGitDir()
+  const { cwd } = options
   const files = await gStatus({ cwd })
   const partiallyStaged = files.filter(
     file =>

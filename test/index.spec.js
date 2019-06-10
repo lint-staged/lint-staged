@@ -3,6 +3,8 @@ import cosmiconfig from 'cosmiconfig'
 import path from 'path'
 import lintStaged from '../src/index'
 
+jest.unmock('execa')
+
 const replaceSerializer = (from, to) => ({
   test: val => typeof val === 'string' && from.test(val),
   print: val => val.replace(from, to)
