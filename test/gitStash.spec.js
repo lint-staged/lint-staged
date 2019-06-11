@@ -88,7 +88,8 @@ describe('git', () => {
     })
 
     it('should return false if there are untracked files', async () => {
-      await execa('touch', ['untracked.file'], gitOpts)
+      const touch = process.platform === 'win32' ? 'echo.>' : 'touch'
+      await execa(touch, ['untracked.file'], gitOpts)
       const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
       expect(res).toEqual(false)
     })
@@ -426,12 +427,12 @@ MM test.js"
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'test',
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   foo: '
   baz
   '
@@ -444,12 +445,12 @@ MM test.js"
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'edited',
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   foo: '
   baz
   '
@@ -472,11 +473,11 @@ MM test.js"
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: "test",
-  
-  
-  
-  
-  
+
+
+
+
+
 
   foo: "baz"
 };`
@@ -494,11 +495,11 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
       expect(await readFile('test.js')).toEqual(`module.exports = {
   test: 'edited',
-  
-  
-  
-  
-  
+
+
+
+
+
 
   foo: "baz"
 };`)
