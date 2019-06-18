@@ -1,4 +1,3 @@
-const execa = require('execa')
 const path = require('path')
 const tmp = require('tmp')
 const gitflow = require('../src/gitWorkflow')
@@ -68,42 +67,7 @@ describe('git', () => {
     wcDir.removeCallback()
   })
 
-  describe('hasPartiallyStagedFiles', () => {
-    it('should return false if files are not staged', async () => {
-      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
-      expect(res).toEqual(false)
-    })
-
-    it('should return false if there are no modified files exist', async () => {
-      await gitflow.execGit(['checkout', '.'], gitOpts)
-      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
-      expect(res).toEqual(false)
-    })
-
-    it('should return false if changes are already in the index', async () => {
-      await gitflow.execGit(['checkout', 'test.css'], gitOpts)
-      await gitflow.execGit(['add', 'test.js'], gitOpts)
-      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
-      expect(res).toEqual(false)
-    })
-
-    it('should return false if there are untracked files', async () => {
-      const touch = process.platform === 'win32' ? 'echo.>' : 'touch'
-      await execa(touch, ['untracked.file'], gitOpts)
-      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
-      expect(res).toEqual(false)
-    })
-
-    it('should return true if files are modified and in the index', async () => {
-      await gitflow.execGit(['checkout', 'test.css'], gitOpts)
-      await gitflow.execGit(['add', 'test.js'], gitOpts)
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), '')
-      const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
-      expect(res).toEqual(true)
-    })
-  })
-
-  describe('gitStashSave/gitStashPop', () => {
+  describe('saveStagedFiles/restoreStagedFiles', () => {
     it('should stash and restore WC state without a commit', async () => {
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
@@ -118,11 +82,14 @@ M  test.js"
 `)
 
       // Stashing files
-      await gitflow.gitStashSave(gitOpts)
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
+      await gitflow.saveStagedFiles(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+M  test.js"
+`)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
 M  test.js"
@@ -139,11 +106,14 @@ D  test.js"
 `)
 
       // Stashing files
-      await gitflow.gitStashSave(gitOpts)
-      expect(await gitStatus()).toMatchInlineSnapshot(`"D  test.js"`)
+      await gitflow.saveStagedFiles(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+D  test.js"
+`)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
 D  test.js"
@@ -160,11 +130,14 @@ D  test.js"
 `)
 
       // Stashing files
-      await gitflow.gitStashSave(gitOpts)
-      expect(await gitStatus()).toMatchInlineSnapshot(`"R  test.js -> test-renamed.js"`)
+      await gitflow.saveStagedFiles(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+"R  test.js -> test-renamed.js
+ M test.css"
+`)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
       expect(await gitStatus()).toMatchInlineSnapshot(`
 "R  test.js -> test-renamed.js
  M test.css"
@@ -183,13 +156,18 @@ D  test.js"
 `)
 
       // Stashing files
-      await gitflow.gitStashSave(gitOpts)
-      expect(await gitStatus()).toMatchInlineSnapshot(`"?? test-renamed.js"`)
-
-      // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.saveStagedFiles(gitOpts)
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
+ D test.js
+?? test-renamed.js"
+`)
+
+      // Restoring state
+      await gitflow.restoreStagedFiles(gitOpts)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+ D test.js
 ?? test-renamed.js"
 `)
     })
@@ -213,10 +191,8 @@ M  test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Stashing state
-      await gitflow.gitStashSave(gitOpts)
+      await gitflow.saveStagedFiles(gitOpts)
 
-      // Only index should remain
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Do additional edits (imitate eslint --fix)
@@ -229,12 +205,15 @@ M  test.js"
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), eslintContent)
 
       // Expect both indexed and modified state on one file
-      expect(await gitStatus()).toMatchInlineSnapshot(`"MM test.js"`)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+MM test.js"
+`)
       // and index isn't modified
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
@@ -272,10 +251,7 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Stashing state
-      await gitflow.gitStashSave(gitOpts)
-
-      // Only index should remain
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
+      await gitflow.saveStagedFiles(gitOpts)
 
       // Do additional edits (imitate eslint --fix)
       await fsp.writeFile(
@@ -285,13 +261,16 @@ MM test.js"
 };`
       )
 
-      // Expect both indexed and modified state on one file
-      expect(await gitStatus()).toMatchInlineSnapshot(`"MM test.js"`)
+      // Expect both indexed and modified state
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+MM test.js"
+`)
       // and index isn't modified
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
 
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`
@@ -321,10 +300,7 @@ M  test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Stashing state
-      await gitflow.gitStashSave(gitOpts)
-
-      // Only index should remain
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
+      await gitflow.saveStagedFiles(gitOpts)
 
       // Do additional edits (imitate eslint --fix)
       const newContent = `module.exports = {
@@ -333,17 +309,15 @@ M  test.js"
       await fsp.writeFile(path.join(wcDirPath, 'test.js'), newContent)
       // and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
-      await gitflow.updateStash(gitOpts)
       const newIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
-      // Expect only index changes
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
+      expect(await gitStatus()).toMatchInlineSnapshot(`
+" M test.css
+M  test.js"
+`)
       // and index is modified
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).not.toEqual(initialIndex)
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
-
-      // Restoring state
-      await gitflow.gitStashPop(gitOpts)
 
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`
@@ -382,10 +356,8 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Stashing state
-      await gitflow.gitStashSave(gitOpts)
+      await gitflow.saveStagedFiles(gitOpts)
 
-      // Only index should remain
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Do additional edits (imitate eslint --fix)
@@ -397,7 +369,6 @@ MM test.js"
       )
       // and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
-      await gitflow.updateStash(gitOpts)
       const newIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Expect index is modified
@@ -405,17 +376,14 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
 
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`
 " M test.css
 MM test.js"
 `)
-      // and content is back to user modifications
-      expect(await readFile('test.js')).toEqual(userContent)
-      // Expect formatting changes in the index
-      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(newIndex)
+      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
     })
 
     it('should add hooks fixes to index and working copy on partially staged files', async () => {
@@ -462,10 +430,8 @@ MM test.js"
       const initialIndex = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Stashing state
-      await gitflow.gitStashSave(gitOpts)
+      await gitflow.saveStagedFiles(gitOpts)
 
-      // Only index should remain
-      expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Imitate running prettier on the version from the index
@@ -483,16 +449,13 @@ MM test.js"
 };`
       )
       await gitflow.execGit(['add', 'test.js'], gitOpts)
-      await gitflow.updateStash(gitOpts)
-      const indexAfterEslint = await gitflow.execGit(['diff', '--cached'], gitOpts)
 
       // Restoring state
-      await gitflow.gitStashPop(gitOpts)
+      await gitflow.restoreStagedFiles(gitOpts)
 
       // Expect stashed files to be back
       expect(await gitStatus()).toMatchInlineSnapshot(`"MM test.js"`)
       // and all lint-staged modifications to be gone
-      expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(indexAfterEslint)
       expect(await readFile('test.js')).toEqual(`module.exports = {
   test: 'edited',
 
@@ -501,8 +464,10 @@ MM test.js"
 
 
 
-  foo: "baz"
-};`)
+  foo: '
+  baz
+  '
+}`)
     })
   })
 })
