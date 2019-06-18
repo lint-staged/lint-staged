@@ -1,6 +1,5 @@
 'use strict'
 
-const gStatus = require('g-status')
 const del = require('del')
 const debug = require('debug')('lint-staged:git')
 
@@ -32,15 +31,20 @@ async function getDiffForTrees(tree1, tree2, options) {
 }
 
 async function hasPartiallyStagedFiles(options) {
-  const { cwd } = options
-  const files = await gStatus({ cwd })
-  const partiallyStaged = files.filter(
-    file =>
-      file.index !== ' ' &&
-      file.workingTree !== ' ' &&
-      file.index !== '?' &&
-      file.workingTree !== '?'
-  )
+  const stdout = await execGit(['status', '--porcelain'], options)
+  if (!stdout) return false
+
+  const changedFiles = stdout.split('\n')
+  const partiallyStaged = changedFiles.filter(line => {
+    /**
+     * See https://git-scm.com/docs/git-status#_short_format
+     * The first letter of the line represents current index status,
+     * and second the working tree
+     */
+    const [index, workingTree] = line
+    return index !== ' ' && workingTree !== ' ' && index !== '?' && workingTree !== '?'
+  })
+
   return partiallyStaged.length > 0
 }
 
