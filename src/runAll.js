@@ -82,17 +82,16 @@ module.exports = async function runAll(config) {
     [
       {
         title: 'Stashing changes...',
-        skip: async () => {
+        skip: async ctx => {
           const hasPSF = await git.hasPartiallyStagedFiles({ cwd: gitDir })
-          if (!hasPSF) {
-            return 'No partially staged files found...'
+          if (hasPSF) {
+            ctx.hasPSF = true
+            return false
           }
-          return false
+
+          return 'No partially staged files found...'
         },
-        task: ctx => {
-          ctx.hasStash = true
-          return git.gitStashSave({ cwd: gitDir })
-        }
+        task: () => git.saveStagedFiles({ cwd: gitDir })
       },
       {
         title: 'Running linters...',
@@ -104,15 +103,14 @@ module.exports = async function runAll(config) {
           })
       },
       {
-        title: 'Updating stash...',
-        enabled: ctx => ctx.hasStash,
-        skip: ctx => ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
-        task: () => git.updateStash({ cwd: gitDir })
+        title: 'Restoring local changes...',
+        enabled: ctx => ctx.hasErrors,
+        task: () => git.restoreStagedFiles({ cwd: gitDir })
       },
       {
-        title: 'Restoring local changes...',
-        enabled: ctx => ctx.hasStash,
-        task: () => git.gitStashPop({ cwd: gitDir })
+        title: 'Clearing temporary stashed changed...',
+        skip: ctx => !ctx.hasPSF,
+        task: () => git.clearStagedFileStash({ cwd: gitDir })
       }
     ],
     listrBaseOptions

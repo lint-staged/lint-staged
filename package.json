@@ -31,7 +31,6 @@
     "cosmiconfig": "^5.2.0",
     "debug": "^3.1.0",
     "dedent": "^0.7.0",
-    "del": "^3.0.0",
     "execa": "^1.0.0",
     "is-glob": "^4.0.0",
     "is-windows": "^1.0.2",
