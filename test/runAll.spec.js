@@ -1,16 +1,16 @@
 import makeConsoleMock from 'consolemock'
-import sgfMock from 'staged-git-files'
 import execa from 'execa'
+
 import { getConfig } from '../src/getConfig'
+import getStagedFiles from '../src/getStagedFiles'
 import runAll from '../src/runAll'
 import { hasPartiallyStagedFiles, gitStashSave, gitStashPop, updateStash } from '../src/gitWorkflow'
 
-jest.mock('staged-git-files')
+jest.mock('../src/getStagedFiles')
 jest.mock('../src/gitWorkflow')
 
-sgfMock.mockImplementation((params, callback) => {
-  callback(null, [])
-})
+getStagedFiles.mockImplementation(async () => [])
+
 const globalConsoleTemp = global.console
 
 describe('runAll', () => {
@@ -60,9 +60,7 @@ describe('runAll', () => {
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.js', status: 'sample' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(console.printHistory()).toMatchSnapshot()
   })
@@ -70,9 +68,7 @@ describe('runAll', () => {
   it('should not skip stashing and restoring if there are partially staged files', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.js', status: 'Modified' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(gitStashSave).toHaveBeenCalledTimes(1)
     expect(updateStash).toHaveBeenCalledTimes(1)
@@ -83,9 +79,7 @@ describe('runAll', () => {
   it('should skip stashing and restoring if there are no partially staged files', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(false))
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.js', status: 'Modified' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
     expect(gitStashSave).toHaveBeenCalledTimes(0)
     expect(updateStash).toHaveBeenCalledTimes(0)
@@ -96,9 +90,7 @@ describe('runAll', () => {
   it('should skip updating stash if there are errors during linting', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.js', status: 'Modified' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
       Promise.resolve({
         stdout: '',
@@ -123,9 +115,7 @@ describe('runAll', () => {
   it('should skip linters and stash update but perform working copy restore if terminated', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.js', status: 'Modified' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
       Promise.resolve({
         stdout: '',
@@ -149,25 +139,16 @@ describe('runAll', () => {
     expect(gitStashPop).toHaveBeenCalledTimes(1)
   })
 
-  it('should reject promise when staged-git-files errors', async () => {
+  it('should reject promise when error during getStagedFiles', async () => {
     expect.assertions(1)
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback('test', undefined)
-    })
-
-    try {
-      await runAll(getConfig({}))
-    } catch (err) {
-      expect(err).toEqual('test')
-    }
+    getStagedFiles.mockImplementationOnce(async () => null)
+    await expect(runAll(getConfig({}))).rejects.toThrowErrorMatchingSnapshot()
   })
 
   it('should skip stashing changes if no lint-staged files are changed', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
-    sgfMock.mockImplementationOnce((params, callback) => {
-      callback(null, [{ filename: 'sample.java', status: 'Modified' }])
-    })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
     execa.mockImplementationOnce(() =>
       Promise.resolve({
         stdout: '',

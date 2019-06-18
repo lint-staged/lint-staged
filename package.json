@@ -43,9 +43,7 @@
     "npm-which": "^3.0.1",
     "p-map": "^1.1.1",
     "path-is-inside": "^1.0.2",
-    "pify": "^3.0.0",
     "please-upgrade-node": "^3.0.2",
-    "staged-git-files": "1.1.2",
     "string-argv": "^0.0.2",
     "stringify-object": "^3.2.2",
     "yup": "^0.27.0"
@@ -61,6 +59,7 @@
     "eslint": "^4.18.1",
     "eslint-config-okonet": "^5.0.1",
     "eslint-plugin-node": "^6.0.0",
+    "fs-extra": "^8.0.1",
     "husky": "^1.1.4",
     "jest": "^23.6.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
