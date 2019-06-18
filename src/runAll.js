@@ -81,16 +81,7 @@ module.exports = async function runAll(config) {
   return new Listr(
     [
       {
-        title: 'Stashing changes...',
-        skip: async ctx => {
-          const hasPSF = await git.hasPartiallyStagedFiles({ cwd: gitDir })
-          if (hasPSF) {
-            ctx.hasPSF = true
-            return false
-          }
-
-          return 'No partially staged files found...'
-        },
+        title: 'Backing up local changes...',
         task: () => git.saveStagedFiles({ cwd: gitDir })
       },
       {
@@ -108,8 +99,7 @@ module.exports = async function runAll(config) {
         task: () => git.restoreStagedFiles({ cwd: gitDir })
       },
       {
-        title: 'Clearing temporary stashed changed...',
-        skip: ctx => !ctx.hasPSF,
+        title: 'Clearing temporary backup...',
         task: () => git.clearStagedFileStash({ cwd: gitDir })
       }
     ],
