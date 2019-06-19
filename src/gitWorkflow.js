@@ -7,7 +7,7 @@ const execGit = require('./execGit')
 async function saveStagedFiles(options) {
   debug('Saving modified files...')
   // Stash changed changes
-  await execGit(['stash', 'push', '-m temporary lint-staged stash'], options)
+  await execGit(['stash', 'save', 'temporary lint-staged stash'], options)
 
   // Restore changed files back
   await execGit(['stash', 'apply', '--index'], options)
