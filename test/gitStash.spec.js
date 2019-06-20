@@ -63,7 +63,8 @@ describe('git', () => {
     await fsp.writeFile(path.join(wcDirPath, 'test.js'), initialContent)
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await gitflow.clearStagedFileStash(gitOpts)
     wcDir.removeCallback()
   })
 
