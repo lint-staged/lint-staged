@@ -73,9 +73,10 @@
     }
   },
   "jest": {
-    "testEnvironment": "node",
+    "collectCoverage": true,
     "setupFiles": ["./testSetup.js"],
-    "snapshotSerializers": ["jest-snapshot-serializer-ansi"]
+    "snapshotSerializers": ["jest-snapshot-serializer-ansi"],
+    "testEnvironment": "node"
   },
   "keywords": [
     "lint",
