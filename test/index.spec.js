@@ -1,9 +1,17 @@
-import makeConsoleMock from 'consolemock'
 import cosmiconfig from 'cosmiconfig'
+import makeConsoleMock from 'consolemock'
 import path from 'path'
-import lintStaged from '../src/index'
 
 jest.unmock('execa')
+
+jest.mock('pify', () => () => () => [{ filename: 'foo.js' }])
+
+// silence console from Jest output
+console.log = jest.fn(() => {})
+console.error = jest.fn(() => {})
+
+// eslint-disable-next-line import/first
+import lintStaged from '../src/index'
 
 const replaceSerializer = (from, to) => ({
   test: val => typeof val === 'string' && from.test(val),
@@ -85,5 +93,16 @@ describe('lintStaged', () => {
     await lintStaged(logger, nonExistentConfig)
     expect(logger.printHistory()).toMatchSnapshot()
     expect(process.exitCode).toEqual(1)
+  })
+
+  it('should exit with code 1 on linter errors', async () => {
+    const config = {
+      linters: {
+        '*': 'node -e "process.exit(1)"'
+      }
+    }
+    mockCosmiconfigWith({ config })
+    await lintStaged(logger, undefined)
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('node -e "process.exit(1)"'))
   })
 })
