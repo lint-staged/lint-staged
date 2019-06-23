@@ -58,8 +58,8 @@ const schema = yup.object().shape({
     .mixed()
     .test(
       'renderer',
-      "Should be 'update', 'verbose' or a function.",
-      value => value === 'update' || value === 'verbose' || isFunction(value)
+      "Should be 'update', 'verbose', 'silent' or a function.",
+      value => ['update', 'verbose', 'silent'].includes(value) || isFunction(value)
     ),
   relative: yup.boolean().default(defaultConfig.relative)
 })
@@ -151,6 +151,7 @@ function unknownValidationReporter(config, option) {
  * For simple config, only the `linters` configuration is provided.
  *
  * @param {Object} sourceConfig
+ * @param {boolean} debugMode
  * @returns {{
  *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string
  * }}
