@@ -29,6 +29,8 @@ LOG Running tasks for *.js [completed]
 LOG Running linters... [completed]"
 `;
 
+exports[`runAll should reject promise when error during getStagedFiles 1`] = `"Unable to get staged files!"`;
+
 exports[`runAll should resolve the promise with no files 1`] = `
 "
 LOG No staged files match any of provided globs."

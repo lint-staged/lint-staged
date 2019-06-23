@@ -2,8 +2,7 @@ const execa = require('execa')
 const path = require('path')
 const tmp = require('tmp')
 const gitflow = require('../src/gitWorkflow')
-const pify = require('pify')
-const fsp = pify(require('fs'))
+const fs = require('fs-extra')
 
 tmp.setGracefulCleanup()
 jest.unmock('execa')
@@ -21,7 +20,7 @@ async function gitStatus(opts = gitOpts) {
 }
 
 async function readFile(filepath, dir = wcDirPath) {
-  const content = await fsp.readFile(path.join(dir, filepath), { encoding: 'utf-8' })
+  const content = await fs.readFile(path.join(dir, filepath), { encoding: 'utf-8' })
   return content.replace(/\r\n/g, '\n')
 }
 
@@ -36,7 +35,7 @@ describe('git', () => {
     // Init repository
     await gitflow.execGit('init', gitOpts)
     // Create JS file
-    await fsp.writeFile(
+    await fs.writeFile(
       path.join(wcDirPath, 'test.js'),
       `module.exports = {
   test: 'test',
@@ -45,7 +44,7 @@ describe('git', () => {
 }
 `
     )
-    await fsp.writeFile(
+    await fs.writeFile(
       path.join(wcDirPath, 'test.css'),
       `.test {
     border: 1px solid green;
@@ -59,9 +58,9 @@ describe('git', () => {
     // Create inital commit
     await gitflow.execGit(['commit', '-m', '"Initial commit"'], gitOpts)
     // Update one of the files
-    await fsp.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
+    await fs.writeFile(path.join(wcDirPath, 'test.css'), '.test { border: red; }')
     // Update one of the files
-    await fsp.writeFile(path.join(wcDirPath, 'test.js'), initialContent)
+    await fs.writeFile(path.join(wcDirPath, 'test.js'), initialContent)
   })
 
   afterEach(() => {
@@ -97,7 +96,7 @@ describe('git', () => {
     it('should return true if files are modified and in the index', async () => {
       await gitflow.execGit(['checkout', 'test.css'], gitOpts)
       await gitflow.execGit(['add', 'test.js'], gitOpts)
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), '')
+      await fs.writeFile(path.join(wcDirPath, 'test.js'), '')
       const res = await gitflow.hasPartiallyStagedFiles(gitOpts)
       expect(res).toEqual(true)
     })
@@ -226,7 +225,7 @@ M  test.js"
     test: 'test2',
     test: 'test2',
 };`
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), eslintContent)
+      await fs.writeFile(path.join(wcDirPath, 'test.js'), eslintContent)
 
       // Expect both indexed and modified state on one file
       expect(await gitStatus()).toMatchInlineSnapshot(`"MM test.js"`)
@@ -262,7 +261,7 @@ M  test.js"
     test: 'test2',
     test: 'test3',
 }`
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), userContent)
+      await fs.writeFile(path.join(wcDirPath, 'test.js'), userContent)
 
       // Expect test.js is in both index and modified
       expect(await gitStatus()).toMatchInlineSnapshot(`
@@ -278,7 +277,7 @@ MM test.js"
       expect(await gitStatus()).toMatchInlineSnapshot(`"M  test.js"`)
 
       // Do additional edits (imitate eslint --fix)
-      await fsp.writeFile(
+      await fs.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
     test: 'test2',
@@ -330,7 +329,7 @@ M  test.js"
       const newContent = `module.exports = {
     test: "test2",
 };`
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), newContent)
+      await fs.writeFile(path.join(wcDirPath, 'test.js'), newContent)
       // and add to index
       await gitflow.execGit(['add', 'test.js'], gitOpts)
       await gitflow.updateStash(gitOpts)
@@ -372,7 +371,7 @@ M  test.js"
     test: 'test2',
     test: 'test3'
 }`
-      await fsp.writeFile(path.join(wcDirPath, 'test.js'), userContent)
+      await fs.writeFile(path.join(wcDirPath, 'test.js'), userContent)
 
       // Expect test.js is in both index and modified
       expect(await gitStatus()).toMatchInlineSnapshot(`
@@ -389,7 +388,7 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Do additional edits (imitate eslint --fix)
-      await fsp.writeFile(
+      await fs.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
     test: "test2"
@@ -423,7 +422,7 @@ MM test.js"
       await gitflow.execGit(['checkout', '--', '.'], gitOpts)
 
       // Do additional edits and stage them
-      await fsp.writeFile(
+      await fs.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'test',
@@ -441,7 +440,7 @@ MM test.js"
       await gitflow.execGit(['add', 'test.js'], gitOpts)
 
       // Do additional edits without adding to index
-      await fsp.writeFile(
+      await fs.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: 'edited',
@@ -469,7 +468,7 @@ MM test.js"
       expect(await gitflow.execGit(['diff', '--cached'], gitOpts)).toEqual(initialIndex)
 
       // Imitate running prettier on the version from the index
-      await fsp.writeFile(
+      await fs.writeFile(
         path.join(wcDirPath, 'test.js'),
         `module.exports = {
   test: "test",

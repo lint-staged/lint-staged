@@ -1,13 +1,12 @@
 'use strict'
 
-const sgf = require('staged-git-files')
+const generateTasks = require('./generateTasks')
+const git = require('./gitWorkflow')
+const getStagedFiles = require('./getStagedFiles')
 const Listr = require('listr')
 const has = require('lodash/has')
-const pify = require('pify')
 const makeCmdTasks = require('./makeCmdTasks')
-const generateTasks = require('./generateTasks')
 const resolveGitDir = require('./resolveGitDir')
-const git = require('./gitWorkflow')
 
 const debug = require('debug')('lint-staged:run')
 
@@ -32,14 +31,15 @@ module.exports = async function runAll(config) {
 
   debug('Resolved git directory to be `%s`', gitDir)
 
-  sgf.cwd = gitDir
+  const files = await getStagedFiles({ cwd: gitDir })
 
-  /* files is an Object{ filename: String, status: String } */
-  const files = await pify(sgf)('ACM')
-  const filenames = files.map(file => file.filename)
-  debug('Loaded list of staged files in git:\n%O', filenames)
+  if (!files) {
+    throw new Error('Unable to get staged files!')
+  }
 
-  const tasks = (await generateTasks(config, gitDir, filenames)).map(task => ({
+  debug('Loaded list of staged files in git:\n%O', files)
+
+  const tasks = (await generateTasks(config, gitDir, files)).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(

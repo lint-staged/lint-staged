@@ -2,6 +2,6 @@
   "linters": {
     "*.{js,json,md}": ["prettier --write", "git add"],
     "*.js": ["npm run lint:base --fix", "git add"],
-    ".*{rc, json}": "jsonlint"
+    ".*{rc, json}": ["jsonlint", "git add"]
   }
 }
