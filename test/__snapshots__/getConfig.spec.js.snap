@@ -54,6 +54,12 @@ Object {
 }
 `;
 
+exports[`validateConfig should not throw and should print nothing for "silent" renderer 1`] = `""`;
+
+exports[`validateConfig should not throw and should print nothing for "update" renderer 1`] = `""`;
+
+exports[`validateConfig should not throw and should print nothing for "verbose" renderer 1`] = `""`;
+
 exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for custom renderer 1`] = `""`;

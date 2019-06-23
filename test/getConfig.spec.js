@@ -229,4 +229,35 @@ describe('validateConfig', () => {
     expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
+
+  it('should not throw and should print nothing for "silent" renderer', () => {
+    const validAdvancedConfig = {
+      renderer: 'silent'
+    }
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for "verbose" renderer', () => {
+    const validAdvancedConfig = {
+      renderer: 'verbose'
+    }
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for "update" renderer', () => {
+    const validAdvancedConfig = {
+      renderer: 'update'
+    }
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should throw for unknown renderer value', () => {
+    const validAdvancedConfig = {
+      renderer: 'some-string'
+    }
+    expect(() => validateConfig(getConfig(validAdvancedConfig))).toThrow()
+  })
 })
