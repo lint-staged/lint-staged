@@ -13,23 +13,20 @@ const findBin = require('./findBin')
 const debug = require('debug')('lint-staged:task')
 
 /**
- * Execute the given linter binary with arguments and file paths using execa and
+ * Execute the given linter binary with arguments using execa and
  * return the promise.
  *
  * @param {string} bin
  * @param {Array<string>} args
  * @param {Object} execaOptions
- * @param {Array<string>} pathsToLint
  * @return {Promise} child_process
  */
-function execLinter(bin, args, execaOptions, pathsToLint) {
-  const binArgs = args.concat(pathsToLint)
-
+function execLinter(bin, args, execaOptions) {
   debug('bin:', bin)
-  debug('args: %O', binArgs)
+  debug('args: %O', args)
   debug('opts: %o', execaOptions)
 
-  return execa(bin, binArgs, { ...execaOptions })
+  return execa(bin, args, { ...execaOptions })
 }
 
 const successMsg = linter => `${symbols.success} ${linter} passed!`
@@ -93,7 +90,16 @@ function makeErr(linter, result, context = {}) {
  */
 module.exports = function resolveTaskFn(options) {
   const { linter, gitDir, pathsToLint } = options
-  const { bin, args } = findBin(linter)
+
+  // If cmd` is a function, it should return a string when evaluated with `pathsToLint`.
+  // Else, it's a already a string
+  const cmdIsFn = typeof cmd === 'function'
+  const linterString = cmdIsFn ? linter(pathsToLint) : linter
+
+  const { bin, args } = findBin(linterString)
+
+  // If `cmd` is a function, args already include `pathsToLint`.
+  const argsWithPaths = cmdIsFn ? args : args.concat(pathsToLint)
 
   const execaOptions = { reject: false }
   // Only use gitDir as CWD if we are using the git binary
@@ -105,7 +111,7 @@ module.exports = function resolveTaskFn(options) {
   if (!isWindows()) {
     debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
     return ctx =>
-      execLinter(bin, args, execaOptions, pathsToLint).then(result => {
+      execLinter(bin, argsWithPaths, execaOptions).then(result => {
         if (result.failed || result.killed || result.signal != null) {
           throw makeErr(linter, result, ctx)
         }
@@ -117,7 +123,7 @@ module.exports = function resolveTaskFn(options) {
   const { chunkSize, subTaskConcurrency: concurrency } = options
 
   const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
-  const mapper = execLinter.bind(null, bin, args, execaOptions)
+  const mapper = execLinter.bind(null, bin, argsWithPaths, execaOptions)
 
   debug(
     'OS: %s; Creating linter task with %d chunked file paths',
