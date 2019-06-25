@@ -96,6 +96,17 @@ describe('getConfig', () => {
         }
       })
     ).toMatchSnapshot()
+
+    expect(
+      getConfig({
+        linters: {
+          '*.js': filenames => {
+            const files = filenames.join(' ')
+            return `eslint --fix ${files} && git add ${files}`
+          }
+        }
+      })
+    ).toMatchSnapshot()
   })
 
   it('should deeply merge configs', () => {
@@ -227,6 +238,22 @@ describe('validateConfig', () => {
       renderer: () => {}
     }
     expect(() => validateConfig(getConfig(validAdvancedConfig))).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for function linter', () => {
+    expect(() =>
+      validateConfig(
+        getConfig({
+          linters: {
+            '*.js': filenames => {
+              const files = filenames.join(' ')
+              return `eslint --fix ${files} && git add ${files}`
+            }
+          }
+        })
+      )
+    ).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 })
