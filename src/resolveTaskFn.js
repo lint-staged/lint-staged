@@ -1,13 +1,9 @@
 'use strict'
 
-const chunk = require('lodash/chunk')
 const dedent = require('dedent')
-const isWindows = require('is-windows')
 const execa = require('execa')
 const chalk = require('chalk')
 const symbols = require('log-symbols')
-const pMap = require('p-map')
-const calcChunkSize = require('./calcChunkSize')
 const findBin = require('./findBin')
 
 const debug = require('debug')('lint-staged:task')
@@ -108,55 +104,12 @@ module.exports = function resolveTaskFn(options) {
     execaOptions.cwd = gitDir
   }
 
-  if (!isWindows()) {
-    debug('%s  OS: %s; File path chunking unnecessary', symbols.success, process.platform)
-    return ctx =>
-      execLinter(bin, argsWithPaths, execaOptions).then(result => {
-        if (result.failed || result.killed || result.signal != null) {
-          throw makeErr(linter, result, ctx)
-        }
-
-        return successMsg(linter)
-      })
-  }
-
-  const { chunkSize, subTaskConcurrency: concurrency } = options
-
-  const filePathChunks = chunk(pathsToLint, calcChunkSize(pathsToLint, chunkSize))
-  const mapper = execLinter.bind(null, bin, argsWithPaths, execaOptions)
-
-  debug(
-    'OS: %s; Creating linter task with %d chunked file paths',
-    process.platform,
-    filePathChunks.length
-  )
   return ctx =>
-    pMap(filePathChunks, mapper, { concurrency })
-      .catch(err => {
-        /* This will probably never be called. But just in case.. */
-        throw new Error(dedent`
-        ${symbols.error} ${linter} got an unexpected error.
-        ${err.message}
-      `)
-      })
-      .then(results => {
-        const errors = results.filter(res => res.failed || res.killed)
-        const failed = results.some(res => res.failed)
-        const killed = results.some(res => res.killed)
-        const signals = results.map(res => res.signal).filter(Boolean)
+    execLinter(bin, argsWithPaths, execaOptions).then(result => {
+      if (result.failed || result.killed || result.signal != null) {
+        throw makeErr(linter, result, ctx)
+      }
 
-        if (failed || killed || signals.length > 0) {
-          const finalResult = {
-            stdout: errors.map(err => err.stdout).join(''),
-            stderr: errors.map(err => err.stderr).join(''),
-            failed,
-            killed,
-            signal: signals.join(', ')
-          }
-
-          throw makeErr(linter, finalResult, ctx)
-        }
-
-        return successMsg(linter)
-      })
+      return successMsg(linter)
+    })
 }
