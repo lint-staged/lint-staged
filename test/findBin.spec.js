@@ -1,5 +1,6 @@
 import makeConsoleMock from 'consolemock'
 import npmWhichMock from 'npm-which'
+
 import findBin from '../src/findBin'
 
 describe('findBin', () => {
