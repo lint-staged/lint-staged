@@ -195,11 +195,17 @@ function validateConfig(config) {
   if (isObject(config.linters)) {
     Object.keys(config.linters).forEach(key => {
       if (
-        (!isArray(config.linters[key]) || config.linters[key].some(item => !isString(item))) &&
-        !isString(config.linters[key])
+        (!isArray(config.linters[key]) ||
+          config.linters[key].some(item => !isString(item) && !isFunction(item))) &&
+        !isString(config.linters[key]) &&
+        !isFunction(config.linters[key])
       ) {
         errors.push(
-          createError(`linters[${key}]`, 'Should be a string or an array of strings', key)
+          createError(
+            `linters[${key}]`,
+            'Should be a string, a function, or an array of strings and functions',
+            key
+          )
         )
       }
     })

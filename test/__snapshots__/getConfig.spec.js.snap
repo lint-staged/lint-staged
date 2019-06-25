@@ -54,9 +54,29 @@ Object {
 }
 `;
 
+exports[`getConfig should set linters 2`] = `
+Object {
+  "chunkSize": 9007199254740991,
+  "concurrent": true,
+  "globOptions": Object {
+    "dot": true,
+    "matchBase": true,
+  },
+  "ignore": Array [],
+  "linters": Object {
+    "*.js": [Function],
+  },
+  "relative": false,
+  "renderer": "update",
+  "subTaskConcurrency": 1,
+}
+`;
+
 exports[`validateConfig should not throw and should print nothing for advanced valid config 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for custom renderer 1`] = `""`;
+
+exports[`validateConfig should not throw and should print nothing for function linter 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for simple valid config 1`] = `""`;
 
@@ -112,7 +132,7 @@ exports[`validateConfig should throw and should print validation errors for inva
 
   Invalid value for 'linters[*.js]'.
 
-  Should be a string or an array of strings.
+  Should be a string, a function, or an array of strings and functions.
  
   Configured value is: '*.js'
 
