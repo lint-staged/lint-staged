@@ -1,9 +1,10 @@
 'use strict'
 
+const chalk = require('chalk')
 const dedent = require('dedent')
 const execa = require('execa')
-const chalk = require('chalk')
 const symbols = require('log-symbols')
+
 const findBin = require('./findBin')
 
 const debug = require('debug')('lint-staged:task')
@@ -82,34 +83,40 @@ function makeErr(linter, result, context = {}) {
  * @param {Array<string>} options.pathsToLint
  * @param {number} options.chunkSize
  * @param {number} options.subTaskConcurrency
- * @returns {function(): Promise<string>}
+ * @returns {function(): Promise<Array<string>>}
  */
 module.exports = function resolveTaskFn(options) {
   const { linter, gitDir, pathsToLint } = options
 
-  // If cmd` is a function, it should return a string when evaluated with `pathsToLint`.
+  // If `linter` is a function, it should return a string when evaluated with `pathsToLint`.
   // Else, it's a already a string
-  const cmdIsFn = typeof cmd === 'function'
-  const linterString = cmdIsFn ? linter(pathsToLint) : linter
+  const fnLinter = typeof linter === 'function'
+  const linterString = fnLinter ? linter(pathsToLint) : linter
+  // Support arrays of strings/functions by treating everything as arrays
+  const linters = Array.isArray(linterString) ? linterString : [linterString]
 
-  const { bin, args } = findBin(linterString)
+  const tasks = linters.map(command => {
+    const { bin, args } = findBin(command)
 
-  // If `cmd` is a function, args already include `pathsToLint`.
-  const argsWithPaths = cmdIsFn ? args : args.concat(pathsToLint)
+    // If `linter` is a function, args already include `pathsToLint`.
+    const argsWithPaths = fnLinter ? args : args.concat(pathsToLint)
 
-  const execaOptions = { reject: false }
-  // Only use gitDir as CWD if we are using the git binary
-  // e.g `npm` should run tasks in the actual CWD
-  if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {
-    execaOptions.cwd = gitDir
-  }
+    const execaOptions = { reject: false }
+    // Only use gitDir as CWD if we are using the git binary
+    // e.g `npm` should run tasks in the actual CWD
+    if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {
+      execaOptions.cwd = gitDir
+    }
 
-  return ctx =>
-    execLinter(bin, argsWithPaths, execaOptions).then(result => {
-      if (result.failed || result.killed || result.signal != null) {
-        throw makeErr(linter, result, ctx)
-      }
+    return ctx =>
+      execLinter(bin, argsWithPaths, execaOptions).then(result => {
+        if (result.failed || result.killed || result.signal != null) {
+          throw makeErr(linter, result, ctx)
+        }
 
-      return successMsg(linter)
-    })
+        return successMsg(linter)
+      })
+  })
+
+  return ctx => Promise.all(tasks.map(task => task(ctx)))
 }
