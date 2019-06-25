@@ -249,7 +249,8 @@ describe('validateConfig', () => {
             '*.js': filenames => {
               const files = filenames.join(' ')
               return `eslint --fix ${files} && git add ${files}`
-            }
+            },
+            '*.css': [filenames => filenames.map(filename => `eslint --fix ${filename}`)]
           }
         })
       )

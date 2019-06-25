@@ -62,6 +62,27 @@ LOG {
 }"
 `;
 
+exports[`lintStaged should parse function linter from js config 1`] = `
+"
+LOG Running lint-staged with the following config:
+LOG {
+  linters: {
+    '*.css': filenames => \`echo \${filenames.join(' ')}\`,
+    '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
+  },
+  concurrent: true,
+  chunkSize: 9007199254740991,
+  globOptions: {
+    matchBase: true,
+    dot: true
+  },
+  ignore: [],
+  subTaskConcurrency: 1,
+  renderer: 'verbose',
+  relative: false
+}"
+`;
+
 exports[`lintStaged should print helpful error message when config file is not found 1`] = `
 "
 ERROR Config could not be found.

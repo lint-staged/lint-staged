@@ -35,6 +35,38 @@ describe('resolveTaskFn', () => {
     })
   })
 
+  it('should support function linters that return string', async () => {
+    expect.assertions(2)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      linter: filenames => `node --arg=true ./myscript.js ${filenames}`
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      reject: false
+    })
+  })
+
+  it('should support function linters that return array of strings', async () => {
+    expect.assertions(3)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      pathsToLint: ['foo.js', 'bar.js'],
+      linter: filenames => filenames.map(filename => `node --arg=true ./myscript.js ${filename}`)
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(2)
+    expect(execa).nthCalledWith(1, 'node', ['--arg=true', './myscript.js', 'foo.js'], {
+      reject: false
+    })
+    expect(execa).nthCalledWith(2, 'node', ['--arg=true', './myscript.js', 'bar.js'], {
+      reject: false
+    })
+  })
+
   it('should pass `gitDir` as `cwd` to `execa()` gitDir !== process.cwd for git commands', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
