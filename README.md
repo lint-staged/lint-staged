@@ -130,6 +130,34 @@ Notice that the linting commands now are nested into the `linters` object. The f
 * `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
 * `relative` — `false` — if `true` it will give the relative path from your `package.json` directory to your linter arguments.
 
+## Using JS functions to customize linter commands
+
+When supplying configuration in JS format it is possible to define the linter command as a function which receives an array of staged filenames/paths and returns the complete linter command as a string. It is also possible to return an array of complete command strings, for example when the linter command supports only a single file input.
+
+### Example: Wrap filenames in single quotes and run once per file
+
+```js
+module.exports = {
+  '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`)
+}
+```
+
+### Example: Run `tsc` on changes to TypeScript files, but do not pass any filename arguments
+
+```js
+module.exports = {
+  '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit'
+}
+```
+
+### Example: Run eslint on entire repo if more than 10 staged files
+
+```js
+module.exports = {
+  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
+}
+```
+
 ## Filtering files
 
 It is possible to run linters for certain paths only by using glob patterns. [micromatch](https://github.com/micromatch/micromatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
