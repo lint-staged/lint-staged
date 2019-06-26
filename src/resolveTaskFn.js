@@ -81,8 +81,6 @@ function makeErr(linter, result, context = {}) {
  * @param {string} options.linter
  * @param {string} options.gitDir
  * @param {Array<string>} options.pathsToLint
- * @param {number} options.chunkSize
- * @param {number} options.subTaskConcurrency
  * @returns {function(): Promise<Array<string>>}
  */
 module.exports = function resolveTaskFn(options) {

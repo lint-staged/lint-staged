@@ -18,18 +18,16 @@ const debug = require('debug')('lint-staged:cfg')
 /**
  * Default config object
  *
- * @type {{concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string}}
+ * @type {{concurrent: boolean, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, renderer: string}}
  */
 const defaultConfig = {
   concurrent: true,
-  chunkSize: Number.MAX_SAFE_INTEGER,
   globOptions: {
     matchBase: true,
     dot: true
   },
   linters: {},
   ignore: [],
-  subTaskConcurrency: 1,
   renderer: 'update',
   relative: false
 }
@@ -39,21 +37,12 @@ const defaultConfig = {
  */
 const schema = yup.object().shape({
   concurrent: yup.boolean().default(defaultConfig.concurrent),
-  chunkSize: yup
-    .number()
-    .positive()
-    .default(defaultConfig.chunkSize),
   globOptions: yup.object().shape({
     matchBase: yup.boolean().default(defaultConfig.globOptions.matchBase),
     dot: yup.boolean().default(defaultConfig.globOptions.dot)
   }),
   linters: yup.object(),
   ignore: yup.array().of(yup.string()),
-  subTaskConcurrency: yup
-    .number()
-    .positive()
-    .integer()
-    .default(defaultConfig.subTaskConcurrency),
   renderer: yup
     .mixed()
     .test(
@@ -152,7 +141,7 @@ function unknownValidationReporter(config, option) {
  *
  * @param {Object} sourceConfig
  * @returns {{
- *  concurrent: boolean, chunkSize: number, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, subTaskConcurrency: number, renderer: string
+ *  concurrent: boolean, globOptions: {matchBase: boolean, dot: boolean}, linters: {}, renderer: string
  * }}
  */
 function getConfig(sourceConfig, debugMode) {

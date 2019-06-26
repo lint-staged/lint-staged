@@ -1,11 +1,7 @@
 import execa from 'execa'
 import resolveTaskFn from '../src/resolveTaskFn'
 
-const defaultOpts = {
-  pathsToLint: ['test.js'],
-  chunkSize: 999,
-  subTaskConcurrency: 1
-}
+const defaultOpts = { pathsToLint: ['test.js'] }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
