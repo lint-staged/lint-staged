@@ -35,9 +35,7 @@ describe('runAll', () => {
   })
 
   it('should not throw when a valid config is provided', () => {
-    const config = getConfig({
-      concurrent: false
-    })
+    const config = getConfig({})
     expect(() => runAll(config)).not.toThrow()
   })
 

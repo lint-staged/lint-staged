@@ -8,13 +8,11 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
   renderer: 'verbose',
   relative: false
 }"
@@ -28,13 +26,11 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
   renderer: 'verbose',
   relative: false
 }"
@@ -50,13 +46,11 @@ LOG {
     '*': 'mytask'
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
   renderer: 'verbose',
   relative: false
 }"
@@ -71,13 +65,11 @@ LOG {
     '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
   },
   concurrent: true,
-  chunkSize: 9007199254740991,
   globOptions: {
     matchBase: true,
     dot: true
   },
   ignore: [],
-  subTaskConcurrency: 1,
   renderer: 'verbose',
   relative: false
 }"

@@ -5,7 +5,7 @@ jest.unmock('execa')
 
 describe('runAll', () => {
   it('should throw when not in a git directory', async () => {
-    const config = getConfig({ concurrent: true, cwd: '/' })
+    const config = getConfig({ renderer: 'update', cwd: '/' })
     await expect(runAll(config)).rejects.toThrowErrorMatchingSnapshot()
   })
 })

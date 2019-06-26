@@ -11,34 +11,6 @@ describe('getConfig', () => {
     expect(getConfig({})).toMatchSnapshot()
   })
 
-  it('should set concurrent', () => {
-    expect(getConfig({})).toEqual(
-      expect.objectContaining({
-        concurrent: true
-      })
-    )
-
-    expect(
-      getConfig({
-        concurrent: false
-      })
-    ).toEqual(
-      expect.objectContaining({
-        concurrent: false
-      })
-    )
-
-    expect(
-      getConfig({
-        concurrent: true
-      })
-    ).toEqual(
-      expect.objectContaining({
-        concurrent: true
-      })
-    )
-  })
-
   it('should set renderer based on debug mode', () => {
     expect(getConfig({})).toEqual(
       expect.objectContaining({
@@ -141,8 +113,7 @@ describe('getConfig', () => {
 
   it('should not change config if the whole config was passed', () => {
     const src = {
-      concurrent: false,
-      chunkSize: 2,
+      concurrent: true,
       globOptions: {
         matchBase: false,
         dot: true
@@ -151,7 +122,6 @@ describe('getConfig', () => {
         '*.js': 'eslint'
       },
       ignore: ['docs/**/*.js'],
-      subTaskConcurrency: 10,
       renderer: 'custom',
       relative: true
     }
@@ -176,7 +146,7 @@ describe('validateConfig', () => {
   it('should throw and should print validation errors for invalid config', () => {
     const invalidAdvancedConfig = {
       foo: false,
-      chunkSize: 'string'
+      ignore: false
     }
     expect(() => validateConfig(getConfig(invalidAdvancedConfig))).toThrowErrorMatchingSnapshot()
   })
@@ -193,7 +163,7 @@ describe('validateConfig', () => {
 
   it('should not throw and should print validation warnings for mixed config', () => {
     const invalidMixedConfig = {
-      concurrent: false,
+      ignore: ['**/*.test.js'],
       '*.js': ['eslint --fix', 'git add']
     }
     expect(() => validateConfig(getConfig(invalidMixedConfig))).not.toThrow()
@@ -224,7 +194,7 @@ describe('validateConfig', () => {
 
   it('should not throw and should print nothing for advanced valid config', () => {
     const validAdvancedConfig = {
-      concurrent: false,
+      ignore: ['**/*.test.js'],
       linters: {
         '*.js': ['eslint --fix', 'git add']
       }

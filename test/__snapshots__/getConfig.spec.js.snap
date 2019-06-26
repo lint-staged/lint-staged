@@ -2,7 +2,6 @@
 
 exports[`getConfig should return config with defaults 1`] = `
 Object {
-  "chunkSize": 9007199254740991,
   "concurrent": true,
   "globOptions": Object {
     "dot": true,
@@ -12,13 +11,11 @@ Object {
   "linters": Object {},
   "relative": false,
   "renderer": "update",
-  "subTaskConcurrency": 1,
 }
 `;
 
 exports[`getConfig should return config with defaults for undefined 1`] = `
 Object {
-  "chunkSize": 9007199254740991,
   "concurrent": true,
   "globOptions": Object {
     "dot": true,
@@ -28,13 +25,11 @@ Object {
   "linters": Object {},
   "relative": false,
   "renderer": "update",
-  "subTaskConcurrency": 1,
 }
 `;
 
 exports[`getConfig should set linters 1`] = `
 Object {
-  "chunkSize": 9007199254740991,
   "concurrent": true,
   "globOptions": Object {
     "dot": true,
@@ -50,13 +45,11 @@ Object {
   },
   "relative": false,
   "renderer": "update",
-  "subTaskConcurrency": 1,
 }
 `;
 
 exports[`getConfig should set linters 2`] = `
 Object {
-  "chunkSize": 9007199254740991,
   "concurrent": true,
   "globOptions": Object {
     "dot": true,
@@ -68,7 +61,6 @@ Object {
   },
   "relative": false,
   "renderer": "update",
-  "subTaskConcurrency": 1,
 }
 `;
 
@@ -122,7 +114,7 @@ Please refer to https://github.com/okonet/lint-staged#configuration for more inf
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
 "● Validation Error:
 
-  chunkSize must be a \`number\` type, but the final value was: \`\\"string\\"\`.
+  ignore must be a \`array\` type, but the final value was: \`false\`.
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `;
