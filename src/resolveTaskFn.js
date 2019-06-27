@@ -26,6 +26,14 @@ function execLinter(bin, args, execaOptions) {
   return execa(bin, args, { ...execaOptions })
 }
 
+/**
+ * https://serverfault.com/questions/69430/what-is-the-maximum-length-of-a-command-line-in-mac-os-x
+ * https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation
+ * https://unix.stackexchange.com/a/120652
+ */
+const MAX_ARG_LENGTH =
+  (process.platform === 'darwin' && 262144) || (process.platform === 'win32' && 8191) || 131072
+
 const successMsg = linter => `${symbols.success} ${linter} passed!`
 
 /**
@@ -95,6 +103,19 @@ module.exports = function resolveTaskFn(options) {
 
   const tasks = linters.map(command => {
     const { bin, args } = findBin(command)
+
+    const argLength = args.join(' ').length
+    if (argLength > MAX_ARG_LENGTH) {
+      console.warn(dedent`${symbols.warning}  ${chalk.yellow(
+        `${chalk.bold(
+          command
+        )} received an argument string of ${argLength} characters, and might not run correctly on your platform.
+It is recommended to use functions as linters and split your command based on the number of staged files. For more info, please read:
+https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-commands
+        `
+      )}
+        `)
+    }
 
     // If `linter` is a function, args already include `pathsToLint`.
     const argsWithPaths = fnLinter ? args : args.concat(pathsToLint)
