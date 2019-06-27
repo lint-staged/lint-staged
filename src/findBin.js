@@ -1,6 +1,6 @@
 'use strict'
 
-const parse = require('string-argv')
+const stringArgv = require('string-argv')
 const npmWhich = require('npm-which')(process.cwd())
 const checkPkgScripts = require('./checkPkgScripts')
 
@@ -32,7 +32,7 @@ module.exports = function findBin(cmd) {
    *    "*.js": "eslint"
    *  }
    */
-  const [binName, ...args] = parse(cmd)
+  const [binName, ...args] = stringArgv.parseArgsStringToArgv(cmd)
 
   if (cache.has(binName)) {
     debug('Resolving binary for `%s` from cache', binName)

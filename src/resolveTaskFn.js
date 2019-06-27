@@ -95,7 +95,7 @@ module.exports = function resolveTaskFn(options) {
   const { linter, gitDir, pathsToLint } = options
   const { bin, args } = findBin(linter)
 
-  const execaOptions = { reject: false }
+  const execaOptions = { preferLocal: true, reject: false }
   // Only use gitDir as CWD if we are using the git binary
   // e.g `npm` should run tasks in the actual CWD
   if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {

@@ -39,7 +39,7 @@ describe('resolveTaskFn', () => {
       expect(pMap).toHaveBeenCalledWith([['test.js']], mapper, { concurrency: 1 })
       await mapper(chunk)
       expect(execa).toHaveBeenCalledTimes(1)
-      expect(execa).toHaveBeenCalledWith('test', ['test.js'], { reject: false })
+      expect(execa).toHaveBeenCalledWith('test', ['test.js'], { preferLocal: true, reject: false })
     })
 
     it('should respect chunk size and concurrency', async () => {
@@ -59,10 +59,10 @@ describe('resolveTaskFn', () => {
       const [c1, c2] = chunks
       await mapper(c1)
       expect(execa).toHaveBeenCalledTimes(1)
-      expect(execa).lastCalledWith('test', ['test1.js'], { reject: false })
+      expect(execa).lastCalledWith('test', ['test1.js'], { preferLocal: true, reject: false })
       await mapper(c2)
       expect(execa).toHaveBeenCalledTimes(2)
-      expect(execa).lastCalledWith('test', ['test2.js'], { reject: false })
+      expect(execa).lastCalledWith('test', ['test2.js'], { preferLocal: true, reject: false })
     })
 
     it('should not return task fn with chunked execution if OS is not Windows', async () => {
@@ -76,7 +76,10 @@ describe('resolveTaskFn', () => {
       await taskFn()
       expect(pMap).not.toHaveBeenCalled()
       expect(execa).toHaveBeenCalledTimes(1)
-      expect(execa).toHaveBeenCalledWith('test', ['test1.js', 'test2.js'], { reject: false })
+      expect(execa).toHaveBeenCalledWith('test', ['test1.js', 'test2.js'], {
+        preferLocal: true,
+        reject: false
+      })
     })
 
     it('should throw error for failed linters', async () => {

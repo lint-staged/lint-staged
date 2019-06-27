@@ -31,6 +31,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      preferLocal: true,
       reject: false
     })
   })
@@ -47,6 +48,7 @@ describe('resolveTaskFn', () => {
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('git', ['add', 'test.js'], {
       cwd: '../',
+      preferLocal: true,
       reject: false
     })
   })
@@ -57,7 +59,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('jest', ['test.js'], { reject: false })
+    expect(execa).lastCalledWith('jest', ['test.js'], { preferLocal: true, reject: false })
   })
 
   it('should throw error for failed linters', async () => {
