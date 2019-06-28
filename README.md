@@ -134,9 +134,14 @@ Notice that the linting commands now are nested into the `linters` object. The f
 
 When supplying configuration in JS format it is possible to define the linter command as a function which receives an array of staged filenames/paths and returns the complete linter command as a string. It is also possible to return an array of complete command strings, for example when the linter command supports only a single file input.
 
+```ts
+type LinterFn = (filenames: string[]) => string | string[]
+```
+
 ### Example: Wrap filenames in single quotes and run once per file
 
 ```js
+// .lintstagedrc.js
 module.exports = {
   '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`)
 }
@@ -145,6 +150,7 @@ module.exports = {
 ### Example: Run `tsc` on changes to TypeScript files, but do not pass any filename arguments
 
 ```js
+// lintstaged.config.js
 module.exports = {
   '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit'
 }
@@ -153,8 +159,22 @@ module.exports = {
 ### Example: Run eslint on entire repo if more than 10 staged files
 
 ```js
+// .lintstagedrc.js
 module.exports = {
   '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
+}
+```
+
+### Example: Create your own globs
+
+```js
+// lintstaged.config.js
+const micromatch = require('micromatch')
+module.exports = {
+  '*': allFiles => {
+    const match = micromatch(allFiles, ['*.js', '*.ts'])
+    return match.map(file => `eslint ${file}`)
+  }
 }
 ```
 
