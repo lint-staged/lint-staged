@@ -1,8 +1,9 @@
 'use strict'
 
-const path = require('path')
 const micromatch = require('micromatch')
 const pathIsInside = require('path-is-inside')
+const path = require('path')
+
 const { getConfig } = require('./getConfig')
 
 const debug = require('debug')('lint-staged:gen-tasks')
