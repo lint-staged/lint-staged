@@ -8,15 +8,6 @@ describe('resolveTaskFn', () => {
     execa.mockClear()
   })
 
-  it('should throw for non-existent script', () => {
-    expect(() => {
-      resolveTaskFn({
-        ...defaultOpts,
-        linter: 'missing-module'
-      })
-    }).toThrow()
-  })
-
   it('should support non npm scripts', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
@@ -26,8 +17,10 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
-      reject: false
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      preferLocal: true,
+      reject: false,
+      shell: true
     })
   })
 
@@ -40,8 +33,10 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
-      reject: false
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      preferLocal: true,
+      reject: false,
+      shell: true
     })
   })
 
@@ -55,11 +50,15 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).nthCalledWith(1, 'node', ['--arg=true', './myscript.js', 'foo.js'], {
-      reject: false
+    expect(execa).nthCalledWith(1, 'node --arg=true ./myscript.js foo.js', {
+      preferLocal: true,
+      reject: false,
+      shell: true
     })
-    expect(execa).nthCalledWith(2, 'node', ['--arg=true', './myscript.js', 'bar.js'], {
-      reject: false
+    expect(execa).nthCalledWith(2, 'node --arg=true ./myscript.js bar.js', {
+      preferLocal: true,
+      reject: false,
+      shell: true
     })
   })
 
@@ -73,9 +72,11 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git', ['add', 'test.js'], {
+    expect(execa).lastCalledWith('git add test.js', {
       cwd: '../',
-      reject: false
+      preferLocal: true,
+      reject: false,
+      shell: true
     })
   })
 
@@ -85,7 +86,11 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('jest', ['test.js'], { reject: false })
+    expect(execa).lastCalledWith('jest test.js', {
+      preferLocal: true,
+      reject: false,
+      shell: true
+    })
   })
 
   it('should throw error for failed linters', async () => {
