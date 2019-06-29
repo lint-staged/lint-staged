@@ -37,11 +37,11 @@ describe('makeCmdTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('test', ['test.js'], { reject: false })
+    expect(execa).lastCalledWith('test test.js', { preferLocal: true, reject: false, shell: true })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).lastCalledWith('test2', ['test.js'], { reject: false })
+    expect(execa).lastCalledWith('test2 test.js', { preferLocal: true, reject: false, shell: true })
   })
 })

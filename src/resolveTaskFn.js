@@ -5,25 +5,19 @@ const dedent = require('dedent')
 const execa = require('execa')
 const symbols = require('log-symbols')
 
-const findBin = require('./findBin')
-
 const debug = require('debug')('lint-staged:task')
 
 /**
- * Execute the given linter binary with arguments using execa and
+ * Execute the given linter cmd using execa and
  * return the promise.
  *
- * @param {string} bin
- * @param {Array<string>} args
- * @param {Object} execaOptions
+ * @param {string} cmd
  * @return {Promise} child_process
  */
-function execLinter(bin, args, execaOptions) {
-  debug('bin:', bin)
-  debug('args: %O', args)
-  debug('opts: %o', execaOptions)
-
-  return execa(bin, args, { ...execaOptions })
+const execLinter = (cmd, execaOptions = {}) => {
+  debug('cmd:', cmd)
+  debug('execaOptions:', execaOptions)
+  return execa(cmd, execaOptions)
 }
 
 const successMsg = linter => `${symbols.success} ${linter} passed!`
@@ -84,7 +78,7 @@ function makeErr(linter, result, context = {}) {
  * @returns {function(): Promise<Array<string>>}
  */
 module.exports = function resolveTaskFn(options) {
-  const { linter, gitDir, pathsToLint } = options
+  const { gitDir, linter, pathsToLint } = options
 
   // If `linter` is a function, it should return a string when evaluated with `pathsToLint`.
   // Else, it's a already a string
@@ -94,20 +88,18 @@ module.exports = function resolveTaskFn(options) {
   const linters = Array.isArray(linterString) ? linterString : [linterString]
 
   const tasks = linters.map(command => {
-    const { bin, args } = findBin(command)
+    // If `linter` is a function, cmd already includes `pathsToLint`.
+    const cmdWithPaths = fnLinter ? command : `${command} ${pathsToLint.join(' ')}`
 
-    // If `linter` is a function, args already include `pathsToLint`.
-    const argsWithPaths = fnLinter ? args : args.concat(pathsToLint)
-
-    const execaOptions = { reject: false }
     // Only use gitDir as CWD if we are using the git binary
     // e.g `npm` should run tasks in the actual CWD
-    if (/git(\.exe)?$/i.test(bin) && gitDir !== process.cwd()) {
+    const execaOptions = { preferLocal: true, reject: false, shell: true }
+    if (/^git(\.exe)?/i.test(command) && gitDir !== process.cwd()) {
       execaOptions.cwd = gitDir
     }
 
     return ctx =>
-      execLinter(bin, argsWithPaths, execaOptions).then(result => {
+      execLinter(cmdWithPaths, execaOptions).then(result => {
         if (result.failed || result.killed || result.signal != null) {
           throw makeErr(linter, result, ctx)
         }
