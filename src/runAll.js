@@ -1,14 +1,26 @@
 'use strict'
 
-const generateTasks = require('./generateTasks')
-const git = require('./gitWorkflow')
-const getStagedFiles = require('./getStagedFiles')
+const chalk = require('chalk')
+const dedent = require('dedent')
 const Listr = require('listr')
 const has = require('lodash/has')
+const symbols = require('log-symbols')
+
+const generateTasks = require('./generateTasks')
+const getStagedFiles = require('./getStagedFiles')
+const git = require('./gitWorkflow')
 const makeCmdTasks = require('./makeCmdTasks')
 const resolveGitDir = require('./resolveGitDir')
 
 const debug = require('debug')('lint-staged:run')
+
+/**
+ * https://serverfault.com/questions/69430/what-is-the-maximum-length-of-a-command-line-in-mac-os-x
+ * https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation
+ * https://unix.stackexchange.com/a/120652
+ */
+const MAX_ARG_LENGTH =
+  (process.platform === 'darwin' && 262144) || (process.platform === 'win32' && 8191) || 131072
 
 /**
  * Executes all tasks and either resolves or rejects the promise
@@ -38,6 +50,18 @@ module.exports = async function runAll(config) {
   }
 
   debug('Loaded list of staged files in git:\n%O', files)
+
+  const argLength = files.join(' ').length
+  if (argLength > MAX_ARG_LENGTH) {
+    console.warn(
+      dedent`${symbols.warning}  ${chalk.yellow(
+        `lint-staged generated an argument string of ${argLength} characters, and commands might not run correctly on your platform.
+It is recommended to use functions as linters and split your command based on the number of staged files. For more info, please read:
+https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-commands
+        `
+      )}`
+    )
+  }
 
   const tasks = (await generateTasks(config, gitDir, files)).map(task => ({
     title: `Running tasks for ${task.pattern}`,
