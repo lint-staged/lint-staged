@@ -40,9 +40,7 @@ describe('lintStaged', () => {
   it('should output config in debug mode', async () => {
     expect.assertions(1)
     const config = {
-      linters: {
-        '*': 'mytask'
-      }
+      '*': 'mytask'
     }
     mockCosmiconfigWith({ config })
     await lintStaged(logger, undefined, true)
@@ -54,6 +52,13 @@ describe('lintStaged', () => {
     const config = {
       '*': 'mytask'
     }
+    mockCosmiconfigWith({ config })
+    await lintStaged(logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should throw when invalid config is provided', async () => {
+    const config = {}
     mockCosmiconfigWith({ config })
     await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
@@ -105,9 +110,7 @@ describe('lintStaged', () => {
 
   it('should exit with code 1 on linter errors', async () => {
     const config = {
-      linters: {
-        '*': 'node -e "process.exit(1)"'
-      }
+      '*': 'node -e "process.exit(1)"'
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])

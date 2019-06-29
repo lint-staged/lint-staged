@@ -4,17 +4,7 @@ exports[`lintStaged should load an npm config package when specified 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  linters: {
-    '*': 'mytask'
-  },
-  concurrent: true,
-  globOptions: {
-    matchBase: true,
-    dot: true
-  },
-  ignore: [],
-  renderer: 'verbose',
-  relative: false
+  '*': 'mytask'
 }"
 `;
 
@@ -22,17 +12,7 @@ exports[`lintStaged should load config file when specified 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  linters: {
-    '*': 'mytask'
-  },
-  concurrent: true,
-  globOptions: {
-    matchBase: true,
-    dot: true
-  },
-  ignore: [],
-  renderer: 'verbose',
-  relative: false
+  '*': 'mytask'
 }"
 `;
 
@@ -42,17 +22,7 @@ exports[`lintStaged should output config in debug mode 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  linters: {
-    '*': 'mytask'
-  },
-  concurrent: true,
-  globOptions: {
-    matchBase: true,
-    dot: true
-  },
-  ignore: [],
-  renderer: 'verbose',
-  relative: false
+  '*': 'mytask'
 }"
 `;
 
@@ -60,18 +30,8 @@ exports[`lintStaged should parse function linter from js config 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
-  linters: {
-    '*.css': filenames => \`echo \${filenames.join(' ')}\`,
-    '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
-  },
-  concurrent: true,
-  globOptions: {
-    matchBase: true,
-    dot: true
-  },
-  ignore: [],
-  renderer: 'verbose',
-  relative: false
+  '*.css': filenames => \`echo \${filenames.join(' ')}\`,
+  '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
 }"
 `;
 
@@ -91,4 +51,14 @@ Error: ENOENT: no such file or directory, open 'fake-config-file.yml'
 ERROR 
 ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration.
+`;
+
+exports[`lintStaged should throw when invalid config is provided 1`] = `
+"
+ERROR Could not parse lint-staged config.
+
+Error: Configuration should not be empty!
+ERROR 
+ERROR Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration."
 `;

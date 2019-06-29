@@ -1,7 +1,6 @@
 import makeConsoleMock from 'consolemock'
 import execa from 'execa'
 
-import { getConfig } from '../src/getConfig'
 import getStagedFiles from '../src/getStagedFiles'
 import runAll from '../src/runAll'
 import { hasPartiallyStagedFiles, gitStashSave, gitStashPop, updateStash } from '../src/gitWorkflow'
@@ -29,37 +28,31 @@ describe('runAll', () => {
     global.console = globalConsoleTemp
   })
 
-  it('should throw when invalid config is provided', async () => {
-    await expect(runAll({})).rejects.toThrowErrorMatchingSnapshot()
-    await expect(runAll()).rejects.toThrowErrorMatchingSnapshot()
-  })
-
   it('should not throw when a valid config is provided', () => {
-    const config = getConfig({})
-    expect(() => runAll(config)).not.toThrow()
+    expect(() => runAll({})).not.toThrow()
   })
 
   it('should return a promise', () => {
-    expect(runAll(getConfig({}))).toBeInstanceOf(Promise)
+    expect(runAll({})).toBeInstanceOf(Promise)
   })
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    const res = await runAll(getConfig({}))
+    const res = await runAll({})
 
     expect(res).toEqual('No tasks to run.')
   })
 
   it('should resolve the promise with no files', async () => {
     expect.assertions(1)
-    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll({ '*.js': ['echo "sample"'] })
     expect(console.printHistory()).toMatchSnapshot()
   })
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll({ '*.js': ['echo "sample"'] })
     expect(console.printHistory()).toMatchSnapshot()
   })
 
@@ -67,7 +60,7 @@ describe('runAll', () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll({ '*.js': ['echo "sample"'] })
     expect(gitStashSave).toHaveBeenCalledTimes(1)
     expect(updateStash).toHaveBeenCalledTimes(1)
     expect(gitStashPop).toHaveBeenCalledTimes(1)
@@ -78,7 +71,7 @@ describe('runAll', () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(false))
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+    await runAll({ '*.js': ['echo "sample"'] })
     expect(gitStashSave).toHaveBeenCalledTimes(0)
     expect(updateStash).toHaveBeenCalledTimes(0)
     expect(gitStashPop).toHaveBeenCalledTimes(0)
@@ -100,7 +93,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+      await runAll({ '*.js': ['echo "sample"'] })
     } catch (err) {
       console.log(err)
     }
@@ -127,7 +120,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+      await runAll({ '*.js': ['echo "sample"'] })
     } catch (err) {
       console.log(err)
     }
@@ -140,7 +133,7 @@ describe('runAll', () => {
   it('should reject promise when error during getStagedFiles', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => null)
-    await expect(runAll(getConfig({}))).rejects.toThrowErrorMatchingSnapshot()
+    await expect(runAll({})).rejects.toThrowErrorMatchingSnapshot()
   })
 
   it('should skip stashing changes if no lint-staged files are changed', async () => {
@@ -158,7 +151,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll(getConfig({ linters: { '*.js': ['echo "sample"'] } }))
+      await runAll({ '*.js': ['echo "sample"'] })
     } catch (err) {
       console.log(err)
     }

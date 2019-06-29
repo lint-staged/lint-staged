@@ -3,9 +3,9 @@
 const dedent = require('dedent')
 const cosmiconfig = require('cosmiconfig')
 const stringifyObject = require('stringify-object')
-const { getConfig, validateConfig } = require('./getConfig')
 const printErrors = require('./printErrors')
 const runAll = require('./runAll')
+const validateConfig = require('./validateConfig')
 
 const debug = require('debug')('lint-staged')
 
@@ -55,7 +55,7 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
       debug('Successfully loaded config from `%s`:\n%O', result.filepath, result.config)
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
-      const config = validateConfig(getConfig(result.config, debugMode))
+      const config = validateConfig(result.config)
       if (debugMode) {
         // Log using logger to be able to test through `consolemock`.
         logger.log('Running lint-staged with the following config:')
@@ -66,7 +66,7 @@ module.exports = function lintStaged(logger = console, configPath, debugMode) {
         debug('Normalized config:\n%O', config)
       }
 
-      return runAll(config)
+      return runAll(config, debugMode)
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0
