@@ -4,15 +4,10 @@ const micromatch = require('micromatch')
 const pathIsInside = require('path-is-inside')
 const path = require('path')
 
-const { getConfig } = require('./getConfig')
-
 const debug = require('debug')('lint-staged:gen-tasks')
 
-module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
+module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
   debug('Generating linter tasks')
-
-  const normalizedConfig = getConfig(config) // Ensure we have a normalized config
-  const { linters, globOptions, ignore } = normalizedConfig
 
   const cwd = process.cwd()
   const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
@@ -30,17 +25,13 @@ module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
         .map(file => path.relative(cwd, file)),
       pattern,
       {
-        ...globOptions,
-        ignore
+        matchBase: true,
+        dot: true
       }
-    ).map(file => {
-      // if you set relative option, then the file path will be relative to your package.json
-      if (config.relative) {
-        return path.normalize(file)
-      }
+    ).map(file =>
       // Return absolute path after the filter is run
-      return path.resolve(cwd, file)
-    })
+      path.resolve(cwd, file)
+    )
 
     const task = { pattern, commands, fileList }
     debug('Generated task: \n%O', task)

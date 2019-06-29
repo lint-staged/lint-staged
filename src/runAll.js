@@ -3,7 +3,6 @@
 const chalk = require('chalk')
 const dedent = require('dedent')
 const Listr = require('listr')
-const has = require('lodash/has')
 const symbols = require('log-symbols')
 
 const generateTasks = require('./generateTasks')
@@ -27,14 +26,9 @@ const MAX_ARG_LENGTH =
  * @param config {Object}
  * @returns {Promise}
  */
-module.exports = async function runAll(config) {
+module.exports = async function runAll(config, debugMode) {
   debug('Running all linter scripts')
-  // Config validation
-  if (!config || !has(config, 'concurrent') || !has(config, 'renderer')) {
-    throw new Error('Invalid config provided to runAll! Use getConfig instead.')
-  }
 
-  const { concurrent, renderer } = config
   const gitDir = await resolveGitDir(config)
 
   if (!gitDir) {
@@ -81,9 +75,9 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     }
   }))
 
-  const listrBaseOptions = {
+  const listrOptions = {
     dateFormat: false,
-    renderer
+    renderer: debugMode ? 'verbose' : 'update'
   }
 
   // If all of the configured "linters" should be skipped
@@ -114,12 +108,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
       },
       {
         title: 'Running linters...',
-        task: () =>
-          new Listr(tasks, {
-            ...listrBaseOptions,
-            concurrent,
-            exitOnError: !concurrent
-          })
+        task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
       },
       {
         title: 'Updating stash...',
@@ -133,6 +122,6 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
         task: () => git.gitStashPop({ cwd: gitDir })
       }
     ],
-    listrBaseOptions
+    listrOptions
   ).run()
 }

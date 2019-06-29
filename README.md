@@ -72,11 +72,7 @@ Starting with v3.1 you can now use different ways of configuring it:
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
 
-Lint-staged supports simple and advanced config formats.
-
-### Simple config format
-
-Should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
+Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
 
 #### `package.json` example:
 
@@ -101,34 +97,6 @@ This config will execute `your-cmd` with the list of currently staged files pass
 So, considering you did `git add file1.ext file2.ext`, lint-staged will run the following command:
 
 `your-cmd file1.ext file2.ext`
-
-### Advanced config format
-
-To extend and customise lint-staged, advanced options are available. To use these options the format should be as the following:
-
-#### `package.json` example with `ignore` option:
-
-```json
-{
-  "lint-staged": {
-    "linters": {
-      "*.{js,scss}": ["some command", "git add"]
-    },
-    "ignore": ["**/dist/*.min.js"]
-  }
-}
-```
-
-Notice that the linting commands now are nested into the `linters` object. The following options are available for advanced configuration:
-
-#### Options
-
-* `concurrent` — _true_ — runs linters for each glob pattern simultaneously. If you don’t want this, you can set `concurrent: false`
-* `globOptions` — `{ matchBase: true, dot: true }` — [micromatch options](https://github.com/micromatch/micromatch#options) to
-  customize how glob patterns match files.
-* `ignore` - `['**/docs/**/*.js']` - array of glob patterns to entirely ignore from any task.
-* `linters` — `Object` — keys (`String`) are glob patterns, values (`Array<String> | String`) are commands to execute.
-* `relative` — `false` — if `true` it will give the relative path from your `package.json` directory to your linter arguments.
 
 ## Using JS functions to customize linter commands
 
@@ -177,36 +145,6 @@ module.exports = {
   }
 }
 ```
-
-## Filtering files
-
-It is possible to run linters for certain paths only by using glob patterns. [micromatch](https://github.com/micromatch/micromatch) is used to filter the staged files according to these patterns. File patterns should be specified _relative to the `package.json` location_ (i.e. where `lint-staged` is installed).
-
-**NOTE:** If you're using `lint-staged<5` globs have to be _relative to the git root_.
-
-```js
-{
-  // .js files anywhere in the root directory of the project
-  "*.js": "eslint",
-  // .js files anywhere in the project
-  "**/*.js": "eslint",
-  // .js file in the src directory
-  "src/*.js": "eslint",
-  // .js file anywhere within and below the src directory
-  "src/**/*.js": "eslint",
-}
-```
-
-When matching, `lint-staged` will do the following
-
-* Resolve the git root automatically, no configuration needed.
-* Pick the staged files which are present inside the project directory.
-* Filter them using the specified glob patterns.
-* Pass absolute paths to the linters as arguments.
-
-**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
-
-Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
 
 ## What commands are supported?
 
@@ -325,17 +263,6 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 ```json
 {
   "*.{md,html}": ["prettier --write", "git add"]
-}
-```
-
-### Use ng lint with angular cli >= 7.0.0
-
-```json
-{
-  "linters": {
-    "*.ts": "ng lint myProjectName --files"
-  },
-  "relative": true
 }
 ```
 
