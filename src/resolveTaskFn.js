@@ -17,9 +17,10 @@ const debug = require('debug')('lint-staged:task')
  */
 const execLinter = (cmd, args, execaOptions = {}) => {
   debug('cmd:', cmd)
-  debug('args:', args)
+  if (args) debug('args:', args)
   debug('execaOptions:', execaOptions)
-  return execa(cmd, args, execaOptions)
+
+  return args ? execa(cmd, args, execaOptions) : execa(cmd, execaOptions)
 }
 
 const successMsg = linter => `${symbols.success} ${linter} passed!`
@@ -88,20 +89,31 @@ module.exports = function resolveTaskFn({ gitDir, linter, pathsToLint, shell = f
   // Support arrays of strings/functions by treating everything as arrays
   const linters = Array.isArray(linterString) ? linterString : [linterString]
 
+  const execaOptions = { preferLocal: true, reject: false, shell }
+
   const tasks = linters.map(command => {
-    const [cmd, ...args] = stringArgv.parseArgsStringToArgv(command)
-    // If `linter` is a function, args already include `pathsToLint`.
-    const argsWithPaths = fnLinter ? args : args.concat(pathsToLint)
+    let cmd
+    let args
+
+    if (shell) {
+      execaOptions.shell = true
+      // If `shell`, passed command shouldn't be parsed
+      // If `linter` is a function, command already includes `pathsToLint`.
+      cmd = fnLinter ? command : `${command} ${pathsToLint.join(' ')}`
+    } else {
+      const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(command)
+      cmd = parsedCmd
+      args = fnLinter ? parsedArgs : parsedArgs.concat(pathsToLint)
+    }
 
     // Only use gitDir as CWD if we are using the git binary
     // e.g `npm` should run tasks in the actual CWD
-    const execaOptions = { preferLocal: true, reject: false, shell }
     if (/^git(\.exe)?/i.test(command) && gitDir !== process.cwd()) {
       execaOptions.cwd = gitDir
     }
 
     return ctx =>
-      execLinter(cmd, argsWithPaths, execaOptions).then(result => {
+      execLinter(cmd, args, execaOptions).then(result => {
         if (result.failed || result.killed || result.signal != null) {
           throw makeErr(linter, result, ctx)
         }
