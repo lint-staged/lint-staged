@@ -25,14 +25,14 @@ const MAX_ARG_LENGTH =
  * Executes all tasks and either resolves or rejects the promise
  * @param config {Object}
  * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
- * @param {Boolean} silentMode Use Listr’s silent renderer
+ * @param {Boolean} quietMode Use Listr’s silent renderer
  * @param {Boolean} debugMode Enable debug mode
  * @returns {Promise}
  */
 module.exports = async function runAll(
   config,
   shellMode = false,
-  silentMode = false,
+  quietMode = false,
   debugMode = false
 ) {
   debug('Running all linter scripts')
@@ -85,7 +85,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
 
   const listrOptions = {
     dateFormat: false,
-    renderer: (silentMode && 'silent') || (debugMode && 'verbose') || 'update'
+    renderer: (quietMode && 'silent') || (debugMode && 'verbose') || 'update'
   }
 
   // If all of the configured "linters" should be skipped
