@@ -24,9 +24,17 @@ const MAX_ARG_LENGTH =
 /**
  * Executes all tasks and either resolves or rejects the promise
  * @param config {Object}
+ * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
+ * @param {Boolean} silentMode Use Listr’s silent renderer
+ * @param {Boolean} debugMode Enable debug mode
  * @returns {Promise}
  */
-module.exports = async function runAll(config, debugMode) {
+module.exports = async function runAll(
+  config,
+  shellMode = false,
+  silentMode = false,
+  debugMode = false
+) {
   debug('Running all linter scripts')
 
   const gitDir = await resolveGitDir(config)
@@ -60,7 +68,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
   const tasks = (await generateTasks(config, gitDir, files)).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
-      new Listr(await makeCmdTasks(task.commands, gitDir, task.fileList), {
+      new Listr(await makeCmdTasks(task.commands, shellMode, gitDir, task.fileList), {
         // In sub-tasks we don't want to run concurrently
         // and we want to abort on errors
         dateFormat: false,
@@ -77,7 +85,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
 
   const listrOptions = {
     dateFormat: false,
-    renderer: debugMode ? 'verbose' : 'update'
+    renderer: (silentMode && 'silent') || (debugMode && 'verbose') || 'update'
   }
 
   // If all of the configured "linters" should be skipped
