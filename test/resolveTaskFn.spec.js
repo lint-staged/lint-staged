@@ -17,10 +17,10 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
   })
 
@@ -33,10 +33,10 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
   })
 
@@ -50,15 +50,15 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).nthCalledWith(1, 'node --arg=true ./myscript.js foo.js', {
+    expect(execa).nthCalledWith(1, 'node', ['--arg=true', './myscript.js', 'foo.js'], {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
-    expect(execa).nthCalledWith(2, 'node --arg=true ./myscript.js bar.js', {
+    expect(execa).nthCalledWith(2, 'node', ['--arg=true', './myscript.js', 'bar.js'], {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
   })
 
@@ -72,11 +72,11 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git add test.js', {
+    expect(execa).lastCalledWith('git', ['add', 'test.js'], {
       cwd: '../',
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
   })
 
@@ -86,10 +86,10 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('jest test.js', {
+    expect(execa).lastCalledWith('jest', ['test.js'], {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: false
     })
   })
 
@@ -166,5 +166,22 @@ Mock error"
     } catch (err) {
       expect(context.hasErrors).toEqual(true)
     }
+  })
+
+  it('should call execa with shell when configured so', async () => {
+    expect.assertions(2)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      linter: 'node --arg=true ./myscript.js',
+      shell: true
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      preferLocal: true,
+      reject: false,
+      shell: true
+    })
   })
 })

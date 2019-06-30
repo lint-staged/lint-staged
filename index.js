@@ -19,6 +19,8 @@ const debug = debugLib('lint-staged:bin')
 cmdline
   .version(pkg.version)
   .option('-c, --config [path]', 'Path to configuration file')
+  .option('-x, --shell', 'Use execa’s shell mode to execute linter commands')
+  .option('-s, --silent', 'Use Listr’s silent renderer')
   .option('-d, --debug', 'Enable debug mode')
   .parse(process.argv)
 
@@ -28,4 +30,4 @@ if (cmdline.debug) {
 
 debug('Running `lint-staged@%s`', pkg.version)
 
-require('./src')(console, cmdline.config, cmdline.debug)
+require('./src')(console, cmdline.config, !!cmdline.shell, !!cmdline.silent, !!cmdline.debug)
