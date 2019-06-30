@@ -133,7 +133,7 @@ module.exports = {
 }
 ```
 
-### Example: Create your own globs
+### Example: Use your own globs
 
 ```js
 // lintstaged.config.js
@@ -142,6 +142,19 @@ module.exports = {
   '*': allFiles => {
     const match = micromatch(allFiles, ['*.js', '*.ts'])
     return match.map(file => `eslint ${file}`)
+  }
+}
+```
+
+### Example: Use relative paths for commands
+
+```js
+const path = require('path')
+module.exports = {
+  '*.ts': absolutePaths => {
+    const cwd = process.cwd()
+    const relativePaths = absolutePaths.map(file => path.relative(cwd, file))
+    return `ng lint myProjectName --files ${relativePaths.join(' ')}`
   }
 }
 ```
