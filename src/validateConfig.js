@@ -4,10 +4,6 @@
 
 const chalk = require('chalk')
 const format = require('stringify-object')
-const isArray = require('lodash/isArray')
-const isFunction = require('lodash/isFunction')
-const isObject = require('lodash/isObject')
-const isString = require('lodash/isString')
 
 const debug = require('debug')('lint-staged:cfg')
 
@@ -36,7 +32,7 @@ module.exports = function validateConfig(config) {
 
   const errors = []
 
-  if (!isObject(config)) {
+  if (!config || typeof config !== 'object') {
     errors.push('Configuration should be an object!')
   } else {
     const globs = Object.keys(config)
@@ -47,9 +43,10 @@ module.exports = function validateConfig(config) {
 
     globs.forEach(key => {
       if (
-        (!isArray(config[key]) || config[key].some(item => !isString(item) && !isFunction(item))) &&
-        !isString(config[key]) &&
-        !isFunction(config[key])
+        (!Array.isArray(config[key]) ||
+          config[key].some(item => typeof item !== 'string' && typeof item !== 'function')) &&
+        typeof config[key] !== 'string' &&
+        typeof config[key] !== 'function'
       ) {
         errors.push(
           createError(
