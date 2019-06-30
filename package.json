@@ -35,7 +35,6 @@
     "del": "^4.1.1",
     "execa": "^2.0.1",
     "listr": "^0.14.3",
-    "lodash": "^4.17.11",
     "log-symbols": "^3.0.0",
     "micromatch": "^4.0.2",
     "path-is-inside": "^1.0.2",
