@@ -47,14 +47,14 @@ function loadConfig(configPath) {
  * @param {Function} logger
  * @param {String} configPath
  * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
- * @param {Boolean} silentMode Use Listr’s silent renderer
+ * @param {Boolean} quietMode Use Listr’s silent renderer
  * @param {Boolean} debugMode Enable debug mode
  */
 module.exports = function lintStaged(
   logger = console,
   configPath,
   shellMode = false,
-  silentMode = false,
+  quietMode = false,
   debugMode = false
 ) {
   debug('Loading config using `cosmiconfig`')
@@ -77,7 +77,7 @@ module.exports = function lintStaged(
         debug('Normalized config:\n%O', config)
       }
 
-      return runAll(config, shellMode, silentMode, debugMode)
+      return runAll(config, shellMode, quietMode, debugMode)
         .then(() => {
           debug('linters were executed successfully!')
           // No errors, exiting with 0

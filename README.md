@@ -41,25 +41,25 @@ See [Releases](https://github.com/okonet/lint-staged/releases)
 
 ## Command line flags
 
-```
-$ ./node_modules/.bin/lint-staged --help
+```bash
+$ npx lint-staged --help
+Usage: lint-staged [options]
 
-  Usage: lint-staged [options]
-
-
-  Options:
-
-    -V, --version        output the version number
-    -c, --config [path]  Configuration file path or package
-    -d, --debug          Enable debug mode
-    -h, --help           output usage information
+Options:
+  -V, --version        output the version number
+  -c, --config [path]  Path to configuration file
+  -x, --shell          Use execa’s shell mode to execute linter commands
+  -q, --quiet          Use Listr’s silent renderer
+  -d, --debug          Enable debug mode
+  -h, --help           output usage information
 ```
 
 * **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
+* **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
+* **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, exept for linter scripts.
 * **`--debug`**: Enabling the debug mode does the following:
   * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   * Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
-  * Do not pass `--silent` to npm scripts.
 
 ## Configuration
 

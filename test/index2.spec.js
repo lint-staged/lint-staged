@@ -15,7 +15,7 @@ describe('lintStaged', () => {
     Listr.mockClear()
   })
 
-  it('should pass silent flag to Listr', async () => {
+  it('should pass quiet flag to Listr', async () => {
     expect.assertions(1)
     await lintStaged(
       console,
