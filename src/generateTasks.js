@@ -25,7 +25,10 @@ module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
         .map(file => path.relative(cwd, file)),
       pattern,
       {
-        matchBase: true,
+        // If pattern doesn't look like a path, enable `matchBase` to
+        // match against filenames in every directory. This makes `*.js`
+        // match both `test.js` and `subdirectory/test.js`.
+        matchBase: !pattern.includes('/'),
         dot: true
       }
     ).map(file =>
