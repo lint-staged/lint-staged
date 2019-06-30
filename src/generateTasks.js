@@ -1,10 +1,22 @@
 'use strict'
 
 const micromatch = require('micromatch')
-const pathIsInside = require('path-is-inside')
 const path = require('path')
 
 const debug = require('debug')('lint-staged:gen-tasks')
+
+/**
+ * Test if `child` path is inside `parent` path
+ * https://stackoverflow.com/a/45242825
+ *
+ * @param {String} parent
+ * @param {String} child
+ * @returns {Boolean}
+ */
+const isPathInside = (parent, child) => {
+  const relative = path.relative(parent, child)
+  return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
+}
 
 module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
   debug('Generating linter tasks')
@@ -20,7 +32,7 @@ module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
       stagedFiles
         // Only worry about children of the CWD unless the pattern explicitly
         // specifies that it concerns a parent directory.
-        .filter(file => isParentDirPattern || pathIsInside(file, cwd))
+        .filter(file => isParentDirPattern || isPathInside(cwd, file))
         // Make the paths relative to CWD for filtering
         .map(file => path.relative(cwd, file)),
       pattern,
