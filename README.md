@@ -118,7 +118,7 @@ module.exports = {
 ### Example: Run `tsc` on changes to TypeScript files, but do not pass any filename arguments
 
 ```js
-// lintstaged.config.js
+// lint-staged.config.js
 module.exports = {
   '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit'
 }
@@ -136,7 +136,7 @@ module.exports = {
 ### Example: Use your own globs
 
 ```js
-// lintstaged.config.js
+// lint-staged.config.js
 const micromatch = require('micromatch')
 module.exports = {
   '*': allFiles => {
