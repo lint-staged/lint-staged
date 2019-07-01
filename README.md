@@ -159,6 +159,27 @@ module.exports = {
 }
 ```
 
+## Filtering files
+
+Linter commands work on a subset of all staged files, defined by a _glob pattern_. `lint-staged´ uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
+
+* If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
+  * **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
+* If the glob pattern does contain a slash (`/`), it will match for paths as well:
+  * **`"/*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
+  * **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
+
+When matching, `lint-staged` will do the following
+
+* Resolve the git root automatically, no configuration needed.
+* Pick the staged files which are present inside the project directory.
+* Filter them using the specified glob patterns.
+* Pass absolute paths to the linters as arguments.
+
+**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
+
+Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
+
 ## What commands are supported?
 
 Supported are any executables installed locally or globally via `npm` as well as any executable from your $PATH.
