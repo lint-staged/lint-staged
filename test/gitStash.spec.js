@@ -503,5 +503,51 @@ MM test.js"
   foo: "baz"
 };`)
     })
+
+    it('should preseve files outside subdir when no errors', async () => {
+      // Save initial status
+      const initialIndex = await gitflow.execGit(['diff'], gitOpts)
+      const initialStatus = await gitflow.execGit(['status'], gitOpts)
+
+      // Create subdirectory
+      const cwd = `${wcDirPath}/subdir`
+      await fs.ensureDir(cwd)
+
+      // "cd into subdir"
+      const subdirGitOpts = { ...gitOpts, cwd }
+
+      // Create file in subdir and stage it
+      await fs.writeJSON(`${cwd}/test.json`, { foo: 'bar' }, subdirGitOpts)
+      await gitflow.execGit(['add', 'test.json'], subdirGitOpts)
+      // Edit file again to make it a partial commit
+      await fs.writeJSON(`${cwd}/test.json`, { foo: 'bar', bar: 'bar' }, subdirGitOpts)
+
+      const newIndex = await gitflow.execGit(['diff', '--cached'], subdirGitOpts)
+
+      // Save stash
+      await gitflow.gitStashSave(subdirGitOpts)
+
+      // Status should still be the same
+      expect(await gitStatus(subdirGitOpts)).toMatchInlineSnapshot(`
+"A  subdir/test.json
+ M test.css
+ M test.js"
+`)
+      expect(await gitflow.execGit(['diff', '--cached'], subdirGitOpts)).toEqual(newIndex)
+
+      // Simulate edit during staging
+      await fs.writeJSON(`${cwd}/test.json`, { foo: 'bar', bar: 'foo' }, subdirGitOpts)
+      await gitflow.execGit(['add', 'test.json'], subdirGitOpts)
+      await gitflow.updateStash(subdirGitOpts)
+
+      // Restore state
+      await gitflow.gitStashPop(subdirGitOpts)
+
+      // Content should match initial index, after removing subdir
+      await fs.emptyDir(cwd)
+      await gitflow.execGit(['add', '.'], gitOpts)
+      expect(await gitflow.execGit(['diff'], gitOpts)).toEqual(initialIndex)
+      expect(await gitflow.execGit(['status'], gitOpts)).toEqual(initialStatus)
+    })
   })
 })
