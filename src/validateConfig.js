@@ -7,6 +7,17 @@ const format = require('stringify-object')
 
 const debug = require('debug')('lint-staged:cfg')
 
+const TEST_DEPRECATED_KEYS = new Map([
+  ['concurrent', key => typeof key === 'boolean'],
+  ['chunkSize', key => typeof key === 'number'],
+  ['globOptions', key => typeof key === 'object'],
+  ['linters', key => typeof key === 'object'],
+  ['ignore', key => Array.isArray(key)],
+  ['subTaskConcurrency', key => typeof key === 'number'],
+  ['renderer', key => typeof key === 'string'],
+  ['relative', key => typeof key === 'boolean']
+])
+
 const formatError = helpMsg => `● Validation Error:
 
   ${helpMsg}
@@ -42,6 +53,19 @@ module.exports = function validateConfig(config) {
     }
 
     globs.forEach(key => {
+      if (TEST_DEPRECATED_KEYS.has(key)) {
+        const testFn = TEST_DEPRECATED_KEYS.get(key)
+        if (testFn(config[key])) {
+          errors.push(
+            createError(
+              key,
+              'Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged',
+              config[key]
+            )
+          )
+        }
+      }
+
       if (
         (!Array.isArray(config[key]) ||
           config[key].some(item => typeof item !== 'string' && typeof item !== 'function')) &&
@@ -52,7 +76,7 @@ module.exports = function validateConfig(config) {
           createError(
             key,
             'Should be a string, a function, or an array of strings and functions',
-            key
+            config[key]
           )
         )
       }
