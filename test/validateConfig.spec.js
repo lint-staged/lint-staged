@@ -48,4 +48,22 @@ describe('validateConfig', () => {
     ).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
+
+  it('should throw when detecting deprecated advanced configuration', () => {
+    const advancedConfig = {
+      chunkSize: 10,
+      concurrent: false,
+      globOptions: { matchBase: false },
+      ignore: ['test.js'],
+      linters: {
+        '*.js': ['eslint']
+      },
+      relative: true,
+      renderer: 'silent',
+      subTaskConcurrency: 10
+    }
+
+    expect(() => validateConfig(advancedConfig)).toThrowErrorMatchingSnapshot()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
 })
