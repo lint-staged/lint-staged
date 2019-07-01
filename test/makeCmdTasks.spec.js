@@ -52,4 +52,34 @@ describe('makeCmdTasks', () => {
       shell: false
     })
   })
+
+  it('should work with function linter returning a string', async () => {
+    const res = await makeCmdTasks(() => 'test', false, gitDir, ['test.js'])
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test')
+  })
+
+  it('should work with function linter returning array of string', async () => {
+    const res = await makeCmdTasks(() => ['test', 'test2'], false, gitDir, ['test.js'])
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test')
+  })
+
+  it('should work with function linter accepting arguments', async () => {
+    const res = await makeCmdTasks(
+      filenames => filenames.map(file => `test ${file}`),
+      false,
+      gitDir,
+      ['test.js']
+    )
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test [file]')
+  })
+
+  it('should work with array of mixed string and function linters', async () => {
+    const res = await makeCmdTasks([() => 'test', 'test2'], false, gitDir, ['test.js'])
+    expect(res.length).toBe(2)
+    expect(res[0].title).toEqual('test')
+    expect(res[1].title).toEqual('test2')
+  })
 })
