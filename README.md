@@ -98,6 +98,45 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 `your-cmd file1.ext file2.ext`
 
+## Filtering files
+
+Linter commands work on a subset of all staged files, defined by a _glob pattern_. `lint-staged´ uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
+
+* If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
+  * **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
+* If the glob pattern does contain a slash (`/`), it will match for paths as well:
+  * **`"/*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
+  * **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
+
+When matching, `lint-staged` will do the following
+
+* Resolve the git root automatically, no configuration needed.
+* Pick the staged files which are present inside the project directory.
+* Filter them using the specified glob patterns.
+* Pass absolute paths to the linters as arguments.
+
+**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
+
+Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
+
+## What commands are supported?
+
+Supported are any executables installed locally or globally via `npm` as well as any executable from your $PATH.
+
+> Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
+
+`lint-staged` uses [execa](https://github.com/sindresorhus/execa#preferlocal) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
+
+```json
+{
+  "*.js": "eslint --fix"
+}
+```
+
+Pass arguments to your commands separated by space as you would do in the shell. See [examples](#examples) below.
+
+Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
+
 ## Using JS functions to customize linter commands
 
 When supplying configuration in JS format it is possible to define the linter command as a function which receives an array of staged filenames/paths and returns the complete linter command as a string. It is also possible to return an array of complete command strings, for example when the linter command supports only a single file input.
@@ -146,6 +185,24 @@ module.exports = {
 }
 ```
 
+### Example: Ignore files from match
+
+If for some reason you want to ignore files from the glob match, you can use `micromatch.not()`:
+
+```js
+// lint-staged.config.js
+const micromatch = require('micromatch')
+module.exports = {
+  '*.js': files => {
+    // from `files` filter those _NOT_ matching `*.test.js`
+    const match = micromatch.not(files, '*.test.js')
+    return match.map(file => `eslint ${file}`)
+  }
+}
+```
+
+Please note that for most cases, globs can achieve the same effect. For the above example, a matching glob would be `!(*.test).js`.
+
 ### Example: Use relative paths for commands
 
 ```js
@@ -158,45 +215,6 @@ module.exports = {
   }
 }
 ```
-
-## Filtering files
-
-Linter commands work on a subset of all staged files, defined by a _glob pattern_. `lint-staged´ uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
-
-* If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
-  * **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
-* If the glob pattern does contain a slash (`/`), it will match for paths as well:
-  * **`"/*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
-  * **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
-
-When matching, `lint-staged` will do the following
-
-* Resolve the git root automatically, no configuration needed.
-* Pick the staged files which are present inside the project directory.
-* Filter them using the specified glob patterns.
-* Pass absolute paths to the linters as arguments.
-
-**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
-
-Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
-
-## What commands are supported?
-
-Supported are any executables installed locally or globally via `npm` as well as any executable from your $PATH.
-
-> Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
-
-`lint-staged` uses [execa](https://github.com/sindresorhus/execa#preferlocal) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
-
-```json
-{
-  "*.js": "eslint --fix"
-}
-```
-
-Pass arguments to your commands separated by space as you would do in the shell. See [examples](#examples) below.
-
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
 ## Reformatting the code
 
