@@ -194,14 +194,14 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 const micromatch = require('micromatch')
 module.exports = {
   '*.js': files => {
-    // from `files` filter those _NOT_ matching `*.test.js`
-    const match = micromatch.not(files, '*.test.js')
+    // from `files` filter those _NOT_ matching `*test.js`
+    const match = micromatch.not(files, '*test.js')
     return match.map(file => `eslint ${file}`)
   }
 }
 ```
 
-Please note that for most cases, globs can achieve the same effect. For the above example, a matching glob would be `!(*.test).js`.
+Please note that for most cases, globs can achieve the same effect. For the above example, a matching glob would be `!(*test).js`.
 
 ### Example: Use relative paths for commands
 
