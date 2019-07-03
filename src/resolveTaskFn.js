@@ -13,9 +13,11 @@ const debug = require('debug')('lint-staged:task')
  * return the promise.
  *
  * @param {string} cmd
+ * @param {Array<string>} args
+ * @param {Object} execaOptions
  * @return {Promise} child_process
  */
-const execLinter = (cmd, args, execaOptions = {}) => {
+const execLinter = (cmd, args, execaOptions) => {
   debug('cmd:', cmd)
   if (args) debug('args:', args)
   debug('execaOptions:', execaOptions)
@@ -75,52 +77,42 @@ function makeErr(linter, result, context = {}) {
  * if the OS is Windows.
  *
  * @param {Object} options
+ * @param {string} options.gitDir
+ * @param {Boolean} options.isFn
  * @param {string} options.linter
  * @param {Boolean} options.shellMode
- * @param {string} options.gitDir
  * @param {Array<string>} options.pathsToLint
  * @returns {function(): Promise<Array<string>>}
  */
-module.exports = function resolveTaskFn({ gitDir, linter, pathsToLint, shell = false }) {
-  // If `linter` is a function, it should return a string when evaluated with `pathsToLint`.
-  // Else, it's a already a string
-  const fnLinter = typeof linter === 'function'
-  const linterString = fnLinter ? linter(pathsToLint) : linter
-  // Support arrays of strings/functions by treating everything as arrays
-  const linters = Array.isArray(linterString) ? linterString : [linterString]
-
+module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell = false }) {
   const execaOptions = { preferLocal: true, reject: false, shell }
 
-  const tasks = linters.map(command => {
-    let cmd
-    let args
+  let cmd
+  let args
 
-    if (shell) {
-      execaOptions.shell = true
-      // If `shell`, passed command shouldn't be parsed
-      // If `linter` is a function, command already includes `pathsToLint`.
-      cmd = fnLinter ? command : `${command} ${pathsToLint.join(' ')}`
-    } else {
-      const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(command)
-      cmd = parsedCmd
-      args = fnLinter ? parsedArgs : parsedArgs.concat(pathsToLint)
-    }
+  if (shell) {
+    execaOptions.shell = true
+    // If `shell`, passed command shouldn't be parsed
+    // If `linter` is a function, command already includes `pathsToLint`.
+    cmd = isFn ? linter : `${linter} ${pathsToLint.join(' ')}`
+  } else {
+    const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(linter)
+    cmd = parsedCmd
+    args = isFn ? parsedArgs : parsedArgs.concat(pathsToLint)
+  }
 
-    // Only use gitDir as CWD if we are using the git binary
-    // e.g `npm` should run tasks in the actual CWD
-    if (/^git(\.exe)?/i.test(command) && gitDir !== process.cwd()) {
-      execaOptions.cwd = gitDir
-    }
+  // Only use gitDir as CWD if we are using the git binary
+  // e.g `npm` should run tasks in the actual CWD
+  if (/^git(\.exe)?/i.test(linter) && gitDir !== process.cwd()) {
+    execaOptions.cwd = gitDir
+  }
 
-    return ctx =>
-      execLinter(cmd, args, execaOptions).then(result => {
-        if (result.failed || result.killed || result.signal != null) {
-          throw makeErr(linter, result, ctx)
-        }
+  return ctx =>
+    execLinter(cmd, args, execaOptions).then(result => {
+      if (result.failed || result.killed || result.signal != null) {
+        throw makeErr(linter, result, ctx)
+      }
 
-        return successMsg(linter)
-      })
-  })
-
-  return ctx => Promise.all(tasks.map(task => task(ctx)))
+      return successMsg(linter)
+    })
 }

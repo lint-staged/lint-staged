@@ -61,8 +61,9 @@ describe('makeCmdTasks', () => {
 
   it('should work with function linter returning array of string', async () => {
     const res = await makeCmdTasks(() => ['test', 'test2'], false, gitDir, ['test.js'])
-    expect(res.length).toBe(1)
+    expect(res.length).toBe(2)
     expect(res[0].title).toEqual('test')
+    expect(res[1].title).toEqual('test2')
   })
 
   it('should work with function linter accepting arguments', async () => {
@@ -70,16 +71,25 @@ describe('makeCmdTasks', () => {
       filenames => filenames.map(file => `test ${file}`),
       false,
       gitDir,
-      ['test.js']
+      ['test.js', 'test2.js']
     )
-    expect(res.length).toBe(1)
-    expect(res[0].title).toEqual('test [file]')
+    expect(res.length).toBe(2)
+    expect(res[0].title).toEqual('test test.js')
+    expect(res[1].title).toEqual('test test2.js')
   })
 
   it('should work with array of mixed string and function linters', async () => {
-    const res = await makeCmdTasks([() => 'test', 'test2'], false, gitDir, ['test.js'])
-    expect(res.length).toBe(2)
+    const res = await makeCmdTasks(
+      [() => 'test', 'test2', files => files.map(file => `test ${file}`)],
+      false,
+      gitDir,
+      ['test.js', 'test2.js', 'test3.js']
+    )
+    expect(res.length).toBe(5)
     expect(res[0].title).toEqual('test')
     expect(res[1].title).toEqual('test2')
+    expect(res[2].title).toEqual('test test.js')
+    expect(res[3].title).toEqual('test test2.js')
+    expect(res[4].title).toEqual('test test3.js')
   })
 })

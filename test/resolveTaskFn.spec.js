@@ -24,11 +24,12 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should support function linters that return string', async () => {
+  it('should not append pathsToLint when isFn', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      linter: filenames => `node --arg=true ./myscript.js ${filenames}`
+      isFn: true,
+      linter: 'node --arg=true ./myscript.js test.js'
     })
 
     await taskFn()
@@ -40,25 +41,38 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should support function linters that return array of strings', async () => {
-    expect.assertions(3)
+  it('should not append pathsToLint when isFn and shell', async () => {
+    expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      pathsToLint: ['foo.js', 'bar.js'],
-      linter: filenames => filenames.map(filename => `node --arg=true ./myscript.js ${filename}`)
+      isFn: true,
+      shell: true,
+      linter: 'node --arg=true ./myscript.js test.js'
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).nthCalledWith(1, 'node', ['--arg=true', './myscript.js', 'foo.js'], {
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: true
     })
-    expect(execa).nthCalledWith(2, 'node', ['--arg=true', './myscript.js', 'bar.js'], {
+  })
+
+  it('should work with shell', async () => {
+    expect.assertions(2)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      shell: true,
+      linter: 'node --arg=true ./myscript.js'
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: true
     })
   })
 

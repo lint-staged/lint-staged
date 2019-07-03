@@ -5,19 +5,6 @@ const resolveTaskFn = require('./resolveTaskFn')
 const debug = require('debug')('lint-staged:make-cmd-tasks')
 
 /**
- * Get title for linter task. For a function, evaluate by passing single [file].
- * For strings, return as-is
- * @param {string|Function} linter
- */
-const getTitle = linter => {
-  if (typeof linter === 'function') {
-    const resolved = linter(['[file]'])
-    return Array.isArray(resolved) ? resolved[0] : resolved
-  }
-  return linter
-}
-
-/**
  * Creates and returns an array of listr tasks which map to the given commands.
  *
  * @param {Array<string|Function>|string|Function} commands
@@ -27,16 +14,23 @@ const getTitle = linter => {
  */
 module.exports = async function makeCmdTasks(commands, shell, gitDir, pathsToLint) {
   debug('Creating listr tasks for commands %o', commands)
+  const commandsArray = Array.isArray(commands) ? commands : [commands]
 
-  const lintersArray = Array.isArray(commands) ? commands : [commands]
+  return commandsArray.reduce((tasks, command) => {
+    // linter function may return array of commands that already include `pathsToLit`
+    const isFn = typeof command === 'function'
+    const resolved = isFn ? command(pathsToLint) : command
+    const linters = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array linter as array
 
-  return lintersArray.map(linter => ({
-    title: getTitle(linter),
-    task: resolveTaskFn({
-      linter,
-      shell,
-      gitDir,
-      pathsToLint
+    linters.forEach(linter => {
+      const task = {
+        title: linter,
+        task: resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell })
+      }
+
+      tasks.push(task)
     })
-  }))
+
+    return tasks
+  }, [])
 }
