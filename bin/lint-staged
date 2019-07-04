@@ -2,7 +2,14 @@
 
 'use strict'
 
-const pkg = require('./package.json')
+// Force colors for packages that depend on https://www.npmjs.com/package/supports-color
+// but do this only in TTY mode
+if (process.stdout.isTTY) {
+  // istanbul ignore next
+  process.env.FORCE_COLOR = '1'
+}
+
+const pkg = require('../package.json')
 require('please-upgrade-node')(
   Object.assign({}, pkg, {
     engines: {
@@ -13,6 +20,7 @@ require('please-upgrade-node')(
 
 const cmdline = require('commander')
 const debugLib = require('debug')
+const lintStaged = require('../src')
 
 const debug = debugLib('lint-staged:bin')
 
@@ -30,4 +38,12 @@ if (cmdline.debug) {
 
 debug('Running `lint-staged@%s`', pkg.version)
 
-require('./src')(console, cmdline.config, !!cmdline.shell, !!cmdline.quiet, !!cmdline.debug)
+lintStaged(console, cmdline.config, !!cmdline.shell, !!cmdline.quiet, !!cmdline.debug).then(
+  exitCode => {
+    process.exitCode = exitCode
+  },
+  err => {
+    console.error(err)
+    process.exitCode = 1
+  }
+)

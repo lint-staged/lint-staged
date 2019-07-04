@@ -10,8 +10,11 @@
     "Suhas Karanth <sudo.suhas@gmail.com>",
     "Iiro Jäppinen <iiro@jappinen.fi> (https://iiro.fi)"
   ],
-  "bin": "index.js",
-  "files": ["index.js", "src"],
+  "main": "./src/index.js",
+  "bin": {
+    "lint-staged": "./bin/lint-staged"
+  },
+  "files": ["src", "bin"],
   "scripts": {
     "cz": "git-cz",
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
@@ -23,7 +26,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "node index.js"
+      "pre-commit": "./bin/lint-staged"
     }
   },
   "dependencies": {

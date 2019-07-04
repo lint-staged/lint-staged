@@ -98,9 +98,9 @@ describe('lintStaged', () => {
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(2)
     mockCosmiconfigWith(null)
-    await lintStaged(logger)
+    const exitCode = await lintStaged(logger)
     expect(logger.printHistory()).toMatchSnapshot()
-    expect(process.exitCode).toEqual(1)
+    expect(exitCode).toEqual(1)
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
@@ -115,9 +115,9 @@ describe('lintStaged', () => {
       )
     )
 
-    await lintStaged(logger, nonExistentConfig)
+    const exitCode = await lintStaged(logger, nonExistentConfig)
     expect(logger.printHistory()).toMatchSnapshot()
-    expect(process.exitCode).toEqual(1)
+    expect(exitCode).toEqual(1)
   })
 
   it('should exit with code 1 on linter errors', async () => {
@@ -126,8 +126,8 @@ describe('lintStaged', () => {
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    await lintStaged(logger, undefined)
+    const exitCode = await lintStaged(logger, undefined)
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('node -e "process.exit(1)"'))
-    expect(process.exitCode).toEqual(1)
+    expect(exitCode).toEqual(1)
   })
 })

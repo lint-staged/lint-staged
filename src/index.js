@@ -9,13 +9,6 @@ const validateConfig = require('./validateConfig')
 
 const debug = require('debug')('lint-staged')
 
-// Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-// but do this only in TTY mode
-if (process.stdout.isTTY) {
-  // istanbul ignore next
-  process.env.FORCE_COLOR = '1'
-}
-
 const errConfigNotFound = new Error('Config could not be found')
 
 function resolveConfig(configPath) {
@@ -43,12 +36,17 @@ function loadConfig(configPath) {
 }
 
 /**
- * Root lint-staged function that is called from .bin
- * @param {Function} logger
+ * @typedef {(...any) => void} LogFunction
+ * @typedef {{ error: LogFunction, log: LogFunction }} Logger
+ *
+ * Root lint-staged function that is called from `bin/lint-staged`.
+ *
+ * @param {Logger} logger
  * @param {String} configPath
  * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
  * @param {Boolean} quietMode Use Listr’s silent renderer
  * @param {Boolean} debugMode Enable debug mode
+ * @returns {Promise<number>} Promise containing the exit code to use
  */
 module.exports = function lintStaged(
   logger = console,
@@ -80,16 +78,14 @@ module.exports = function lintStaged(
       return runAll(config, shellMode, quietMode, debugMode)
         .then(() => {
           debug('linters were executed successfully!')
-          // No errors, exiting with 0
+          return Promise.resolve(0)
         })
         .catch(error => {
-          // Errors detected, printing and exiting with non-zero
-          process.exitCode = 1
-          printErrors(error)
+          printErrors(error, logger)
+          return Promise.resolve(1)
         })
     })
     .catch(err => {
-      process.exitCode = 1
       if (err === errConfigNotFound) {
         logger.error(`${err.message}.`)
       } else {
@@ -106,5 +102,7 @@ module.exports = function lintStaged(
         Please make sure you have created it correctly.
         See https://github.com/okonet/lint-staged#configuration.
       `)
+
+      return Promise.resolve(1)
     })
 }
