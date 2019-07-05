@@ -4,12 +4,12 @@ exports[`runAll should not skip stashing and restoring if there are partially st
 "
 LOG Stashing changes... [started]
 LOG Stashing changes... [completed]
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
-LOG Running linters... [completed]
+LOG Running tasks... [completed]
 LOG Updating stash... [started]
 LOG Updating stash... [completed]
 LOG Restoring local changes... [started]
@@ -21,12 +21,12 @@ exports[`runAll should not skip tasks if there are files 1`] = `
 LOG Stashing changes... [started]
 LOG Stashing changes... [skipped]
 LOG → No partially staged files found...
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
-LOG Running linters... [completed]"
+LOG Running tasks... [completed]"
 `;
 
 exports[`runAll should reject promise when error during getStagedFiles 1`] = `"Unable to get staged files!"`;
@@ -40,14 +40,14 @@ exports[`runAll should skip linters and stash update but perform working copy re
 "
 LOG Stashing changes... [started]
 LOG Stashing changes... [completed]
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [failed]
 LOG → 
 LOG Running tasks for *.js [failed]
 LOG → 
-LOG Running linters... [failed]
+LOG Running tasks... [failed]
 LOG Updating stash... [started]
 LOG Updating stash... [skipped]
 LOG → Skipping stash update since some tasks exited with errors
@@ -70,12 +70,12 @@ exports[`runAll should skip stashing and restoring if there are no partially sta
 LOG Stashing changes... [started]
 LOG Stashing changes... [skipped]
 LOG → No partially staged files found...
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
-LOG Running linters... [completed]"
+LOG Running tasks... [completed]"
 `;
 
 exports[`runAll should skip stashing changes if no lint-staged files are changed 1`] = `
@@ -87,14 +87,14 @@ exports[`runAll should skip updating stash if there are errors during linting 1`
 "
 LOG Stashing changes... [started]
 LOG Stashing changes... [completed]
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [failed]
 LOG → 
 LOG Running tasks for *.js [failed]
 LOG → 
-LOG Running linters... [failed]
+LOG Running tasks... [failed]
 LOG Updating stash... [started]
 LOG Updating stash... [skipped]
 LOG → Skipping stash update since some tasks exited with errors
