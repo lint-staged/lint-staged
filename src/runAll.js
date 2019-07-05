@@ -30,7 +30,7 @@ const MAX_ARG_LENGTH =
  * @param {Boolean} [shellMode] Use execa’s shell mode to execute linter commands
  * @param {Boolean} [quietMode] Use Listr’s silent renderer
  * @param {Boolean} [debugMode] Enable debug mode
- * @param {Logger} [logger]
+ * @param {Logger} logger
  * @returns {Promise}
  */
 module.exports = async function runAll(

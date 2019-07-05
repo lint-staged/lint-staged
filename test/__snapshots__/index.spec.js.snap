@@ -77,3 +77,18 @@ ERROR
 ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration."
 `;
+
+exports[`lintStaged should use cosmiconfig if no params are passed 1`] = `
+"
+ERROR Unable to get staged files!"
+`;
+
+exports[`lintStaged should use use the console if no logger is passed 1`] = `
+"
+ERROR Could not parse lint-staged config.
+
+Error: Configuration should not be empty!
+ERROR 
+ERROR Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration."
+`;
