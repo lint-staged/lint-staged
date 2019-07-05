@@ -78,13 +78,19 @@ function makeErr(linter, result, context = {}) {
  *
  * @param {Object} options
  * @param {string} options.gitDir
- * @param {Boolean} options.isFn
+ * @param {Boolean} [options.shouldBeProvidedPaths]
  * @param {string} options.linter
  * @param {Boolean} options.shellMode
  * @param {Array<string>} options.pathsToLint
  * @returns {function(): Promise<Array<string>>}
  */
-module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell = false }) {
+module.exports = function resolveTaskFn({
+  gitDir,
+  shouldBeProvidedPaths = true,
+  linter,
+  pathsToLint,
+  shell = false
+}) {
   const execaOptions = { preferLocal: true, reject: false, shell }
 
   let cmd
@@ -94,11 +100,11 @@ module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, she
     execaOptions.shell = true
     // If `shell`, passed command shouldn't be parsed
     // If `linter` is a function, command already includes `pathsToLint`.
-    cmd = isFn ? linter : `${linter} ${pathsToLint.join(' ')}`
+    cmd = shouldBeProvidedPaths ? `${linter} ${pathsToLint.join(' ')}` : linter
   } else {
     const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(linter)
     cmd = parsedCmd
-    args = isFn ? parsedArgs : parsedArgs.concat(pathsToLint)
+    args = shouldBeProvidedPaths ? parsedArgs.concat(pathsToLint) : parsedArgs
   }
 
   // Only use gitDir as CWD if we are using the git binary

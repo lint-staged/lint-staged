@@ -2,6 +2,7 @@
 
 const micromatch = require('micromatch')
 const path = require('path')
+const normalizeTasksConfig = require('./normalizeTasksConfig')
 
 const debug = require('debug')('lint-staged:gen-tasks')
 
@@ -26,7 +27,7 @@ module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
 
   return Object.keys(config).map(pattern => {
     const isParentDirPattern = pattern.startsWith('../')
-    const commands = config[pattern]
+    const { title, commands } = normalizeTasksConfig(pattern, config[pattern])
 
     const fileList = micromatch(
       stagedFiles
@@ -48,7 +49,7 @@ module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
       path.resolve(cwd, file)
     )
 
-    const task = { pattern, commands, fileList }
+    const task = { title, pattern, commands, fileList }
     debug('Generated task: \n%O', task)
 
     return task

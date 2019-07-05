@@ -66,7 +66,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
   }
 
   const tasks = (await generateTasks(config, gitDir, files)).map(task => ({
-    title: `Running tasks for ${task.pattern}`,
+    title: task.title,
     task: async () =>
       new Listr(await makeCmdTasks(task.commands, shellMode, gitDir, task.fileList), {
         // In sub-tasks we don't want to run concurrently

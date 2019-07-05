@@ -24,11 +24,11 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should not append pathsToLint when isFn', async () => {
+  it('should not append pathsToLint when shouldBeProvidedPaths is false', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      isFn: true,
+      shouldBeProvidedPaths: false,
       linter: 'node --arg=true ./myscript.js test.js'
     })
 
@@ -41,11 +41,11 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should not append pathsToLint when isFn and shell', async () => {
+  it('should not append pathsToLint when shouldBeProvidedPaths is false and shell', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      isFn: true,
+      shouldBeProvidedPaths: false,
       shell: true,
       linter: 'node --arg=true ./myscript.js test.js'
     })

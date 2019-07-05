@@ -64,6 +64,7 @@ describe('generateTasks', () => {
     const result = await generateTasks({ ...config }, relPath, files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
+      title: expect.stringContaining('*.js'),
       pattern: '*.js',
       commands: 'root-js',
       fileList: []
@@ -86,6 +87,7 @@ describe('generateTasks', () => {
     const result = await generateTasks(config, workDir, files)
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
+      title: expect.stringContaining('*.js'),
       pattern: '*.js',
       commands: 'root-js',
       fileList: [
@@ -102,6 +104,7 @@ describe('generateTasks', () => {
     const result = await generateTasks(config, workDir, files)
     const linter = result.find(item => item.pattern === '**/*.js')
     expect(linter).toEqual({
+      title: expect.stringContaining('**/*.js'),
       pattern: '**/*.js',
       commands: 'any-js',
       fileList: [
@@ -118,6 +121,7 @@ describe('generateTasks', () => {
     const result = await generateTasks(config, workDir, files)
     const linter = result.find(item => item.pattern === 'deeper/*.js')
     expect(linter).toEqual({
+      title: expect.stringContaining('deeper/*.js'),
       pattern: 'deeper/*.js',
       commands: 'deeper-js',
       fileList: [`${workDir}/deeper/test.js`, `${workDir}/deeper/test2.js`].map(path.normalize)
@@ -128,6 +132,7 @@ describe('generateTasks', () => {
     const result = await generateTasks(config, workDir, files)
     const linter = result.find(item => item.pattern === '.hidden/*.js')
     expect(linter).toEqual({
+      title: expect.stringContaining('.hidden/*.js'),
       pattern: '.hidden/*.js',
       commands: 'hidden-js',
       fileList: [path.normalize(`${workDir}/.hidden/test.js`)]
@@ -138,6 +143,7 @@ describe('generateTasks', () => {
     const result = await generateTasks(config, workDir, files)
     const linter = result.find(item => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
+      title: expect.stringContaining('*.{css,js}'),
       pattern: '*.{css,js}',
       commands: 'root-css-or-js',
       fileList: [
