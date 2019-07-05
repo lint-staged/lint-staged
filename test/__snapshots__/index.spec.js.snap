@@ -58,7 +58,7 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration."
 `;
 
-exports[`lintStaged should print helpful error message when explicit config file is not found 2`] = `
+exports[`lintStaged should print helpful error message when explicit config file is not found 1`] = `
 
 ERROR Could not parse lint-staged config.
 

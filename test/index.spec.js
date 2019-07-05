@@ -118,9 +118,7 @@ describe('lintStaged', () => {
 
     await expect(
       lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
-    ).rejects.toMatchInlineSnapshot(
-      `[Error: ENOENT: no such file or directory, open '/Users/chunter/workspace/github/cameronhunter/lint-staged/fake-config-file.yml']`
-    )
+    ).rejects.toThrowError()
 
     expect(logger.printHistory()).toMatchSnapshot()
   })
