@@ -18,15 +18,15 @@ const isPathInside = (parent, child) => {
   return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
 }
 
-module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
+module.exports = async function generateTasks(config, gitDir, stagedRelFiles) {
   debug('Generating linter tasks')
 
   const cwd = process.cwd()
   const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
 
-  return Object.keys(linters).map(pattern => {
+  return Object.keys(config).map(pattern => {
     const isParentDirPattern = pattern.startsWith('../')
-    const commands = linters[pattern]
+    const commands = config[pattern]
 
     const fileList = micromatch(
       stagedFiles
