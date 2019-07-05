@@ -123,7 +123,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
         }
       },
       {
-        title: 'Running linters...',
+        title: 'Running tasks...',
         task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
       },
       {
