@@ -10,14 +10,13 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
  * @param {Array<string|Function>|string|Function} commands
  * @param {Boolean} shell
  * @param {Array<string>} pathsToLint
- * @param {Object} [options]
  */
 module.exports = async function makeCmdTasks(commands, shell, gitDir, pathsToLint) {
   debug('Creating listr tasks for commands %o', commands)
   const commandsArray = Array.isArray(commands) ? commands : [commands]
 
   return commandsArray.reduce((tasks, command) => {
-    // linter function may return array of commands that already include `pathsToLit`
+    // linter function may return array of commands that already include `pathsToLint`
     const isFn = typeof command === 'function'
     const resolved = isFn ? command(pathsToLint) : command
     const linters = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array linter as array
