@@ -110,6 +110,18 @@ describe('runAll', () => {
     expect(gitStashPop).toHaveBeenCalledTimes(1)
   })
 
+  it('should warn if the argument length is longer than what the platform can handle', async () => {
+    hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(false))
+    getStagedFiles.mockImplementationOnce(async () => new Array(100000).fill('sample.js'))
+
+    try {
+      await runAll({ '*.js': () => 'echo "sample"' })
+    } catch (err) {
+      console.log(err)
+    }
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
   it('should skip linters and stash update but perform working copy restore if terminated', async () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
