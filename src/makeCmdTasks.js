@@ -1,6 +1,7 @@
 'use strict'
 
 const resolveTaskFn = require('./resolveTaskFn')
+const normalizeCommandConfig = require('./normalizeCommandConfig')
 
 const debug = require('debug')('lint-staged:make-cmd-tasks')
 
@@ -16,15 +17,18 @@ module.exports = async function makeCmdTasks(commands, shell, gitDir, pathsToLin
   const commandsArray = Array.isArray(commands) ? commands : [commands]
 
   return commandsArray.reduce((tasks, command) => {
-    // linter function may return array of commands that already include `pathsToLint`
-    const isFn = typeof command === 'function'
-    const resolved = isFn ? command(pathsToLint) : command
-    const linters = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array linter as array
+    const linters = normalizeCommandConfig(pathsToLint, command)
 
     linters.forEach(linter => {
       const task = {
-        title: linter,
-        task: resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell })
+        title: linter.title,
+        task: resolveTaskFn({
+          gitDir,
+          shouldBeProvidedPaths: linter.shouldBeProvidedPaths,
+          linter: linter.task,
+          pathsToLint,
+          shell
+        })
       }
 
       tasks.push(task)
