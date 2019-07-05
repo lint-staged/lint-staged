@@ -43,12 +43,10 @@ lintStaged({
   shell: !!cmdline.shell,
   quiet: !!cmdline.quiet,
   debug: !!cmdline.debug
-}).then(
-  exitCode => {
-    process.exitCode = exitCode
-  },
-  err => {
-    console.error(err)
+})
+  .then(passed => {
+    process.exitCode = passed ? 0 : 1
+  })
+  .catch(() => {
     process.exitCode = 1
-  }
-)
+  })
