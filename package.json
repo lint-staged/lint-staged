@@ -11,9 +11,7 @@
     "Iiro Jäppinen <iiro@jappinen.fi> (https://iiro.fi)"
   ],
   "main": "./src/index.js",
-  "bin": {
-    "lint-staged": "./bin/lint-staged"
-  },
+  "bin": "./bin/lint-staged",
   "files": ["src", "bin"],
   "scripts": {
     "cz": "git-cz",
