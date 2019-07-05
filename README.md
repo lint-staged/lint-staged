@@ -360,6 +360,21 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 }
 ```
 
+### Adding custom titles for tasks
+
+```json
+{
+  "*.{js,jsx}": {
+    "title": "Running JavaScript tasks",
+    "tasks": [
+      { "title": "Formatting", "task": "prettier --write" },
+      { "title": "Linting", "task": "eslint --fix" },
+      { "title": "Adding modified files to the commit", "task": "git add" }
+    ]
+  }
+}
+```
+
 ## Frequently Asked Questions
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
