@@ -3,24 +3,16 @@ import makeConsoleMock from 'consolemock'
 import printErrors from '../src/printErrors'
 
 describe('printErrors', () => {
-  const originalConsole = console
-
-  beforeAll(() => {
-    console = makeConsoleMock()
-  })
+  const logger = makeConsoleMock()
 
   beforeEach(() => {
-    console.clearHistory()
-  })
-
-  afterAll(() => {
-    global.console = originalConsole
+    logger.clearHistory()
   })
 
   it('should print plain errors', () => {
     const err = new Error('We have a problem')
-    printErrors(err)
-    expect(console.printHistory()).toMatchSnapshot()
+    printErrors(err, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print Listr nested errors', async () => {
@@ -59,8 +51,8 @@ describe('printErrors', () => {
     try {
       await list.run()
     } catch (err) {
-      printErrors(err)
-      expect(console.printHistory()).toMatchSnapshot()
+      printErrors(err, logger)
+      expect(logger.printHistory()).toMatchSnapshot()
     }
   })
 })
