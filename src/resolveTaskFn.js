@@ -80,8 +80,8 @@ function makeErr(linter, result, context = {}) {
  * @param {string} options.gitDir
  * @param {Boolean} options.isFn
  * @param {string} options.linter
- * @param {Boolean} options.shellMode
  * @param {Array<string>} options.pathsToLint
+ * @param {Boolean} [options.shell]
  * @returns {function(): Promise<Array<string>>}
  */
 module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell = false }) {

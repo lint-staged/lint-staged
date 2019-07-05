@@ -4,12 +4,12 @@
 // Work-around for duplicated error logs, see #142
 const errMsg = err => (err.privateMsg != null ? err.privateMsg : err.message)
 
-module.exports = function printErrors(errorInstance) {
+module.exports = function printErrors(errorInstance, logger = console) {
   if (Array.isArray(errorInstance.errors)) {
     errorInstance.errors.forEach(lintError => {
-      console.error(errMsg(lintError))
+      logger.error(errMsg(lintError))
     })
   } else {
-    console.error(errMsg(errorInstance))
+    logger.error(errMsg(errorInstance))
   }
 }

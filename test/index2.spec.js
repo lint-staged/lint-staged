@@ -18,11 +18,8 @@ describe('lintStaged', () => {
   it('should pass quiet flag to Listr', async () => {
     expect.assertions(1)
     await lintStaged(
-      console,
-      path.join(__dirname, '__mocks__', 'my-config.json'),
-      false,
-      true,
-      false
+      { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
+      console
     )
     expect(Listr.mock.calls[0][1]).toEqual({ dateFormat: false, renderer: 'silent' })
   })
@@ -30,11 +27,11 @@ describe('lintStaged', () => {
   it('should pass debug flag to Listr', async () => {
     expect.assertions(1)
     await lintStaged(
-      console,
-      path.join(__dirname, '__mocks__', 'my-config.json'),
-      false,
-      false,
-      true
+      {
+        configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
+        debug: true
+      },
+      console
     )
     expect(Listr.mock.calls[0][1]).toEqual({ dateFormat: false, renderer: 'verbose' })
   })

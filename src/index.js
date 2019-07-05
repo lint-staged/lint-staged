@@ -7,7 +7,7 @@ const printErrors = require('./printErrors')
 const runAll = require('./runAll')
 const validateConfig = require('./validateConfig')
 
-const debug = require('debug')('lint-staged')
+const debugLog = require('debug')('lint-staged')
 
 const errConfigNotFound = new Error('Config could not be found')
 
@@ -37,47 +37,46 @@ function loadConfig(configPath) {
 
 /**
  * @typedef {(...any) => void} LogFunction
- * @typedef {{ error: LogFunction, log: LogFunction }} Logger
+ * @typedef {{ error: LogFunction, log: LogFunction, warn: LogFunction }} Logger
  *
  * Root lint-staged function that is called from `bin/lint-staged`.
  *
- * @param {Logger} logger
- * @param {String} configPath
- * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
- * @param {Boolean} quietMode Use Listr’s silent renderer
- * @param {Boolean} debugMode Enable debug mode
+ * @param {object} options
+ * @param {string} [options.configPath] - Path to configuration file
+ * @param {boolean} [options.shell] - Use execa’s shell mode to execute linter commands
+ * @param {boolean} [options.quiet] - Use Listr’s silent renderer
+ * @param {boolean} [options.debug] - Enable debug mode
+ * @param {Logger} [logger]
+ *
  * @returns {Promise<number>} Promise containing the exit code to use
  */
 module.exports = function lintStaged(
-  logger = console,
-  configPath,
-  shellMode = false,
-  quietMode = false,
-  debugMode = false
+  { configPath, shell = false, quiet = false, debug = false } = {},
+  logger = console
 ) {
-  debug('Loading config using `cosmiconfig`')
+  debugLog('Loading config using `cosmiconfig`')
 
   return loadConfig(configPath)
     .then(result => {
       if (result == null) throw errConfigNotFound
 
-      debug('Successfully loaded config from `%s`:\n%O', result.filepath, result.config)
+      debugLog('Successfully loaded config from `%s`:\n%O', result.filepath, result.config)
       // result.config is the parsed configuration object
       // result.filepath is the path to the config file that was found
       const config = validateConfig(result.config)
-      if (debugMode) {
+      if (debug) {
         // Log using logger to be able to test through `consolemock`.
         logger.log('Running lint-staged with the following config:')
         logger.log(stringifyObject(config, { indent: '  ' }))
       } else {
         // We might not be in debug mode but `DEBUG=lint-staged*` could have
         // been set.
-        debug('Normalized config:\n%O', config)
+        debugLog('Normalized config:\n%O', config)
       }
 
-      return runAll(config, shellMode, quietMode, debugMode)
+      return runAll(config, shell, quiet, debug, logger)
         .then(() => {
-          debug('linters were executed successfully!')
+          debugLog('linters were executed successfully!')
           return Promise.resolve(0)
         })
         .catch(error => {

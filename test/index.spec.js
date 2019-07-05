@@ -4,10 +4,6 @@ import path from 'path'
 
 jest.unmock('execa')
 
-// silence console from Jest output
-console.log = jest.fn(() => {})
-console.error = jest.fn(() => {})
-
 // eslint-disable-next-line import/first
 import getStagedFiles from '../src/getStagedFiles'
 // eslint-disable-next-line import/first
@@ -43,7 +39,7 @@ describe('lintStaged', () => {
       '*': 'mytask'
     }
     mockCosmiconfigWith({ config })
-    await lintStaged(logger, undefined, false, false, true)
+    await lintStaged({ debug: true, quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -53,25 +49,26 @@ describe('lintStaged', () => {
       '*': 'mytask'
     }
     mockCosmiconfigWith({ config })
-    await lintStaged(logger)
+    await lintStaged({ quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should throw when invalid config is provided', async () => {
     const config = {}
     mockCosmiconfigWith({ config })
-    await lintStaged(logger)
+    await lintStaged({ quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should load config file when specified', async () => {
     expect.assertions(1)
     await lintStaged(
-      logger,
-      path.join(__dirname, '__mocks__', 'my-config.json'),
-      false,
-      false,
-      true
+      {
+        configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
+        debug: true,
+        quiet: true
+      },
+      logger
     )
     expect(logger.printHistory()).toMatchSnapshot()
   })
@@ -79,11 +76,12 @@ describe('lintStaged', () => {
   it('should parse function linter from js config', async () => {
     expect.assertions(1)
     await lintStaged(
-      logger,
-      path.join(__dirname, '__mocks__', 'advanced-config.js'),
-      false,
-      false,
-      true
+      {
+        configPath: path.join(__dirname, '__mocks__', 'advanced-config.js'),
+        debug: true,
+        quiet: true
+      },
+      logger
     )
     expect(logger.printHistory()).toMatchSnapshot()
   })
@@ -91,14 +89,14 @@ describe('lintStaged', () => {
   it('should load an npm config package when specified', async () => {
     expect.assertions(1)
     jest.mock('my-lint-staged-config')
-    await lintStaged(logger, 'my-lint-staged-config', false, false, true)
+    await lintStaged({ configPath: 'my-lint-staged-config', quiet: true, debug: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(2)
     mockCosmiconfigWith(null)
-    const exitCode = await lintStaged(logger)
+    const exitCode = await lintStaged({ quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
     expect(exitCode).toEqual(1)
   })
@@ -115,7 +113,7 @@ describe('lintStaged', () => {
       )
     )
 
-    const exitCode = await lintStaged(logger, nonExistentConfig)
+    const exitCode = await lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
     expect(exitCode).toEqual(1)
   })
@@ -126,8 +124,8 @@ describe('lintStaged', () => {
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const exitCode = await lintStaged(logger, undefined)
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('node -e "process.exit(1)"'))
+    const exitCode = await lintStaged({ quiet: true }, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
     expect(exitCode).toEqual(1)
   })
 })

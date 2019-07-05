@@ -10,7 +10,6 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
  * @param {Array<string|Function>|string|Function} commands
  * @param {Boolean} shell
  * @param {Array<string>} pathsToLint
- * @param {Object} [options]
  */
 module.exports = async function makeCmdTasks(commands, shell, gitDir, pathsToLint) {
   debug('Creating listr tasks for commands %o', commands)
