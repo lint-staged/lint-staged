@@ -362,6 +362,33 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 ## Frequently Asked Questions
 
+### Can I use `lint-staged` via node?
+
+Yes!
+
+```js
+const lintStaged = require('lint-staged')
+
+try {
+  const success = await lintStaged()
+  console.log(success ? 'Linting was successful!' : 'Linting failed!')
+} catch(e) {
+  // Failed to load configuration
+  console.error(e)
+}
+```
+
+Parameters to `lintStaged` are equivalent to their CLI counterparts:
+
+```js
+const success = await lintStaged({
+  configPath: './path/to/configuration/file',
+  shell: false,
+  quiet: false,
+  debug: false
+})
+```
+
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
 _**Update**_: The latest version of JetBrains IDEs now support running hooks as you would expect.
