@@ -50,7 +50,7 @@ LOG {
 ERROR Unable to get staged files!"
 `;
 
-exports[`lintStaged should print helpful error message when config file is not found 1`] = `
+exports[`lintStaged should print helpful error message when config file is not found 2`] = `
 "
 ERROR Config could not be found.
 ERROR 
@@ -58,7 +58,7 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration."
 `;
 
-exports[`lintStaged should print helpful error message when explicit config file is not found 1`] = `
+exports[`lintStaged should print helpful error message when explicit config file is not found 2`] = `
 
 ERROR Could not parse lint-staged config.
 
@@ -68,7 +68,7 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration.
 `;
 
-exports[`lintStaged should throw when invalid config is provided 1`] = `
+exports[`lintStaged should throw when invalid config is provided 2`] = `
 "
 ERROR Could not parse lint-staged config.
 

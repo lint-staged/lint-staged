@@ -48,7 +48,7 @@ function loadConfig(configPath) {
  * @param {boolean} [options.debug] - Enable debug mode
  * @param {Logger} [logger]
  *
- * @returns {Promise<number>} Promise containing the exit code to use
+ * @returns {Promise<boolean>} Promise of whether the linting passed or failed
  */
 module.exports = function lintStaged(
   { configPath, shell = false, quiet = false, debug = false } = {},
@@ -77,11 +77,11 @@ module.exports = function lintStaged(
       return runAll(config, shell, quiet, debug, logger)
         .then(() => {
           debugLog('linters were executed successfully!')
-          return Promise.resolve(0)
+          return Promise.resolve(true)
         })
         .catch(error => {
           printErrors(error, logger)
-          return Promise.resolve(1)
+          return Promise.resolve(false)
         })
     })
     .catch(err => {
@@ -102,6 +102,6 @@ module.exports = function lintStaged(
         See https://github.com/okonet/lint-staged#configuration.
       `)
 
-      return Promise.resolve(1)
+      return Promise.reject(err)
     })
 }

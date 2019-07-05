@@ -56,7 +56,9 @@ describe('lintStaged', () => {
   it('should throw when invalid config is provided', async () => {
     const config = {}
     mockCosmiconfigWith({ config })
-    await lintStaged({ quiet: true }, logger)
+    await expect(lintStaged({ quiet: true }, logger)).rejects.toMatchInlineSnapshot(
+      `[Error: Configuration should not be empty!]`
+    )
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -96,9 +98,10 @@ describe('lintStaged', () => {
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(2)
     mockCosmiconfigWith(null)
-    const exitCode = await lintStaged({ quiet: true }, logger)
+    await expect(lintStaged({ quiet: true }, logger)).rejects.toMatchInlineSnapshot(
+      `[Error: Config could not be found]`
+    )
     expect(logger.printHistory()).toMatchSnapshot()
-    expect(exitCode).toEqual(1)
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
@@ -113,9 +116,13 @@ describe('lintStaged', () => {
       )
     )
 
-    const exitCode = await lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
+    await expect(
+      lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
+    ).rejects.toMatchInlineSnapshot(
+      `[Error: ENOENT: no such file or directory, open '/Users/chunter/workspace/github/cameronhunter/lint-staged/fake-config-file.yml']`
+    )
+
     expect(logger.printHistory()).toMatchSnapshot()
-    expect(exitCode).toEqual(1)
   })
 
   it('should exit with code 1 on linter errors', async () => {
@@ -124,8 +131,8 @@ describe('lintStaged', () => {
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const exitCode = await lintStaged({ quiet: true }, logger)
+    const passed = await lintStaged({ quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
-    expect(exitCode).toEqual(1)
+    expect(passed).toBe(false)
   })
 })
