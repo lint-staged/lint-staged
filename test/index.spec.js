@@ -24,6 +24,16 @@ const mockCosmiconfigWith = result => {
 
 jest.mock('../src/gitWorkflow')
 
+async function withMockedConsole(mockConsole, fn) {
+  const previousConsole = console
+  try {
+    console = mockConsole
+    await fn()
+  } finally {
+    console = previousConsole
+  }
+}
+
 // TODO: Never run tests in the project's WC because this might change source files git status
 
 describe('lintStaged', () => {
@@ -31,6 +41,28 @@ describe('lintStaged', () => {
 
   beforeEach(() => {
     logger.clearHistory()
+  })
+
+  it('should use cosmiconfig if no params are passed', async () => {
+    expect.assertions(1)
+    const config = {
+      '*': 'mytask'
+    }
+    mockCosmiconfigWith({ config })
+    await lintStaged(undefined, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should use use the console if no logger is passed', async () => {
+    expect.assertions(1)
+    mockCosmiconfigWith({ config: {} })
+
+    const mockedConsole = makeConsoleMock()
+    try {
+      await withMockedConsole(mockedConsole, () => lintStaged())
+    } catch (ignore) {
+      expect(mockedConsole.printHistory()).toMatchSnapshot()
+    }
   })
 
   it('should output config in debug mode', async () => {

@@ -49,6 +49,13 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
+  it('should use an injected logger', async () => {
+    expect.assertions(1)
+    const logger = makeConsoleMock()
+    await runAll({ '*.js': ['echo "sample"'] }, undefined, true, undefined, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])

@@ -111,3 +111,8 @@ LOG {
   context: {hasStash: true, hasErrors: true}
 }"
 `;
+
+exports[`runAll should use an injected logger 1`] = `
+"
+LOG No staged files match any of provided globs."
+`;
