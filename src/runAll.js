@@ -1,5 +1,7 @@
 'use strict'
 
+/** @typedef {import('./index').Logger} Logger */
+
 const chalk = require('chalk')
 const dedent = require('dedent')
 const Listr = require('listr')
@@ -23,17 +25,20 @@ const MAX_ARG_LENGTH =
 
 /**
  * Executes all tasks and either resolves or rejects the promise
+ *
  * @param config {Object}
- * @param {Boolean} shellMode Use execa’s shell mode to execute linter commands
- * @param {Boolean} quietMode Use Listr’s silent renderer
- * @param {Boolean} debugMode Enable debug mode
+ * @param {Boolean} [shellMode] Use execa’s shell mode to execute linter commands
+ * @param {Boolean} [quietMode] Use Listr’s silent renderer
+ * @param {Boolean} [debugMode] Enable debug mode
+ * @param {Logger} [logger]
  * @returns {Promise}
  */
 module.exports = async function runAll(
   config,
   shellMode = false,
   quietMode = false,
-  debugMode = false
+  debugMode = false,
+  logger = console
 ) {
   debug('Running all linter scripts')
 
@@ -55,7 +60,7 @@ module.exports = async function runAll(
 
   const argLength = files.join(' ').length
   if (argLength > MAX_ARG_LENGTH) {
-    console.warn(
+    logger.warn(
       dedent`${symbols.warning}  ${chalk.yellow(
         `lint-staged generated an argument string of ${argLength} characters, and commands might not run correctly on your platform.
 It is recommended to use functions as linters and split your command based on the number of staged files. For more info, please visit:
@@ -91,7 +96,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
   // If all of the configured "linters" should be skipped
   // avoid executing any lint-staged logic
   if (tasks.every(task => task.skip())) {
-    console.log('No staged files match any of provided globs.')
+    logger.log('No staged files match any of provided globs.')
     return 'No tasks to run.'
   }
 

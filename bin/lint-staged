@@ -38,7 +38,12 @@ if (cmdline.debug) {
 
 debug('Running `lint-staged@%s`', pkg.version)
 
-lintStaged(console, cmdline.config, !!cmdline.shell, !!cmdline.quiet, !!cmdline.debug).then(
+lintStaged({
+  configPath: cmdline.config,
+  shell: !!cmdline.shell,
+  quiet: !!cmdline.quiet,
+  debug: !!cmdline.debug
+}).then(
   exitCode => {
     process.exitCode = exitCode
   },
