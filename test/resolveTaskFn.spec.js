@@ -107,6 +107,24 @@ describe('resolveTaskFn', () => {
     })
   })
 
+  it('should always pass `process.cwd()` as `cwd` to `execa()` when relative = true', async () => {
+    expect.assertions(2)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      linter: 'git add',
+      relative: true
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('git', ['add', 'test.js'], {
+      cwd: process.cwd(),
+      preferLocal: true,
+      reject: false,
+      shell: false
+    })
+  })
+
   it('should throw error for failed linters', async () => {
     expect.assertions(1)
     execa.mockResolvedValueOnce({
