@@ -3,7 +3,7 @@
 import path from 'path'
 import tmp from 'tmp'
 import execa from 'execa'
-import { execGit } from '../src/gitWorkflow'
+import { execGit, gitStashPop } from '../src/gitWorkflow'
 
 tmp.setGracefulCleanup()
 
@@ -30,6 +30,14 @@ describe('gitWorkflow', () => {
       expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
         cwd: path.resolve(process.cwd(), 'test', '__fixtures__')
       })
+    })
+  })
+
+  describe('gitStashPop', () => {
+    it('should throw when workingTree is null', () => {
+      expect(gitStashPop()).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"Trying to restore from stash but could not find working copy stash."`
+      )
     })
   })
 })
