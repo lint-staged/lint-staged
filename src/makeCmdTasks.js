@@ -7,11 +7,13 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
 /**
  * Creates and returns an array of listr tasks which map to the given commands.
  *
- * @param {Array<string|Function>|string|Function} commands
+ * @param {object} options
+ * @param {Array<string|Function>|string|Function} [options.commands]
+ * @param {string} [options.gitDir]
+ * @param {Array<string>} [options.pathsToLint]
  * @param {Boolean} shell
- * @param {Array<string>} pathsToLint
  */
-module.exports = async function makeCmdTasks(commands, shell, gitDir, pathsToLint) {
+module.exports = async function makeCmdTasks({ commands, gitDir, pathsToLint, shell }) {
   debug('Creating listr tasks for commands %o', commands)
   const commandsArray = Array.isArray(commands) ? commands : [commands]
 

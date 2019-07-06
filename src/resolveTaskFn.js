@@ -77,15 +77,31 @@ function makeErr(linter, result, context = {}) {
  * if the OS is Windows.
  *
  * @param {Object} options
- * @param {string} options.gitDir
- * @param {Boolean} options.isFn
- * @param {string} options.linter
- * @param {Array<string>} options.pathsToLint
- * @param {Boolean} [options.shell]
+ * @param {String} [options.gitDir] - Current git repo path
+ * @param {Boolean} [options.isFn] - Whether the linter task is a function
+ * @param {string} [options.linter] — Linter task
+ * @param {Array<string>} [options.pathsToLint] — Filepaths to run the linter task against
+ * @param {Boolean} [options.relative] — Whether the filepaths should be relative
+ * @param {Boolean} [options.shell] — Whether to skip parsing linter task for better shell support
  * @returns {function(): Promise<Array<string>>}
  */
-module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell = false }) {
+module.exports = function resolveTaskFn({
+  gitDir,
+  isFn,
+  linter,
+  pathsToLint,
+  relative,
+  shell = false
+}) {
   const execaOptions = { preferLocal: true, reject: false, shell }
+
+  if (relative) {
+    execaOptions.cwd = process.cwd()
+  } else if (/^git(\.exe)?/i.test(linter) && gitDir !== process.cwd()) {
+    // Only use gitDir as CWD if we are using the git binary
+    // e.g `npm` should run tasks in the actual CWD
+    execaOptions.cwd = gitDir
+  }
 
   let cmd
   let args
@@ -99,12 +115,6 @@ module.exports = function resolveTaskFn({ gitDir, isFn, linter, pathsToLint, she
     const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(linter)
     cmd = parsedCmd
     args = isFn ? parsedArgs : parsedArgs.concat(pathsToLint)
-  }
-
-  // Only use gitDir as CWD if we are using the git binary
-  // e.g `npm` should run tasks in the actual CWD
-  if (/^git(\.exe)?/i.test(linter) && gitDir !== process.cwd()) {
-    execaOptions.cwd = gitDir
   }
 
   return ctx =>

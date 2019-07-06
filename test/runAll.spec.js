@@ -38,28 +38,28 @@ describe('runAll', () => {
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    const res = await runAll({})
+    const res = await runAll({ config: {} })
 
     expect(res).toEqual('No tasks to run.')
   })
 
   it('should resolve the promise with no files', async () => {
     expect.assertions(1)
-    await runAll({ '*.js': ['echo "sample"'] })
+    await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchSnapshot()
   })
 
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()
-    await runAll({ '*.js': ['echo "sample"'] }, undefined, true, undefined, logger)
+    await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ '*.js': ['echo "sample"'] })
+    await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchSnapshot()
   })
 
@@ -67,7 +67,7 @@ describe('runAll', () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(true))
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ '*.js': ['echo "sample"'] })
+    await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(gitStashSave).toHaveBeenCalledTimes(1)
     expect(updateStash).toHaveBeenCalledTimes(1)
     expect(gitStashPop).toHaveBeenCalledTimes(1)
@@ -78,7 +78,7 @@ describe('runAll', () => {
     expect.assertions(4)
     hasPartiallyStagedFiles.mockImplementationOnce(() => Promise.resolve(false))
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ '*.js': ['echo "sample"'] })
+    await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(gitStashSave).toHaveBeenCalledTimes(0)
     expect(updateStash).toHaveBeenCalledTimes(0)
     expect(gitStashPop).toHaveBeenCalledTimes(0)
@@ -100,7 +100,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll({ '*.js': ['echo "sample"'] })
+      await runAll({ config: { '*.js': ['echo "sample"'] } })
     } catch (err) {
       console.log(err)
     }
@@ -115,7 +115,7 @@ describe('runAll', () => {
     getStagedFiles.mockImplementationOnce(async () => new Array(100000).fill('sample.js'))
 
     try {
-      await runAll({ '*.js': () => 'echo "sample"' })
+      await runAll({ config: { '*.js': () => 'echo "sample"' } })
     } catch (err) {
       console.log(err)
     }
@@ -139,7 +139,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll({ '*.js': ['echo "sample"'] })
+      await runAll({ config: { '*.js': ['echo "sample"'] } })
     } catch (err) {
       console.log(err)
     }
@@ -170,7 +170,7 @@ describe('runAll', () => {
     )
 
     try {
-      await runAll({ '*.js': ['echo "sample"'] })
+      await runAll({ config: { '*.js': ['echo "sample"'] } })
     } catch (err) {
       console.log(err)
     }

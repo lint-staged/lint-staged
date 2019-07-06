@@ -13,7 +13,7 @@ const git = require('./gitWorkflow')
 const makeCmdTasks = require('./makeCmdTasks')
 const resolveGitDir = require('./resolveGitDir')
 
-const debug = require('debug')('lint-staged:run')
+const debugLog = require('debug')('lint-staged:run')
 
 /**
  * https://serverfault.com/questions/69430/what-is-the-maximum-length-of-a-command-line-in-mac-os-x
@@ -26,29 +26,28 @@ const MAX_ARG_LENGTH =
 /**
  * Executes all tasks and either resolves or rejects the promise
  *
- * @param config {Object}
- * @param {Boolean} [shellMode] Use execa’s shell mode to execute linter commands
- * @param {Boolean} [quietMode] Use Listr’s silent renderer
- * @param {Boolean} [debugMode] Enable debug mode
+ * @param {object} options
+ * @param {Object} [options.config] - Task configuration
+ * @param {boolean} [options.relative] - Pass relative filepaths to tasks
+ * @param {boolean} [options.shell] - Skip parsing of tasks for better shell support
+ * @param {boolean} [options.quiet] - Disable lint-staged’s own console output
+ * @param {boolean} [options.debug] - Enable debug mode
  * @param {Logger} logger
  * @returns {Promise}
  */
 module.exports = async function runAll(
-  config,
-  shellMode = false,
-  quietMode = false,
-  debugMode = false,
+  { config, relative = false, shell = false, quiet = false, debug = false },
   logger = console
 ) {
-  debug('Running all linter scripts')
+  debugLog('Running all linter scripts')
 
-  const gitDir = await resolveGitDir(config)
+  const gitDir = await resolveGitDir()
 
   if (!gitDir) {
     throw new Error('Current directory is not a git directory!')
   }
 
-  debug('Resolved git directory to be `%s`', gitDir)
+  debugLog('Resolved git directory to be `%s`', gitDir)
 
   const files = await getStagedFiles({ cwd: gitDir })
 
@@ -56,7 +55,7 @@ module.exports = async function runAll(
     throw new Error('Unable to get staged files!')
   }
 
-  debug('Loaded list of staged files in git:\n%O', files)
+  debugLog('Loaded list of staged files in git:\n%O', files)
 
   const argLength = files.join(' ').length
   if (argLength > MAX_ARG_LENGTH) {
@@ -70,16 +69,19 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     )
   }
 
-  const tasks = (await generateTasks(config, gitDir, files)).map(task => ({
+  const tasks = (await generateTasks({ config, gitDir, files, relative })).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
-      new Listr(await makeCmdTasks(task.commands, shellMode, gitDir, task.fileList), {
-        // In sub-tasks we don't want to run concurrently
-        // and we want to abort on errors
-        dateFormat: false,
-        concurrent: false,
-        exitOnError: true
-      }),
+      new Listr(
+        await makeCmdTasks({ commands: task.commands, gitDir, shell, pathsToLint: task.fileList }),
+        {
+          // In sub-tasks we don't want to run concurrently
+          // and we want to abort on errors
+          dateFormat: false,
+          concurrent: false,
+          exitOnError: true
+        }
+      ),
     skip: () => {
       if (task.fileList.length === 0) {
         return `No staged files match ${task.pattern}`
@@ -90,7 +92,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
 
   const listrOptions = {
     dateFormat: false,
-    renderer: (quietMode && 'silent') || (debugMode && 'verbose') || 'update'
+    renderer: (quiet && 'silent') || (debug && 'verbose') || 'update'
   }
 
   // If all of the configured "linters" should be skipped

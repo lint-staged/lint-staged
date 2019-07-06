@@ -25,8 +25,8 @@ const files = [
 
 // Mocks get hoisted
 jest.mock('../src/resolveGitDir.js')
-const workDir = path.join(os.tmpdir(), 'tmp-lint-staged')
-resolveGitDir.mockResolvedValue(workDir)
+const gitDir = path.join(os.tmpdir(), 'tmp-lint-staged')
+resolveGitDir.mockResolvedValue(gitDir)
 
 const config = {
   '*.js': 'root-js',
@@ -39,7 +39,7 @@ const config = {
 
 describe('generateTasks', () => {
   beforeAll(() => {
-    jest.spyOn(process, 'cwd').mockReturnValue(workDir)
+    jest.spyOn(process, 'cwd').mockReturnValue(gitDir)
   })
 
   afterAll(() => {
@@ -47,13 +47,13 @@ describe('generateTasks', () => {
   })
 
   it('should return absolute paths', async () => {
-    const [task] = await generateTasks(
-      {
+    const [task] = await generateTasks({
+      config: {
         '*': 'lint'
       },
-      workDir,
+      gitDir,
       files
-    )
+    })
     task.fileList.forEach(file => {
       expect(path.isAbsolute(file)).toBe(true)
     })
@@ -61,7 +61,7 @@ describe('generateTasks', () => {
 
   it('should not match non-children files', async () => {
     const relPath = path.join(process.cwd(), '..')
-    const result = await generateTasks({ ...config }, relPath, files)
+    const result = await generateTasks({ config, gitDir: relPath, files })
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
@@ -71,7 +71,7 @@ describe('generateTasks', () => {
   })
 
   it('should return an empty file list for linters with no matches.', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
 
     result.forEach(task => {
       if (task.commands === 'unknown-js') {
@@ -83,74 +83,95 @@ describe('generateTasks', () => {
   })
 
   it('should match pattern "*.js"', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
       commands: 'root-js',
       fileList: [
-        `${workDir}/test.js`,
-        `${workDir}/deeper/test.js`,
-        `${workDir}/deeper/test2.js`,
-        `${workDir}/even/deeper/test.js`,
-        `${workDir}/.hidden/test.js`
+        `${gitDir}/test.js`,
+        `${gitDir}/deeper/test.js`,
+        `${gitDir}/deeper/test2.js`,
+        `${gitDir}/even/deeper/test.js`,
+        `${gitDir}/.hidden/test.js`
       ].map(path.normalize)
     })
   })
 
   it('should match pattern "**/*.js"', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
     const linter = result.find(item => item.pattern === '**/*.js')
     expect(linter).toEqual({
       pattern: '**/*.js',
       commands: 'any-js',
       fileList: [
-        `${workDir}/test.js`,
-        `${workDir}/deeper/test.js`,
-        `${workDir}/deeper/test2.js`,
-        `${workDir}/even/deeper/test.js`,
-        `${workDir}/.hidden/test.js`
+        `${gitDir}/test.js`,
+        `${gitDir}/deeper/test.js`,
+        `${gitDir}/deeper/test2.js`,
+        `${gitDir}/even/deeper/test.js`,
+        `${gitDir}/.hidden/test.js`
       ].map(path.normalize)
     })
   })
 
   it('should match pattern "deeper/*.js"', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
     const linter = result.find(item => item.pattern === 'deeper/*.js')
     expect(linter).toEqual({
       pattern: 'deeper/*.js',
       commands: 'deeper-js',
-      fileList: [`${workDir}/deeper/test.js`, `${workDir}/deeper/test2.js`].map(path.normalize)
+      fileList: [`${gitDir}/deeper/test.js`, `${gitDir}/deeper/test2.js`].map(path.normalize)
     })
   })
 
   it('should match pattern ".hidden/*.js"', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
     const linter = result.find(item => item.pattern === '.hidden/*.js')
     expect(linter).toEqual({
       pattern: '.hidden/*.js',
       commands: 'hidden-js',
-      fileList: [path.normalize(`${workDir}/.hidden/test.js`)]
+      fileList: [path.normalize(`${gitDir}/.hidden/test.js`)]
     })
   })
 
   it('should match pattern "*.{css,js}"', async () => {
-    const result = await generateTasks(config, workDir, files)
+    const result = await generateTasks({ config, gitDir, files })
     const linter = result.find(item => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
       pattern: '*.{css,js}',
       commands: 'root-css-or-js',
       fileList: [
-        `${workDir}/test.js`,
-        `${workDir}/deeper/test.js`,
-        `${workDir}/deeper/test2.js`,
-        `${workDir}/even/deeper/test.js`,
-        `${workDir}/.hidden/test.js`,
-        `${workDir}/test.css`,
-        `${workDir}/deeper/test.css`,
-        `${workDir}/deeper/test2.css`,
-        `${workDir}/even/deeper/test.css`,
-        `${workDir}/.hidden/test.css`
+        `${gitDir}/test.js`,
+        `${gitDir}/deeper/test.js`,
+        `${gitDir}/deeper/test2.js`,
+        `${gitDir}/even/deeper/test.js`,
+        `${gitDir}/.hidden/test.js`,
+        `${gitDir}/test.css`,
+        `${gitDir}/deeper/test.css`,
+        `${gitDir}/deeper/test2.css`,
+        `${gitDir}/even/deeper/test.css`,
+        `${gitDir}/.hidden/test.css`
+      ].map(path.normalize)
+    })
+  })
+
+  it('should be able to return relative paths for "*.{css,js}"', async () => {
+    const result = await generateTasks({ config, gitDir, files, relative: true })
+    const linter = result.find(item => item.pattern === '*.{css,js}')
+    expect(linter).toEqual({
+      pattern: '*.{css,js}',
+      commands: 'root-css-or-js',
+      fileList: [
+        'test.js',
+        'deeper/test.js',
+        'deeper/test2.js',
+        'even/deeper/test.js',
+        '.hidden/test.js',
+        'test.css',
+        'deeper/test.css',
+        'deeper/test2.css',
+        'even/deeper/test.css',
+        '.hidden/test.css'
       ].map(path.normalize)
     })
   })

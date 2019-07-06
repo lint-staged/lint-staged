@@ -43,15 +43,16 @@ function loadConfig(configPath) {
  *
  * @param {object} options
  * @param {string} [options.configPath] - Path to configuration file
- * @param {boolean} [options.shell] - Use execa’s shell mode to execute linter commands
- * @param {boolean} [options.quiet] - Use Listr’s silent renderer
+ * @param {boolean} [options.relative] - Pass relative filepaths to tasks
+ * @param {boolean} [options.shell] - Skip parsing of tasks for better shell support
+ * @param {boolean} [options.quiet] - Disable lint-staged’s own console output
  * @param {boolean} [options.debug] - Enable debug mode
  * @param {Logger} [logger]
  *
  * @returns {Promise<boolean>} Promise of whether the linting passed or failed
  */
 module.exports = function lintStaged(
-  { configPath, shell = false, quiet = false, debug = false } = {},
+  { configPath, relative = false, shell = false, quiet = false, debug = false } = {},
   logger = console
 ) {
   debugLog('Loading config using `cosmiconfig`')
@@ -71,12 +72,12 @@ module.exports = function lintStaged(
       } else {
         // We might not be in debug mode but `DEBUG=lint-staged*` could have
         // been set.
-        debugLog('Normalized config:\n%O', config)
+        debugLog('lint-staged config:\n%O', config)
       }
 
-      return runAll(config, shell, quiet, debug, logger)
+      return runAll({ config, relative, shell, quiet, debug }, logger)
         .then(() => {
-          debugLog('linters were executed successfully!')
+          debugLog('tasks were executed successfully!')
           return Promise.resolve(true)
         })
         .catch(error => {

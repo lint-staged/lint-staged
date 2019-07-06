@@ -18,15 +18,25 @@ const isPathInside = (parent, child) => {
   return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
 }
 
-module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
+/**
+ * Generates all task commands, and filelist
+ *
+ * @param {object} options
+ * @param {Object} [options.config] - Task configuration
+ * @param {boolean} [options.gitDir] - Git root directory
+ * @param {boolean} [options.files] - Staged filepaths
+ * @param {boolean} [options.relative] - Whether filepaths to should be relative to gitDir
+ * @returns {Promise}
+ */
+module.exports = async function generateTasks({ config, gitDir, files, relative = false }) {
   debug('Generating linter tasks')
 
   const cwd = process.cwd()
-  const stagedFiles = stagedRelFiles.map(file => path.resolve(gitDir, file))
+  const stagedFiles = files.map(file => path.resolve(gitDir, file))
 
-  return Object.keys(linters).map(pattern => {
+  return Object.keys(config).map(pattern => {
     const isParentDirPattern = pattern.startsWith('../')
-    const commands = linters[pattern]
+    const commands = config[pattern]
 
     const fileList = micromatch(
       stagedFiles
@@ -43,9 +53,10 @@ module.exports = async function generateTasks(linters, gitDir, stagedRelFiles) {
         matchBase: !pattern.includes('/'),
         dot: true
       }
-    ).map(file =>
-      // Return absolute path after the filter is run
-      path.resolve(cwd, file)
+    ).map(
+      file =>
+        // Return absolute path after the filter is run
+        relative ? path.normalize(file) : path.resolve(cwd, file)
     )
 
     const task = { pattern, commands, fileList }
