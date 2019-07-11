@@ -48,13 +48,15 @@ Usage: lint-staged [options]
 Options:
   -V, --version        output the version number
   -c, --config [path]  Path to configuration file
-  -x, --shell          Use execa’s shell mode to execute linter commands
-  -q, --quiet          Use Listr’s silent renderer
+  -r, --relative       Pass relative filepaths to tasks
+  -x, --shell          Skip parsing of tasks for better shell support
+  -q, --quiet          Disable lint-staged’s own console output
   -d, --debug          Enable debug mode
   -h, --help           output usage information
 ```
 
 * **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
+* **`--relative`**: By default filepaths will be passed to the linter tasks as *absolute*. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
 * **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
 * **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
 * **`--debug`**: Enabling the debug mode does the following:
