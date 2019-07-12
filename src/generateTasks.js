@@ -23,15 +23,21 @@ const isPathInside = (parent, child) => {
  *
  * @param {object} options
  * @param {Object} [options.config] - Task configuration
+ * @param {Object} [options.cwd] - Current working directory
  * @param {boolean} [options.gitDir] - Git root directory
  * @param {boolean} [options.files] - Staged filepaths
  * @param {boolean} [options.relative] - Whether filepaths to should be relative to gitDir
  * @returns {Promise}
  */
-module.exports = async function generateTasks({ config, gitDir, files, relative = false }) {
+module.exports = async function generateTasks({
+  config,
+  cwd = process.cwd(),
+  gitDir,
+  files,
+  relative = false
+}) {
   debug('Generating linter tasks')
 
-  const cwd = process.cwd()
   const stagedFiles = files.map(file => path.resolve(gitDir, file))
 
   return Object.keys(config).map(pattern => {
