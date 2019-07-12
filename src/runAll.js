@@ -28,6 +28,7 @@ const MAX_ARG_LENGTH =
  *
  * @param {object} options
  * @param {Object} [options.config] - Task configuration
+ * @param {Object} [options.cwd] - Current working directory
  * @param {boolean} [options.relative] - Pass relative filepaths to tasks
  * @param {boolean} [options.shell] - Skip parsing of tasks for better shell support
  * @param {boolean} [options.quiet] - Disable lint-staged’s own console output
@@ -36,12 +37,12 @@ const MAX_ARG_LENGTH =
  * @returns {Promise}
  */
 module.exports = async function runAll(
-  { config, relative = false, shell = false, quiet = false, debug = false },
+  { config, cwd = process.cwd(), debug = false, quiet = false, relative = false, shell = false },
   logger = console
 ) {
   debugLog('Running all linter scripts')
 
-  const gitDir = await resolveGitDir()
+  const gitDir = await resolveGitDir({ cwd })
 
   if (!gitDir) {
     throw new Error('Current directory is not a git directory!')
@@ -69,7 +70,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     )
   }
 
-  const tasks = (await generateTasks({ config, gitDir, files, relative })).map(task => ({
+  const tasks = (await generateTasks({ config, cwd, gitDir, files, relative })).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(
