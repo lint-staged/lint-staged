@@ -344,6 +344,16 @@ index f80f875..1c5643c 100644
 
     // Remove lock file
     await fs.remove(`${cwd}/.git/index.lock`)
+
+    // Luckily there is a stash
+    expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(
+      `"stash@{0}: On master: lint-staged automatic backup"`
+    )
+    await execGit(['reset', '--hard'])
+    await execGit(['stash', 'pop', '--index'])
+
+    expect(await execGit(['diff'])).toEqual(diff)
+    expect(await readFile('test.js')).toEqual(testJsFileUgly + appended)
   })
 
   afterEach(async () => {
