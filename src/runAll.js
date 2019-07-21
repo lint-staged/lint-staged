@@ -103,9 +103,6 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     return 'No tasks to run.'
   }
 
-  // Do not terminate main Listr process on SIGINT
-  process.on('SIGINT', () => {})
-
   return new Listr(
     [
       {
