@@ -1,164 +1,133 @@
 'use strict'
 
-const del = require('del')
 const debug = require('debug')('lint-staged:git')
 
 const execGit = require('./execGit')
 
-let workingCopyTree = null
-let indexTree = null
-let formattedIndexTree = null
+const STASH_ORGINAL = 'lint-staged backup (original state)'
+const STASH_MODIFICATIONS = 'lint-staged backup (modifications)'
 
-async function writeTree(options) {
-  return execGit(['write-tree'], options)
+let unstagedDiff
+
+/**
+ * From `array` of strings find index number of string containing `test` string
+ *
+ * @param {Array<string>} array - Array of strings
+ * @param {string} test - Test string
+ * @returns {number} - Index number
+ */
+const findIndex = (array, test) => array.findIndex(line => line.includes(test))
+
+/**
+ * Get names of stashes
+ *
+ * @param {Object} [options]
+ * @returns {Promise<Object>}
+ */
+async function getStashes(options) {
+  const stashList = (await execGit(['stash', 'list'], options)).split('\n')
+  return {
+    original: `stash@{${findIndex(stashList, STASH_ORGINAL)}}`,
+    modifications: `stash@{${findIndex(stashList, STASH_MODIFICATIONS)}}`
+  }
 }
 
-async function getDiffForTrees(tree1, tree2, options) {
-  debug(`Generating diff between trees ${tree1} and ${tree2}...`)
-  return execGit(
-    [
-      'diff-tree',
-      '--ignore-submodules',
-      '--binary',
-      '--no-color',
-      '--no-ext-diff',
-      '--unified=0',
-      tree1,
-      tree2
-    ],
+/**
+ * Create backup stashes, one of everything and one of only staged changes
+ * Leves stages files in index for running tasks
+ *
+ * @param {Object} [options]
+ * @returns {Promise<void>}
+ */
+async function backupOriginalState(options) {
+  debug('Backing up original state...')
+
+  // Get stash of entire original state, including unstaged changes
+  // Keep index so that tasks only work on those files
+  await execGit(['stash', 'save', '--include-untracked', '--keep-index', STASH_ORGINAL], options)
+
+  // Since only staged files are now present, get a diff of unstaged changes
+  // by comparing current index against original stash, but in reverse
+  const { original } = await getStashes(options)
+  unstagedDiff = await execGit(
+    ['diff', '--unified=0', '--no-color', '--no-ext-diff', '-p', original, '-R'],
     options
   )
+
+  debug('Done backing up original state!')
 }
 
-async function hasPartiallyStagedFiles(options) {
-  const stdout = await execGit(['status', '--porcelain'], options)
-  if (!stdout) return false
+/**
+ * Resets everything and applies back unstaged and staged changes,
+ * possibly with modifications by tasks
+ *
+ * @param {Object} [options]
+ * @returns {Promise<void>}
+ */
+async function applyModifications(options) {
+  debug('Applying modifications by tasks...')
 
-  const changedFiles = stdout.split('\n')
-  const partiallyStaged = changedFiles.filter(line => {
-    /**
-     * See https://git-scm.com/docs/git-status#_short_format
-     * The first letter of the line represents current index status,
-     * and second the working tree
-     */
-    const [index, workingTree] = line
-    return index !== ' ' && workingTree !== ' ' && index !== '?' && workingTree !== '?'
+  // Save index with possible modifications by tasks.
+  await execGit(['stash', 'save', STASH_MODIFICATIONS], options)
+  // Reset HEAD
+  await execGit(['reset'], options)
+  await execGit(['checkout', '.'], options)
+
+  // Get diff of index against reseted HEAD, this includes all staged changes,
+  // with possible changes by tasks
+  const { modifications } = await getStashes(options)
+  const stagedDiff = await execGit(
+    ['diff', '--unified=0', '--no-color', '--no-ext-diff', 'HEAD', '-p', modifications],
+    options
+  )
+
+  await execGit(['apply', '-v', '--index', '--whitespace=nowarn', '--recount', '--unidiff-zero'], {
+    ...options,
+    input: `${stagedDiff}\n`
   })
 
-  return partiallyStaged.length > 0
-}
-
-// eslint-disable-next-line
-async function gitStashSave(options) {
-  debug('Stashing files...')
-  // Save ref to the current index
-  indexTree = await writeTree(options)
-  // Add working copy changes to index
-  await execGit(['add', '.'], options)
-  // Save ref to the working copy index
-  workingCopyTree = await writeTree(options)
-  // Restore the current index
-  await execGit(['read-tree', indexTree], options)
-  // Remove all modifications
-  await execGit(['checkout-index', '-af'], options)
-  // await execGit(['clean', '-dfx'], options)
-  debug('Done stashing files!')
-  return [workingCopyTree, indexTree]
-}
-
-async function updateStash(options) {
-  formattedIndexTree = await writeTree(options)
-  return formattedIndexTree
-}
-
-async function applyPatchFor(tree1, tree2, options) {
-  const diff = await getDiffForTrees(tree1, tree2, options)
-  /**
-   * This is crucial for patch to work
-   * For some reason, git-apply requires that the patch ends with the newline symbol
-   * See http://git.661346.n2.nabble.com/Bug-in-Git-Gui-Creates-corrupt-patch-td2384251.html
-   * and https://stackoverflow.com/questions/13223868/how-to-stage-line-by-line-in-git-gui-although-no-newline-at-end-of-file-warnin
-   */
-  // TODO: Figure out how to test this. For some reason tests were working but in the real env it was failing
-  if (diff) {
-    try {
-      /**
-       * Apply patch to index. We will apply it with --reject so it it will try apply hunk by hunk
-       * We're not interested in failied hunks since this mean that formatting conflicts with user changes
-       * and we prioritize user changes over formatter's
-       */
-      await execGit(
-        ['apply', '-v', '--whitespace=nowarn', '--reject', '--recount', '--unidiff-zero'],
-        {
-          ...options,
-          input: `${diff}\n` // TODO: This should also work on Windows but test would be good
-        }
-      )
-    } catch (err) {
-      debug('Could not apply patch to the stashed files cleanly')
-      debug(err)
-      debug('Patch content:')
-      debug(diff)
-      throw new Error('Could not apply patch to the stashed files cleanly.', err)
-    }
-  }
-}
-
-async function gitStashPop(options) {
-  if (workingCopyTree === null) {
-    throw new Error('Trying to restore from stash but could not find working copy stash.')
+  if (unstagedDiff) {
+    await execGit(['apply', '-v', '--whitespace=nowarn', '--recount', '--unidiff-zero'], {
+      ...options,
+      input: `${unstagedDiff}\n`
+    })
   }
 
-  debug('Restoring working copy')
-  // Restore the stashed files in the index
-  await execGit(['read-tree', workingCopyTree], options)
-  // and sync it to the working copy (i.e. update files on fs)
-  await execGit(['checkout-index', '-af'], options)
+  debug('Done applying modifications by tasks!')
+}
 
-  // Then, restore the index after working copy is restored
-  if (indexTree !== null && formattedIndexTree === null) {
-    // Restore changes that were in index if there are no formatting changes
-    debug('Restoring index')
-    await execGit(['read-tree', indexTree], options)
-  } else {
-    /**
-     * There are formatting changes we want to restore in the index
-     * and in the working copy. So we start by restoring the index
-     * and after that we'll try to carry as many as possible changes
-     * to the working copy by applying the patch with --reject option.
-     */
-    debug('Restoring index with formatting changes')
-    await execGit(['read-tree', formattedIndexTree], options)
-    try {
-      await applyPatchFor(indexTree, formattedIndexTree, options)
-    } catch (err) {
-      debug(
-        'Found conflicts between formatters and local changes. Formatters changes will be ignored for conflicted hunks.'
-      )
-      /**
-       * Clean up working directory from *.rej files that contain conflicted hanks.
-       * These hunks are coming from formatters so we'll just delete them since they are irrelevant.
-       */
-      try {
-        const rejFiles = await del(['*.rej'], options)
-        debug('Deleted files and folders:\n', rejFiles.join('\n'))
-      } catch (delErr) {
-        debug('Error deleting *.rej files', delErr)
-      }
-    }
-  }
-  // Clean up references
-  workingCopyTree = null
-  indexTree = null
-  formattedIndexTree = null
+/**
+ * Restore original HEAD state in case of errors
+ *
+ * @param {Object} [options]
+ * @returns {Promise<void>}
+ */
+async function restoreOriginalState(options) {
+  debug('Restoring original state...')
+  const { original } = await getStashes(options)
+  await execGit(['reset', '--hard', 'HEAD'], options)
+  await execGit(['stash', 'apply', '--index', original], options)
+  debug('Done restoring original state!')
+}
 
-  return null
+/**
+ * Drop the created stashes after everything has run
+ *
+ * @param {Object} [options]
+ * @returns {Promise<void>}
+ */
+async function dropBackupStashes(options) {
+  debug('Dropping backup stash...')
+  const { original, modifications } = await getStashes(options)
+  await execGit(['stash', 'drop', original], options)
+  await execGit(['stash', 'drop', modifications], options)
+  debug('Done dropping backup stash!')
 }
 
 module.exports = {
   execGit,
-  gitStashSave,
-  gitStashPop,
-  hasPartiallyStagedFiles,
-  updateStash
+  backupOriginalState,
+  applyModifications,
+  restoreOriginalState,
+  dropBackupStashes
 }

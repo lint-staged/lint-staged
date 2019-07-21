@@ -1,115 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runAll should not skip stashing and restoring if there are partially staged files 1`] = `
+exports[`runAll should not skip tasks if there are files 1`] = `
 "
-LOG Stashing changes... [started]
-LOG Stashing changes... [completed]
+LOG Backing up... [started]
+LOG Backing up... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Updating stash... [started]
-LOG Updating stash... [completed]
-LOG Restoring local changes... [started]
-LOG Restoring local changes... [completed]"
+LOG Applying modifications by tasks... [started]
+LOG Applying modifications by tasks... [completed]
+LOG Clearing backup... [started]
+LOG Clearing backup... [completed]"
 `;
-
-exports[`runAll should not skip tasks if there are files 1`] = `
-"
-LOG Stashing changes... [started]
-LOG Stashing changes... [skipped]
-LOG → No partially staged files found...
-LOG Running tasks... [started]
-LOG Running tasks for *.js [started]
-LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [completed]
-LOG Running tasks for *.js [completed]
-LOG Running tasks... [completed]"
-`;
-
-exports[`runAll should reject promise when error during getStagedFiles 1`] = `"Unable to get staged files!"`;
 
 exports[`runAll should resolve the promise with no files 1`] = `
 "
 LOG No staged files match any of provided globs."
-`;
-
-exports[`runAll should skip linters and stash update but perform working copy restore if terminated 1`] = `
-"
-LOG Stashing changes... [started]
-LOG Stashing changes... [completed]
-LOG Running tasks... [started]
-LOG Running tasks for *.js [started]
-LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [failed]
-LOG → 
-LOG Running tasks for *.js [failed]
-LOG → 
-LOG Running tasks... [failed]
-LOG Updating stash... [started]
-LOG Updating stash... [skipped]
-LOG → Skipping stash update since some tasks exited with errors
-LOG Restoring local changes... [started]
-LOG Restoring local changes... [completed]
-LOG {
-  name: 'ListrError',
-  errors: [
-    {
-      privateMsg: '\\\\n\\\\n\\\\n‼ echo \\"sample\\" was terminated with SIGINT',
-      context: {hasStash: true, hasErrors: true}
-    }
-  ],
-  context: {hasStash: true, hasErrors: true}
-}"
-`;
-
-exports[`runAll should skip stashing and restoring if there are no partially staged files 1`] = `
-"
-LOG Stashing changes... [started]
-LOG Stashing changes... [skipped]
-LOG → No partially staged files found...
-LOG Running tasks... [started]
-LOG Running tasks for *.js [started]
-LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [completed]
-LOG Running tasks for *.js [completed]
-LOG Running tasks... [completed]"
-`;
-
-exports[`runAll should skip stashing changes if no lint-staged files are changed 1`] = `
-"
-LOG No staged files match any of provided globs."
-`;
-
-exports[`runAll should skip updating stash if there are errors during linting 1`] = `
-"
-LOG Stashing changes... [started]
-LOG Stashing changes... [completed]
-LOG Running tasks... [started]
-LOG Running tasks for *.js [started]
-LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [failed]
-LOG → 
-LOG Running tasks for *.js [failed]
-LOG → 
-LOG Running tasks... [failed]
-LOG Updating stash... [started]
-LOG Updating stash... [skipped]
-LOG → Skipping stash update since some tasks exited with errors
-LOG Restoring local changes... [started]
-LOG Restoring local changes... [completed]
-LOG {
-  name: 'ListrError',
-  errors: [
-    {
-      privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
-      context: {hasStash: true, hasErrors: true}
-    }
-  ],
-  context: {hasStash: true, hasErrors: true}
-}"
 `;
 
 exports[`runAll should use an injected logger 1`] = `
@@ -122,25 +31,16 @@ exports[`runAll should warn if the argument length is longer than what the platf
 WARN ‼  lint-staged generated an argument string of 999999 characters, and commands might not run correctly on your platform.
 It is recommended to use functions as linters and split your command based on the number of staged files. For more info, please visit:
 https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-commands
-LOG Stashing changes... [started]
-LOG Stashing changes... [skipped]
-LOG → No partially staged files found...
+LOG Backing up... [started]
+LOG Backing up... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [failed]
-LOG → 
-LOG Running tasks for *.js [failed]
-LOG → 
-LOG Running tasks... [failed]
-LOG {
-  name: 'ListrError',
-  errors: [
-    {
-      privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
-      context: {hasErrors: true}
-    }
-  ],
-  context: {hasErrors: true}
-}"
+LOG echo \\"sample\\" [completed]
+LOG Running tasks for *.js [completed]
+LOG Running tasks... [completed]
+LOG Applying modifications by tasks... [started]
+LOG Applying modifications by tasks... [completed]
+LOG Clearing backup... [started]
+LOG Clearing backup... [completed]"
 `;

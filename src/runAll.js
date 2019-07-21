@@ -105,33 +105,26 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
   return new Listr(
     [
       {
-        title: 'Stashing changes...',
-        skip: async () => {
-          const hasPSF = await git.hasPartiallyStagedFiles({ cwd: gitDir })
-          if (!hasPSF) {
-            return 'No partially staged files found...'
-          }
-          return false
-        },
-        task: ctx => {
-          ctx.hasStash = true
-          return git.gitStashSave({ cwd: gitDir })
-        }
+        title: 'Backing up...',
+        task: () => git.backupOriginalState({ cwd: gitDir })
       },
       {
         title: 'Running tasks...',
         task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
       },
       {
-        title: 'Updating stash...',
-        enabled: ctx => ctx.hasStash,
-        skip: ctx => ctx.hasErrors && 'Skipping stash update since some tasks exited with errors',
-        task: () => git.updateStash({ cwd: gitDir })
+        title: 'Applying modifications by tasks...',
+        skip: ctx => ctx.hasErrors,
+        task: () => git.applyModifications({ cwd: gitDir })
       },
       {
-        title: 'Restoring local changes...',
-        enabled: ctx => ctx.hasStash,
-        task: () => git.gitStashPop({ cwd: gitDir })
+        title: 'Restoring original state due to errors...',
+        enabled: ctx => ctx.hasErrors,
+        task: () => git.restoreOriginalState({ cwd: gitDir })
+      },
+      {
+        title: 'Clearing backup...',
+        task: () => git.dropBackupStashes({ cwd: gitDir })
       }
     ],
     listrOptions
