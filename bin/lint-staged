@@ -9,6 +9,9 @@ if (process.stdout.isTTY) {
   process.env.FORCE_COLOR = '1'
 }
 
+// Do not terminate main Listr process on SIGINT
+process.on('SIGINT', () => {})
+
 const pkg = require('../package.json')
 require('please-upgrade-node')(
   Object.assign({}, pkg, {
