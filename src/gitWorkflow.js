@@ -45,6 +45,8 @@ async function stashBackup(options) {
   debug('Done backing up original state!')
 }
 
+const gitApplyArgs = ['apply', '-v', '--whitespace=nowarn', '--recount', '--unidiff-zero']
+
 /**
  * Resets everything and applies back unstaged and staged changes,
  * possibly with modifications by tasks
@@ -56,10 +58,15 @@ async function restoreUnstagedChanges(options) {
   debug('Restoring unstaged changes...')
 
   if (unstagedDiff) {
-    await execGit(['apply', '-v', '--whitespace=nowarn', '--recount', '--unidiff-zero'], {
-      ...options,
-      input: `${unstagedDiff}\n`
-    })
+    try {
+      await execGit(gitApplyArgs, { ...options, input: `${unstagedDiff}\n` })
+    } catch (error) {
+      debug('Error when restoring changes:')
+      debug(error)
+      debug('Retrying with 3-way merge')
+      // Retry with `--3way` if normal apply fails
+      await execGit([...gitApplyArgs, '--3way'], { ...options, input: `${unstagedDiff}\n` })
+    }
   }
 
   debug('Done restoring unstaged changes!')
