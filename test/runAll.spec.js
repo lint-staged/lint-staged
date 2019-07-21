@@ -65,11 +65,4 @@ describe('runAll', () => {
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
-
-  it('should not skip tasks if there are files', async () => {
-    expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ config: { '*.js': ['echo "sample"'] } })
-    expect(console.printHistory()).toMatchSnapshot()
-  })
 })
