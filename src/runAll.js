@@ -105,17 +105,12 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
   return new Listr(
     [
       {
-        title: 'Backing up...',
-        task: () => git.backupOriginalState({ cwd: gitDir })
+        title: 'Preparing...',
+        task: () => git.stashBackup({ cwd: gitDir })
       },
       {
         title: 'Running tasks...',
         task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
-      },
-      {
-        title: 'Applying modifications by tasks...',
-        skip: ctx => ctx.hasErrors,
-        task: () => git.applyModifications({ cwd: gitDir })
       },
       {
         title: 'Restoring original state due to errors...',
@@ -123,8 +118,11 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
         task: () => git.restoreOriginalState({ cwd: gitDir })
       },
       {
-        title: 'Clearing backup...',
-        task: () => git.dropBackupStashes({ cwd: gitDir })
+        title: 'Cleaning up...',
+        task: async ctx => {
+          if (!ctx.hasErrors) await git.restoreUnstagedChanges({ cwd: gitDir })
+          await git.dropBackup({ cwd: gitDir })
+        }
       }
     ],
     listrOptions

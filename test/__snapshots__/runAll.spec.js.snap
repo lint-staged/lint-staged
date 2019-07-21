@@ -1,21 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runAll should not skip tasks if there are files 1`] = `
-"
-LOG Backing up... [started]
-LOG Backing up... [completed]
-LOG Running tasks... [started]
-LOG Running tasks for *.js [started]
-LOG echo \\"sample\\" [started]
-LOG echo \\"sample\\" [completed]
-LOG Running tasks for *.js [completed]
-LOG Running tasks... [completed]
-LOG Applying modifications by tasks... [started]
-LOG Applying modifications by tasks... [completed]
-LOG Clearing backup... [started]
-LOG Clearing backup... [completed]"
-`;
-
 exports[`runAll should resolve the promise with no files 1`] = `
 "
 LOG No staged files match any of provided globs."
@@ -31,16 +15,14 @@ exports[`runAll should warn if the argument length is longer than what the platf
 WARN ‼  lint-staged generated an argument string of 999999 characters, and commands might not run correctly on your platform.
 It is recommended to use functions as linters and split your command based on the number of staged files. For more info, please visit:
 https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-commands
-LOG Backing up... [started]
-LOG Backing up... [completed]
+LOG Preparing... [started]
+LOG Preparing... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Applying modifications by tasks... [started]
-LOG Applying modifications by tasks... [completed]
-LOG Clearing backup... [started]
-LOG Clearing backup... [completed]"
+LOG Cleaning up... [started]
+LOG Cleaning up... [completed]"
 `;

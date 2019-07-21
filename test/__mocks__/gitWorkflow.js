@@ -1,11 +1,11 @@
-const backupOriginalState = jest.fn().mockImplementation(() => Promise.resolve(null))
-const applyModifications = jest.fn().mockImplementation(() => Promise.resolve(null))
+const stashBackup = jest.fn().mockImplementation(() => Promise.resolve(null))
+const restoreUnstagedChanges = jest.fn().mockImplementation(() => Promise.resolve(null))
 const restoreOriginalState = jest.fn().mockImplementation(() => Promise.resolve(null))
-const dropBackupStashes = jest.fn().mockImplementation(() => Promise.resolve(null))
+const dropBackup = jest.fn().mockImplementation(() => Promise.resolve(null))
 
 module.exports = {
-  backupOriginalState,
-  applyModifications,
+  stashBackup,
+  restoreUnstagedChanges,
   restoreOriginalState,
-  dropBackupStashes
+  dropBackup
 }
