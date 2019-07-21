@@ -59,10 +59,9 @@ module.exports = async function generateTasks({
         matchBase: !pattern.includes('/'),
         dot: true
       }
-    ).map(
-      file =>
-        // Return absolute path after the filter is run
-        relative ? path.normalize(file) : path.resolve(cwd, file)
+    ).map(file =>
+      // Return absolute path after the filter is run
+      relative ? path.normalize(file) : path.resolve(cwd, file)
     )
 
     const task = { pattern, commands, fileList }

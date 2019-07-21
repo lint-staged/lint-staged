@@ -12,7 +12,10 @@
   ],
   "main": "./src/index.js",
   "bin": "./bin/lint-staged",
-  "files": ["src", "bin"],
+  "files": [
+    "src",
+    "bin"
+  ],
   "scripts": {
     "cz": "git-cz",
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
@@ -43,23 +46,30 @@
     "stringify-object": "^3.3.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-jest": "^23.6.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "commitizen": "^2.9.6",
-    "consolemock": "^1.0.2",
-    "cz-conventional-changelog": "^2.0.0",
-    "eslint": "^4.18.1",
-    "eslint-config-okonet": "^5.0.1",
-    "eslint-plugin-node": "^6.0.0",
-    "fs-extra": "^8.0.1",
-    "husky": "^1.1.4",
-    "jest": "^23.6.0",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-eslint": "^10.0.2",
+    "babel-jest": "^24.8.0",
+    "commitizen": "^4.0.3",
+    "consolemock": "^1.1.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.1.0",
+    "eslint-config-okonet": "^7.0.2",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-flowtype": "^3.12.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.2",
+    "fs-extra": "^8.1.0",
+    "husky": "^3.0.1",
+    "jest": "^24.8.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "jsonlint": "^1.6.2",
-    "prettier": "1.11.1",
-    "tmp": "0.0.33"
+    "jsonlint": "^1.6.3",
+    "prettier": "1.18.2",
+    "tmp": "0.1.0"
   },
   "config": {
     "commitizen": {
@@ -67,9 +77,16 @@
     }
   },
   "jest": {
-    "collectCoverageFrom": ["src/**/*.js"],
-    "setupFiles": ["./testSetup.js"],
-    "snapshotSerializers": ["jest-snapshot-serializer-ansi"],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "setupFiles": [
+      "./testSetup.js"
+    ],
+    "snapshotSerializers": [
+      "jest-snapshot-serializer-ansi"
+    ],
     "testEnvironment": "node"
   },
   "keywords": [
