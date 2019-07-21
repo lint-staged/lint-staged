@@ -1,27 +1,10 @@
 {
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "script"
-  },
-  "extends": ["okonet", "plugin:node/recommended"],
-  "plugins": ["node"],
+  "extends": ["okonet/node"],
   "rules": {
-    "strict": ["error", "global"],
     "no-console": "off",
-    "prefer-destructuring": [
-      "error",
-      {
-        "VariableDeclarator": {
-          "array": true,
-          "object": true
-        },
-        "AssignmentExpression": {
-          "array": false,
-          "object": false
-        }
-      }
-    ],
+    "node/no-unsupported-features": ["error", "8.12.0"],
+    "node/no-unsupported-features/es-syntax": ["error", { "version": ">=8.12.0" }],
     "prettier/prettier": "off",
-    "node/no-unsupported-features": ["error", "8.6.0"]
+    "require-atomic-updates": "off"
   }
 }
