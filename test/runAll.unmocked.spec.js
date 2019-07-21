@@ -273,6 +273,40 @@ no changes added to commit (use \\"git add\\" and/or \\"git commit -a\\")"
     expect(await readFile('test.js')).toEqual(testJsFileUnfixable + appended)
   })
 
+  it('Should clear unstaged changes when linter applies same changes', async () => {
+    // Stage ugly file
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Replace ugly file with pretty but do not stage changes
+    await fs.remove(path.join(cwd, 'test.js'))
+    await appendFile('test.js', testJsFilePretty)
+
+    // Run lint-staged with `prettier --write` and commit pretty file
+    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    expect(success).toEqual(true)
+
+    // Nothing is wrong, so a new commit is created and file is pretty
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
+" \\"test\\"
+"
+`)
+
+    // Latest commit contains pretty file
+    // `git show` strips empty line from here here
+    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.replace(/\n$/, ''))
+
+    // Nothing is staged
+    expect(await execGit(['status'])).toMatchInlineSnapshot(`
+"On branch master
+nothing to commit, working tree clean"
+`)
+
+    // File is pretty, and has been edited
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+  })
+
   afterEach(async () => {
     wcDir.removeCallback()
   })
