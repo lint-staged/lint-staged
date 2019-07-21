@@ -125,14 +125,14 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
 LOG Stashing changes... [started]
 LOG Stashing changes... [skipped]
 LOG → No partially staged files found...
-LOG Running linters... [started]
+LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [failed]
 LOG → 
 LOG Running tasks for *.js [failed]
 LOG → 
-LOG Running linters... [failed]
+LOG Running tasks... [failed]
 LOG {
   name: 'ListrError',
   errors: [
