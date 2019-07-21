@@ -25,6 +25,7 @@ cache:
 test_script:
   - node --version
   - yarn --version
+  - git --version
   - yarn test
 
 branches:
