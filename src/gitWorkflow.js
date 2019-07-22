@@ -6,7 +6,7 @@ const execGit = require('./execGit')
 
 const STASH = 'lint-staged automatic backup'
 
-let unstagedDiff
+let unstagedDiff = null
 
 /**
  * Get name of backup stash
@@ -15,8 +15,8 @@ let unstagedDiff
  * @returns {Promise<Object>}
  */
 async function getBackupStash(options) {
-  const stashList = (await execGit(['stash', 'list'], options)).split('\n')
-  const index = stashList.findIndex(line => line.includes(STASH))
+  const stashes = await execGit(['stash', 'list'], options)
+  const index = stashes.split('\n').findIndex(line => line.includes(STASH))
   return `stash@{${index}}`
 }
 
@@ -96,6 +96,7 @@ async function dropBackup(options) {
   debug('Dropping backup stash...')
   const original = await getBackupStash(options)
   await execGit(['stash', 'drop', '--quiet', original], options)
+  unstagedDiff = null
   debug('Done dropping backup stash!')
 }
 
