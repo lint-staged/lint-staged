@@ -36,14 +36,11 @@ describe('runAll', () => {
   })
 
   it('should resolve the promise with no tasks', async () => {
-    expect.assertions(1)
     const res = await runAll({ config: {} })
-
     expect(res).toEqual('No tasks to run.')
   })
 
   it('should resolve the promise with no files', async () => {
-    expect.assertions(1)
     await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchSnapshot()
   })
@@ -56,6 +53,7 @@ describe('runAll', () => {
     } catch (err) {
       console.log(err)
     }
+
     expect(console.printHistory()).toMatchSnapshot()
   })
 

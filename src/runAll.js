@@ -9,7 +9,7 @@ const symbols = require('log-symbols')
 
 const generateTasks = require('./generateTasks')
 const getStagedFiles = require('./getStagedFiles')
-const git = require('./gitWorkflow')
+const GitWorkflow = require('./gitWorkflow')
 const makeCmdTasks = require('./makeCmdTasks')
 const resolveGitDir = require('./resolveGitDir')
 
@@ -102,11 +102,13 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     return 'No tasks to run.'
   }
 
+  const git = new GitWorkflow(gitDir)
+
   return new Listr(
     [
       {
         title: 'Preparing...',
-        task: () => git.stashBackup({ cwd: gitDir })
+        task: () => git.stashBackup()
       },
       {
         title: 'Running tasks...',
@@ -115,13 +117,13 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
       {
         title: 'Restoring original state due to errors...',
         enabled: ctx => ctx.hasErrors,
-        task: () => git.restoreOriginalState({ cwd: gitDir })
+        task: () => git.restoreOriginalState()
       },
       {
         title: 'Cleaning up...',
         task: async ctx => {
-          if (!ctx.hasErrors) await git.restoreUnstagedChanges({ cwd: gitDir })
-          await git.dropBackup({ cwd: gitDir })
+          if (!ctx.hasErrors) await git.restoreUnstagedChanges()
+          await git.dropBackup()
         }
       }
     ],
