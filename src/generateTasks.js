@@ -14,8 +14,8 @@ const debug = require('debug')('lint-staged:gen-tasks')
  * @returns {Boolean}
  */
 const isPathInside = (parent, child) => {
-  const relative = path.relative(parent, child)
-  return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
+  const relative = path.posix.relative(parent, child)
+  return relative && !relative.startsWith('..') && !path.posix.isAbsolute(relative)
 }
 
 /**
@@ -38,19 +38,19 @@ module.exports = async function generateTasks({
 }) {
   debug('Generating linter tasks')
 
-  const stagedFiles = files.map(file => path.resolve(gitDir, file))
-
   return Object.keys(config).map(pattern => {
     const isParentDirPattern = pattern.startsWith('../')
     const commands = config[pattern]
 
     const fileList = micromatch(
-      stagedFiles
+      files
         // Only worry about children of the CWD unless the pattern explicitly
         // specifies that it concerns a parent directory.
-        .filter(file => isParentDirPattern || isPathInside(cwd, file))
-        // Make the paths relative to CWD for filtering
-        .map(file => path.relative(cwd, file)),
+        .filter(file => {
+          if (isParentDirPattern) return true
+          const absolutePath = path.posix.resolve(gitDir, file)
+          return isPathInside(cwd, absolutePath)
+        }),
       pattern,
       {
         // If pattern doesn't look like a path, enable `matchBase` to
@@ -61,7 +61,7 @@ module.exports = async function generateTasks({
       }
     ).map(file =>
       // Return absolute path after the filter is run
-      relative ? path.normalize(file) : path.resolve(cwd, file)
+      relative ? file : path.posix.resolve(gitDir, file)
     )
 
     const task = { pattern, commands, fileList }
