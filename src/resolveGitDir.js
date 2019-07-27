@@ -9,7 +9,7 @@ module.exports = async function resolveGitDir(options = {}) {
     // depending on where the caller initiated this from, hence clear GIT_DIR
     delete process.env.GIT_DIR
     const gitDir = await execGit(['rev-parse', '--show-toplevel'], options)
-    return path.normalize(gitDir)
+    return path.resolve(gitDir)
   } catch (error) {
     return null
   }
