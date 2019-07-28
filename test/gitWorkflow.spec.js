@@ -10,26 +10,15 @@ tmp.setGracefulCleanup()
 describe('gitWorkflow', () => {
   describe('execGit', () => {
     it('should execute git in process.cwd if working copy is not specified', async () => {
+      const cwd = process.cwd()
       await execGit(['init', 'param'])
-      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
-        cwd: path.resolve(process.cwd())
-      })
+      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], { cwd })
     })
 
     it('should execute git in a given working copy', async () => {
-      await execGit(['init', 'param'], { cwd: 'test/__fixtures__' })
-      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
-        cwd: path.resolve(process.cwd(), 'test', '__fixtures__')
-      })
-    })
-
-    it('should work with relative paths', async () => {
-      await execGit(['init', 'param'], {
-        cwd: 'test/__fixtures__'
-      })
-      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], {
-        cwd: path.resolve(process.cwd(), 'test', '__fixtures__')
-      })
+      const cwd = path.join(process.cwd(), 'test', '__fixtures__')
+      await execGit(['init', 'param'], { cwd })
+      expect(execa).toHaveBeenCalledWith('git', ['init', 'param'], { cwd })
     })
   })
 
