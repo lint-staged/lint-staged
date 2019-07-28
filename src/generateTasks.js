@@ -29,7 +29,7 @@ const isPathInside = (parent, child) => {
  * @param {boolean} [options.relative] - Whether filepaths to should be relative to gitDir
  * @returns {Promise}
  */
-module.exports = async function generateTasks({
+module.exports = function generateTasks({
   config,
   cwd = process.cwd(),
   gitDir,
@@ -37,31 +37,30 @@ module.exports = async function generateTasks({
   relative = false
 }) {
   debug('Generating linter tasks')
-
-  const stagedFiles = files.map(file => path.resolve(gitDir, file))
-
-  return Object.keys(config).map(pattern => {
+  return Object.entries(config).map(([pattern, commands]) => {
     const isParentDirPattern = pattern.startsWith('../')
-    const commands = config[pattern]
-
     const fileList = micromatch(
-      stagedFiles
+      files
         // Only worry about children of the CWD unless the pattern explicitly
         // specifies that it concerns a parent directory.
-        .filter(file => isParentDirPattern || isPathInside(cwd, file))
-        // Make the paths relative to CWD for filtering
-        .map(file => path.relative(cwd, file)),
+        .filter(file => {
+          if (isParentDirPattern) return true
+          const absolutePath = path.resolve(gitDir, file)
+          return isPathInside(cwd, absolutePath)
+        }),
       pattern,
       {
+        cwd,
+        dot: true,
         // If pattern doesn't look like a path, enable `matchBase` to
         // match against filenames in every directory. This makes `*.js`
         // match both `test.js` and `subdirectory/test.js`.
         matchBase: !pattern.includes('/'),
-        dot: true
+        posixSlashes: true
       }
     ).map(file =>
       // Return absolute path after the filter is run
-      relative ? path.normalize(file) : path.resolve(cwd, file)
+      relative ? file : cwd + '/' + file
     )
 
     const task = { pattern, commands, fileList }

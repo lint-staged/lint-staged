@@ -69,7 +69,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     )
   }
 
-  const tasks = (await generateTasks({ config, cwd, gitDir, files, relative })).map(task => ({
+  const tasks = generateTasks({ config, cwd, gitDir, files, relative }).map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(
