@@ -67,7 +67,10 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: '*.js',
       commands: 'root-js',
-      fileList: files.filter(x => /sub-dir/.test(x)).map(x => `${gitDir}/${x}`)
+      fileList: files
+        .filter(x => /sub-dir/.test(x))
+        .map(x => path.join(gitDir, x))
+        .map(path.normalize)
     })
   })
 
@@ -78,7 +81,10 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: '../**/*.py',
       commands: 'below-root-py',
-      fileList: files.filter(x => !/sub-dir/.test(x) && /.py$/.test(x)).map(x => `${gitDir}/${x}`)
+      fileList: files
+        .filter(x => !/sub-dir/.test(x) && /.py$/.test(x))
+        .map(x => path.join(gitDir, x))
+        .map(path.normalize)
     })
   })
 })
