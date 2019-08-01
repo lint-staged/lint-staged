@@ -202,8 +202,7 @@ describe('generateTasks Special Cases', () => {
   })
 
   it('should not match non-children files', async () => {
-    const relPath = path.join(process.cwd(), '..')
-    const result = await generateTasks({ config, gitDir: relPath, files: filesSpecialCases })
+    const result = await generateTasks({ config, gitDir, files: filesSpecialCases })
     const linter = result.find(item => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
@@ -216,8 +215,8 @@ describe('generateTasks Special Cases', () => {
   })
 
   it('should match non-children files when configured', async () => {
-    const relPath = path.join(process.cwd(), '..')
-    const result = await generateTasks({ config, gitDir: relPath, files: filesSpecialCases })
+    // const relPath = path.join(process.cwd(), '..')
+    const result = await generateTasks({ config, gitDir, files: filesSpecialCases })
     const linter = result.find(item => item.pattern === '../**/*.py')
     expect(linter).toEqual({
       pattern: '../**/*.py',
