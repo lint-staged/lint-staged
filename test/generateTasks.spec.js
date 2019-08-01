@@ -23,6 +23,20 @@ const files = [
   '.hidden/test.txt'
 ]
 
+const filesSpecialCases = files.concat([
+  'sub-dir/test.js',
+  'sub-dir/deeper/test.js',
+  'sub-dir/deeper/test2.js',
+  'sub-dir/even/deeper/test.js',
+  'sub-dir/.hidden/test.js',
+
+  'test.py',
+  'deeper/test.py',
+  'deeper/test2.py',
+  'even/deeper/test.py',
+  '.hidden/test.py'
+])
+
 // Mocks get hoisted
 jest.mock('../src/resolveGitDir.js')
 const gitDir = path.join(os.tmpdir(), 'tmp-lint-staged')
@@ -34,7 +48,8 @@ const config = {
   'deeper/*.js': 'deeper-js',
   '.hidden/*.js': 'hidden-js',
   'unknown/*.js': 'unknown-js',
-  '*.{css,js}': 'root-css-or-js'
+  '*.{css,js}': 'root-css-or-js',
+  '../**/*.py': 'below-root-py'
 }
 
 describe('generateTasks', () => {
@@ -74,7 +89,7 @@ describe('generateTasks', () => {
     const result = await generateTasks({ config, gitDir, files })
 
     result.forEach(task => {
-      if (task.commands === 'unknown-js') {
+      if (task.commands === 'unknown-js' || task.commands === 'below-root-py') {
         expect(task.fileList.length).toEqual(0)
       } else {
         expect(task.fileList.length).not.toEqual(0)
@@ -173,6 +188,44 @@ describe('generateTasks', () => {
         'even/deeper/test.css',
         '.hidden/test.css'
       ].map(path.normalize)
+    })
+  })
+})
+
+describe('generateTasks Special Cases', () => {
+  beforeAll(() => {
+    jest.spyOn(process, 'cwd').mockReturnValue(path.join(gitDir, 'sub-dir'))
+  })
+
+  afterAll(() => {
+    process.cwd.mockRestore()
+  })
+
+  it('should not match non-children files', async () => {
+    const relPath = path.join(process.cwd(), '..')
+    const result = await generateTasks({ config, gitDir: relPath, files: filesSpecialCases })
+    const linter = result.find(item => item.pattern === '*.js')
+    expect(linter).toEqual({
+      pattern: '*.js',
+      commands: 'root-js',
+      fileList: filesSpecialCases
+        .filter(x => /sub-dir/.test(x))
+        .map(x => path.join(gitDir, x))
+        .map(path.normalize)
+    })
+  })
+
+  it('should match non-children files when configured', async () => {
+    const relPath = path.join(process.cwd(), '..')
+    const result = await generateTasks({ config, gitDir: relPath, files: filesSpecialCases })
+    const linter = result.find(item => item.pattern === '../**/*.py')
+    expect(linter).toEqual({
+      pattern: '../**/*.py',
+      commands: 'below-root-py',
+      fileList: filesSpecialCases
+        .filter(x => !/sub-dir/.test(x) && /.py$/.test(x))
+        .map(x => path.join(gitDir, x))
+        .map(path.normalize)
     })
   })
 })
