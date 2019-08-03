@@ -41,6 +41,7 @@
     "listr": "^0.14.3",
     "log-symbols": "^3.0.0",
     "micromatch": "^4.0.2",
+    "normalize-path": "^3.0.0",
     "please-upgrade-node": "^3.1.1",
     "string-argv": "^0.3.0",
     "stringify-object": "^3.3.0"
