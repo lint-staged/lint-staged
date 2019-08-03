@@ -1,4 +1,6 @@
+import normalize from 'normalize-path'
 import path from 'path'
+
 import resolveGitDir from '../src/resolveGitDir'
 
 /**
@@ -8,12 +10,12 @@ jest.unmock('execa')
 
 describe('resolveGitDir', () => {
   it('should resolve to current working dir when .git is in the same dir', async () => {
-    const expected = process.cwd()
+    const expected = normalize(process.cwd())
     expect(await resolveGitDir()).toEqual(expected)
   })
 
   it('should resolve to the parent dir when .git is in the parent dir', async () => {
-    const expected = path.dirname(__dirname)
+    const expected = normalize(path.dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     // path.resolve to strip trailing slash
@@ -22,7 +24,7 @@ describe('resolveGitDir', () => {
   })
 
   it('should resolve to the parent dir when .git is in the parent dir even when the GIT_DIR environment variable is set', async () => {
-    const expected = path.dirname(__dirname)
+    const expected = normalize(path.dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     process.env.GIT_DIR = 'wrong/path/.git' // refer to https://github.com/DonJayamanne/gitHistoryVSCode/issues/233#issuecomment-375769718
