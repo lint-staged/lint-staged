@@ -18,8 +18,7 @@ describe('resolveGitDir', () => {
     const expected = normalize(path.dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
-    // path.resolve to strip trailing slash
-    expect(path.resolve(await resolveGitDir())).toEqual(expected)
+    expect(await resolveGitDir()).toEqual(expected)
     process.cwd = processCwdBkp
   })
 
@@ -28,7 +27,7 @@ describe('resolveGitDir', () => {
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     process.env.GIT_DIR = 'wrong/path/.git' // refer to https://github.com/DonJayamanne/gitHistoryVSCode/issues/233#issuecomment-375769718
-    expect(path.resolve(await resolveGitDir())).toEqual(expected)
+    expect(await resolveGitDir()).toEqual(expected)
     process.cwd = processCwdBkp
   })
 
