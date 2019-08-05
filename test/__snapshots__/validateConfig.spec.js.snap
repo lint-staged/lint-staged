@@ -1,8 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateConfig should not throw and should print nothing for function linter 1`] = `""`;
+exports[`validateConfig should not throw and should print nothing for function task 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for valid config 1`] = `""`;
+
+exports[`validateConfig should not throw when config contains deprecated key but with valid task 1`] = `""`;
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
 "● Validation Error:
@@ -148,3 +150,15 @@ Please refer to https://github.com/okonet/lint-staged#configuration for more inf
 `;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 2`] = `""`;
+
+exports[`validateConfig should throw when function task returns incorrect values 1`] = `
+"● Validation Error:
+
+  Invalid value for 'filenames => filenames.map(file => [\`eslint --fix \${file}\`, \`git add \${file}\`])'.
+
+  Function task should return a string or an array of strings.
+ 
+  Configured value is: [['eslint --fix [filename]', 'git add [filename]']]
+
+Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+`;
