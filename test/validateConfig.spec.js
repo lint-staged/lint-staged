@@ -36,7 +36,7 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should not throw and should print nothing for function linter', () => {
+  it('should not throw and should print nothing for function task', () => {
     expect(() =>
       validateConfig({
         '*.js': filenames => {
@@ -47,6 +47,13 @@ describe('validateConfig', () => {
       })
     ).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should throw when function task returns incorrect values', () => {
+    const invalidConfig = {
+      '*.js': filenames => filenames.map(file => [`eslint --fix ${file}`, `git add ${file}`])
+    }
+    expect(() => validateConfig(invalidConfig)).toThrowErrorMatchingSnapshot()
   })
 
   it('should throw when detecting deprecated advanced configuration', () => {
@@ -64,6 +71,14 @@ describe('validateConfig', () => {
     }
 
     expect(() => validateConfig(advancedConfig)).toThrowErrorMatchingSnapshot()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw when config contains deprecated key but with valid task', () => {
+    const stillValidConfig = {
+      concurrent: 'my command'
+    }
+    expect(() => validateConfig(stillValidConfig)).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 })

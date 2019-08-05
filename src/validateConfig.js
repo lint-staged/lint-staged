@@ -46,40 +46,55 @@ module.exports = function validateConfig(config) {
   if (!config || typeof config !== 'object') {
     errors.push('Configuration should be an object!')
   } else {
-    const globs = Object.keys(config)
+    const entries = Object.entries(config)
 
-    if (globs.length === 0) {
+    if (entries.length === 0) {
       errors.push('Configuration should not be empty!')
     }
 
-    globs.forEach(key => {
-      if (TEST_DEPRECATED_KEYS.has(key)) {
-        const testFn = TEST_DEPRECATED_KEYS.get(key)
-        if (testFn(config[key])) {
+    entries.forEach(([pattern, task]) => {
+      if (TEST_DEPRECATED_KEYS.has(pattern)) {
+        const testFn = TEST_DEPRECATED_KEYS.get(pattern)
+        if (testFn(task)) {
           errors.push(
             createError(
-              key,
+              pattern,
               'Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged',
-              config[key]
+              task
             )
           )
         }
       }
 
       if (
-        (!Array.isArray(config[key]) ||
-          config[key].some(item => typeof item !== 'string' && typeof item !== 'function')) &&
-        typeof config[key] !== 'string' &&
-        typeof config[key] !== 'function'
+        (!Array.isArray(task) ||
+          task.some(item => typeof item !== 'string' && typeof item !== 'function')) &&
+        typeof task !== 'string' &&
+        typeof task !== 'function'
       ) {
         errors.push(
           createError(
-            key,
+            pattern,
             'Should be a string, a function, or an array of strings and functions',
-            config[key]
+            task
           )
         )
       }
+
+      entries.forEach(([, task]) => {
+        if (typeof task !== 'function') return
+        const resolved = task(['[filename]'])
+        if (typeof resolved === 'string') return
+        if (!Array.isArray(resolved) || resolved.some(subtask => typeof subtask !== 'string')) {
+          errors.push(
+            createError(
+              task,
+              'Function task should return a string or an array of strings',
+              resolved
+            )
+          )
+        }
+      })
     })
   }
 
