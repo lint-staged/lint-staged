@@ -1,4 +1,5 @@
 import makeConsoleMock from 'consolemock'
+import execa from 'execa'
 import normalize from 'normalize-path'
 
 import resolveGitDir from '../src/resolveGitDir'
@@ -62,5 +63,56 @@ describe('runAll', () => {
     const logger = makeConsoleMock()
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not skip tasks if there are files', async () => {
+    expect.assertions(1)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    await runAll({ config: { '*.js': ['echo "sample"'] } })
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should skip applying unstaged modifications if there are errors during linting', async () => {
+    expect.assertions(1)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    execa.mockImplementation(() =>
+      Promise.resolve({
+        stdout: '',
+        stderr: 'Linter finished with error',
+        code: 1,
+        failed: true,
+        cmd: 'mock cmd'
+      })
+    )
+
+    try {
+      await runAll({ config: { '*.js': ['echo "sample"'] } })
+    } catch (err) {
+      console.log(err)
+    }
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should skip tasks and restore state if terminated', async () => {
+    expect.assertions(1)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    execa.mockImplementation(() =>
+      Promise.resolve({
+        stdout: '',
+        stderr: '',
+        code: 0,
+        failed: false,
+        killed: true,
+        signal: 'SIGINT',
+        cmd: 'mock cmd'
+      })
+    )
+
+    try {
+      await runAll({ config: { '*.js': ['echo "sample"'] } })
+    } catch (err) {
+      console.log(err)
+    }
+    expect(console.printHistory()).toMatchSnapshot()
   })
 })

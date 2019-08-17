@@ -1,8 +1,86 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`runAll should not skip tasks if there are files 1`] = `
+"
+LOG Preparing... [started]
+LOG Preparing... [completed]
+LOG Running tasks... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [completed]
+LOG Running tasks for *.js [completed]
+LOG Running tasks... [completed]
+LOG Applying unstaged changes... [started]
+LOG Applying unstaged changes... [completed]
+LOG Cleaning up... [started]
+LOG Cleaning up... [completed]"
+`;
+
 exports[`runAll should resolve the promise with no files 1`] = `
 "
 LOG No staged files match any of provided globs."
+`;
+
+exports[`runAll should skip applying unstaged modifications if there are errors during linting 1`] = `
+"
+LOG Preparing... [started]
+LOG Preparing... [completed]
+LOG Running tasks... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [failed]
+LOG → 
+LOG Running tasks for *.js [failed]
+LOG → 
+LOG Running tasks... [failed]
+LOG Applying unstaged changes... [started]
+LOG Applying unstaged changes... [skipped]
+LOG → Skipped because of errors from tasks
+LOG Restoring original state due to errors... [started]
+LOG Restoring original state due to errors... [completed]
+LOG Cleaning up... [started]
+LOG Cleaning up... [completed]
+LOG {
+  name: 'ListrError',
+  errors: [
+    {
+      privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
+      context: {hasErrors: true}
+    }
+  ],
+  context: {hasErrors: true}
+}"
+`;
+
+exports[`runAll should skip tasks and restore state if terminated 1`] = `
+"
+LOG Preparing... [started]
+LOG Preparing... [completed]
+LOG Running tasks... [started]
+LOG Running tasks for *.js [started]
+LOG echo \\"sample\\" [started]
+LOG echo \\"sample\\" [failed]
+LOG → 
+LOG Running tasks for *.js [failed]
+LOG → 
+LOG Running tasks... [failed]
+LOG Applying unstaged changes... [started]
+LOG Applying unstaged changes... [skipped]
+LOG → Skipped because of errors from tasks
+LOG Restoring original state due to errors... [started]
+LOG Restoring original state due to errors... [completed]
+LOG Cleaning up... [started]
+LOG Cleaning up... [completed]
+LOG {
+  name: 'ListrError',
+  errors: [
+    {
+      privateMsg: '\\\\n\\\\n\\\\n‼ echo \\"sample\\" was terminated with SIGINT',
+      context: {hasErrors: true}
+    }
+  ],
+  context: {hasErrors: true}
+}"
 `;
 
 exports[`runAll should use an injected logger 1`] = `
