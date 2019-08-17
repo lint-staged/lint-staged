@@ -80,8 +80,7 @@ async function applyPatchFor(tree1, tree2, options) {
    * and https://stackoverflow.com/questions/13223868/how-to-stage-line-by-line-in-git-gui-although-no-newline-at-end-of-file-warnin
    */
   // TODO: Figure out how to test this. For some reason tests were working but in the real env it was failing
-  const patch = `${diff}\n` // TODO: This should also work on Windows but test would be good
-  if (patch) {
+  if (diff) {
     try {
       /**
        * Apply patch to index. We will apply it with --reject so it it will try apply hunk by hunk
@@ -92,14 +91,14 @@ async function applyPatchFor(tree1, tree2, options) {
         ['apply', '-v', '--whitespace=nowarn', '--reject', '--recount', '--unidiff-zero'],
         {
           ...options,
-          input: patch
+          input: `${diff}\n` // TODO: This should also work on Windows but test would be good
         }
       )
     } catch (err) {
       debug('Could not apply patch to the stashed files cleanly')
       debug(err)
       debug('Patch content:')
-      debug(patch)
+      debug(diff)
       throw new Error('Could not apply patch to the stashed files cleanly.', err)
     }
   }
