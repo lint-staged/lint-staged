@@ -115,16 +115,18 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
         task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
       },
       {
+        title: 'Applying unstaged changes...',
+        skip: ctx => ctx.hasErrors && 'Skipped because of errors from tasks',
+        task: () => git.restoreUnstagedChanges()
+      },
+      {
         title: 'Restoring original state due to errors...',
         enabled: ctx => ctx.hasErrors,
         task: () => git.restoreOriginalState()
       },
       {
         title: 'Cleaning up...',
-        task: async ctx => {
-          if (!ctx.hasErrors) await git.restoreUnstagedChanges()
-          await git.dropBackup()
-        }
+        task: () => git.dropBackup()
       }
     ],
     listrOptions
