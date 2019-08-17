@@ -23,6 +23,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
+LOG Applying unstaged changes... [started]
+LOG Applying unstaged changes... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]"
 `;
