@@ -1,31 +1,35 @@
 import makeConsoleMock from 'consolemock'
 import execa from 'execa'
+import normalize from 'normalize-path'
 
+import resolveGitDir from '../src/resolveGitDir'
 import getStagedFiles from '../src/getStagedFiles'
 import runAll from '../src/runAll'
 import { hasPartiallyStagedFiles, gitStashSave, gitStashPop, updateStash } from '../src/gitWorkflow'
 
+jest.mock('../src/resolveGitDir')
 jest.mock('../src/getStagedFiles')
 jest.mock('../src/gitWorkflow')
 
+resolveGitDir.mockImplementation(async () => normalize(process.cwd()))
 getStagedFiles.mockImplementation(async () => [])
 
-const globalConsoleTemp = global.console
+const globalConsoleTemp = console
 
 describe('runAll', () => {
   beforeAll(() => {
-    global.console = makeConsoleMock()
+    console = makeConsoleMock()
   })
 
   afterEach(() => {
-    global.console.clearHistory()
+    console.clearHistory()
     gitStashSave.mockClear()
     gitStashPop.mockClear()
     updateStash.mockClear()
   })
 
   afterAll(() => {
-    global.console = globalConsoleTemp
+    console = globalConsoleTemp
   })
 
   it('should not throw when a valid config is provided', () => {
