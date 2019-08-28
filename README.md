@@ -400,6 +400,20 @@ const success = await lintStaged({
 })
 ```
 
+You can also pass config directly with `config` option:
+
+
+```js
+const success = await lintStaged({
+  config: {
+    '*.js': 'eslint --fix'
+  },
+  shell: false,
+  quiet: false,
+  debug: false
+})
+```
+
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
 _**Update**_: The latest version of JetBrains IDEs now support running hooks as you would expect.

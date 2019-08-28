@@ -43,6 +43,7 @@ function loadConfig(configPath) {
  *
  * @param {object} options
  * @param {string} [options.configPath] - Path to configuration file
+ * @param {object}  [options.config] - Object with configuration for programmatic API
  * @param {boolean} [options.relative] - Pass relative filepaths to tasks
  * @param {boolean} [options.shell] - Skip parsing of tasks for better shell support
  * @param {boolean} [options.quiet] - Disable lint-staged’s own console output
@@ -52,12 +53,12 @@ function loadConfig(configPath) {
  * @returns {Promise<boolean>} Promise of whether the linting passed or failed
  */
 module.exports = function lintStaged(
-  { configPath, relative = false, shell = false, quiet = false, debug = false } = {},
+  { configPath, config, relative = false, shell = false, quiet = false, debug = false } = {},
   logger = console
 ) {
   debugLog('Loading config using `cosmiconfig`')
 
-  return loadConfig(configPath)
+  return (config ? Promise.resolve({ config, filepath: '(input)' }) : loadConfig(configPath))
     .then(result => {
       if (result == null) throw errConfigNotFound
 
