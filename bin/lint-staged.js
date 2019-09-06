@@ -31,6 +31,7 @@ cmdline
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file')
   .option('-d, --debug', 'print additional debug information', false)
+  .option('-e, --escape', 'escape special characters in filenames', false)
   .option(
     '-p, --concurrent <parallel tasks>',
     'the number of tasks to run concurrently, or false to run tasks serially',
@@ -70,6 +71,7 @@ const options = {
   concurrent: cmdline.concurrent,
   configPath: cmdline.config,
   debug: !!cmdline.debug,
+  escape: !!cmdline.escape,
   maxArgLength: getMaxArgLength() / 2,
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,

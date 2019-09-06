@@ -843,6 +843,24 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: workTreeDir })).toMatch('test')
     expect(await readFile('test.js', workTreeDir)).toEqual(testJsFilePretty)
   })
+
+  it('should handle brackets in file path', async () => {
+    // Stage pretty file
+    await fs.ensureDir(path.join(cwd, '[dir]'))
+    await appendFile('[dir]/test.js', testJsFilePretty)
+    await execGit(['add', '[dir]/test.js'])
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await gitCommit({ escape: true, config: { '*.js': 'prettier --list-different' } })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
+    " test
+    "
+    `)
+    expect(await readFile('[dir]/test.js')).toEqual(testJsFilePretty)
+  })
 })
 
 describe('runAll', () => {

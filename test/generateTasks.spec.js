@@ -203,4 +203,43 @@ describe('generateTasks', () => {
       ].map(normalizePath)
     })
   })
+
+  it('should escape certain characters in paths when enabled', async () => {
+    const result = await generateTasks({
+      config,
+      cwd,
+      escape: true,
+      gitDir,
+      files: [
+        '[dir]/test.js',
+        'test*string.js',
+        'test$string.js',
+        'space name.js',
+        "'single-quotes'.js",
+        '"double-quotes".js',
+        '`backticks`.js',
+        '(brackets1).js',
+        '[brackets2].js',
+        '{brackets3}.js'
+      ],
+      relative: true
+    })
+    const linter = result.find(item => item.pattern === '*.js')
+    expect(linter).toEqual({
+      pattern: '*.js',
+      commands: 'root-js',
+      fileList: [
+        `\\[dir\\]/test.js`,
+        `test\\*string.js`,
+        `test\\$string.js`,
+        `space\\ name.js`,
+        `\\'single-quotes\\'.js`,
+        `\\"double-quotes\\".js`,
+        '\\`backticks\\`.js',
+        `\\(brackets1\\).js`,
+        `\\[brackets2\\].js`,
+        `\\{brackets3\\}.js`
+      ]
+    })
+  })
 })
