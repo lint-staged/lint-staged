@@ -33,19 +33,25 @@ const readFile = async (filename, dir = cwd) =>
 const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.join(dir, filename), content)
 
+// Write (over) file, creating if it doesn't exist
+const writeFile = async (filename, content, dir = cwd) =>
+  fs.writeFile(path.join(dir, filename), content)
+
 // Wrap execGit to always pass `gitOps`
 const execGit = async args => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
-const gitCommit = async options => {
+const gitCommit = async (options, message = 'test') => {
   try {
     await runAll({ ...options, cwd, quiet: true })
-    await execGit(['commit', '-m "test"'])
+    await execGit(['commit', `-m "${message}"`])
     return true
   } catch (error) {
     return false
   }
 }
+
+const fixJsConfig = { config: { '*.js': ['prettier --write', 'git add'] } }
 
 describe('runAll', () => {
   it('should throw when not in a git directory', async () => {
@@ -82,10 +88,7 @@ describe('runAll', () => {
 
     // Nothing is wrong, so a new commit is created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" \\"test\\"
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
   })
 
@@ -95,15 +98,12 @@ describe('runAll', () => {
     await execGit(['add', 'test.js'])
 
     // Run lint-staged with `prettier --write` and commit pretty file
-    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    const success = await gitCommit(fixJsConfig)
     expect(success).toEqual(true)
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" \\"test\\"
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
   })
 
@@ -119,10 +119,7 @@ describe('runAll', () => {
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" initial commit
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await execGit(['status'])).toEqual(status)
     expect(await readFile('test.js')).toEqual(testJsFileUgly)
   })
@@ -134,15 +131,12 @@ describe('runAll', () => {
     const status = await execGit(['status'])
 
     // Run lint-staged with `prettier --write` to break the linter
-    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    const success = await gitCommit(fixJsConfig)
     expect(success).toEqual(false)
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" initial commit
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await execGit(['status'])).toEqual(status)
     expect(await readFile('test.js')).toEqual(testJsFileUnfixable)
   })
@@ -162,10 +156,7 @@ describe('runAll', () => {
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" \\"test\\"
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
@@ -188,15 +179,12 @@ describe('runAll', () => {
     await appendFile('test.js', appended)
 
     // Run lint-staged with `prettier --write` and commit pretty file
-    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    const success = await gitCommit(fixJsConfig)
     expect(success).toEqual(true)
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" \\"test\\"
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
@@ -227,10 +215,7 @@ describe('runAll', () => {
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" initial commit
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await execGit(['status'])).toEqual(status)
     expect(await readFile('test.js')).toEqual(testJsFileUgly + appended)
   })
@@ -246,15 +231,12 @@ describe('runAll', () => {
     const status = await execGit(['status'])
 
     // Run lint-staged with `prettier --write` to break the linter
-    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    const success = await gitCommit(fixJsConfig)
     expect(success).toEqual(false)
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" initial commit
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await execGit(['status'])).toEqual(status)
     expect(await readFile('test.js')).toEqual(testJsFileUnfixable + appended)
   })
@@ -269,25 +251,19 @@ describe('runAll', () => {
     await appendFile('test.js', testJsFilePretty)
 
     // Run lint-staged with `prettier --write` and commit pretty file
-    const success = await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+    const success = await gitCommit(fixJsConfig)
     expect(success).toEqual(true)
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" \\"test\\"
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
     expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.replace(/\n$/, ''))
 
     // Nothing is staged
-    expect(await execGit(['status'])).toMatchInlineSnapshot(`
-"On branch master
-nothing to commit, working tree clean"
-`)
+    expect(await execGit(['status'])).toMatch('nothing to commit, working tree clean')
 
     // File is pretty, and has been edited
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -319,25 +295,22 @@ nothing to commit, working tree clean"
 
     // Something was wrong so new commit wasn't created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-" initial commit
-"
-`)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
 
     // But local modifications are gone
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-"diff --git a/test.js b/test.js
-index f80f875..1c5643c 100644
---- a/test.js
-+++ b/test.js
-@@ -1,3 +1,3 @@
- module.exports = {
--    'foo': 'bar',
--}
-+  foo: \\"bar\\"
-+};"
-`)
+      "diff --git a/test.js b/test.js
+      index f80f875..1c5643c 100644
+      --- a/test.js
+      +++ b/test.js
+      @@ -1,3 +1,3 @@
+       module.exports = {
+      -    'foo': 'bar',
+      -}
+      +  foo: \\"bar\\"
+      +};"
+    `)
 
     expect(await readFile('test.js')).not.toEqual(testJsFileUgly + appended)
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -354,6 +327,69 @@ index f80f875..1c5643c 100644
 
     expect(await execGit(['diff'])).toEqual(diff)
     expect(await readFile('test.js')).toEqual(testJsFileUgly + appended)
+  })
+
+  it('should handle merge conflicts', async () => {
+    const fileInBranchA = `module.exports = "foo";\n`
+    const fileInBranchB = `module.exports = 'bar'\n`
+    const fileInBranchBFixed = `module.exports = "bar";\n`
+
+    // Create one branch
+    await execGit(['checkout', '-b', 'branch-a'])
+    await appendFile('test.js', fileInBranchA)
+    await execGit(['add', '.'])
+    const successA = await gitCommit(fixJsConfig, 'commit a')
+    expect(successA).toEqual(true)
+    expect(await readFile('test.js')).toEqual(fileInBranchA)
+
+    await execGit(['checkout', 'master'])
+
+    // Create another branch
+    await execGit(['checkout', '-b', 'branch-b'])
+    await appendFile('test.js', fileInBranchB)
+    await execGit(['add', '.'])
+    const successB = await gitCommit(fixJsConfig, 'commit b')
+    expect(successB).toEqual(true)
+    expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
+
+    // Merge first branch
+    await execGit(['checkout', 'master'])
+    await execGit(['merge', 'branch-a'])
+    expect(await readFile('test.js')).toEqual(fileInBranchA)
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
+
+    // Merge second branch, causing merge conflict
+    try {
+      await execGit(['merge', 'branch-b'])
+    } catch ({ stdout }) {
+      expect(stdout).toMatch('Merge conflict in test.js')
+    }
+
+    expect(await readFile('test.js')).toMatchInlineSnapshot(`
+      "<<<<<<< HEAD
+      module.exports = \\"foo\\";
+      =======
+      module.exports = \\"bar\\";
+      >>>>>>> branch-b
+      "
+    `)
+
+    // Fix conflict and commit using lint-staged
+    await writeFile('test.js', fileInBranchB)
+    expect(await readFile('test.js')).toEqual(fileInBranchB)
+    await execGit(['add', '.'])
+
+    // Do not use `gitCommit` wrapper here
+    await runAll({ ...fixJsConfig, cwd, quiet: true })
+
+    // Lint-staged lost MERGE_HEAD
+    try {
+      await execGit(['merge', '--continue'])
+    } catch ({ stderr }) {
+      expect(stderr).toMatch('There is no merge in progress (MERGE_HEAD missing)')
+    }
+
+    // TODO: Fix behaviour by saving/restoring MERGE_HEAD, and then complete test
   })
 
   afterEach(async () => {
