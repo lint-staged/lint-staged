@@ -300,17 +300,17 @@ describe('runAll', () => {
     // But local modifications are gone
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-      "diff --git a/test.js b/test.js
-      index f80f875..1c5643c 100644
-      --- a/test.js
-      +++ b/test.js
-      @@ -1,3 +1,3 @@
-       module.exports = {
-      -    'foo': 'bar',
-      -}
-      +  foo: \\"bar\\"
-      +};"
-    `)
+                  "diff --git a/test.js b/test.js
+                  index f80f875..1c5643c 100644
+                  --- a/test.js
+                  +++ b/test.js
+                  @@ -1,3 +1,3 @@
+                   module.exports = {
+                  -    'foo': 'bar',
+                  -}
+                  +  foo: \\"bar\\"
+                  +};"
+            `)
 
     expect(await readFile('test.js')).not.toEqual(testJsFileUgly + appended)
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -366,13 +366,13 @@ describe('runAll', () => {
     }
 
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
-      "<<<<<<< HEAD
-      module.exports = \\"foo\\";
-      =======
-      module.exports = \\"bar\\";
-      >>>>>>> branch-b
-      "
-    `)
+                  "<<<<<<< HEAD
+                  module.exports = \\"foo\\";
+                  =======
+                  module.exports = \\"bar\\";
+                  >>>>>>> branch-b
+                  "
+            `)
 
     // Fix conflict and commit using lint-staged
     await writeFile('test.js', fileInBranchB)
@@ -381,15 +381,18 @@ describe('runAll', () => {
 
     // Do not use `gitCommit` wrapper here
     await runAll({ ...fixJsConfig, cwd, quiet: true })
+    await execGit(['commit', '--no-edit'])
 
-    // Lint-staged lost MERGE_HEAD
-    try {
-      await execGit(['merge', '--continue'])
-    } catch ({ stderr }) {
-      expect(stderr).toMatch('There is no merge in progress (MERGE_HEAD missing)')
-    }
+    // Nothing is wrong, so a new commit is created and file is pretty
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
+      "Merge branch 'branch-b'
 
-    // TODO: Fix behaviour by saving/restoring MERGE_HEAD, and then complete test
+      # Conflicts:
+      #	test.js
+      "
+    `)
+    expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
 
   afterEach(async () => {

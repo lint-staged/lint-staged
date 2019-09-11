@@ -1,8 +1,14 @@
 'use strict'
 
 const debug = require('debug')('lint-staged:git')
+const fs = require('fs')
+const path = require('path')
 
 const execGit = require('./execGit')
+
+const MERGE_HEAD = 'MERGE_HEAD'
+const MERGE_MODE = 'MERGE_MODE'
+const MERGE_MSG = 'MERGE_MSG'
 
 const STASH = 'lint-staged automatic backup'
 
@@ -12,6 +18,33 @@ class GitWorkflow {
   constructor(cwd) {
     this.execGit = (args, options = {}) => execGit(args, { ...options, cwd })
     this.unstagedDiff = null
+    this.cwd = cwd
+  }
+
+  /**
+   * Read file from .git directory, returning a buffer or null
+   * @param {String} filename Relative path to file
+   * @returns {Promise<Buffer|Null>}
+   */
+  readGitConfigFile(filename) {
+    const resolvedPath = path.resolve(this.cwd, '.git', filename)
+    return new Promise(resolve => {
+      fs.readFile(resolvedPath, (error, file) => {
+        resolve(error && error.code === 'ENOENT' ? null : file)
+      })
+    })
+  }
+
+  /**
+   * Write buffer to relative .git directory
+   * @param {String} filename Relative path to file
+   * @param {Buffer} buffer
+   */
+  writeGitConfigFile(filename, buffer) {
+    const resolvedPath = path.resolve(this.cwd, '.git', filename)
+    return new Promise(resolve => {
+      fs.writeFile(resolvedPath, buffer, resolve)
+    })
   }
 
   /**
@@ -35,6 +68,21 @@ class GitWorkflow {
    */
   async stashBackup() {
     debug('Backing up original state...')
+
+    // Git stash loses metadata about a possible merge mode
+    // Manually check and backup if necessary
+    const mergeHead = await this.readGitConfigFile(MERGE_HEAD)
+    if (mergeHead) {
+      debug('Detected current merge mode!')
+      debug('Backing up merge state...')
+      this.mergeHead = mergeHead
+      await Promise.all([
+        this.readGitConfigFile(MERGE_MODE).then(mergeMode => (this.mergeMode = mergeMode)),
+        this.readGitConfigFile(MERGE_MSG).then(mergeMsg => (this.mergeMsg = mergeMsg))
+      ])
+      debug('Done backing up merge state!')
+    }
+
     // Get stash of entire original state, including unstaged changes
     // Keep index so that tasks only work on those files
     await this.execGit(['stash', 'save', '--quiet', '--include-untracked', '--keep-index', STASH])
@@ -100,8 +148,17 @@ class GitWorkflow {
     debug('Dropping backup stash...')
     const original = await this.getBackupStash()
     await this.execGit(['stash', 'drop', '--quiet', original])
-    this.unstagedDiff = null
     debug('Done dropping backup stash!')
+
+    if (this.mergeHead) {
+      debug('Detected backup merge state!')
+      debug('Restoring merge state...')
+      const writePromises = [this.writeGitConfigFile(MERGE_HEAD, this.mergeHead)]
+      if (this.mergeMode) writePromises.push(this.writeGitConfigFile(MERGE_MODE, this.mergeMode))
+      if (this.mergeMsg) writePromises.push(this.writeGitConfigFile(MERGE_MSG, this.mergeMsg))
+      await Promise.all(writePromises)
+      debug('Done restoring merge state!')
+    }
   }
 }
 
