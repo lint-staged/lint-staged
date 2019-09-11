@@ -17,7 +17,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
       shell: false
@@ -34,7 +34,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
       shell: false
@@ -86,7 +86,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git', ['add', 'test.js'], {
+    expect(execa).lastCalledWith('git add test.js', {
       cwd: '../',
       preferLocal: true,
       reject: false,
@@ -100,7 +100,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('jest', ['test.js'], {
+    expect(execa).lastCalledWith('jest test.js', {
       preferLocal: true,
       reject: false,
       shell: false
@@ -117,7 +117,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git', ['add', 'test.js'], {
+    expect(execa).lastCalledWith('git add test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,

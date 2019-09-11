@@ -161,7 +161,7 @@ describe('lintStaged', () => {
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const passed = await lintStaged({ quiet: true }, logger)
+    const passed = await lintStaged({ quiet: true, shell: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
     expect(passed).toBe(false)
   })
