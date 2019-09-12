@@ -1,11 +1,6 @@
-/* eslint no-underscore-dangle: 0 */
-
 import path from 'path'
-import tmp from 'tmp'
 import execa from 'execa'
 import execGit from '../src/execGit'
-
-tmp.setGracefulCleanup()
 
 describe('execGit', () => {
   it('should execute git in process.cwd if working copy is not specified', async () => {
