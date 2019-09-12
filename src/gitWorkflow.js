@@ -2,7 +2,6 @@
 
 const debug = require('debug')('lint-staged:git')
 const fs = require('fs')
-const path = require('path')
 
 const execGit = require('./execGit')
 
@@ -27,7 +26,7 @@ class GitWorkflow {
    * @returns {Promise<Buffer|Null>}
    */
   readGitConfigFile(filename) {
-    const resolvedPath = path.resolve(this.cwd, '.git', filename)
+    const resolvedPath = `${this.cwd}/.git/${filename}`
     return new Promise(resolve => {
       fs.readFile(resolvedPath, (error, file) => {
         resolve(error && error.code === 'ENOENT' ? null : file)
@@ -41,7 +40,7 @@ class GitWorkflow {
    * @param {Buffer} buffer
    */
   writeGitConfigFile(filename, buffer) {
-    const resolvedPath = path.resolve(this.cwd, '.git', filename)
+    const resolvedPath = `${this.cwd}/.git/${filename}`
     return new Promise(resolve => {
       fs.writeFile(resolvedPath, buffer, resolve)
     })
