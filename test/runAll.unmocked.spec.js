@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import normalize from 'normalize-path'
 import path from 'path'
 import tmp from 'tmp'
 
@@ -22,7 +23,15 @@ const testJsFileUnfixable = `const obj = {
     'foo': 'bar'
 `
 
-let wcDir
+// Create temporary directory by wrapping `tmp` in a Promise
+const createTempDir = () =>
+  new Promise((resolve, reject) => {
+    tmp.dir({ keep: true, unsafeCleanup: true }, (error, name, cleanupCallback) => {
+      if (error) reject(error)
+      resolve({ name, cleanupCallback })
+    })
+  })
+
 let cwd
 
 // Get file content
@@ -55,18 +64,20 @@ const fixJsConfig = { config: { '*.js': ['prettier --write', 'git add'] } }
 
 describe('runAll', () => {
   it('should throw when not in a git directory', async () => {
-    const nonGitDir = tmp.dirSync({ unsafeCleanup: true })
+    const nonGitDir = await createTempDir()
     await expect(runAll({ cwd: nonGitDir })).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Current directory is not a git directory!"`
     )
-    nonGitDir.removeCallback()
+    nonGitDir.cleanupCallback()
   })
 })
 
 describe('runAll', () => {
+  let tmpDir
+
   beforeEach(async () => {
-    wcDir = tmp.dirSync({ unsafeCleanup: true })
-    cwd = await fs.realpath(wcDir.name)
+    tmpDir = await createTempDir()
+    cwd = normalize(await fs.realpath(tmpDir.name))
 
     // Init repository with initial commit
     await execGit('init')
@@ -75,6 +86,10 @@ describe('runAll', () => {
     await appendFile('README.md', '# Test\n')
     await execGit(['add', 'README.md'])
     await execGit(['commit', '-m initial commit'])
+  })
+
+  afterEach(async () => {
+    await tmpDir.cleanupCallback()
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
@@ -393,9 +408,5 @@ describe('runAll', () => {
       "
     `)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
-  })
-
-  afterEach(async () => {
-    wcDir.removeCallback()
   })
 })
