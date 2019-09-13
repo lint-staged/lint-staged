@@ -28,14 +28,6 @@ describe('runAll', () => {
     console = globalConsoleTemp
   })
 
-  it('should not throw when a valid config is provided', () => {
-    expect(() => runAll({})).not.toThrow()
-  })
-
-  it('should return a promise', () => {
-    expect(runAll({})).toBeInstanceOf(Promise)
-  })
-
   it('should resolve the promise with no tasks', async () => {
     const res = await runAll({ config: {} })
     expect(res).toEqual('No tasks to run.')
