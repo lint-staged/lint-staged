@@ -1,9 +1,10 @@
 'use strict'
 
 const debug = require('debug')('lint-staged:git')
-const fs = require('fs')
+const path = require('path')
 
 const execGit = require('./execGit')
+const { checkFile, readBufferFromFile, writeBufferToFile } = require('./file')
 
 const MERGE_HEAD = 'MERGE_HEAD'
 const MERGE_MODE = 'MERGE_MODE'
@@ -18,47 +19,14 @@ class GitWorkflow {
     this.execGit = (args, options = {}) => execGit(args, { ...options, cwd })
     this.unstagedDiff = null
     this.cwd = cwd
-  }
 
-  /**
-   * Resolve file path from .git directory
-   */
-  resolveGitFile(filename) {
-    return `${this.cwd}/.git/${filename}`
-  }
-
-  /**
-   * Check if file exists in .git directory
-   * @param {String} filename
-   */
-  checkGitConfigFile(filename) {
-    return new Promise(resolve => {
-      fs.access(this.resolveGitFile(filename), fs.constants.R_OK, error => resolve(!error))
-    })
-  }
-
-  /**
-   * Read file from .git directory, returning a buffer or null
-   * @param {String} filename
-   * @returns {Promise<Buffer|Null>}
-   */
-  readGitConfigFile(filename) {
-    return new Promise(resolve => {
-      fs.readFile(this.resolveGitFile(filename), (error, file) => {
-        resolve(file)
-      })
-    })
-  }
-
-  /**
-   * Write buffer to relative .git directory
-   * @param {String} filename
-   * @param {Buffer} buffer
-   */
-  writeGitConfigFile(filename, buffer) {
-    return new Promise(resolve => {
-      fs.writeFile(this.resolveGitFile(filename), buffer, resolve)
-    })
+    /**
+     * These three files hold state about an ongoing git merge
+     * Resolve paths during constructor
+     */
+    this.mergeHeadFile = path.resolve(this.cwd, '.git', MERGE_HEAD)
+    this.mergeModeFile = path.resolve(this.cwd, '.git', MERGE_MODE)
+    this.mergeMsgFile = path.resolve(this.cwd, '.git', MERGE_MSG)
   }
 
   /**
@@ -85,13 +53,17 @@ class GitWorkflow {
 
     // Git stash loses metadata about a possible merge mode
     // Manually check and backup if necessary
-    if (await this.checkGitConfigFile(MERGE_HEAD)) {
+    if (await checkFile(this.mergeHeadFile)) {
       debug('Detected current merge mode!')
       debug('Backing up merge state...')
       await Promise.all([
-        this.readGitConfigFile(MERGE_HEAD).then(mergeHead => (this.mergeHead = mergeHead)),
-        this.readGitConfigFile(MERGE_MODE).then(mergeMode => (this.mergeMode = mergeMode)),
-        this.readGitConfigFile(MERGE_MSG).then(mergeMsg => (this.mergeMsg = mergeMsg))
+        readBufferFromFile(this.mergeHeadFile).then(
+          mergeHead => (this.mergeHeadBuffer = mergeHead)
+        ),
+        readBufferFromFile(this.mergeModeFile).then(
+          mergeMode => (this.mergeModeBuffer = mergeMode)
+        ),
+        readBufferFromFile(this.mergeMsgFile).then(mergeMsg => (this.mergeMsgBuffer = mergeMsg))
       ])
       debug('Done backing up merge state!')
     }
@@ -163,13 +135,13 @@ class GitWorkflow {
     await this.execGit(['stash', 'drop', '--quiet', original])
     debug('Done dropping backup stash!')
 
-    if (this.mergeHead) {
+    if (this.mergeHeadBuffer) {
       debug('Detected backup merge state!')
       debug('Restoring merge state...')
       await Promise.all([
-        this.writeGitConfigFile(MERGE_HEAD, this.mergeHead),
-        this.writeGitConfigFile(MERGE_MODE, this.mergeMode),
-        this.writeGitConfigFile(MERGE_MSG, this.mergeMsg)
+        writeBufferToFile(this.mergeHeadFile, this.mergeHeadBuffer),
+        writeBufferToFile(this.mergeModeFile, this.mergeModeBuffer),
+        writeBufferToFile(this.mergeMsgFile, this.mergeMsgBuffer)
       ])
       debug('Done restoring merge state!')
     }
