@@ -21,28 +21,43 @@ class GitWorkflow {
   }
 
   /**
+   * Resolve file path from .git directory
+   */
+  resolveGitFile(filename) {
+    return `${this.cwd}/.git/${filename}`
+  }
+
+  /**
+   * Check if file exists in .git directory
+   * @param {String} filename
+   */
+  checkGitConfigFile(filename) {
+    return new Promise(resolve => {
+      fs.access(this.resolveGitFile(filename), fs.constants.R_OK, error => resolve(!error))
+    })
+  }
+
+  /**
    * Read file from .git directory, returning a buffer or null
-   * @param {String} filename Relative path to file
+   * @param {String} filename
    * @returns {Promise<Buffer|Null>}
    */
   readGitConfigFile(filename) {
-    const resolvedPath = `${this.cwd}/.git/${filename}`
     return new Promise(resolve => {
-      fs.readFile(resolvedPath, (error, file) => {
-        resolve(error && error.code === 'ENOENT' ? null : file)
+      fs.readFile(this.resolveGitFile(filename), (error, file) => {
+        resolve(file)
       })
     })
   }
 
   /**
    * Write buffer to relative .git directory
-   * @param {String} filename Relative path to file
+   * @param {String} filename
    * @param {Buffer} buffer
    */
   writeGitConfigFile(filename, buffer) {
-    const resolvedPath = `${this.cwd}/.git/${filename}`
     return new Promise(resolve => {
-      fs.writeFile(resolvedPath, buffer, resolve)
+      fs.writeFile(this.resolveGitFile(filename), buffer, resolve)
     })
   }
 
@@ -70,12 +85,11 @@ class GitWorkflow {
 
     // Git stash loses metadata about a possible merge mode
     // Manually check and backup if necessary
-    const mergeHead = await this.readGitConfigFile(MERGE_HEAD)
-    if (mergeHead) {
+    if (await this.checkGitConfigFile(MERGE_HEAD)) {
       debug('Detected current merge mode!')
       debug('Backing up merge state...')
-      this.mergeHead = mergeHead
       await Promise.all([
+        this.readGitConfigFile(MERGE_HEAD).then(mergeHead => (this.mergeHead = mergeHead)),
         this.readGitConfigFile(MERGE_MODE).then(mergeMode => (this.mergeMode = mergeMode)),
         this.readGitConfigFile(MERGE_MSG).then(mergeMsg => (this.mergeMsg = mergeMsg))
       ])
@@ -152,10 +166,11 @@ class GitWorkflow {
     if (this.mergeHead) {
       debug('Detected backup merge state!')
       debug('Restoring merge state...')
-      const writePromises = [this.writeGitConfigFile(MERGE_HEAD, this.mergeHead)]
-      if (this.mergeMode) writePromises.push(this.writeGitConfigFile(MERGE_MODE, this.mergeMode))
-      if (this.mergeMsg) writePromises.push(this.writeGitConfigFile(MERGE_MSG, this.mergeMsg))
-      await Promise.all(writePromises)
+      await Promise.all([
+        this.writeGitConfigFile(MERGE_HEAD, this.mergeHead),
+        this.writeGitConfigFile(MERGE_MODE, this.mergeMode),
+        this.writeGitConfigFile(MERGE_MSG, this.mergeMsg)
+      ])
       debug('Done restoring merge state!')
     }
   }
