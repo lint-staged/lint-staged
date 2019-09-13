@@ -1,7 +1,7 @@
 import normalize from 'normalize-path'
 import path from 'path'
 
-import resolveGitDir from '../src/resolveGitDir'
+import resolveGitDir from '../lib/resolveGitDir'
 
 /**
  * resolveGitDir runs execa, so the mock needs to be disabled for these tests

@@ -10,11 +10,11 @@
     "Suhas Karanth <sudo.suhas@gmail.com>",
     "Iiro Jäppinen <iiro@jappinen.fi> (https://iiro.fi)"
   ],
-  "main": "./src/index.js",
   "bin": "./bin/lint-staged",
+  "main": "./lib/index.js",
   "files": [
-    "src",
-    "bin"
+    "bin",
+    "lib"
   ],
   "scripts": {
     "cz": "git-cz",
@@ -79,7 +79,7 @@
   "jest": {
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "lib/**/*.js"
     ],
     "setupFiles": [
       "./testSetup.js"

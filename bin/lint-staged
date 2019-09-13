@@ -23,7 +23,7 @@ require('please-upgrade-node')(
 
 const cmdline = require('commander')
 const debugLib = require('debug')
-const lintStaged = require('../src')
+const lintStaged = require('../lib')
 
 const debug = debugLib('lint-staged:bin')
 

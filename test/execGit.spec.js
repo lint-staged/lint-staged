@@ -1,6 +1,6 @@
 import path from 'path'
 import execa from 'execa'
-import execGit from '../src/execGit'
+import execGit from '../lib/execGit'
 
 describe('execGit', () => {
   it('should execute git in process.cwd if working copy is not specified', async () => {

@@ -1,5 +1,5 @@
 import execa from 'execa'
-import resolveTaskFn from '../src/resolveTaskFn'
+import resolveTaskFn from '../lib/resolveTaskFn'
 
 const defaultOpts = { files: ['test.js'] }
 

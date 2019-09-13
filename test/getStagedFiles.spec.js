@@ -1,7 +1,7 @@
-import getStagedFiles from '../src/getStagedFiles'
-import execGit from '../src/execGit'
+import getStagedFiles from '../lib/getStagedFiles'
+import execGit from '../lib/execGit'
 
-jest.mock('../src/execGit')
+jest.mock('../lib/execGit')
 
 describe('getStagedFiles', () => {
   it('should return array of file names', async () => {
