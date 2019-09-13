@@ -1,12 +1,12 @@
 import fs from 'fs-extra'
 import normalize from 'normalize-path'
+import os from 'os'
 import path from 'path'
-import tmp from 'tmp'
+import uuid from 'uuid'
 
 import execGitBase from '../lib/execGit'
 import runAll from '../lib/runAll'
 
-tmp.setGracefulCleanup()
 jest.unmock('execa')
 
 jest.setTimeout(10000)
@@ -25,15 +25,31 @@ const testJsFileUnfixable = `const obj = {
     'foo': 'bar'
 `
 
-// Create temporary directory by wrapping `tmp` in a Promise
-const createTempDir = () =>
-  new Promise((resolve, reject) => {
-    tmp.dir({ keep: true, unsafeCleanup: true }, (error, name, cleanupCallback) => {
-      if (error) reject(error)
-      resolve({ name, cleanupCallback })
-    })
-  })
+const fixJsConfig = { config: { '*.js': ['prettier --write', 'git add'] } }
 
+const isAppveyor = !!process.env.APPVEYOR
+const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
+
+/**
+ * Create temporary directory and return its path
+ * @returns {Promise<String>}
+ */
+const createTempDir = async () => {
+  const dirname = path.resolve(osTmpDir, 'lint-staged-test', uuid())
+  await fs.ensureDir(dirname)
+  return dirname
+}
+
+/**
+ * Remove temporary directory
+ * @param {String} dirname
+ * @returns {Promise<Void>}
+ */
+const removeTempDir = async dirname => {
+  await fs.remove(dirname)
+}
+
+let tmpDir
 let cwd
 
 // Get file content
@@ -57,25 +73,20 @@ const gitCommit = async (options, message = 'test') => {
   await execGit(['commit', `-m "${message}"`])
 }
 
-const fixJsConfig = { config: { '*.js': ['prettier --write', 'git add'] } }
-
 describe('runAll', () => {
   it('should throw when not in a git directory', async () => {
     const nonGitDir = await createTempDir()
     await expect(runAll({ cwd: nonGitDir })).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Current directory is not a git directory!"`
     )
-    nonGitDir.cleanupCallback()
+    await removeTempDir(nonGitDir)
   })
 })
 
 describe('runAll', () => {
-  let tmpDir
-
   beforeEach(async () => {
     tmpDir = await createTempDir()
-    cwd = normalize(await fs.realpath(tmpDir.name))
-
+    cwd = normalize(tmpDir)
     // Init repository with initial commit
     await execGit('init')
     await execGit(['config', 'user.name', '"test"'])
@@ -86,7 +97,9 @@ describe('runAll', () => {
   })
 
   afterEach(async () => {
-    await tmpDir.cleanupCallback()
+    if (!isAppveyor) {
+      await removeTempDir(tmpDir)
+    }
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
