@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import makeConsoleMock from 'consolemock'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
@@ -83,7 +84,13 @@ describe('runAll', () => {
   })
 })
 
+const globalConsoleTemp = console
+
 describe('runAll', () => {
+  beforeAll(() => {
+    console = makeConsoleMock()
+  })
+
   beforeEach(async () => {
     tmpDir = await createTempDir()
     cwd = normalize(tmpDir)
@@ -97,9 +104,14 @@ describe('runAll', () => {
   })
 
   afterEach(async () => {
+    console.clearHistory()
     if (!isAppveyor) {
       await removeTempDir(tmpDir)
     }
+  })
+
+  afterAll(() => {
+    console = globalConsoleTemp
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
@@ -326,6 +338,17 @@ describe('runAll', () => {
       })
     } catch (error) {
       expect(error.message).toMatch('Another git process seems to be running in this repository')
+      expect(console.printHistory()).toMatchInlineSnapshot(`
+        "
+        ERROR 
+          × lint-staged failed due to a git error.
+            Any lost modifications can be restored from a git stash:
+
+            > git stash list
+            stash@{0}: On master: automatic lint-staged backup
+            > git stash pop stash@{0}
+        "
+      `)
     }
 
     // Something was wrong so new commit wasn't created
@@ -335,17 +358,17 @@ describe('runAll', () => {
     // But local modifications are gone
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-                              "diff --git a/test.js b/test.js
-                              index f80f875..1c5643c 100644
-                              --- a/test.js
-                              +++ b/test.js
-                              @@ -1,3 +1,3 @@
-                               module.exports = {
-                              -    'foo': 'bar',
-                              -}
-                              +  foo: \\"bar\\"
-                              +};"
-                    `)
+                                          "diff --git a/test.js b/test.js
+                                          index f80f875..1c5643c 100644
+                                          --- a/test.js
+                                          +++ b/test.js
+                                          @@ -1,3 +1,3 @@
+                                           module.exports = {
+                                          -    'foo': 'bar',
+                                          -}
+                                          +  foo: \\"bar\\"
+                                          +};"
+                            `)
 
     expect(await readFile('test.js')).not.toEqual(testJsFileUgly + appended)
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -399,13 +422,13 @@ describe('runAll', () => {
     }
 
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
-                              "<<<<<<< HEAD
-                              module.exports = \\"foo\\";
-                              =======
-                              module.exports = \\"bar\\";
-                              >>>>>>> branch-b
-                              "
-                    `)
+                                          "<<<<<<< HEAD
+                                          module.exports = \\"foo\\";
+                                          =======
+                                          module.exports = \\"bar\\";
+                                          >>>>>>> branch-b
+                                          "
+                            `)
 
     // Fix conflict and commit using lint-staged
     await writeFile('test.js', fileInBranchB)
@@ -419,12 +442,12 @@ describe('runAll', () => {
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-                  "Merge branch 'branch-b'
+                              "Merge branch 'branch-b'
 
-                  # Conflicts:
-                  #	test.js
-                  "
-            `)
+                              # Conflicts:
+                              #	test.js
+                              "
+                    `)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
 })
