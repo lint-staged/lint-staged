@@ -10,7 +10,7 @@ import runAll from '../lib/runAll'
 
 jest.unmock('execa')
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 const testJsFilePretty = `module.exports = {
   foo: "bar"
