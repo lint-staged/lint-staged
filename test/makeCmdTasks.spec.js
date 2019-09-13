@@ -1,5 +1,5 @@
 import execa from 'execa'
-import makeCmdTasks from '../src/makeCmdTasks'
+import makeCmdTasks from '../lib/makeCmdTasks'
 
 describe('makeCmdTasks', () => {
   const gitDir = process.cwd()

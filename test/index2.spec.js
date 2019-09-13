@@ -8,7 +8,7 @@ console.error = jest.fn(() => {})
 jest.mock('listr')
 
 // eslint-disable-next-line import/first
-import lintStaged from '../src/index'
+import lintStaged from '../lib/index'
 
 describe('lintStaged', () => {
   afterEach(() => {

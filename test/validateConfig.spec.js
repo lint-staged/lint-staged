@@ -1,6 +1,6 @@
 import makeConsoleMock from 'consolemock'
 
-import validateConfig from '../src/validateConfig'
+import validateConfig from '../lib/validateConfig'
 
 describe('validateConfig', () => {
   const originalConsole = global.console

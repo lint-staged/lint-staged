@@ -5,11 +5,11 @@ import path from 'path'
 jest.unmock('execa')
 
 // eslint-disable-next-line import/first
-import getStagedFiles from '../src/getStagedFiles'
+import getStagedFiles from '../lib/getStagedFiles'
 // eslint-disable-next-line import/first
-import lintStaged from '../src/index'
+import lintStaged from '../lib/index'
 
-jest.mock('../src/getStagedFiles')
+jest.mock('../lib/getStagedFiles')
 
 const replaceSerializer = (from, to) => ({
   test: val => typeof val === 'string' && from.test(val),
@@ -22,7 +22,7 @@ const mockCosmiconfigWith = result => {
   }))
 }
 
-jest.mock('../src/gitWorkflow')
+jest.mock('../lib/gitWorkflow')
 
 async function withMockedConsole(mockConsole, fn) {
   const previousConsole = console

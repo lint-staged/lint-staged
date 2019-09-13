@@ -2,13 +2,13 @@ import makeConsoleMock from 'consolemock'
 import execa from 'execa'
 import normalize from 'normalize-path'
 
-import resolveGitDir from '../src/resolveGitDir'
-import getStagedFiles from '../src/getStagedFiles'
-import runAll from '../src/runAll'
+import resolveGitDir from '../lib/resolveGitDir'
+import getStagedFiles from '../lib/getStagedFiles'
+import runAll from '../lib/runAll'
 
-jest.mock('../src/resolveGitDir')
-jest.mock('../src/getStagedFiles')
-jest.mock('../src/gitWorkflow')
+jest.mock('../lib/resolveGitDir')
+jest.mock('../lib/getStagedFiles')
+jest.mock('../lib/gitWorkflow')
 
 resolveGitDir.mockImplementation(async () => normalize(process.cwd()))
 getStagedFiles.mockImplementation(async () => [])

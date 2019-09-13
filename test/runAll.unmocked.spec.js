@@ -3,8 +3,8 @@ import normalize from 'normalize-path'
 import path from 'path'
 import tmp from 'tmp'
 
-import execGitBase from '../src/execGit'
-import runAll from '../src/runAll'
+import execGitBase from '../lib/execGit'
+import runAll from '../lib/runAll'
 
 tmp.setGracefulCleanup()
 jest.unmock('execa')
