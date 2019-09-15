@@ -450,4 +450,23 @@ describe('runAll', () => {
                     `)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
+
+  it('should keep untracked files', async () => {
+    // Stage pretty file
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+
+    // Add another file, but keep it untracked
+    await appendFile('test-untracked.js', testJsFilePretty)
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await gitCommit({ config: { '*.js': 'prettier --list-different' } })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
+    console = makeConsoleMock()
+  })
 })
