@@ -1,0 +1,36 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+      # temp during testing
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: yarn install #and test
+      run: |
+        yarn install
+        #yarn test
+      env:
+        CI: true
+    - name: yarn test
+      run: yarn test
+      env:
+        CI: true
+
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} #See https://github.com/marketplace/actions/codecov
