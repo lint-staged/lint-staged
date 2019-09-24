@@ -9,13 +9,13 @@ describe('makeCmdTasks', () => {
   })
 
   it('should return an array', async () => {
-    const array = await makeCmdTasks({ commands: 'test', gitDir, pathsToLint: ['test.js'] })
+    const array = await makeCmdTasks({ commands: 'test', gitDir, files: ['test.js'] })
     expect(array).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = await makeCmdTasks({ commands: 'test', gitDir, pathsToLint: ['test.js'] })
+    const res = await makeCmdTasks({ commands: 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -30,7 +30,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: ['test', 'test2'],
       gitDir,
-      pathsToLint: ['test.js']
+      files: ['test.js']
     })
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
@@ -58,7 +58,7 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with function linter returning a string', async () => {
-    const res = await makeCmdTasks({ commands: () => 'test', gitDir, pathsToLint: ['test.js'] })
+    const res = await makeCmdTasks({ commands: () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
@@ -67,7 +67,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: () => ['test', 'test2'],
       gitDir,
-      pathsToLint: ['test.js']
+      files: ['test.js']
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('test')
@@ -78,7 +78,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: filenames => filenames.map(file => `test ${file}`),
       gitDir,
-      pathsToLint: ['test.js', 'test2.js']
+      files: ['test.js', 'test2.js']
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('test test.js')
@@ -89,7 +89,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: [() => 'test', 'test2', files => files.map(file => `test ${file}`)],
       gitDir,
-      pathsToLint: ['test.js', 'test2.js', 'test3.js']
+      files: ['test.js', 'test2.js', 'test3.js']
     })
     expect(res.length).toBe(5)
     expect(res[0].title).toEqual('test')

@@ -5,9 +5,9 @@ jest.unmock('execa')
 describe('resolveTaskFn', () => {
   it('should call execa with shell when configured so', async () => {
     const taskFn = resolveTaskFn({
-      pathsToLint: ['package.json'],
+      command: 'node -e "process.exit(1)" || echo $?',
+      files: ['package.json'],
       isFn: true,
-      linter: 'node -e "process.exit(1)" || echo $?',
       shell: true
     })
 

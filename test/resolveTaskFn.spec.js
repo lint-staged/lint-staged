@@ -1,7 +1,7 @@
 import execa from 'execa'
 import resolveTaskFn from '../src/resolveTaskFn'
 
-const defaultOpts = { pathsToLint: ['test.js'] }
+const defaultOpts = { files: ['test.js'] }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      linter: 'node --arg=true ./myscript.js'
+      command: 'node --arg=true ./myscript.js'
     })
 
     await taskFn()
@@ -29,7 +29,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       isFn: true,
-      linter: 'node --arg=true ./myscript.js test.js'
+      command: 'node --arg=true ./myscript.js test.js'
     })
 
     await taskFn()
@@ -47,7 +47,7 @@ describe('resolveTaskFn', () => {
       ...defaultOpts,
       isFn: true,
       shell: true,
-      linter: 'node --arg=true ./myscript.js test.js'
+      command: 'node --arg=true ./myscript.js test.js'
     })
 
     await taskFn()
@@ -64,7 +64,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       shell: true,
-      linter: 'node --arg=true ./myscript.js'
+      command: 'node --arg=true ./myscript.js'
     })
 
     await taskFn()
@@ -80,7 +80,7 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      linter: 'git add',
+      command: 'git add',
       gitDir: '../'
     })
 
@@ -96,7 +96,7 @@ describe('resolveTaskFn', () => {
 
   it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'jest', gitDir: '../' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
@@ -111,7 +111,7 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      linter: 'git add',
+      command: 'git add',
       relative: true
     })
 
@@ -135,7 +135,7 @@ describe('resolveTaskFn', () => {
       cmd: 'mock cmd'
     })
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-fail-linter' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
     try {
       await taskFn()
     } catch (err) {
@@ -161,7 +161,7 @@ Mock error"
       cmd: 'mock cmd'
     })
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-killed-linter' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
     try {
       await taskFn()
     } catch (err) {
@@ -177,7 +177,7 @@ Mock error"
   it('should not set hasErrors on context if no error occur', async () => {
     expect.assertions(1)
     const context = {}
-    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'jest', gitDir: '../' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
     await taskFn(context)
     expect(context.hasErrors).toBeUndefined()
   })
@@ -191,7 +191,7 @@ Mock error"
       cmd: 'mock cmd'
     })
     const context = {}
-    const taskFn = resolveTaskFn({ ...defaultOpts, linter: 'mock-fail-linter' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
     expect.assertions(1)
     try {
       await taskFn(context)
