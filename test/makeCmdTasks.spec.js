@@ -81,8 +81,8 @@ describe('makeCmdTasks', () => {
       files: ['test.js', 'test2.js']
     })
     expect(res.length).toBe(2)
-    expect(res[0].title).toEqual('test test.js')
-    expect(res[1].title).toEqual('test test2.js')
+    expect(res[0].title).toEqual('test [file]')
+    expect(res[1].title).toEqual('test [file]')
   })
 
   it('should work with array of mixed string and function linters', async () => {
@@ -94,8 +94,18 @@ describe('makeCmdTasks', () => {
     expect(res.length).toBe(5)
     expect(res[0].title).toEqual('test')
     expect(res[1].title).toEqual('test2')
-    expect(res[2].title).toEqual('test test.js')
-    expect(res[3].title).toEqual('test test2.js')
-    expect(res[4].title).toEqual('test test3.js')
+    expect(res[2].title).toEqual('test [file]')
+    expect(res[3].title).toEqual('test [file]')
+    expect(res[4].title).toEqual('test [file]')
+  })
+
+  it('should generate short names for function tasks with long file list', async () => {
+    const res = await makeCmdTasks({
+      commands: filenames => `test ${filenames.map(file => `--file ${file}`).join(' ')}`,
+      gitDir,
+      files: Array(100).fill('file.js') // 100 times `file.js`
+    })
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test --file [file]')
   })
 })

@@ -23,10 +23,23 @@ module.exports = async function makeCmdTasks({ commands, files, gitDir, shell })
     const resolved = isFn ? command(files) : command
     const commands = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array command as array
 
-    for (const command of commands) {
-      const task = { title: command, task: resolveTaskFn({ gitDir, isFn, command, files, shell }) }
-      tasks.push(task)
+    // Function command should not be used as the task title as-is
+    // because the resolved string it might be very long
+    // Create a matching command array with [file] in place of file names
+    let mockCommands
+    if (isFn) {
+      const mockFileList = Array(commands.length).fill('[file]')
+      const resolved = command(mockFileList)
+      mockCommands = Array.isArray(resolved) ? resolved : [resolved]
     }
+
+    commands.forEach((command, i) => {
+      // If command is a function, use the matching mock command as title,
+      // but since might include multiple [file] arguments, shorten to one
+      const title = isFn ? mockCommands[i].replace(/\[file\].*\[file\]/, '[file]') : command
+      const task = { title, task: resolveTaskFn({ gitDir, isFn, command, files, shell }) }
+      tasks.push(task)
+    })
 
     return tasks
   }, [])
