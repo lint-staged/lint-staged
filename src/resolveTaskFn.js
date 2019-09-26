@@ -77,27 +77,20 @@ function makeErr(linter, result, context = {}) {
  * if the OS is Windows.
  *
  * @param {Object} options
- * @param {String} [options.gitDir] - Current git repo path
- * @param {Boolean} [options.isFn] - Whether the linter task is a function
- * @param {string} [options.linter] — Linter task
- * @param {Array<string>} [options.pathsToLint] — Filepaths to run the linter task against
+ * @param {string} options.command — Linter task
+ * @param {String} options.gitDir - Current git repo path
+ * @param {Boolean} options.isFn - Whether the linter task is a function
+ * @param {Array<string>} options.pathsToLint — Filepaths to run the linter task against
  * @param {Boolean} [options.relative] — Whether the filepaths should be relative
  * @param {Boolean} [options.shell] — Whether to skip parsing linter task for better shell support
  * @returns {function(): Promise<Array<string>>}
  */
-module.exports = function resolveTaskFn({
-  gitDir,
-  isFn,
-  linter,
-  pathsToLint,
-  relative,
-  shell = false
-}) {
+module.exports = function resolveTaskFn({ command, files, gitDir, isFn, relative, shell = false }) {
   const execaOptions = { preferLocal: true, reject: false, shell }
 
   if (relative) {
     execaOptions.cwd = process.cwd()
-  } else if (/^git(\.exe)?/i.test(linter) && gitDir !== process.cwd()) {
+  } else if (/^git(\.exe)?/i.test(command) && gitDir !== process.cwd()) {
     // Only use gitDir as CWD if we are using the git binary
     // e.g `npm` should run tasks in the actual CWD
     execaOptions.cwd = gitDir
@@ -109,20 +102,20 @@ module.exports = function resolveTaskFn({
   if (shell) {
     execaOptions.shell = true
     // If `shell`, passed command shouldn't be parsed
-    // If `linter` is a function, command already includes `pathsToLint`.
-    cmd = isFn ? linter : `${linter} ${pathsToLint.join(' ')}`
+    // If `linter` is a function, command already includes `files`.
+    cmd = isFn ? command : `${command} ${files.join(' ')}`
   } else {
-    const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(linter)
+    const [parsedCmd, ...parsedArgs] = stringArgv.parseArgsStringToArgv(command)
     cmd = parsedCmd
-    args = isFn ? parsedArgs : parsedArgs.concat(pathsToLint)
+    args = isFn ? parsedArgs : parsedArgs.concat(files)
   }
 
   return ctx =>
     execLinter(cmd, args, execaOptions).then(result => {
       if (result.failed || result.killed || result.signal != null) {
-        throw makeErr(linter, result, ctx)
+        throw makeErr(command, result, ctx)
       }
 
-      return successMsg(linter)
+      return successMsg(command)
     })
 }
