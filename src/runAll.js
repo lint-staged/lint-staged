@@ -73,7 +73,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(
-        await makeCmdTasks({ commands: task.commands, gitDir, shell, pathsToLint: task.fileList }),
+        await makeCmdTasks({ commands: task.commands, files: task.fileList, gitDir, shell }),
         {
           // In sub-tasks we don't want to run concurrently
           // and we want to abort on errors

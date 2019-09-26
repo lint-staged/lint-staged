@@ -8,27 +8,36 @@ const debug = require('debug')('lint-staged:make-cmd-tasks')
  * Creates and returns an array of listr tasks which map to the given commands.
  *
  * @param {object} options
- * @param {Array<string|Function>|string|Function} [options.commands]
- * @param {string} [options.gitDir]
- * @param {Array<string>} [options.pathsToLint]
+ * @param {Array<string|Function>|string|Function} options.commands
+ * @param {Array<string>} options.files
+ * @param {string} options.gitDir
  * @param {Boolean} shell
  */
-module.exports = async function makeCmdTasks({ commands, gitDir, pathsToLint, shell }) {
+module.exports = async function makeCmdTasks({ commands, files, gitDir, shell }) {
   debug('Creating listr tasks for commands %o', commands)
   const commandsArray = Array.isArray(commands) ? commands : [commands]
 
   return commandsArray.reduce((tasks, command) => {
-    // linter function may return array of commands that already include `pathsToLit`
+    // command function may return array of commands that already include `stagedFiles`
     const isFn = typeof command === 'function'
-    const resolved = isFn ? command(pathsToLint) : command
-    const linters = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array linter as array
+    const resolved = isFn ? command(files) : command
+    const commands = Array.isArray(resolved) ? resolved : [resolved] // Wrap non-array command as array
 
-    linters.forEach(linter => {
-      const task = {
-        title: linter,
-        task: resolveTaskFn({ gitDir, isFn, linter, pathsToLint, shell })
-      }
+    // Function command should not be used as the task title as-is
+    // because the resolved string it might be very long
+    // Create a matching command array with [file] in place of file names
+    let mockCommands
+    if (isFn) {
+      const mockFileList = Array(commands.length).fill('[file]')
+      const resolved = command(mockFileList)
+      mockCommands = Array.isArray(resolved) ? resolved : [resolved]
+    }
 
+    commands.forEach((command, i) => {
+      // If command is a function, use the matching mock command as title,
+      // but since might include multiple [file] arguments, shorten to one
+      const title = isFn ? mockCommands[i].replace(/\[file\].*\[file\]/, '[file]') : command
+      const task = { title, task: resolveTaskFn({ gitDir, isFn, command, files, shell }) }
       tasks.push(task)
     })
 
