@@ -10,8 +10,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Applying unstaged changes... [started]
-LOG Applying unstaged changes... [completed]
+LOG Restoring unstaged changes... [started]
+LOG Restoring unstaged changes... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]"
 `;
@@ -33,11 +33,11 @@ LOG →
 LOG Running tasks for *.js [failed]
 LOG → 
 LOG Running tasks... [failed]
-LOG Applying unstaged changes... [started]
-LOG Applying unstaged changes... [skipped]
+LOG Restoring unstaged changes... [started]
+LOG Restoring unstaged changes... [skipped]
 LOG → Skipped because of errors from tasks
-LOG Restoring original state due to errors... [started]
-LOG Restoring original state due to errors... [completed]
+LOG Reverting to original state... [started]
+LOG Reverting to original state... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]
 LOG {
@@ -64,11 +64,11 @@ LOG →
 LOG Running tasks for *.js [failed]
 LOG → 
 LOG Running tasks... [failed]
-LOG Applying unstaged changes... [started]
-LOG Applying unstaged changes... [skipped]
+LOG Restoring unstaged changes... [started]
+LOG Restoring unstaged changes... [skipped]
 LOG → Skipped because of errors from tasks
-LOG Restoring original state due to errors... [started]
-LOG Restoring original state due to errors... [completed]
+LOG Reverting to original state... [started]
+LOG Reverting to original state... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]
 LOG {
@@ -103,8 +103,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Applying unstaged changes... [started]
-LOG Applying unstaged changes... [completed]
+LOG Restoring unstaged changes... [started]
+LOG Restoring unstaged changes... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]"
 `;

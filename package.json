@@ -68,8 +68,8 @@
     "jest": "^24.8.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "jsonlint": "^1.6.3",
-    "prettier": "1.18.2",
-    "uuid": "^3.3.3"
+    "nanoid": "^2.1.1",
+    "prettier": "1.18.2"
   },
   "config": {
     "commitizen": {

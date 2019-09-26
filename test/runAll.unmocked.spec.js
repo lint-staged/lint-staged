@@ -3,7 +3,7 @@ import makeConsoleMock from 'consolemock'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
-import uuid from 'uuid'
+import nanoid from 'nanoid'
 
 import execGitBase from '../lib/execGit'
 import runAll from '../lib/runAll'
@@ -36,7 +36,7 @@ const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
  * @returns {Promise<String>}
  */
 const createTempDir = async () => {
-  const dirname = path.resolve(osTmpDir, 'lint-staged-test', uuid())
+  const dirname = path.resolve(osTmpDir, 'lint-staged-test', nanoid())
   await fs.ensureDir(dirname)
   return dirname
 }
@@ -467,6 +467,5 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
-    console = makeConsoleMock()
   })
 })
