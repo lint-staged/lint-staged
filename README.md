@@ -2,6 +2,30 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
+---
+
+## 🚧 Help test `lint-staged@next`!
+
+Version 10 of `lint-staged` is coming with changes that help it run faster on large git repositories and prevent loss of data during errors. Please help test the `next` version and report any inconsistencies in our [GitHub Issues](https://github.com/okonet/lint-staged/issues):
+
+**Using npm**
+
+    npm install --save-dev lint-staged@next
+
+**Using yarn**
+
+    yarn add -D lint-staged@next
+
+### Notable changes
+
+- A git stash is created before running any tasks, so in case of errors any lost changes can be restored easily (and automatically unless lint-staged itself crashes)
+- Instead of write-tree/read-tree, `lint-staged@next` uses git stashes to hide unstaged changes while running tasks against staged files
+  - This results in a performance increase of up to 45x on very large repositories
+- The behaviour of committing modifications during tasks (eg. `prettier --write && git add`) is different. The current version creates a diff of these modifications, and applies it against the original state, silently ignoring any errors. The `next` version leaves modifications of staged files as-is, and then restores all hidden unstaged changes as patch. If applying the patch fails due to a merge conflict (because tasks have modified the same lines), a 3-way merge will be retried. If this also fails, the entire commit will fail and the original state will be restored.
+  - **TL;DR** the `next` version will never skip committing any changes by tasks (due to a merge conflict), but might fail in very complex situations where unstaged changes cannot be restored cleanly. If this happens to you, we are very interested in a repeatable test scenario.
+
+---
+
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
 
 ## Why
