@@ -2,30 +2,6 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
----
-
-## 🚧 Help test `lint-staged@next`!
-
-Version 10 of `lint-staged` is coming with changes that help it run faster on large git repositories and prevent loss of data during errors. Please help test the `next` version and report any inconsistencies in our [GitHub Issues](https://github.com/okonet/lint-staged/issues):
-
-**Using npm**
-
-    npm install --save-dev lint-staged@next
-
-**Using yarn**
-
-    yarn add -D lint-staged@next
-
-### Notable changes
-
-- A git stash is created before running any tasks, so in case of errors any lost changes can be restored easily (and automatically unless lint-staged itself crashes)
-- Instead of write-tree/read-tree, `lint-staged@next` uses git stashes to hide unstaged changes while running tasks against staged files
-  - This results in a performance increase of up to 45x on very large repositories
-- The behaviour of committing modifications during tasks (eg. `prettier --write && git add`) is different. The current version creates a diff of these modifications, and applies it against the original state, silently ignoring any errors. The `next` version leaves modifications of staged files as-is, and then restores all hidden unstaged changes as patch. If applying the patch fails due to a merge conflict (because tasks have modified the same lines), a 3-way merge will be retried. If this also fails, the entire commit will fail and the original state will be restored.
-  - **TL;DR** the `next` version will never skip committing any changes by tasks (due to a merge conflict), but might fail in very complex situations where unstaged changes cannot be restored cleanly. If this happens to you, we are very interested in a repeatable test scenario.
-
----
-
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
 
 ## Why
@@ -36,10 +12,10 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Related blogs posts and talks
 
-* [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
-* [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
-* [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
-* [SurviveJS Interview](https://survivejs.com/blog/lint-staged-interview/)
+- [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
+- [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+- [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
+- [SurviveJS Interview](https://survivejs.com/blog/lint-staged-interview/)
 
 > If you've written one, please submit a PR with the link to it!
 
@@ -79,22 +55,22 @@ Options:
   -h, --help           output usage information
 ```
 
-* **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
-* **`--relative`**: By default filepaths will be passed to the linter tasks as *absolute*. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
-* **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
-* **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
-* **`--debug`**: Enabling the debug mode does the following:
-  * `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  * Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
+- **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
+- **`--relative`**: By default filepaths will be passed to the linter tasks as _absolute_. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
+- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
+- **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
+- **`--debug`**: Enabling the debug mode does the following:
+  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
 
 ## Configuration
 
 Starting with v3.1 you can now use different ways of configuring it:
 
-* `lint-staged` object in your `package.json`
-* `.lintstagedrc` file in JSON or YML format
-* `lint-staged.config.js` file in JS format
-* Pass a configuration file using the `--config` or `-c` flag
+- `lint-staged` object in your `package.json`
+- `.lintstagedrc` file in JSON or YML format
+- `lint-staged.config.js` file in JS format
+- Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
 
@@ -128,19 +104,19 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 Linter commands work on a subset of all staged files, defined by a _glob pattern_. `lint-staged´ uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
 
-* If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
-  * **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
-  * **`"!(*test).js"`**. will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
-* If the glob pattern does contain a slash (`/`), it will match for paths as well:
-  * **`"/*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
-  * **`"foo/**/*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
+- If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
+  - **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
+  - **`"!(*test).js"`**. will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
+- If the glob pattern does contain a slash (`/`), it will match for paths as well:
+  - **`"/*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
+  - **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
 
 When matching, `lint-staged` will do the following
 
-* Resolve the git root automatically, no configuration needed.
-* Pick the staged files which are present inside the project directory.
-* Filter them using the specified glob patterns.
-* Pass absolute paths to the linters as arguments.
+- Resolve the git root automatically, no configuration needed.
+- Pick the staged files which are present inside the project directory.
+- Filter them using the specified glob patterns.
+- Pass absolute paths to the linters as arguments.
 
 **NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
 
@@ -156,7 +132,7 @@ In advanced scenarios, where it is impossible to configure the linter task itsel
 
 ## What commands are supported?
 
-Supported are any executables installed locally or globally via `npm` as well as any executable from your $PATH.
+Supported are any executables installed locally or globally via `npm` as well as any executable from your \$PATH.
 
 > Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
 
@@ -407,7 +383,7 @@ const lintStaged = require('lint-staged')
 try {
   const success = await lintStaged()
   console.log(success ? 'Linting was successful!' : 'Linting failed!')
-} catch(e) {
+} catch (e) {
   // Failed to load configuration
   console.error(e)
 }
@@ -425,7 +401,6 @@ const success = await lintStaged({
 ```
 
 You can also pass config directly with `config` option:
-
 
 ```js
 const success = await lintStaged({
