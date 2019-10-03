@@ -68,21 +68,10 @@ async function loadConfig({ logger = console, inputConfig, configPath, debug } =
       ]
     })
 
-    try {
-      result = await (configPath ? explorer.load(resolveConfig(configPath)) : explorer.search())
-    } catch (error) {
-      // It was probably a parsing error
-      logger.error(dedent`
-      Could not parse lint-staged config.
-
-      ${error}
-    `)
-      throw error
-    }
+    result = await (configPath ? explorer.load(resolveConfig(configPath)) : explorer.search())
   }
 
   if (result == null) {
-    logger.error(`${errConfigNotFound.message}.`)
     throw errConfigNotFound
   }
 
@@ -126,7 +115,27 @@ async function lintStaged(
 ) {
   try {
     config = (await loadConfig({ logger, configPath, inputConfig: config, debug })).config
+
+    try {
+      await runAll({ config, relative, shell, quiet, debug }, logger)
+      debugLog('linters were executed successfully!')
+      return true
+    } catch (error) {
+      // Errors detected, printing and exiting with non-zero
+      printErrors(error, logger)
+      return false
+    }
   } catch (error) {
+    if (error === errConfigNotFound) {
+      logger.error(`${error.message}.`)
+    } else {
+      // It was probably a parsing error
+      logger.error(dedent`
+        Could not parse lint-staged config.
+
+        ${error}
+      `)
+    }
     logger.error() // empty line
     // Print helpful message for all errors
     logger.error(dedent`
@@ -135,16 +144,9 @@ async function lintStaged(
     `)
     throw error
   }
-
-  try {
-    await runAll({ config, relative, shell, quiet, debug }, logger)
-    debug('linters were executed successfully!')
-    return true
-  } catch (error) {
-    // Errors detected, printing and exiting with non-zero
-    printErrors(error, logger)
-    return false
-  }
 }
 
-module.exports = { runAll, lintStaged, loadConfig }
+module.exports = lintStaged
+
+lintStaged.loadConfig = loadConfig
+lintStaged.runAll = runAll
