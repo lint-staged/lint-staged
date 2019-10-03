@@ -69,9 +69,9 @@ const writeFile = async (filename, content, dir = cwd) =>
 const execGit = async args => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
-const gitCommit = async (options, message = 'test') => {
+const gitCommit = async (options, args = ['-m test']) => {
   await runAll({ ...options, cwd, quiet: true })
-  await execGit(['commit', `-m "${message}"`])
+  await execGit(['commit', ...args])
 }
 
 describe('runAll', () => {
@@ -339,16 +339,16 @@ describe('runAll', () => {
     } catch (error) {
       expect(error.message).toMatch('Another git process seems to be running in this repository')
       expect(console.printHistory()).toMatchInlineSnapshot(`
-        "
-        ERROR 
-          × lint-staged failed due to a git error.
-            Any lost modifications can be restored from a git stash:
+                        "
+                        ERROR 
+                          × lint-staged failed due to a git error.
+                            Any lost modifications can be restored from a git stash:
 
-            > git stash list
-            stash@{0}: On master: automatic lint-staged backup
-            > git stash pop stash@{0}
-        "
-      `)
+                            > git stash list
+                            stash@{0}: On master: automatic lint-staged backup
+                            > git stash pop stash@{0}
+                        "
+                  `)
     }
 
     // Something was wrong so new commit wasn't created
@@ -358,17 +358,17 @@ describe('runAll', () => {
     // But local modifications are gone
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-                                          "diff --git a/test.js b/test.js
-                                          index f80f875..1c5643c 100644
-                                          --- a/test.js
-                                          +++ b/test.js
-                                          @@ -1,3 +1,3 @@
-                                           module.exports = {
-                                          -    'foo': 'bar',
-                                          -}
-                                          +  foo: \\"bar\\"
-                                          +};"
-                            `)
+                                                      "diff --git a/test.js b/test.js
+                                                      index f80f875..1c5643c 100644
+                                                      --- a/test.js
+                                                      +++ b/test.js
+                                                      @@ -1,3 +1,3 @@
+                                                       module.exports = {
+                                                      -    'foo': 'bar',
+                                                      -}
+                                                      +  foo: \\"bar\\"
+                                                      +};"
+                                    `)
 
     expect(await readFile('test.js')).not.toEqual(testJsFileUgly + appended)
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -396,7 +396,7 @@ describe('runAll', () => {
     await execGit(['checkout', '-b', 'branch-a'])
     await appendFile('test.js', fileInBranchA)
     await execGit(['add', '.'])
-    await gitCommit(fixJsConfig, 'commit a')
+    await gitCommit(fixJsConfig, ['-m commit a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
 
     await execGit(['checkout', 'master'])
@@ -405,7 +405,7 @@ describe('runAll', () => {
     await execGit(['checkout', '-b', 'branch-b'])
     await appendFile('test.js', fileInBranchB)
     await execGit(['add', '.'])
-    await gitCommit(fixJsConfig, 'commit b')
+    await gitCommit(fixJsConfig, ['-m commit b'])
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
     // Merge first branch
@@ -422,13 +422,13 @@ describe('runAll', () => {
     }
 
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
-                                          "<<<<<<< HEAD
-                                          module.exports = \\"foo\\";
-                                          =======
-                                          module.exports = \\"bar\\";
-                                          >>>>>>> branch-b
-                                          "
-                            `)
+                                                      "<<<<<<< HEAD
+                                                      module.exports = \\"foo\\";
+                                                      =======
+                                                      module.exports = \\"bar\\";
+                                                      >>>>>>> branch-b
+                                                      "
+                                    `)
 
     // Fix conflict and commit using lint-staged
     await writeFile('test.js', fileInBranchB)
@@ -442,12 +442,12 @@ describe('runAll', () => {
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-                              "Merge branch 'branch-b'
+                                          "Merge branch 'branch-b'
 
-                              # Conflicts:
-                              #	test.js
-                              "
-                    `)
+                                          # Conflicts:
+                                          #	test.js
+                                          "
+                            `)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
 
@@ -467,5 +467,38 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
+  })
+
+  it('should work when amending previous commit with unstaged changes', async () => {
+    // Edit file from previous commit
+    await appendFile('README.md', '\n## Amended\n')
+    await execGit(['add', 'README.md'])
+
+    // Edit again, but keep it unstaged
+    await appendFile('README.md', '\n## Edited\n')
+    await appendFile('test-untracked.js', testJsFilePretty)
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await gitCommit({ config: { '*.{js,md}': 'prettier --list-different' } }, [
+      '--amend',
+      '--no-edit'
+    ])
+
+    // Nothing is wrong, so the commit was amended
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
+    expect(await readFile('README.md')).toMatchInlineSnapshot(`
+      "# Test
+
+      ## Amended
+
+      ## Edited
+      "
+    `)
+    expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
+    const status = await execGit(['status'])
+    expect(status).toMatch('modified:   README.md')
+    expect(status).toMatch('test-untracked.js')
+    expect(status).toMatch('no changes added to commit')
   })
 })
