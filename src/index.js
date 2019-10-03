@@ -146,7 +146,7 @@ async function lintStaged(
   }
 }
 
-module.exports = lintStaged
-
 lintStaged.loadConfig = loadConfig
 lintStaged.runAll = runAll
+
+module.exports = lintStaged
