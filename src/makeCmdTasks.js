@@ -28,7 +28,7 @@ module.exports = async function makeCmdTasks({ commands, files, gitDir, shell })
     // Create a matching command array with [file] in place of file names
     let mockCommands
     if (isFn) {
-      const mockFileList = Array(commands.length).fill('[file]')
+      const mockFileList = Array(files.length).fill('[file]')
       const resolved = command(mockFileList)
       mockCommands = Array.isArray(resolved) ? resolved : [resolved]
     }
