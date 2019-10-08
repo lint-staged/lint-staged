@@ -28,15 +28,19 @@ module.exports = async function makeCmdTasks({ commands, files, gitDir, shell })
     // Create a matching command array with [file] in place of file names
     let mockCommands
     if (isFn) {
-      const mockFileList = Array(commands.length).fill('[file]')
+      const mockFileList = Array(files.length).fill('[file]')
       const resolved = command(mockFileList)
       mockCommands = Array.isArray(resolved) ? resolved : [resolved]
     }
 
     commands.forEach((command, i) => {
-      // If command is a function, use the matching mock command as title,
-      // but since might include multiple [file] arguments, shorten to one
-      const title = isFn ? mockCommands[i].replace(/\[file\].*\[file\]/, '[file]') : command
+      let title = isFn ? '[Function]' : command
+      if (isFn && mockCommands[i]) {
+        // If command is a function, use the matching mock command as title,
+        // but since might include multiple [file] arguments, shorten to one
+        title = mockCommands[i].replace(/\[file\].*\[file\]/, '[file]')
+      }
+
       const task = { title, task: resolveTaskFn({ gitDir, isFn, command, files, shell }) }
       tasks.push(task)
     })
