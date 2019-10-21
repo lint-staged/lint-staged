@@ -10,8 +10,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Restoring unstaged changes... [started]
-LOG Restoring unstaged changes... [completed]
+LOG Applying modifications... [started]
+LOG Applying modifications... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]"
 `;
@@ -33,8 +33,8 @@ LOG →
 LOG Running tasks for *.js [failed]
 LOG → 
 LOG Running tasks... [failed]
-LOG Restoring unstaged changes... [started]
-LOG Restoring unstaged changes... [skipped]
+LOG Applying modifications... [started]
+LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks
 LOG Reverting to original state... [started]
 LOG Reverting to original state... [completed]
@@ -64,8 +64,8 @@ LOG →
 LOG Running tasks for *.js [failed]
 LOG → 
 LOG Running tasks... [failed]
-LOG Restoring unstaged changes... [started]
-LOG Restoring unstaged changes... [skipped]
+LOG Applying modifications... [started]
+LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks
 LOG Reverting to original state... [started]
 LOG Reverting to original state... [completed]
@@ -103,8 +103,8 @@ LOG echo \\"sample\\" [started]
 LOG echo \\"sample\\" [completed]
 LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
-LOG Restoring unstaged changes... [started]
-LOG Restoring unstaged changes... [completed]
+LOG Applying modifications... [started]
+LOG Applying modifications... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]"
 `;

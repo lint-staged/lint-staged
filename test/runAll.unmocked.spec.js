@@ -26,7 +26,7 @@ const testJsFileUnfixable = `const obj = {
     'foo': 'bar'
 `
 
-const fixJsConfig = { config: { '*.js': ['prettier --write', 'git add'] } }
+const fixJsConfig = { config: { '*.js': 'prettier --write' } }
 
 const isAppveyor = !!process.env.APPVEYOR
 const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
