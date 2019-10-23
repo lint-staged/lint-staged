@@ -1,4 +1,6 @@
 import execa from 'execa'
+import makeConsoleMock from 'consolemock'
+
 import resolveTaskFn from '../lib/resolveTaskFn'
 
 const defaultOpts = { files: ['test.js'] }
@@ -80,13 +82,13 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      command: 'git add',
+      command: 'git diff',
       gitDir: '../'
     })
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git add test.js', {
+    expect(execa).lastCalledWith('git diff test.js', {
       cwd: '../',
       preferLocal: true,
       reject: false,
@@ -111,13 +113,13 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      command: 'git add',
+      command: 'git diff',
       relative: true
     })
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git add test.js', {
+    expect(execa).lastCalledWith('git diff test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -140,12 +142,12 @@ describe('resolveTaskFn', () => {
       await taskFn()
     } catch (err) {
       expect(err.privateMsg).toMatchInlineSnapshot(`
-"
+                "
 
 
-× mock-fail-linter found some errors. Please fix them and try committing again.
-Mock error"
-`)
+                × mock-fail-linter found some errors. Please fix them and try committing again.
+                Mock error"
+            `)
     }
   })
 
@@ -166,11 +168,11 @@ Mock error"
       await taskFn()
     } catch (err) {
       expect(err.privateMsg).toMatchInlineSnapshot(`
-"
+                "
 
 
-‼ mock-killed-linter was terminated with SIGINT"
-`)
+                ‼ mock-killed-linter was terminated with SIGINT"
+            `)
     }
   })
 
@@ -198,5 +200,20 @@ Mock error"
     } catch (err) {
       expect(context.hasErrors).toEqual(true)
     }
+  })
+
+  it('should warn when tasks include git add', async () => {
+    const logger = makeConsoleMock()
+    await resolveTaskFn({
+      ...defaultOpts,
+      command: 'git add',
+      logger,
+      relative: true
+    })
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN 
+       ‼  Detected a task using \`git add\`. Lint-staged version 10 will automatically add any task modifications to the git index, and you should remove this command."
+    `)
   })
 })
