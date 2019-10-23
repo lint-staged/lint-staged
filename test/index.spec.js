@@ -120,6 +120,15 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
+  it('should use config object', async () => {
+    const config = {
+      '*': 'node -e "process.exit(1)"'
+    }
+    expect.assertions(1)
+    await lintStaged({ config, debug: true, quiet: true }, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
   it('should load an npm config package when specified', async () => {
     expect.assertions(1)
     jest.mock('my-lint-staged-config')
