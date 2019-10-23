@@ -1,5 +1,5 @@
 {
-  "*.{js,json,md}": ["prettier --write"],
-  "*.js": ["npm run lint:base --fix"],
-  ".*{rc, json}": ["jsonlint  --in-place"]
+  "*.{js,json,md}": "prettier --write",
+  "*.js": "npm run lint:base --fix",
+  ".*{rc, json}": "jsonlint  --in-place"
 }
