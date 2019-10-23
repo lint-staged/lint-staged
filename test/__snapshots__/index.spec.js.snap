@@ -78,6 +78,15 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration."
 `;
 
+exports[`lintStaged should use config object 1`] = `
+"
+LOG Running lint-staged with the following config:
+LOG {
+  '*': 'node -e \\"process.exit(1)\\"'
+}
+ERROR Unable to get staged files!"
+`;
+
 exports[`lintStaged should use cosmiconfig if no params are passed 1`] = `
 "
 ERROR Unable to get staged files!"
