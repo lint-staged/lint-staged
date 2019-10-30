@@ -1,5 +1,4 @@
 import execa from 'execa'
-import makeConsoleMock from 'consolemock'
 
 import resolveTaskFn from '../lib/resolveTaskFn'
 
@@ -200,20 +199,5 @@ describe('resolveTaskFn', () => {
     } catch (err) {
       expect(context.hasErrors).toEqual(true)
     }
-  })
-
-  it('should warn when tasks include git add', async () => {
-    const logger = makeConsoleMock()
-    await resolveTaskFn({
-      ...defaultOpts,
-      command: 'git add',
-      logger,
-      relative: true
-    })
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN 
-       ‼  Detected a task using \`git add\`. Lint-staged version 10 will automatically add any task modifications to the git index, and you should remove this command."
-    `)
   })
 })
