@@ -503,4 +503,13 @@ describe('runAll', () => {
     expect(status).toMatch('test-untracked.js')
     expect(status).toMatch('no changes added to commit')
   })
+
+  it('should not resurrect removed files due to git bug', async () => {
+    const readmeFile = path.resolve(cwd, 'README.md')
+    await fs.remove(readmeFile) // Remove file from previous commit
+    await execGit(['add', '.'])
+    await gitCommit({ config: { '*.{js,md}': 'prettier --list-different' } })
+    const exists = await fs.exists(readmeFile)
+    expect(exists).toEqual(false)
+  })
 })
