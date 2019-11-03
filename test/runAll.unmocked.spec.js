@@ -340,7 +340,7 @@ describe('runAll', () => {
       expect(error.message).toMatch('Another git process seems to be running in this repository')
       expect(console.printHistory()).toMatchInlineSnapshot(`
         "
-        WARN ‼ Detected a task using \`git add\`. Lint-staged version 10 will automatically add any task modifications to the git index, and you should remove this command.
+        WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
         ERROR 
           × lint-staged failed due to a git error.
@@ -360,17 +360,17 @@ describe('runAll', () => {
     // But local modifications are gone
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-                                                                  "diff --git a/test.js b/test.js
-                                                                  index f80f875..1c5643c 100644
-                                                                  --- a/test.js
-                                                                  +++ b/test.js
-                                                                  @@ -1,3 +1,3 @@
-                                                                   module.exports = {
-                                                                  -    'foo': 'bar',
-                                                                  -}
-                                                                  +  foo: \\"bar\\"
-                                                                  +};"
-                                            `)
+                                                                        "diff --git a/test.js b/test.js
+                                                                        index f80f875..1c5643c 100644
+                                                                        --- a/test.js
+                                                                        +++ b/test.js
+                                                                        @@ -1,3 +1,3 @@
+                                                                         module.exports = {
+                                                                        -    'foo': 'bar',
+                                                                        -}
+                                                                        +  foo: \\"bar\\"
+                                                                        +};"
+                                                `)
 
     expect(await readFile('test.js')).not.toEqual(testJsFileUgly + appended)
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
@@ -424,13 +424,13 @@ describe('runAll', () => {
     }
 
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
-                                                                  "<<<<<<< HEAD
-                                                                  module.exports = \\"foo\\";
-                                                                  =======
-                                                                  module.exports = \\"bar\\";
-                                                                  >>>>>>> branch-b
-                                                                  "
-                                            `)
+                                                                        "<<<<<<< HEAD
+                                                                        module.exports = \\"foo\\";
+                                                                        =======
+                                                                        module.exports = \\"bar\\";
+                                                                        >>>>>>> branch-b
+                                                                        "
+                                                `)
 
     // Fix conflict and commit using lint-staged
     await writeFile('test.js', fileInBranchB)
@@ -444,12 +444,12 @@ describe('runAll', () => {
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-                                                      "Merge branch 'branch-b'
+                                                            "Merge branch 'branch-b'
 
-                                                      # Conflicts:
-                                                      #	test.js
-                                                      "
-                                    `)
+                                                            # Conflicts:
+                                                            #	test.js
+                                                            "
+                                        `)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
 
@@ -490,13 +490,13 @@ describe('runAll', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await readFile('README.md')).toMatchInlineSnapshot(`
-                  "# Test
+                        "# Test
 
-                  ## Amended
+                        ## Amended
 
-                  ## Edited
-                  "
-            `)
+                        ## Edited
+                        "
+                `)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
     const status = await execGit(['status'])
     expect(status).toMatch('modified:   README.md')

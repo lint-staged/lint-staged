@@ -229,15 +229,15 @@ module.exports = {
 
 ## Reformatting the code
 
-Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`/`stylelint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`/`stylelint --fix`. Lint-staged will automatically add any modifications to the commit as long as there are no errors.
 
 ```json
 {
-  "*.js": ["prettier --write", "git add"]
+  "*.js": "prettier --write"
 }
 ```
 
-Starting from v8, lint-staged will stash your remaining changes (not added to the index) and restore them from stash afterwards if there are partially staged files detected. This allows you to create partial commits with hunks using `git add --patch`. See the [blog post](https://medium.com/@okonetchnikov/announcing-lint-staged-with-support-for-partially-staged-files-abc24a40d3ff)
+Prior to version 10, tasks had to manually include `git add` as the final step. This behavior has been integrated into lint-staged itself in order to prevent race conditions with multiple tasks editing the same files. If lint-staged detects `git add` in task configurations, it will show a warning in the console. Please remove `git add` from your configuration after upgrading.
 
 ## Examples
 
@@ -273,7 +273,7 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 
 ```json
 {
-  "*.js": ["eslint --fix", "git add"]
+  "*.js": "eslint --fix"
 }
 ```
 
@@ -285,7 +285,7 @@ If you wish to reuse a npm script defined in your package.json:
 
 ```json
 {
-  "*.js": ["npm run my-custom-script --", "git add"]
+  "*.js": "npm run my-custom-script --"
 }
 ```
 
@@ -293,7 +293,7 @@ The following is equivalent:
 
 ```json
 {
-  "*.js": ["linter --arg1 --arg2", "git add"]
+  "*.js": "linter --arg1 --arg2"
 }
 ```
 
@@ -313,19 +313,19 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 
 ```json
 {
-  "*.{js,jsx}": ["prettier --write", "git add"]
+  "*.{js,jsx}": "prettier --write"
 }
 ```
 
 ```json
 {
-  "*.{ts,tsx}": ["prettier --write", "git add"]
+  "*.{ts,tsx}": "prettier --write"
 }
 ```
 
 ```json
 {
-  "*.{md,html}": ["prettier --write", "git add"]
+  "*.{md,html}": "prettier --write"
 }
 ```
 
@@ -338,19 +338,19 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 }
 ```
 
-### Run PostCSS sorting, add files to commit and run Stylelint to check
+### Run PostCSS sorting and Stylelint to check
 
 ```json
 {
-  "*.scss": ["postcss --config path/to/your/config --replace", "stylelint", "git add"]
+  "*.scss": "postcss --config path/to/your/config --replace", "stylelint"
 }
 ```
 
-### Minify the images and add files to commit
+### Minify the images
 
 ```json
 {
-  "*.{png,jpeg,jpg,gif,svg}": ["imagemin-lint-staged", "git add"]
+  "*.{png,jpeg,jpg,gif,svg}": "imagemin-lint-staged"
 }
 ```
 
@@ -367,7 +367,7 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 ```json
 {
-  "*.{js,jsx}": ["flow focus-check", "git add"]
+  "*.{js,jsx}": "flow focus-check"
 }
 ```
 
