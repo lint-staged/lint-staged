@@ -129,9 +129,12 @@ describe('runAll', () => {
   })
 
   it('Should commit entire staged file when no errors and linter modifies file', async () => {
-    // Stage ugly file
+    // Stage multiple ugly files
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
+
+    await appendFile('test2.js', testJsFileUgly)
+    await execGit(['add', 'test2.js'])
 
     // Run lint-staged with `prettier --write` and commit pretty file
     await gitCommit(fixJsConfig)
@@ -140,6 +143,7 @@ describe('runAll', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
 
   it('Should fail to commit entire staged file when errors from linter', async () => {
