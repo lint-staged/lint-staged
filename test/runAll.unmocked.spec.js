@@ -516,4 +516,21 @@ describe('runAll', () => {
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
   })
+
+  it('should handle binary files', async () => {
+    // mark test.js as binary file
+    await appendFile('.gitattributes', 'test.js binary\n')
+
+    // Stage pretty file
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await gitCommit({ config: { '*.js': 'prettier --list-different' } })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+  })
 })
