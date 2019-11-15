@@ -1,4 +1,4 @@
-import cosmiconfig from 'cosmiconfig'
+import { cosmiconfig } from 'cosmiconfig'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
