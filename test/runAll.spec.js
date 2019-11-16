@@ -38,18 +38,6 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should warn if the argument length is longer than what the platform can handle', async () => {
-    getStagedFiles.mockImplementationOnce(async () => new Array(100000).fill('sample.js'))
-
-    try {
-      await runAll({ config: { '*.js': () => 'echo "sample"' } })
-    } catch (err) {
-      console.log(err)
-    }
-
-    expect(console.printHistory()).toMatchSnapshot()
-  })
-
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()

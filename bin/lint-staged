@@ -42,8 +42,17 @@ if (cmdline.debug) {
 
 debug('Running `lint-staged@%s`', pkg.version)
 
+/**
+ * https://serverfault.com/questions/69430/what-is-the-maximum-length-of-a-command-line-in-mac-os-x
+ * https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation
+ * https://unix.stackexchange.com/a/120652
+ */
+const MAX_ARG_LENGTH =
+  (process.platform === 'darwin' && 262144) || (process.platform === 'win32' && 8191) || 131072
+
 lintStaged({
   configPath: cmdline.config,
+  maxArgLength: MAX_ARG_LENGTH,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
   quiet: !!cmdline.quiet,

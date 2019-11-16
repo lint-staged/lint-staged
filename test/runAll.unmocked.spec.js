@@ -82,6 +82,11 @@ describe('runAll', () => {
     )
     await removeTempDir(nonGitDir)
   })
+
+  it('should short-circuit with no staged files', async () => {
+    const status = await runAll({ config: { '*.js': 'echo success' }, cwd })
+    expect(status).toEqual('No tasks to run.')
+  })
 })
 
 const globalConsoleTemp = console
@@ -532,5 +537,23 @@ describe('runAll', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
+  })
+
+  it('should run chunked tasks when necessary', async () => {
+    // Stage two files
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+    await appendFile('test2.js', testJsFilePretty)
+    await execGit(['add', 'test2.js'])
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    // Set maxArgLength low enough so that chunking is used
+    await gitCommit({ config: { '*.js': 'prettier --list-different' }, maxArgLength: 10 })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
 })
