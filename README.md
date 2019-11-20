@@ -394,6 +394,8 @@ Parameters to `lintStaged` are equivalent to their CLI counterparts:
 ```js
 const success = await lintStaged({
   configPath: './path/to/configuration/file',
+  maxArgLength: null,
+  relative: false,
   shell: false,
   quiet: false,
   debug: false
@@ -407,11 +409,15 @@ const success = await lintStaged({
   config: {
     '*.js': 'eslint --fix'
   },
+  maxArgLength: null,
+  relative: false,
   shell: false,
   quiet: false,
   debug: false
 })
 ```
+
+The `maxArgLength` option configures chunking of tasks into multiple parts that are run one after the other. This is to avoid issues on Windows platforms where the maximum length of the command line argument string is limited to 8192 characters. Lint-staged might generate a very long argument string when there are many staged files. This option is set automatically from the cli, but not via the Node.js API by default.
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
