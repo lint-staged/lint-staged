@@ -61,7 +61,7 @@ module.exports = function lintStaged(
     shell = false,
     quiet = false,
     debug = false,
-    concurrent = false
+    concurrent = true
   } = {},
   logger = console
 ) {

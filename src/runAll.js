@@ -45,7 +45,7 @@ module.exports = async function runAll(
     quiet = false,
     relative = false,
     shell = false,
-    concurrent = false
+    concurrent = true
   },
   logger = console
 ) {
