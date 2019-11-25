@@ -33,15 +33,23 @@ const MAX_ARG_LENGTH =
  * @param {boolean} [options.shell] - Skip parsing of tasks for better shell support
  * @param {boolean} [options.quiet] - Disable lint-staged’s own console output
  * @param {boolean} [options.debug] - Enable debug mode
+ * @param {boolean | number} [options.concurrent] - The number of tasks to run concurrently, or false to run tasks serially
  * @param {Logger} logger
  * @returns {Promise}
  */
 module.exports = async function runAll(
-  { config, cwd = process.cwd(), debug = false, quiet = false, relative = false, shell = false },
+  {
+    config,
+    cwd = process.cwd(),
+    debug = false,
+    quiet = false,
+    relative = false,
+    shell = false,
+    concurrent = true
+  },
   logger = console
 ) {
   debugLog('Running all linter scripts')
-
   const gitDir = await resolveGitDir({ cwd })
 
   if (!gitDir) {
@@ -120,7 +128,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
       },
       {
         title: 'Running tasks...',
-        task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
+        task: () => new Listr(tasks, { ...listrOptions, concurrent, exitOnError: false })
       },
       {
         title: 'Updating stash...',
