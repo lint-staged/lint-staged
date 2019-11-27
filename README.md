@@ -46,13 +46,14 @@ $ npx lint-staged --help
 Usage: lint-staged [options]
 
 Options:
-  -V, --version        output the version number
-  -c, --config [path]  Path to configuration file
-  -r, --relative       Pass relative filepaths to tasks
-  -x, --shell          Skip parsing of tasks for better shell support
-  -q, --quiet          Disable lint-staged’s own console output
-  -d, --debug          Enable debug mode
-  -h, --help           output usage information
+  -V, --version                     output the version number
+  -c, --config [path]               Path to configuration file
+  -r, --relative                    Pass relative filepaths to tasks
+  -x, --shell                       Skip parsing of tasks for better shell support
+  -q, --quiet                       Disable lint-staged’s own console output
+  -d, --debug                       Enable debug mode
+  -p, --concurrent [parallel tasks] The number of tasks to run concurrently, or false to run tasks sequentially
+  -h, --help                        output usage information
 ```
 
 - **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
@@ -62,6 +63,10 @@ Options:
 - **`--debug`**: Enabling the debug mode does the following:
   - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
+- **`--concurrent [number | (true/false)]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
+  - `false`: Run all tasks serially
+  - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
+  - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
 
 ## Configuration
 
