@@ -60,14 +60,18 @@ const getMaxArgLength = () => {
   }
 }
 
-lintStaged({
+const options = {
   configPath: cmdline.config,
   maxArgLength: getMaxArgLength(),
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
   quiet: !!cmdline.quiet,
   debug: !!cmdline.debug
-})
+}
+
+debug('Options parsed from command-line:', options)
+
+lintStaged(options)
   .then(passed => {
     process.exitCode = passed ? 0 : 1
   })
