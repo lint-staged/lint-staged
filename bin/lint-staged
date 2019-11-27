@@ -62,7 +62,7 @@ const getMaxArgLength = () => {
 
 const options = {
   configPath: cmdline.config,
-  maxArgLength: getMaxArgLength(),
+  maxArgLength: getMaxArgLength() / 2,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
   quiet: !!cmdline.quiet,
