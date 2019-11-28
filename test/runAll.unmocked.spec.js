@@ -70,7 +70,7 @@ const execGit = async args => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
 const gitCommit = async (options, args = ['-m test']) => {
-  await runAll({ ...options, cwd, quiet: true })
+  await runAll({ quiet: true, ...options, cwd })
   await execGit(['commit', ...args])
 }
 
@@ -555,5 +555,67 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
+  })
+
+  it('Should run successfully with --bail when task does not modify files', async () => {
+    // Stage multiple ugly files
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with `prettier --write` and commit pretty file
+    await gitCommit({ ...fixJsConfig, bail: true })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+  })
+
+  it('Should fail with --bail when task modifies files', async () => {
+    // Stage multiple ugly files
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    let errorMessage
+    // Run lint-staged with `prettier --write` and commit pretty file
+    try {
+      await gitCommit({ ...fixJsConfig, quiet: false, bail: true })
+    } catch (error) {
+      errorMessage = error.message
+    }
+
+    expect(errorMessage).toMatchInlineSnapshot(
+      `"Exited because --bail was used and there were modifications by tasks"`
+    )
+
+    // Something is wrong, and because of --bail modifications were not reset
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG prettier --write [started]
+      LOG prettier --write [completed]
+      LOG Running tasks for *.js [completed]
+      LOG Running tasks... [completed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [failed]
+      LOG → Exited because --bail was used and there were modifications by tasks
+      ERROR 
+        × lint-staged failed because --bail was used and there were modifications by tasks.
+          Task modifications were left as staged. The original state before committing can be restored from a git stash:
+
+          > git stash list
+          stash@{0}: On master: automatic lint-staged backup
+          > git stash pop stash@{0}
+      "
+    `)
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"A  test.js"`)
+    expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(
+      `"stash@{0}: On master: lint-staged automatic backup"`
+    )
   })
 })

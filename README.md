@@ -46,20 +46,19 @@ $ npx lint-staged --help
 Usage: lint-staged [options]
 
 Options:
-  -V, --version                     output the version number
+  --bail                            Exit with status 1 if tasks modify any files
   -c, --config [path]               Path to configuration file
-  -r, --relative                    Pass relative filepaths to tasks
-  -x, --shell                       Skip parsing of tasks for better shell support
-  -q, --quiet                       Disable lint-staged’s own console output
   -d, --debug                       Enable debug mode
-  -p, --concurrent [parallel tasks] The number of tasks to run concurrently, or false to run tasks sequentially
   -h, --help                        output usage information
+  -p, --concurrent [parallel tasks] The number of tasks to run concurrently, or false to run tasks sequentially
+  -q, --quiet                       Disable lint-staged’s own console output
+  -r, --relative                    Pass relative filepaths to tasks
+  -V, --version                     output the version number
+  -x, --shell                       Skip parsing of tasks for better shell support
 ```
 
+- **`--bail`**: Configures lint-staged to exit with status 1 (error) when any tasks modify files. This will typically abort the commit. Useful when you want to manually review any changes by tasks before committing. Will leave any modifications as-is instead of reverting to the original state.
 - **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
-- **`--relative`**: By default filepaths will be passed to the linter tasks as _absolute_. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
-- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
-- **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
 - **`--debug`**: Enabling the debug mode does the following:
   - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`.
@@ -67,6 +66,9 @@ Options:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
+- **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
+- **`--relative`**: By default filepaths will be passed to the linter tasks as _absolute_. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
+- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
 
 ## Configuration
 
@@ -398,12 +400,14 @@ Parameters to `lintStaged` are equivalent to their CLI counterparts:
 
 ```js
 const success = await lintStaged({
+  bail: false,
+  concurrent: true,
   configPath: './path/to/configuration/file',
+  debug: false,
   maxArgLength: null,
-  relative: false,
-  shell: false,
   quiet: false,
-  debug: false
+  relative: false,
+  shell: false
 })
 ```
 
@@ -411,14 +415,16 @@ You can also pass config directly with `config` option:
 
 ```js
 const success = await lintStaged({
+  bail: false,
   config: {
     '*.js': 'eslint --fix'
   },
+  concurrent: true,
+  debug: false,
   maxArgLength: null,
-  relative: false,
-  shell: false,
   quiet: false,
-  debug: false
+  relative: false,
+  shell: false
 })
 ```
 
