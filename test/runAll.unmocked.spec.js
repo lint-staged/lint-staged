@@ -613,7 +613,7 @@ describe('runAll', () => {
     `)
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
-    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"A  test.js"`)
+    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"AM test.js"`)
     expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(
       `"stash@{0}: On master: lint-staged automatic backup"`
     )
