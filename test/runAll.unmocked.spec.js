@@ -55,15 +55,15 @@ let cwd
 
 // Get file content
 const readFile = async (filename, dir = cwd) =>
-  fs.readFile(path.join(dir, filename), { encoding: 'utf-8' })
+  fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
 
 // Append to file, creating if it doesn't exist
 const appendFile = async (filename, content, dir = cwd) =>
-  fs.appendFile(path.join(dir, filename), content)
+  fs.appendFile(path.resolve(dir, filename), content)
 
 // Write (over) file, creating if it doesn't exist
 const writeFile = async (filename, content, dir = cwd) =>
-  fs.writeFile(path.join(dir, filename), content)
+  fs.writeFile(path.resolve(dir, filename), content)
 
 // Wrap execGit to always pass `gitOps`
 const execGit = async args => execGitBase(args, { cwd })
