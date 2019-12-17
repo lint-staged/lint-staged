@@ -646,4 +646,36 @@ describe('runAll', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
+
+  it('should fail when backup stash is missing', async () => {
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+
+    // Remove backup stash during run
+    await expect(
+      gitCommit({
+        config: { '*.js': () => 'git stash drop' },
+        shell: true,
+        debug: true,
+        quiet: false
+      })
+    ).rejects.toThrowError()
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG git stash drop [started]
+      LOG git stash drop [completed]
+      LOG Running tasks for *.js [completed]
+      LOG Running tasks... [completed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [completed]
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [failed]
+      LOG → lint-staged automatic backup is missing!"
+    `)
+  })
 })
