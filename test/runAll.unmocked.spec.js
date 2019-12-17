@@ -197,12 +197,13 @@ describe('runAll', () => {
     await execGit(['add', 'test.js'])
 
     // Run lint-staged with action that does horrible things to the file, causing a merge conflict
+    const testFile = path.resolve(cwd, 'test.js')
     await expect(
       gitCommit({
         config: {
-          '*.js': file => {
-            fs.writeFileSync(file[0], Buffer.from(testJsFileUnfixable, 'binary'))
-            return `prettier --write ${file[0]}`
+          '*.js': () => {
+            fs.writeFileSync(testFile, Buffer.from(testJsFileUnfixable, 'binary'))
+            return `prettier --write ${testFile}`
           }
         },
         quiet: false,
