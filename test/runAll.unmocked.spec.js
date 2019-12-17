@@ -70,7 +70,7 @@ const execGit = async args => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
 const gitCommit = async (options, args = ['-m test']) => {
-  await runAll({ ...options, cwd, quiet: true })
+  await runAll({ quiet: true, ...options, cwd })
   await execGit(['commit', ...args])
 }
 
@@ -189,6 +189,38 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await execGit(['status'])).toEqual(status)
     expect(await readFile('test.js')).toEqual(testJsFileUnfixable)
+  })
+
+  it('Should fail to commit entire staged file when there are unrecoverable merge conflicts', async () => {
+    // Stage file
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with action that does horrible things to the file, causing a merge conflict
+    await expect(
+      gitCommit({
+        config: {
+          '*.js': file => {
+            fs.writeFileSync(file[0], Buffer.from(testJsFileUnfixable, 'binary'))
+            return `prettier --write ${file[0]}`
+          }
+        },
+        quiet: false,
+        debug: true
+      })
+    ).rejects.toThrowError()
+
+    expect(console.printHistory()).toMatch(
+      'Unstaged changes could not be restored due to a merge conflict!'
+    )
+
+    // Something was wrong so the repo is returned to original state
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
+    // Git status is a bit messed up because the horrible things we did
+    // in the config above were done before creating the initial backup stash,
+    // and thus included in it.
+    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"AM test.js"`)
   })
 
   it('Should commit partial change from partially staged file when no errors from linter', async () => {
@@ -334,9 +366,9 @@ describe('runAll', () => {
     const diff = await execGit(['diff'])
 
     // Run lint-staged with `prettier --write` and commit pretty file
-    // The task creates a git lock file to simulate failure
-    try {
-      await gitCommit({
+    // The task creates a git lock file and runs `git add` to simulate failure
+    await expect(
+      gitCommit({
         config: {
           '*.js': files => [
             `touch ${cwd}/.git/index.lock`,
@@ -345,22 +377,20 @@ describe('runAll', () => {
           ]
         }
       })
-    } catch (error) {
-      expect(error.message).toMatch('Another git process seems to be running in this repository')
-      expect(console.printHistory()).toMatchInlineSnapshot(`
-        "
-        WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
+    ).rejects.toThrowError()
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
-        ERROR 
-          × lint-staged failed due to a git error.
-            Any lost modifications can be restored from a git stash:
+      ERROR 
+        × lint-staged failed due to a git error.
+          Any lost modifications can be restored from a git stash:
 
-            > git stash list
-            stash@{0}: On master: automatic lint-staged backup
-            > git stash pop stash@{0}
-        "
-      `)
-    }
+          > git stash list
+          stash@{0}: On master: automatic lint-staged backup
+          > git stash pop stash@{0}
+      "
+    `)
 
     // Something was wrong so new commit wasn't created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
