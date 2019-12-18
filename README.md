@@ -153,12 +153,12 @@ Pass arguments to your commands separated by space as you would do in the shell.
 
 Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
-## Using JS functions to customize linter commands
+## Using JS functions to customize tasks
 
-When supplying configuration in JS format it is possible to define the linter command as a function which receives an array of staged filenames/paths and returns the complete linter command as a string. It is also possible to return an array of complete command strings, for example when the linter command supports only a single file input.
+When supplying configuration in JS format it is possible to define the task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
 
 ```ts
-type LinterFn = (filenames: string[]) => string | string[]
+type TaskFn = (filenames: string[]) => string | string[] | Promise<string | string[]>
 ```
 
 ### Example: Wrap filenames in single quotes and run once per file
@@ -196,7 +196,7 @@ const micromatch = require('micromatch')
 module.exports = {
   '*': allFiles => {
     const match = micromatch(allFiles, ['*.js', '*.ts'])
-    return `eslint ${match.join(" ")}`
+    return `eslint ${match.join(' ')}`
   }
 }
 ```
@@ -212,7 +212,7 @@ module.exports = {
   '*.js': files => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
-    return `eslint ${match.join(" ")}`
+    return `eslint ${match.join(' ')}`
   }
 }
 ```
