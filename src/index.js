@@ -61,6 +61,7 @@ module.exports = function lintStaged(
     shell = false,
     quiet = false,
     debug = false,
+    all = false,
     concurrent = true
   } = {},
   logger = console
@@ -85,7 +86,7 @@ module.exports = function lintStaged(
         debugLog('lint-staged config:\n%O', config)
       }
 
-      return runAll({ config, relative, shell, quiet, debug, concurrent }, logger)
+      return runAll({ config, relative, shell, quiet, debug, all, concurrent }, logger)
         .then(() => {
           debugLog('tasks were executed successfully!')
           return Promise.resolve(true)

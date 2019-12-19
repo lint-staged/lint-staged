@@ -34,6 +34,7 @@ cmdline
   .option('-x, --shell', 'Skip parsing of tasks for better shell support')
   .option('-q, --quiet', 'Disable lint-staged’s own console output')
   .option('-d, --debug', 'Enable debug mode')
+  .option('-a, --all', 'Lint all committed files, not just those with staged changes')
   .option(
     '-p, --concurrent <parallel tasks>',
     'The number of tasks to run concurrently, or false to run tasks serially',
@@ -53,6 +54,7 @@ lintStaged({
   shell: !!cmdline.shell,
   quiet: !!cmdline.quiet,
   debug: !!cmdline.debug,
+  all: !!cmdline.all,
   concurrent: cmdline.concurrent
 })
   .then(passed => {

@@ -45,6 +45,7 @@ module.exports = async function runAll(
     quiet = false,
     relative = false,
     shell = false,
+    all = false,
     concurrent = true
   },
   logger = console
@@ -58,7 +59,7 @@ module.exports = async function runAll(
 
   debugLog('Resolved git directory to be `%s`', gitDir)
 
-  const files = await getStagedFiles({ cwd: gitDir })
+  const files = await getStagedFiles({ cwd: gitDir, all })
 
   if (!files) {
     throw new Error('Unable to get staged files!')
