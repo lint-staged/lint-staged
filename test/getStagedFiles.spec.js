@@ -4,9 +4,27 @@ import execGit from '../src/execGit'
 jest.mock('../src/execGit')
 
 describe('getStagedFiles', () => {
-  it('should return array of file names', async () => {
-    execGit.mockImplementationOnce(async () => 'foo.js\nbar.js')
+  it('should return array of only staged file names when all is not specified', async () => {
+    execGit.mockImplementationOnce(async cmd =>
+      cmd[0] === 'ls-tree' ? 'foo.js\nbar.js\nbaz.js' : 'foo.js\nbar.js'
+    )
     const staged = await getStagedFiles()
+    expect(staged).toEqual(['foo.js', 'bar.js'])
+  })
+
+  it('should return array of all file names when all is true', async () => {
+    execGit.mockImplementationOnce(async cmd =>
+      cmd[0] === 'ls-tree' ? 'foo.js\nbar.js\nbaz.js' : 'foo.js\nbar.js'
+    )
+    const staged = await getStagedFiles({ all: true })
+    expect(staged).toEqual(['foo.js', 'bar.js', 'baz.js'])
+  })
+
+  it('should return array of only staged file names when all is false', async () => {
+    execGit.mockImplementationOnce(async cmd =>
+      cmd[0] === 'ls-tree' ? 'foo.js\nbar.js\nbaz.js' : 'foo.js\nbar.js'
+    )
+    const staged = await getStagedFiles({ all: false })
     expect(staged).toEqual(['foo.js', 'bar.js'])
   })
 
