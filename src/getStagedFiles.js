@@ -2,7 +2,7 @@
 
 const execGit = require('./execGit')
 
-module.exports = async function getStagedFiles(options) {
+module.exports = async function getStagedFiles(options = {}) {
   try {
     const lines = await execGit(
       options.all
