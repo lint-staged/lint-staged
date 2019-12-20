@@ -54,7 +54,7 @@ const execGit = async args => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
 const gitCommit = async (options, args = ['-m test']) => {
-  await runAll({ ...options, cwd, quiet: true })
+  await runAll({ quiet: true, ...options, cwd })
   await execGit(['commit', ...args])
 }
 
@@ -88,8 +88,8 @@ describe('runAll', () => {
     console = globalConsoleTemp
   })
 
-  it('Should throw when restoring untracked files fails', async () => {
-    readBufferFromFile.mockImplementation(async () => [Buffer.from('')])
+  it.only('Should throw when restoring untracked files fails', async () => {
+    readBufferFromFile.mockImplementation(async () => Buffer.from('test'))
     writeBufferToFile.mockImplementation(async () => Promise.reject('test'))
 
     // Stage pretty file
@@ -99,11 +99,36 @@ describe('runAll', () => {
     // Create untracked file
     await appendFile('test-untracked.js', testJsFilePretty)
 
-    try {
-      // Run lint-staged with `prettier --list-different` and commit pretty file
-      await gitCommit({ config: { '*.js': 'prettier --list-different' } })
-    } catch (error) {
-      expect(error.message).toEqual('Untracked changes could not be restored due to an error!')
-    }
+    // Run lint-staged with `prettier --list-different`
+    await expect(
+      gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [failed]
+      LOG → Merge state could not be restored due to an error!
+      LOG Running tasks... [started]
+      LOG Running tasks... [skipped]
+      LOG → Skipped because of previous git error
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [skipped]
+      LOG → Skipped because of errors from tasks
+      LOG Reverting to original state... [started]
+      LOG Reverting to original state... [failed]
+      LOG → Merge state could not be restored due to an error!
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [skipped]
+      LOG → Skipped because of previous git error
+      ERROR 
+        × lint-staged failed due to a git error.
+          Any lost modifications can be restored from a git stash:
+
+          > git stash list
+          stash@{0}: On master: automatic lint-staged backup
+          > git stash pop stash@{0}
+      "
+    `)
   })
 })
