@@ -111,16 +111,13 @@ describe('runAll', () => {
       LOG → Merge state could not be restored due to an error!
       LOG Running tasks... [started]
       LOG Running tasks... [skipped]
-      LOG → Skipped because of previous git error
+      LOG → Skipped because of previous git error.
       LOG Applying modifications... [started]
       LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks
-      LOG Reverting to original state... [started]
-      LOG Reverting to original state... [failed]
-      LOG → Merge state could not be restored due to an error!
+      LOG → Skipped because of previous git error.
       LOG Cleaning up... [started]
       LOG Cleaning up... [skipped]
-      LOG → Skipped because of previous git error
+      LOG → Skipped because of previous git error.
       ERROR 
         × lint-staged failed due to a git error.
           Any lost modifications can be restored from a git stash:

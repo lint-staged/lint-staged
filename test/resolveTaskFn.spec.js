@@ -175,15 +175,15 @@ describe('resolveTaskFn', () => {
     }
   })
 
-  it('should not set hasErrors on context if no error occur', async () => {
+  it('should not set taskError on context if no error occur', async () => {
     expect.assertions(1)
     const context = {}
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
     await taskFn(context)
-    expect(context.hasErrors).toBeUndefined()
+    expect(context.taskError).toBeUndefined()
   })
 
-  it('should set hasErrors on context to true on error', async () => {
+  it('should set taskError on context to true on error', async () => {
     execa.mockResolvedValueOnce({
       stdout: 'Mock error',
       stderr: '',
@@ -197,7 +197,7 @@ describe('resolveTaskFn', () => {
     try {
       await taskFn(context)
     } catch (err) {
-      expect(context.hasErrors).toEqual(true)
+      expect(context.taskError).toEqual(true)
     }
   })
 })

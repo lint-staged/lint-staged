@@ -35,7 +35,7 @@ LOG →
 LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
-LOG → Skipped because of errors from tasks
+LOG → Skipped because of errors from tasks.
 LOG Reverting to original state... [started]
 LOG Reverting to original state... [completed]
 LOG Cleaning up... [started]
@@ -45,10 +45,10 @@ LOG {
   errors: [
     {
       privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
-      context: {hasErrors: true}
+      context: {taskError: true}
     }
   ],
-  context: {hasErrors: true}
+  context: {taskError: true}
 }"
 `;
 
@@ -66,7 +66,7 @@ LOG →
 LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
-LOG → Skipped because of errors from tasks
+LOG → Skipped because of errors from tasks.
 LOG Reverting to original state... [started]
 LOG Reverting to original state... [completed]
 LOG Cleaning up... [started]
@@ -76,10 +76,10 @@ LOG {
   errors: [
     {
       privateMsg: '\\\\n\\\\n\\\\n‼ echo \\"sample\\" was terminated with SIGINT',
-      context: {hasErrors: true}
+      context: {taskError: true}
     }
   ],
-  context: {hasErrors: true}
+  context: {taskError: true}
 }"
 `;
 
