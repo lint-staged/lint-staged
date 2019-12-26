@@ -497,3 +497,20 @@ In certain project setups, it might be desirable to bypass this restriction. See
 Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
 
 Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).
+
+### How can i ignore files from `.eslintignore` ?
+
+ESLint throws out `warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
+
+Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
+
+So you can setup a `.lintstagedrc.js` config file to do this:
+
+```
+var CLIEngine = require("eslint").CLIEngine;
+var cli = new CLIEngine({});
+
+module.exports = {
+    "*.js": files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' ),
+}
+```
