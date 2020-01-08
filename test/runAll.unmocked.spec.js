@@ -678,4 +678,61 @@ describe('runAll', () => {
       LOG → lint-staged automatic backup is missing!"
     `)
   })
+
+  it('should fail when task reverts staged changes, to prevent an empty git commit', async () => {
+    // Create and commit a pretty file without running lint-staged
+    // This way the file will be available for the next step
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+    await execGit(['commit', '-m committed pretty file'])
+
+    // Edit file to be ugly
+    await fs.remove(path.resolve(cwd, 'test.js'))
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with prettier --write to automatically fix the file
+    // Since prettier reverts all changes, the commit should fail
+    await expect(
+      gitCommit({ config: { '*.js': 'prettier --write' } })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN 
+        ‼ lint-staged prevented an empty git commit.
+          Use the --allow-empty option to continue, or check your task configuration
+      "
+    `)
+
+    // Something was wrong so the repo is returned to original state
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('committed pretty file')
+    expect(await readFile('test.js')).toEqual(testJsFileUgly)
+  })
+
+  it('should create commit when task reverts staged changed and --allow-empty is used', async () => {
+    // Create and commit a pretty file without running lint-staged
+    // This way the file will be available for the next step
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+    await execGit(['commit', '-m committed pretty file'])
+
+    // Edit file to be ugly
+    await writeFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with prettier --write to automatically fix the file
+    // Here we also pass '--allow-empty' to gitCommit because this part is not the full lint-staged
+    await gitCommit({ allowEmpty: true, config: { '*.js': 'prettier --write' } }, [
+      '-m test',
+      '--allow-empty'
+    ])
+
+    // Nothing was wrong so the empty commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('3')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+    expect(await execGit(['diff', '-1'])).toEqual('')
+    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+  })
 })

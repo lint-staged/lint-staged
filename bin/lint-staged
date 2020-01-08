@@ -29,16 +29,17 @@ const debug = debugLib('lint-staged:bin')
 
 cmdline
   .version(pkg.version)
-  .option('-c, --config [path]', 'Path to configuration file')
-  .option('-r, --relative', 'Pass relative filepaths to tasks')
-  .option('-x, --shell', 'Skip parsing of tasks for better shell support')
-  .option('-q, --quiet', 'Disable lint-staged’s own console output')
-  .option('-d, --debug', 'Enable debug mode')
+  .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
+  .option('-c, --config [path]', 'path to configuration file')
+  .option('-d, --debug', 'print additional debug information', false)
   .option(
     '-p, --concurrent <parallel tasks>',
-    'The number of tasks to run concurrently, or false to run tasks serially',
+    'the number of tasks to run concurrently, or false to run tasks serially',
     true
-  )
+    )
+  .option('-q, --quiet', 'disable lint-staged’s own console output', false)
+  .option('-r, --relative', 'pass relative filepaths to tasks', false)
+  .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
   .parse(process.argv)
 
 if (cmdline.debug) {
@@ -66,13 +67,14 @@ const getMaxArgLength = () => {
 }
 
 const options = {
+  allowEmpty: !!cmdline.allowEmpty,
+  concurrent: cmdline.concurrent,
   configPath: cmdline.config,
+  debug: !!cmdline.debug,
   maxArgLength: getMaxArgLength() / 2,
+  quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
-  quiet: !!cmdline.quiet,
-  debug: !!cmdline.debug,
-  concurrent: cmdline.concurrent
 }
 
 debug('Options parsed from command-line:', options)
