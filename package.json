@@ -10,6 +10,9 @@
     "Suhas Karanth <sudo.suhas@gmail.com>",
     "Iiro Jäppinen <iiro@jappinen.fi> (https://iiro.fi)"
   ],
+  "funding": {
+    "url": "https://opencollective.com/lint-staged"
+  },
   "main": "./src/index.js",
   "bin": "./bin/lint-staged",
   "files": [
