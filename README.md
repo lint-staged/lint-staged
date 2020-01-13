@@ -190,8 +190,8 @@ type LinterFn = (filenames: string[]) => string | string[]
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`)
-}
+  '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`),
+};
 ```
 
 ### Example: Run `tsc` on changes to TypeScript files, but do not pass any filename arguments
@@ -199,8 +199,8 @@ module.exports = {
 ```js
 // lint-staged.config.js
 module.exports = {
-  '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit'
-}
+  '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit',
+};
 ```
 
 ### Example: Run eslint on entire repo if more than 10 staged files
@@ -208,21 +208,22 @@ module.exports = {
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
-}
+  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`),
+};
 ```
 
 ### Example: Use your own globs
 
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch')
+const micromatch = require('micromatch');
+
 module.exports = {
   '*': allFiles => {
-    const match = micromatch(allFiles, ['*.js', '*.ts'])
-    return `eslint ${match.join(" ")}`
+    const match = micromatch(allFiles, ['*.js', '*.ts']);
+    return `eslint ${match.join(" ")}`;
   }
-}
+};
 ```
 
 ### Example: Ignore files from match
@@ -231,14 +232,15 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch')
+const micromatch = require('micromatch');
+
 module.exports = {
   '*.js': files => {
     // from `files` filter those _NOT_ matching `*test.js`
-    const match = micromatch.not(files, '*test.js')
-    return `eslint ${match.join(" ")}`
+    const match = micromatch.not(files, '*test.js');
+    return `eslint ${match.join(" ")}`;
   }
-}
+};
 ```
 
 Please note that for most cases, globs can achieve the same effect. For the above example, a matching glob would be `!(*test).js`.
@@ -246,14 +248,15 @@ Please note that for most cases, globs can achieve the same effect. For the abov
 ### Example: Use relative paths for commands
 
 ```js
-const path = require('path')
+const path = require('path');
+
 module.exports = {
   '*.ts': absolutePaths => {
-    const cwd = process.cwd()
-    const relativePaths = absolutePaths.map(file => path.relative(cwd, file))
-    return `ng lint myProjectName --files ${relativePaths.join(' ')}`
+    const cwd = process.cwd();
+    const relativePaths = absolutePaths.map(file => path.relative(cwd, file));
+    return `ng lint myProjectName --files ${relativePaths.join(' ')}`;
   }
-}
+};
 ```
 
 ## Reformatting the code
@@ -407,14 +410,14 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 Yes!
 
 ```js
-const lintStaged = require('lint-staged')
+const lintStaged = require('lint-staged');
 
 try {
   const success = await lintStaged()
-  console.log(success ? 'Linting was successful!' : 'Linting failed!')
+  console.log(success ? 'Linting was successful!' : 'Linting failed!');
 } catch (e) {
   // Failed to load configuration
-  console.error(e)
+  console.error(e);
 }
 ```
 
@@ -425,8 +428,8 @@ const success = await lintStaged({
   configPath: './path/to/configuration/file',
   shell: false,
   quiet: false,
-  debug: false
-})
+  debug: false,
+});
 ```
 
 You can also pass config directly with `config` option:
@@ -438,8 +441,8 @@ const success = await lintStaged({
   },
   shell: false,
   quiet: false,
-  debug: false
-})
+  debug: false,
+});
 ```
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
@@ -506,11 +509,12 @@ Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it w
 
 So you can setup a `.lintstagedrc.js` config file to do this:
 
-```
-var CLIEngine = require("eslint").CLIEngine;
-var cli = new CLIEngine({});
+```js
+const { CLIEngine } = require("eslint");
+
+const cli = new CLIEngine({});
 
 module.exports = {
     "*.js": files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' ),
-}
+};
 ```
