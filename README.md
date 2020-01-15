@@ -510,7 +510,7 @@ Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it w
 So you can setup a `.lintstagedrc.js` config file to do this:
 
 ```js
-const { CLIEngine } = require("eslint")
+const { CLIEngine } = require('eslint')
 
 const cli = new CLIEngine({})
 
