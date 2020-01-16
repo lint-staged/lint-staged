@@ -217,6 +217,7 @@ module.exports = {
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
+
 module.exports = {
   '*': allFiles => {
     const match = micromatch(allFiles, ['*.js', '*.ts'])
@@ -232,6 +233,7 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
+
 module.exports = {
   '*.js': files => {
     // from `files` filter those _NOT_ matching `*test.js`
@@ -247,6 +249,7 @@ Please note that for most cases, globs can achieve the same effect. For the abov
 
 ```js
 const path = require('path')
+
 module.exports = {
   '*.ts': absolutePaths => {
     const cwd = process.cwd()
@@ -506,11 +509,12 @@ Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it w
 
 So you can setup a `.lintstagedrc.js` config file to do this:
 
-```
-var CLIEngine = require("eslint").CLIEngine;
-var cli = new CLIEngine({});
+```js
+const { CLIEngine } = require('eslint')
+
+const cli = new CLIEngine({})
 
 module.exports = {
-    "*.js": files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' ),
+  '*.js': files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' )
 }
 ```
