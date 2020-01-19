@@ -3,8 +3,8 @@
 module.exports = wallaby => ({
   files: [
     { pattern: 'test/__fixtures__/*', instrument: false },
-    'src/*.js',
-    'src/__mocks__/*.js',
+    'lib/*.js',
+    'lib/__mocks__/*.js',
     '!test/*.spec.js'
   ],
 

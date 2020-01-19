@@ -1,6 +1,6 @@
 import Listr from 'listr'
 import makeConsoleMock from 'consolemock'
-import printErrors from '../src/printErrors'
+import printErrors from '../lib/printErrors'
 
 describe('printErrors', () => {
   const logger = makeConsoleMock()

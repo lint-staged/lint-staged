@@ -1,4 +1,4 @@
-module.exports = jest.fn(() =>
+const execa = jest.fn(() =>
   Promise.resolve({
     stdout: 'a-ok',
     stderr: '',
@@ -9,3 +9,7 @@ module.exports = jest.fn(() =>
     signal: null
   })
 )
+
+execa.command = execa
+
+module.exports = execa

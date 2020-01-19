@@ -1,7 +1,7 @@
 const actual = require.requireActual('cosmiconfig')
 
 function cosmiconfig(name, options) {
-  return actual(name, options)
+  return actual.cosmiconfig(name, options)
 }
 
-module.exports = jest.fn(cosmiconfig)
+module.exports.cosmiconfig = jest.fn(cosmiconfig)

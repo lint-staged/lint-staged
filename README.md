@@ -2,30 +2,6 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
----
-
-## 🚧 Help test `lint-staged@beta`!
-
-Version 10 of `lint-staged` is coming with changes that help it run faster on large git repositories and prevent loss of data during errors. Please help test the `beta` version and report any inconsistencies in our [GitHub Issues](https://github.com/okonet/lint-staged/issues):
-
-**Using npm**
-
-    npm install --save-dev lint-staged@beta
-
-**Using yarn**
-
-    yarn add -D lint-staged@beta
-
-### Notable changes
-
-- A git stash is created before running any tasks, so in case of errors any lost changes can be restored easily (and automatically unless lint-staged itself crashes)
-- Instead of write-tree/read-tree, `lint-staged@beta` uses git stashes to hide unstaged changes while running tasks against staged files
-  - This results in a performance increase of up to 45x on very large repositories
-- The behaviour of committing modifications during tasks (eg. `prettier --write && git add`) is different. The current version creates a diff of these modifications, and applies it against the original state, silently ignoring any errors. The `beta` version leaves modifications of staged files as-is, and then restores all hidden unstaged changes as patch. If applying the patch fails due to a merge conflict (because tasks have modified the same lines), a 3-way merge will be retried. If this also fails, the entire commit will fail and the original state will be restored.
-  - **TL;DR** the `beta` version will never skip committing any changes by tasks (due to a merge conflict), but might fail in very complex situations where unstaged changes cannot be restored cleanly. If this happens to you, we are very interested in a repeatable test scenario.
-
----
-
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
 
 ## Why
@@ -66,31 +42,33 @@ See [Releases](https://github.com/okonet/lint-staged/releases)
 ## Command line flags
 
 ```bash
-$ npx lint-staged --help
+❯ npx lint-staged --help
 Usage: lint-staged [options]
 
 Options:
-  -V, --version                     output the version number
-  -c, --config [path]               Path to configuration file
-  -r, --relative                    Pass relative filepaths to tasks
-  -x, --shell                       Skip parsing of tasks for better shell support
-  -q, --quiet                       Disable lint-staged’s own console output
-  -d, --debug                       Enable debug mode
-  -p, --concurrent [parallel tasks] The number of tasks to run concurrently, or false to run tasks sequentially
-  -h, --help                        output usage information
+  -V, --version                      output the version number
+  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+  -c, --config [path]                path to configuration file
+  -d, --debug                        print additional debug information (default: false)
+  -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run tasks serially (default: true)
+  -q, --quiet                        disable lint-staged’s own console output (default: false)
+  -r, --relative                     pass relative filepaths to tasks (default: false)
+  -x, --shell                        skip parsing of tasks for better shell support (default: false)
+  -h, --help                         output usage information
 ```
 
-- **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
-- **`--relative`**: By default filepaths will be passed to the linter tasks as _absolute_. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
-- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
-- **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
-- **`--debug`**: Enabling the debug mode does the following:
-  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
+- **`--allow-empty`**: By default, when after running tasks there are no staged modifications, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found.
+- **`--debug`**: Run in debug mode. When set, it does the following:
+  - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
 - **`--concurrent [number | (true/false)]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
+- **`--quiet`**: Supress all CLI output, except from tasks.
+- **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
+- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
 
 ## Configuration
 
@@ -177,12 +155,12 @@ Pass arguments to your commands separated by space as you would do in the shell.
 
 Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
 
-## Using JS functions to customize linter commands
+## Using JS functions to customize tasks
 
-When supplying configuration in JS format it is possible to define the linter command as a function which receives an array of staged filenames/paths and returns the complete linter command as a string. It is also possible to return an array of complete command strings, for example when the linter command supports only a single file input.
+When supplying configuration in JS format it is possible to define the task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
 
 ```ts
-type LinterFn = (filenames: string[]) => string | string[]
+type TaskFn = (filenames: string[]) => string | string[] | Promise<string | string[]>
 ```
 
 ### Example: Wrap filenames in single quotes and run once per file
@@ -221,7 +199,7 @@ const micromatch = require('micromatch')
 module.exports = {
   '*': allFiles => {
     const match = micromatch(allFiles, ['*.js', '*.ts'])
-    return `eslint ${match.join(" ")}`
+    return `eslint ${match.join(' ')}`
   }
 }
 ```
@@ -238,7 +216,7 @@ module.exports = {
   '*.js': files => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
-    return `eslint ${match.join(" ")}`
+    return `eslint ${match.join(' ')}`
   }
 }
 ```
@@ -261,15 +239,15 @@ module.exports = {
 
 ## Reformatting the code
 
-Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`/`stylelint --fix`. After the code is reformatted, we want it to be added to the same commit. This can be done using following config:
+Tools like [Prettier](https://prettier.io), ESLint/TSLint, or stylelint can reformat your code according to an appropriate config by running `prettier --write`/`eslint --fix`/`tslint --fix`/`stylelint --fix`. Lint-staged will automatically add any modifications to the commit as long as there are no errors.
 
 ```json
 {
-  "*.js": ["prettier --write", "git add"]
+  "*.js": "prettier --write"
 }
 ```
 
-Starting from v8, lint-staged will stash your remaining changes (not added to the index) and restore them from stash afterwards if there are partially staged files detected. This allows you to create partial commits with hunks using `git add --patch`. See the [blog post](https://medium.com/@okonetchnikov/announcing-lint-staged-with-support-for-partially-staged-files-abc24a40d3ff)
+Prior to version 10, tasks had to manually include `git add` as the final step. This behavior has been integrated into lint-staged itself in order to prevent race conditions with multiple tasks editing the same files. If lint-staged detects `git add` in task configurations, it will show a warning in the console. Please remove `git add` from your configuration after upgrading.
 
 ## Examples
 
@@ -305,7 +283,7 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 
 ```json
 {
-  "*.js": ["eslint --fix", "git add"]
+  "*.js": "eslint --fix"
 }
 ```
 
@@ -317,7 +295,7 @@ If you wish to reuse a npm script defined in your package.json:
 
 ```json
 {
-  "*.js": ["npm run my-custom-script --", "git add"]
+  "*.js": "npm run my-custom-script --"
 }
 ```
 
@@ -325,7 +303,7 @@ The following is equivalent:
 
 ```json
 {
-  "*.js": ["linter --arg1 --arg2", "git add"]
+  "*.js": "linter --arg1 --arg2"
 }
 ```
 
@@ -345,19 +323,19 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 
 ```json
 {
-  "*.{js,jsx}": ["prettier --write", "git add"]
+  "*.{js,jsx}": "prettier --write"
 }
 ```
 
 ```json
 {
-  "*.{ts,tsx}": ["prettier --write", "git add"]
+  "*.{ts,tsx}": "prettier --write"
 }
 ```
 
 ```json
 {
-  "*.{md,html}": ["prettier --write", "git add"]
+  "*.{md,html}": "prettier --write"
 }
 ```
 
@@ -370,19 +348,19 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 }
 ```
 
-### Run PostCSS sorting, add files to commit and run Stylelint to check
+### Run PostCSS sorting and Stylelint to check
 
 ```json
 {
-  "*.scss": ["postcss --config path/to/your/config --replace", "stylelint", "git add"]
+  "*.scss": "postcss --config path/to/your/config --replace", "stylelint"
 }
 ```
 
-### Minify the images and add files to commit
+### Minify the images
 
 ```json
 {
-  "*.{png,jpeg,jpg,gif,svg}": ["imagemin-lint-staged", "git add"]
+  "*.{png,jpeg,jpg,gif,svg}": "imagemin-lint-staged"
 }
 ```
 
@@ -399,7 +377,7 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 ```json
 {
-  "*.{js,jsx}": ["flow focus-check", "git add"]
+  "*.{js,jsx}": "flow focus-check"
 }
 ```
 
@@ -426,6 +404,8 @@ Parameters to `lintStaged` are equivalent to their CLI counterparts:
 ```js
 const success = await lintStaged({
   configPath: './path/to/configuration/file',
+  maxArgLength: null,
+  relative: false,
   shell: false,
   quiet: false,
   debug: false
@@ -439,11 +419,15 @@ const success = await lintStaged({
   config: {
     '*.js': 'eslint --fix'
   },
+  maxArgLength: null,
+  relative: false,
   shell: false,
   quiet: false,
   debug: false
 })
 ```
+
+The `maxArgLength` option configures chunking of tasks into multiple parts that are run one after the other. This is to avoid issues on Windows platforms where the maximum length of the command line argument string is limited to 8192 characters. Lint-staged might generate a very long argument string when there are many staged files. This option is set automatically from the cli, but not via the Node.js API by default.
 
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
 
@@ -503,7 +487,7 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 
 ### How can i ignore files from `.eslintignore` ?
 
-ESLint throws out `warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
+ESLint throws out `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
 
 Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
 

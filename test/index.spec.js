@@ -1,15 +1,15 @@
-import cosmiconfig from 'cosmiconfig'
+import { cosmiconfig } from 'cosmiconfig'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
 jest.unmock('execa')
 
 // eslint-disable-next-line import/first
-import getStagedFiles from '../src/getStagedFiles'
+import getStagedFiles from '../lib/getStagedFiles'
 // eslint-disable-next-line import/first
-import lintStaged from '../src/index'
+import lintStaged from '../lib/index'
 
-jest.mock('../src/getStagedFiles')
+jest.mock('../lib/getStagedFiles')
 
 const replaceSerializer = (from, to) => ({
   test: val => typeof val === 'string' && from.test(val),
@@ -22,7 +22,7 @@ const mockCosmiconfigWith = result => {
   }))
 }
 
-jest.mock('../src/gitWorkflow')
+jest.mock('../lib/gitWorkflow')
 
 async function withMockedConsole(mockConsole, fn) {
   const previousConsole = console
@@ -120,6 +120,15 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
+  it('should use config object', async () => {
+    const config = {
+      '*': 'node -e "process.exit(1)"'
+    }
+    expect.assertions(1)
+    await lintStaged({ config, debug: true, quiet: true }, logger)
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
   it('should load an npm config package when specified', async () => {
     expect.assertions(1)
     jest.mock('my-lint-staged-config')
@@ -161,7 +170,7 @@ describe('lintStaged', () => {
     }
     mockCosmiconfigWith({ config })
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const passed = await lintStaged({ quiet: true }, logger)
+    const passed = await lintStaged({ quiet: true, shell: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
     expect(passed).toBe(false)
   })

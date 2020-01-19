@@ -1,5 +1,6 @@
 import execa from 'execa'
-import makeCmdTasks from '../src/makeCmdTasks'
+
+import makeCmdTasks from '../lib/makeCmdTasks'
 
 describe('makeCmdTasks', () => {
   const gitDir = process.cwd()
@@ -41,7 +42,7 @@ describe('makeCmdTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('test', ['test.js'], {
+    expect(execa).lastCalledWith('test test.js', {
       preferLocal: true,
       reject: false,
       shell: false
@@ -50,20 +51,20 @@ describe('makeCmdTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).lastCalledWith('test2', ['test.js'], {
+    expect(execa).lastCalledWith('test2 test.js', {
       preferLocal: true,
       reject: false,
       shell: false
     })
   })
 
-  it('should work with function linter returning a string', async () => {
+  it('should work with function task returning a string', async () => {
     const res = await makeCmdTasks({ commands: () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
 
-  it('should work with function linter returning array of string', async () => {
+  it('should work with function task returning array of string', async () => {
     const res = await makeCmdTasks({
       commands: () => ['test', 'test2'],
       gitDir,
@@ -74,7 +75,7 @@ describe('makeCmdTasks', () => {
     expect(res[1].title).toEqual('test2')
   })
 
-  it('should work with function linter accepting arguments', async () => {
+  it('should work with function task accepting arguments', async () => {
     const res = await makeCmdTasks({
       commands: filenames => filenames.map(file => `test ${file}`),
       gitDir,
@@ -85,7 +86,7 @@ describe('makeCmdTasks', () => {
     expect(res[1].title).toEqual('test [file]')
   })
 
-  it('should work with array of mixed string and function linters', async () => {
+  it('should work with array of mixed string and function tasks', async () => {
     const res = await makeCmdTasks({
       commands: [() => 'test', 'test2', files => files.map(file => `test ${file}`)],
       gitDir,
@@ -107,5 +108,11 @@ describe('makeCmdTasks', () => {
     })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test --file [file]')
+  })
+
+  it('should work with async function tasks', async () => {
+    const res = await makeCmdTasks({ commands: async () => 'test', gitDir, files: ['test.js'] })
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test')
   })
 })

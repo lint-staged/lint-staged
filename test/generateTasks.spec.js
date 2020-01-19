@@ -2,8 +2,8 @@ import os from 'os'
 import normalize from 'normalize-path'
 import path from 'path'
 
-import generateTasks from '../src/generateTasks'
-import resolveGitDir from '../src/resolveGitDir'
+import generateTasks from '../lib/generateTasks'
+import resolveGitDir from '../lib/resolveGitDir'
 
 const normalizePath = path => normalize(path)
 
@@ -28,7 +28,7 @@ const files = [
 ]
 
 // Mocks get hoisted
-jest.mock('../src/resolveGitDir.js')
+jest.mock('../lib/resolveGitDir.js')
 const gitDir = path.join(os.tmpdir(), 'tmp-lint-staged')
 resolveGitDir.mockResolvedValue(gitDir)
 const cwd = gitDir

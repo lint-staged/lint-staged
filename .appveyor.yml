@@ -4,9 +4,9 @@
 
 environment:
   matrix:
+    - nodejs_version: '13'
     - nodejs_version: '12'
     - nodejs_version: '10'
-    - nodejs_version: '8'
 
 matrix:
   fast_finish: true
@@ -25,6 +25,7 @@ cache:
 test_script:
   - node --version
   - yarn --version
+  - git --version
   - yarn test
 
 branches:
