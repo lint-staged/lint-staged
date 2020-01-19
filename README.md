@@ -57,18 +57,17 @@ Options:
   -h, --help                         output usage information
 ```
 
-- **`--allow-empty`**: By default lint-stage will exit with an error — aborting the commit — when after running tasks there are no staged modifications. Use this disable this behaviour and create empty git commits.
-  - This can happen when tasks use libraries like _prettier_ or _eslint_ with automatic code formatting
-- **`--config [path]`**: This can be used to manually specify the `lint-staged` config file location. However, if the specified file cannot be found, it will error out instead of performing the usual search. You may pass a npm package name for configuration also.
-- **`--debug`**: Enabling the debug mode does the following:
-  - `lint-staged` uses the [debug](https://github.com/visionmedia/debug) module internally to log information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  - Use the [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
+- **`--allow-empty`**: By default, when after running tasks there are no staged modifications, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found.
+- **`--debug`**: Run in debug mode. When set, it does the following:
+  - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
 - **`--concurrent [number | (true/false)]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
-- **`--quiet`**: By default `lint-staged` will print progress status to console while running linters. Use this flag to supress all output, except for linter scripts.
-- **`--relative`**: By default filepaths will be passed to the linter tasks as _absolute_. This flag makes them relative to `process.cwd()` (where `lint-staged` runs).
+- **`--quiet`**: Supress all CLI output, except from tasks.
+- **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
 
 ## Configuration
