@@ -242,7 +242,7 @@ describe('runAll', () => {
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
-    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.replace(/\n$/, ''))
+    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.trim())
 
     // Since edit was not staged, the file is still modified
     const status = await execGit(['status'])
@@ -269,7 +269,7 @@ describe('runAll', () => {
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
-    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.replace(/\n$/, ''))
+    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.trim())
 
     // Nothing is staged
     const status = await execGit(['status'])
@@ -346,7 +346,7 @@ describe('runAll', () => {
 
     // Latest commit contains pretty file
     // `git show` strips empty line from here here
-    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.replace(/\n$/, ''))
+    expect(await execGit(['show', 'HEAD:test.js'])).toEqual(testJsFilePretty.trim())
 
     // Nothing is staged
     expect(await execGit(['status'])).toMatch('nothing to commit, working tree clean')
