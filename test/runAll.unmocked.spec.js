@@ -751,6 +751,9 @@ describe('runAll', () => {
     // This simulates adding it from a remote
     await execGit(['submodule', 'add', '--force', './submodule-temp', './submodule'])
     submoduleDir = path.resolve(cwd, 'submodule')
+    // Set these again for Windows git in CI
+    await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
+    await execGit(['config', 'user.email', '"test@test.com"'], { cwd: submoduleDir })
 
     // Stage pretty file
     await appendFile('test.js', testJsFilePretty, submoduleDir)
