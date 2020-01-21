@@ -39,6 +39,19 @@ See [examples](#examples) and [configuration](#configuration) for more informati
 
 See [Releases](https://github.com/okonet/lint-staged/releases)
 
+### Migration
+
+#### v10
+
+- From `v10.0.0` onwards any new modifications to originally staged files will be automatically added to the commit.
+  If your task previously contained a `git add` step, please remove this.
+  The automatic behaviour ensures there are less race-conditions,
+  since trying to run multiple git operations at the same time usually results in an error.
+- From `v10.0.0` onwards _lint-staged_ uses git stashes to improve speed and provide backups while running.
+  Since git stashes require at least an initial commit, you shouldn't run _lint-staged_ in an empty repo.
+- From `v10.0.0` onwards _lint-staged_ requires Node.js version 10.13.0 or later.
+- From `v10.0.0` onwards _lint-staged_ will abort the commit if linter tasks undo all staged changes. To allow creating empty commit, please use the `--allow-empty` option.
+
 ## Command line flags
 
 ```bash
