@@ -67,7 +67,6 @@
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "jsonlint": "^1.6.3",
     "nanoid": "^2.1.7",
     "prettier": "^1.19.1"
   },
