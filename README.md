@@ -47,7 +47,7 @@ Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
-  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+  --allow-empty                      allow empty commits when tasks undo all staged changes (default: false)
   -c, --config [path]                path to configuration file
   -d, --debug                        print additional debug information (default: false)
   -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run tasks serially (default: true)
@@ -57,7 +57,7 @@ Options:
   -h, --help                         output usage information
 ```
 
-- **`--allow-empty`**: By default, when after running tasks there are no staged modifications, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+- **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
 - **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found.
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
@@ -499,6 +499,7 @@ const { CLIEngine } = require('eslint')
 const cli = new CLIEngine({})
 
 module.exports = {
-  '*.js': files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' )
+  '*.js': files =>
+    'eslint --max-warnings=0 ' + files.filter(file => !cli.isPathIgnored(file)).join(' ')
 }
 ```
