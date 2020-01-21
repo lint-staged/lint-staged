@@ -11,8 +11,6 @@ describe('resolveTaskFn', () => {
       shell: true
     })
 
-    await expect(taskFn()).resolves.toMatchInlineSnapshot(
-      `"√ node -e \\"process.exit(1)\\" || echo $? passed!"`
-    )
+    await expect(taskFn()).resolves.toMatchInlineSnapshot(`"√ node passed!"`)
   })
 })

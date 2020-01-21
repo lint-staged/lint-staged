@@ -121,8 +121,8 @@ describe('runAll', () => {
 
   it('Should commit entire staged file when no errors from linter', async () => {
     // Stage pretty file
-    await appendFile('test.js', testJsFilePretty)
-    await execGit(['add', 'test.js'])
+    await appendFile('test file.js', testJsFilePretty)
+    await execGit(['add', 'test file.js'])
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
     await gitCommit({ config: { '*.js': 'prettier --list-different' } })
@@ -130,7 +130,7 @@ describe('runAll', () => {
     // Nothing is wrong, so a new commit is created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
-    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await readFile('test file.js')).toEqual(testJsFilePretty)
   })
 
   it('Should commit entire staged file when no errors and linter modifies file', async () => {
