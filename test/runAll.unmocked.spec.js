@@ -383,7 +383,7 @@ describe('runAll', () => {
       "
       ERROR 
         × lint-staged failed due to a git error.
-          Any lost modifications can be restored from a git stash:
+      ERROR   Any lost modifications can be restored from a git stash:
 
           > git stash list
           stash@{0}: On master: automatic lint-staged backup
@@ -772,5 +772,30 @@ describe('runAll', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'], { cwd: submoduleDir })).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: submoduleDir })).toMatch('test')
     expect(await readFile('test.js', submoduleDir)).toEqual(testJsFilePretty)
+  })
+})
+
+describe('runAll', () => {
+  it('Should throw when run on an empty git repo without an initial commit', async () => {
+    const tmpDir = await createTempDir()
+    const cwd = normalize(tmpDir)
+    const logger = makeConsoleMock()
+
+    await execGit('init', { cwd })
+    await execGit(['config', 'user.name', '"test"'], { cwd })
+    await execGit(['config', 'user.email', '"test@test.com"'], { cwd })
+    await appendFile('test.js', testJsFilePretty, cwd)
+    await execGit(['add', 'test.js'], { cwd })
+    await expect(
+      runAll({ config: { '*.js': 'prettier --list-different' }, cwd, quiet: true }, logger)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      ERROR 
+        × lint-staged failed due to a git error.
+      ERROR 
+          The initial commit is needed for lint-staged to work.
+          Please use the --no-verify flag to skip running lint-staged."
+    `)
   })
 })
