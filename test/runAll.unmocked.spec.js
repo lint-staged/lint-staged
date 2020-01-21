@@ -381,8 +381,6 @@ describe('runAll', () => {
     ).rejects.toThrowError()
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
-
       ERROR 
         × lint-staged failed due to a git error.
           Any lost modifications can be restored from a git stash:
@@ -693,12 +691,15 @@ describe('runAll', () => {
 
     // Run lint-staged with prettier --write to automatically fix the file
     // Since prettier reverts all changes, the commit should fail
+    // use the old syntax with manual `git add` to provide a warning message
     await expect(
-      gitCommit({ config: { '*.js': 'prettier --write' } })
+      gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
+      WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
+
       WARN 
         ‼ lint-staged prevented an empty git commit.
           Use the --allow-empty option to continue, or check your task configuration
