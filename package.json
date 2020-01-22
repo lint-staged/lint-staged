@@ -45,6 +45,7 @@
     "micromatch": "^4.0.2",
     "normalize-path": "^3.0.0",
     "please-upgrade-node": "^3.2.0",
+    "string-argv": "0.3.1",
     "stringify-object": "^3.3.0"
   },
   "devDependencies": {
@@ -67,7 +68,6 @@
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "jsonlint": "^1.6.3",
     "nanoid": "^2.1.7",
     "prettier": "^1.19.1"
   },

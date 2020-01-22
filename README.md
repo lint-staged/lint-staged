@@ -39,6 +39,19 @@ See [examples](#examples) and [configuration](#configuration) for more informati
 
 See [Releases](https://github.com/okonet/lint-staged/releases)
 
+### Migration
+
+#### v10
+
+- From `v10.0.0` onwards any new modifications to originally staged files will be automatically added to the commit.
+  If your task previously contained a `git add` step, please remove this.
+  The automatic behaviour ensures there are less race-conditions,
+  since trying to run multiple git operations at the same time usually results in an error.
+- From `v10.0.0` onwards _lint-staged_ uses git stashes to improve speed and provide backups while running.
+  Since git stashes require at least an initial commit, you shouldn't run _lint-staged_ in an empty repo.
+- From `v10.0.0` onwards _lint-staged_ requires Node.js version 10.13.0 or later.
+- From `v10.0.0` onwards _lint-staged_ will abort the commit if linter tasks undo all staged changes. To allow creating empty commit, please use the `--allow-empty` option.
+
 ## Command line flags
 
 ```bash
@@ -47,7 +60,7 @@ Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
-  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+  --allow-empty                      allow empty commits when tasks undo all staged changes (default: false)
   -c, --config [path]                path to configuration file
   -d, --debug                        print additional debug information (default: false)
   -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run tasks serially (default: true)
@@ -57,7 +70,7 @@ Options:
   -h, --help                         output usage information
 ```
 
-- **`--allow-empty`**: By default, when after running tasks there are no staged modifications, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+- **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
 - **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found.
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
@@ -499,6 +512,7 @@ const { CLIEngine } = require('eslint')
 const cli = new CLIEngine({})
 
 module.exports = {
-  '*.js': files => 'eslint --max-warnings=0 ' + files.filter( file => ! cli.isPathIgnored( file ) ).join( ' ' )
+  '*.js': files =>
+    'eslint --max-warnings=0 ' + files.filter(file => !cli.isPathIgnored(file)).join(' ')
 }
 ```

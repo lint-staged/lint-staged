@@ -44,7 +44,7 @@ LOG {
   name: 'ListrError',
   errors: [
     {
-      privateMsg: '\\\\n\\\\n\\\\n× echo \\"sample\\" found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
+      privateMsg: '\\\\n\\\\n\\\\n× echo found some errors. Please fix them and try committing again.\\\\n\\\\nLinter finished with error',
       context: {taskError: true}
     }
   ],
@@ -75,7 +75,7 @@ LOG {
   name: 'ListrError',
   errors: [
     {
-      privateMsg: '\\\\n\\\\n\\\\n‼ echo \\"sample\\" was terminated with SIGINT',
+      privateMsg: '\\\\n\\\\n\\\\n‼ echo was terminated with SIGINT',
       context: {taskError: true}
     }
   ],

@@ -5,7 +5,7 @@ exports[`lintStaged should exit with code 1 on linter errors 1`] = `
 ERROR 
 
 
-× node -e \\"process.exit(1)\\" found some errors. Please fix them and try committing again."
+× node found some errors. Please fix them and try committing again."
 `;
 
 exports[`lintStaged should load an npm config package when specified 1`] = `

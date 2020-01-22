@@ -120,7 +120,7 @@ describe('runAll', () => {
       LOG → Skipped because of previous git error.
       ERROR 
         × lint-staged failed due to a git error.
-          Any lost modifications can be restored from a git stash:
+      ERROR   Any lost modifications can be restored from a git stash:
 
           > git stash list
           stash@{0}: On master: automatic lint-staged backup
