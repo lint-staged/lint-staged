@@ -365,7 +365,7 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 
 ```json
 {
-  "*.scss": "postcss --config path/to/your/config --replace", "stylelint"
+  "*.scss": ["postcss --config path/to/your/config --replace", "stylelint"]
 }
 ```
 
