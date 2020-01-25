@@ -8,7 +8,7 @@ import nanoid from 'nanoid'
 jest.mock('../lib/file')
 
 import execGitBase from '../lib/execGit'
-import { readBufferFromFile, writeBufferToFile } from '../lib/file'
+import { readFile, writeFile } from '../lib/file'
 import runAll from '../lib/runAll'
 
 jest.unmock('execa')
@@ -89,8 +89,8 @@ describe('runAll', () => {
   })
 
   it.only('Should throw when restoring untracked files fails', async () => {
-    readBufferFromFile.mockImplementation(async () => Buffer.from('test'))
-    writeBufferToFile.mockImplementation(async () => Promise.reject('test'))
+    readFile.mockImplementation(async () => Buffer.from('test'))
+    writeFile.mockImplementation(async () => Promise.reject('test'))
 
     // Stage pretty file
     await appendFile('test.js', testJsFilePretty)
