@@ -82,11 +82,6 @@ describe('runAll', () => {
     )
     await removeTempDir(nonGitDir)
   })
-
-  it('should short-circuit with no staged files', async () => {
-    const status = await runAll({ config: { '*.js': 'echo success' }, cwd })
-    expect(status).toEqual('No tasks to run.')
-  })
 })
 
 const globalConsoleTemp = console
@@ -117,6 +112,11 @@ describe('runAll', () => {
 
   afterAll(() => {
     console = globalConsoleTemp
+  })
+
+  it('should exit early with no staged files', async () => {
+    const status = await runAll({ config: { '*.js': 'echo success' }, cwd })
+    expect(status).toEqual('No tasks to run.')
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
