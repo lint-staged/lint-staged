@@ -604,11 +604,24 @@ describe('runAll', () => {
     expect(status).toMatch('no changes added to commit')
   })
 
-  it('should not resurrect removed files due to git bug', async () => {
+  it('should not resurrect removed files due to git bug when tasks pass', async () => {
     const readmeFile = path.resolve(cwd, 'README.md')
     await fs.remove(readmeFile) // Remove file from previous commit
-    await execGit(['add', '.'])
-    await gitCommit({ config: { '*.{js,md}': 'prettier --list-different' } })
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    const exists = await fs.exists(readmeFile)
+    expect(exists).toEqual(false)
+  })
+
+  it('should not resurrect removed files due to git bug when tasks fail', async () => {
+    const readmeFile = path.resolve(cwd, 'README.md')
+    await fs.remove(readmeFile) // Remove file from previous commit
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+    await expect(
+      runAll({ allowEmpty: true, cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    ).rejects.toThrowError()
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
   })

@@ -5,7 +5,7 @@ import path from 'path'
 import nanoid from 'nanoid'
 
 import execGitBase from '../lib/execGit'
-import GitWorkflow, { cleanUntrackedFiles } from '../lib/gitWorkflow'
+import GitWorkflow from '../lib/gitWorkflow'
 
 jest.unmock('execa')
 
@@ -63,16 +63,6 @@ describe('gitWorkflow', () => {
     if (!isAppveyor) {
       await removeTempDir(tmpDir)
     }
-  })
-
-  describe('cleanUntrackedFiles', () => {
-    it('should delete untracked, unstaged files', async () => {
-      const testFile = path.resolve(cwd, 'test.js')
-      await appendFile(testFile, 'test')
-      expect(await fs.exists(testFile)).toEqual(true)
-      await cleanUntrackedFiles(execGit)
-      expect(await fs.exists(testFile)).toEqual(false)
-    })
   })
 
   describe('hasPatch', () => {
