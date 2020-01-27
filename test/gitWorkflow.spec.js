@@ -5,7 +5,7 @@ import path from 'path'
 import nanoid from 'nanoid'
 
 import execGitBase from '../lib/execGit'
-import { cleanUntrackedFiles } from '../lib/gitWorkflow'
+import GitWorkflow, { cleanUntrackedFiles } from '../lib/gitWorkflow'
 
 jest.unmock('execa')
 
@@ -72,6 +72,33 @@ describe('gitWorkflow', () => {
       expect(await fs.exists(testFile)).toEqual(true)
       await cleanUntrackedFiles(execGit)
       expect(await fs.exists(testFile)).toEqual(false)
+    })
+  })
+
+  describe('hasPatch', () => {
+    it('should return false when patch file not found', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+      expect(await gitWorkflow.hasPatch('foo')).toEqual(false)
+    })
+  })
+
+  describe('dropBackup', () => {
+    it('should handle errors', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+      const ctx = {}
+      await expect(gitWorkflow.dropBackup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"lint-staged automatic backup is missing!"`
+      )
+      expect(ctx).toEqual({
+        gitError: true,
+        gitGetBackupStashError: true
+      })
     })
   })
 })
