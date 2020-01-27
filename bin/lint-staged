@@ -3,10 +3,9 @@
 'use strict'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-// but do this only in TTY mode
-if (process.stdout.isTTY) {
-  // istanbul ignore next
-  process.env.FORCE_COLOR = '1'
+const { supportsColor } = require('chalk')
+if (supportsColor) {
+  process.env.FORCE_COLOR = supportsColor.level.toString()
 }
 
 // Do not terminate main Listr process on SIGINT
