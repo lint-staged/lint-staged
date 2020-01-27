@@ -670,10 +670,11 @@ describe('runAll', () => {
       LOG Running tasks for *.js [completed]
       LOG Running tasks... [completed]
       LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
+      LOG Applying modifications... [failed]
+      LOG → lint-staged automatic backup is missing!
       LOG Cleaning up... [started]
-      LOG Cleaning up... [failed]
-      LOG → lint-staged automatic backup is missing!"
+      LOG Cleaning up... [skipped]
+      LOG → Skipped because of previous git error."
     `)
   })
 
