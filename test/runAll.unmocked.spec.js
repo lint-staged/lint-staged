@@ -555,8 +555,10 @@ describe('runAll', () => {
     await appendFile('test.js', testJsFilePretty)
     await execGit(['add', 'test.js'])
 
-    // Add another file, but keep it untracked
+    // Add untracked files
     await appendFile('test-untracked.js', testJsFilePretty)
+    await appendFile('.gitattributes', 'binary\n')
+    await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
     await gitCommit({ config: { '*.js': 'prettier --list-different' } })
@@ -566,6 +568,7 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
+    expect(Buffer.from(await readFile('binary'), 'binary').toString()).toEqual('Hello, World!')
   })
 
   it('should work when amending previous commit with unstaged changes', async () => {
@@ -611,12 +614,12 @@ describe('runAll', () => {
   })
 
   it('should handle binary files', async () => {
-    // mark test.js as binary file
-    await appendFile('.gitattributes', 'test.js binary\n')
+    // mark file as binary
+    await appendFile('.gitattributes', 'binary\n')
 
     // Stage pretty file
-    await appendFile('test.js', testJsFilePretty)
-    await execGit(['add', 'test.js'])
+    await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
+    await execGit(['add', 'binary'])
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
     await gitCommit({ config: { '*.js': 'prettier --list-different' } })
@@ -624,7 +627,7 @@ describe('runAll', () => {
     // Nothing is wrong, so a new commit is created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
-    expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(Buffer.from(await readFile('binary'), 'binary').toString()).toEqual('Hello, World!')
   })
 
   it('should run chunked tasks when necessary', async () => {
