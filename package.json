@@ -13,7 +13,7 @@
   "funding": {
     "url": "https://opencollective.com/lint-staged"
   },
-  "bin": "./bin/lint-staged",
+  "bin": "./bin/lint-staged.js",
   "main": "./lib/index.js",
   "files": [
     "bin",
@@ -30,7 +30,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./bin/lint-staged"
+      "pre-commit": "./bin/lint-staged.js"
     }
   },
   "dependencies": {

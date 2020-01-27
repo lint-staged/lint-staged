@@ -35,7 +35,7 @@ cmdline
     '-p, --concurrent <parallel tasks>',
     'the number of tasks to run concurrently, or false to run tasks serially',
     true
-    )
+  )
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
@@ -73,7 +73,7 @@ const options = {
   maxArgLength: getMaxArgLength() / 2,
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
-  shell: !!cmdline.shell,
+  shell: !!cmdline.shell
 }
 
 debug('Options parsed from command-line:', options)
