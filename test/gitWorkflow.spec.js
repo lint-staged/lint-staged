@@ -75,6 +75,16 @@ describe('gitWorkflow', () => {
     })
   })
 
+  describe('hasPatch', () => {
+    it('should return false when patch file not found', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+      expect(await gitWorkflow.hasPatch('foo')).toEqual(false)
+    })
+  })
+
   describe('dropBackup', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
