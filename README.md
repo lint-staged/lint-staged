@@ -166,7 +166,19 @@ Supported are any executables installed locally or globally via `npm` as well as
 
 Pass arguments to your commands separated by space as you would do in the shell. See [examples](#examples) below.
 
-Starting from [v2.0.0](https://github.com/okonet/lint-staged/releases/tag/2.0.0) sequences of commands are supported. Pass an array of commands instead of a single one and they will run sequentially. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences.
+## Running multiple commands in a sequence
+
+You can run multiple commands in a sequence on every glob. To do so, pass an array of commands instead of a single one. This is useful for running autoformatting tools like `eslint --fix` or `stylefmt` but can be used for any arbitrary sequences. 
+
+For example:
+
+```json
+{
+  "*.js": ["eslint", "prettier --write"]
+}
+```
+
+going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
 ## Using JS functions to customize tasks
 
@@ -332,23 +344,11 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 }
 ```
 
-### Automatically fix code style with `prettier` for javascript + flow, typescript, markdown or html
+### Automatically fix code style with `prettier` for javascript, typescript, markdown, HTML, or CSS
 
 ```json
 {
-  "*.{js,jsx}": "prettier --write"
-}
-```
-
-```json
-{
-  "*.{ts,tsx}": "prettier --write"
-}
-```
-
-```json
-{
-  "*.{md,html}": "prettier --write"
+  "*.{js,jsx,ts,tsx,md,html,css}": "prettier --write"
 }
 ```
 
@@ -365,7 +365,7 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 
 ```json
 {
-  "*.scss": "postcss --config path/to/your/config --replace", "stylelint"
+  "*.scss": ["postcss --config path/to/your/config --replace", "stylelint"]
 }
 ```
 
