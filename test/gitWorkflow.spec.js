@@ -91,4 +91,19 @@ describe('gitWorkflow', () => {
       })
     })
   })
+
+  describe('cleanUntrackedFiles', () => {
+    it('should remove untracked files', async () => {
+      const tempFile = path.resolve(cwd, 'tempFile')
+      await fs.writeFile(tempFile, 'Hello')
+
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+
+      await gitWorkflow.cleanUntrackedFiles()
+      await expect(fs.access(tempFile)).rejects.toThrow('ENOENT')
+    })
+  })
 })
