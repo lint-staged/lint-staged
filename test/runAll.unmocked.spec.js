@@ -609,7 +609,14 @@ describe('runAll', () => {
     await fs.remove(readmeFile) // Remove file from previous commit
     await appendFile('test.js', testJsFilePretty)
     await execGit(['add', 'test.js'])
-    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+
+    try {
+      await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    } catch (error) {
+      globalConsoleTemp.warn(error)
+      globalConsoleTemp.error(console.printHistory())
+    }
+
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
   })
