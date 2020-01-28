@@ -609,16 +609,38 @@ describe('runAll', () => {
     await fs.remove(readmeFile) // Remove file from previous commit
     await appendFile('test.js', testJsFilePretty)
     await execGit(['add', 'test.js'])
-
-    try {
-      await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
-    } catch (error) {
-      globalConsoleTemp.warn(error)
-      globalConsoleTemp.error(console.printHistory())
-    }
-
+    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
+  })
+
+  it('should not resurrect removed files in complex case', async () => {
+    // Add file to index, and remove it from disk
+    await appendFile('test.js', testJsFilePretty)
+    await execGit(['add', 'test.js'])
+    const testFile = path.resolve(cwd, 'test.js')
+    await fs.remove(testFile)
+
+    // Rename file in index, and remove it from disk
+    const readmeFile = path.resolve(cwd, 'README.md')
+    const readme = await readFile(readmeFile)
+    await fs.remove(readmeFile)
+    await execGit(['add', readmeFile])
+    const newReadmeFile = path.resolve(cwd, 'README_NEW.md')
+    await appendFile(newReadmeFile, readme)
+    await execGit(['add', newReadmeFile])
+    await fs.remove(newReadmeFile)
+
+    const status = await execGit(['status', '--porcelain'])
+    expect(status).toMatchInlineSnapshot(`
+      "RD README.md -> README_NEW.md
+      AD test.js"
+    `)
+
+    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    expect(await fs.exists(testFile)).toEqual(false)
+    expect(await fs.exists(newReadmeFile)).toEqual(false)
+    expect(await execGit(['status', '--porcelain'])).toEqual(status)
   })
 
   it('should not resurrect removed files due to git bug when tasks fail', async () => {
