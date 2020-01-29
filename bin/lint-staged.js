@@ -3,10 +3,9 @@
 'use strict'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-// but do this only in TTY mode
-if (process.stdout.isTTY) {
-  // istanbul ignore next
-  process.env.FORCE_COLOR = '1'
+const { supportsColor } = require('chalk')
+if (supportsColor) {
+  process.env.FORCE_COLOR = supportsColor.level.toString()
 }
 
 // Do not terminate main Listr process on SIGINT
@@ -36,7 +35,7 @@ cmdline
     '-p, --concurrent <parallel tasks>',
     'the number of tasks to run concurrently, or false to run tasks serially',
     true
-    )
+  )
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
@@ -74,7 +73,7 @@ const options = {
   maxArgLength: getMaxArgLength() / 2,
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
-  shell: !!cmdline.shell,
+  shell: !!cmdline.shell
 }
 
 debug('Options parsed from command-line:', options)
