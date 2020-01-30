@@ -777,6 +777,30 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: submoduleDir })).toMatch('test')
     expect(await readFile('test.js', submoduleDir)).toEqual(testJsFilePretty)
   })
+
+  it('should handle git worktrees', async () => {
+    // create a new branch and add it as worktree
+    const workTreeDir = path.resolve(cwd, 'worktree')
+    await execGit(['branch', 'test'])
+    await execGit(['worktree', 'add', workTreeDir, 'test'])
+
+    // Stage pretty file
+    await appendFile('test.js', testJsFilePretty, workTreeDir)
+    await execGit(['add', 'test.js'], { cwd: workTreeDir })
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await runAll({
+      config: { '*.js': 'prettier --list-different' },
+      cwd: workTreeDir,
+      quiet: true
+    })
+    await execGit(['commit', '-m test'], { cwd: workTreeDir })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'], { cwd: workTreeDir })).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: workTreeDir })).toMatch('test')
+    expect(await readFile('test.js', workTreeDir)).toEqual(testJsFilePretty)
+  })
 })
 
 describe('runAll', () => {
