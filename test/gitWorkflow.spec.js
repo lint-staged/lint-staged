@@ -5,7 +5,7 @@ import path from 'path'
 import nanoid from 'nanoid'
 
 import execGitBase from '../lib/execGit'
-import GitWorkflow, { cleanUntrackedFiles } from '../lib/gitWorkflow'
+import GitWorkflow from '../lib/gitWorkflow'
 
 jest.unmock('execa')
 
@@ -65,16 +65,6 @@ describe('gitWorkflow', () => {
     }
   })
 
-  describe('cleanUntrackedFiles', () => {
-    it('should delete untracked, unstaged files', async () => {
-      const testFile = path.resolve(cwd, 'test.js')
-      await appendFile(testFile, 'test')
-      expect(await fs.exists(testFile)).toEqual(true)
-      await cleanUntrackedFiles(execGit)
-      expect(await fs.exists(testFile)).toEqual(false)
-    })
-  })
-
   describe('hasPatch', () => {
     it('should return false when patch file not found', async () => {
       const gitWorkflow = new GitWorkflow({
@@ -99,6 +89,21 @@ describe('gitWorkflow', () => {
         gitError: true,
         gitGetBackupStashError: true
       })
+    })
+  })
+
+  describe('cleanUntrackedFiles', () => {
+    it('should remove untracked files', async () => {
+      const tempFile = path.resolve(cwd, 'tempFile')
+      await fs.writeFile(tempFile, 'Hello')
+
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+
+      await gitWorkflow.cleanUntrackedFiles()
+      await expect(fs.access(tempFile)).rejects.toThrow('ENOENT')
     })
   })
 })
