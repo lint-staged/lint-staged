@@ -481,7 +481,7 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 Starting with v5.0, `lint-staged` automatically resolves the git root **without any** additional configuration. You configure `lint-staged` as you normally would if your project root and git root were the same directory.
 
 If you wish to use `lint-staged` in a multi package monorepo, it is recommended to install [`husky`](https://github.com/typicode/husky) in the root package.json.
-[`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
+[`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages (e.g: `lerna run lint-staged --concurrency 1`, `--concurrency 1` is required).
 
 Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
 
