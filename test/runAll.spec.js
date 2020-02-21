@@ -5,7 +5,7 @@ import path from 'path'
 
 import resolveGitRepo from '../lib/resolveGitRepo'
 import getStagedFiles from '../lib/getStagedFiles'
-import runAll from '../lib/runAll'
+import runAll, { shouldSkip } from '../lib/runAll'
 
 jest.mock('../lib/resolveGitRepo')
 jest.mock('../lib/getStagedFiles')
@@ -98,5 +98,21 @@ describe('runAll', () => {
       console.log(err)
     }
     expect(console.printHistory()).toMatchSnapshot()
+  })
+})
+
+describe('shouldSkip', () => {
+  describe('shouldSkipRevert', () => {
+    it('should return error message when there is an unkown git error', () => {
+      const result = shouldSkip.shouldSkipRevert({ gitError: true })
+      expect(typeof result === 'string').toEqual(true)
+    })
+  })
+
+  describe('shouldSkipCleanup', () => {
+    it('should return error message when reverting to original state fails', () => {
+      const result = shouldSkip.shouldSkipCleanup({ gitRestoreOriginalStateError: true })
+      expect(typeof result === 'string').toEqual(true)
+    })
   })
 })
