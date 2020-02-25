@@ -49,13 +49,6 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
-  it('should throw when function task returns incorrect values', () => {
-    const invalidConfig = {
-      '*.js': filenames => filenames.map(file => [`eslint --fix ${file}`, `git add ${file}`])
-    }
-    expect(() => validateConfig(invalidConfig)).toThrowErrorMatchingSnapshot()
-  })
-
   it('should throw when detecting deprecated advanced configuration', () => {
     const advancedConfig = {
       chunkSize: 10,
