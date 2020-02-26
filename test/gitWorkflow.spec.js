@@ -65,16 +65,6 @@ describe('gitWorkflow', () => {
     }
   })
 
-  describe('hasPatch', () => {
-    it('should return false when patch file not found', async () => {
-      const gitWorkflow = new GitWorkflow({
-        gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git')
-      })
-      expect(await gitWorkflow.hasPatch('foo')).toEqual(false)
-    })
-  })
-
   describe('dropBackup', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
@@ -92,18 +82,22 @@ describe('gitWorkflow', () => {
     })
   })
 
-  describe('cleanUntrackedFiles', () => {
-    it('should remove untracked files', async () => {
-      const tempFile = path.resolve(cwd, 'tempFile')
-      await fs.writeFile(tempFile, 'Hello')
-
+  describe('hideUnstagedChanges', () => {
+    it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git')
       })
-
-      await gitWorkflow.cleanUntrackedFiles()
-      await expect(fs.access(tempFile)).rejects.toThrow('ENOENT')
+      const totallyRandom = `totally_random_file-${Date.now().toString()}`
+      gitWorkflow.partiallyStagedFiles = [totallyRandom]
+      const ctx = {}
+      await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"error: pathspec '${totallyRandom}' did not match any file(s) known to git"`
+      )
+      expect(ctx).toEqual({
+        gitError: true,
+        gitHideUnstagedChangesError: true
+      })
     })
   })
 })

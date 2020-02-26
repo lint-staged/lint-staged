@@ -2,8 +2,8 @@
 
 exports[`runAll should not skip tasks if there are files 1`] = `
 "
-LOG Preparing... [started]
-LOG Preparing... [completed]
+LOG Creating backup... [started]
+LOG Creating backup... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
@@ -12,8 +12,8 @@ LOG Running tasks for *.js [completed]
 LOG Running tasks... [completed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [completed]
-LOG Cleaning up... [started]
-LOG Cleaning up... [completed]"
+LOG Cleaning up backup... [started]
+LOG Cleaning up backup... [completed]"
 `;
 
 exports[`runAll should resolve the promise with no files 1`] = `
@@ -23,8 +23,8 @@ LOG No staged files found."
 
 exports[`runAll should skip applying unstaged modifications if there are errors during linting 1`] = `
 "
-LOG Preparing... [started]
-LOG Preparing... [completed]
+LOG Creating backup... [started]
+LOG Creating backup... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
@@ -36,10 +36,10 @@ LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks.
-LOG Reverting to original state... [started]
-LOG Reverting to original state... [completed]
-LOG Cleaning up... [started]
-LOG Cleaning up... [completed]
+LOG Reverting to original state because of errors... [started]
+LOG Reverting to original state because of errors... [completed]
+LOG Cleaning up backup... [started]
+LOG Cleaning up backup... [completed]
 LOG {
   name: 'ListrError',
   errors: [
@@ -54,8 +54,8 @@ LOG {
 
 exports[`runAll should skip tasks and restore state if terminated 1`] = `
 "
-LOG Preparing... [started]
-LOG Preparing... [completed]
+LOG Creating backup... [started]
+LOG Creating backup... [completed]
 LOG Running tasks... [started]
 LOG Running tasks for *.js [started]
 LOG echo \\"sample\\" [started]
@@ -67,10 +67,10 @@ LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks.
-LOG Reverting to original state... [started]
-LOG Reverting to original state... [completed]
-LOG Cleaning up... [started]
-LOG Cleaning up... [completed]
+LOG Reverting to original state because of errors... [started]
+LOG Reverting to original state because of errors... [completed]
+LOG Cleaning up backup... [started]
+LOG Cleaning up backup... [completed]
 LOG {
   name: 'ListrError',
   errors: [

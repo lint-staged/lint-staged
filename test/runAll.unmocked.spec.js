@@ -234,7 +234,26 @@ describe('runAll', () => {
     await appendFile('test.js', appended)
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
-    await gitCommit({ config: { '*.js': 'prettier --list-different' } })
+    await gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Creating backup... [started]
+      LOG Creating backup... [completed]
+      LOG Hiding unstaged changes to partially staged files... [started]
+      LOG Hiding unstaged changes to partially staged files... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG prettier --list-different [started]
+      LOG prettier --list-different [completed]
+      LOG Running tasks for *.js [completed]
+      LOG Running tasks... [completed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [completed]
+      LOG Restoring unstaged changes to partially staged files... [started]
+      LOG Restoring unstaged changes to partially staged files... [completed]
+      LOG Cleaning up backup... [started]
+      LOG Cleaning up backup... [completed]"
+    `)
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -291,11 +310,34 @@ describe('runAll', () => {
     const status = await execGit(['status'])
 
     // Run lint-staged with `prettier --list-different` to break the linter
-    try {
-      await gitCommit({ config: { '*.js': 'prettier --list-different' } })
-    } catch (error) {
-      expect(error.message).toMatchInlineSnapshot(`"Something went wrong"`)
-    }
+    await expect(
+      gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
+    ).rejects.toThrowError()
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Creating backup... [started]
+      LOG Creating backup... [completed]
+      LOG Hiding unstaged changes to partially staged files... [started]
+      LOG Hiding unstaged changes to partially staged files... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG prettier --list-different [started]
+      LOG prettier --list-different [failed]
+      LOG → 
+      LOG Running tasks for *.js [failed]
+      LOG → 
+      LOG Running tasks... [failed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [skipped]
+      LOG → Skipped because of errors from tasks.
+      LOG Restoring unstaged changes to partially staged files... [started]
+      LOG Restoring unstaged changes to partially staged files... [skipped]
+      LOG → Skipped because of errors from tasks.
+      LOG Reverting to original state because of errors... [started]
+      LOG Reverting to original state because of errors... [completed]
+      LOG Cleaning up backup... [started]
+      LOG Cleaning up backup... [completed]"
+    `)
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -519,11 +561,7 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
     // Merge second branch, causing merge conflict
-    try {
-      await execGit(['merge', 'branch-b'])
-    } catch (error) {
-      expect(error.message).toMatch('Merge conflict in test.js')
-    }
+    await expect(execGit(['merge', 'branch-b'])).rejects.toThrowError('Merge conflict in test.js')
 
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
       "<<<<<<< HEAD
@@ -706,8 +744,8 @@ describe('runAll', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
+      LOG Creating backup... [started]
+      LOG Creating backup... [completed]
       LOG Running tasks... [started]
       LOG Running tasks for *.js [started]
       LOG [Function] git ... [started]
@@ -715,11 +753,10 @@ describe('runAll', () => {
       LOG Running tasks for *.js [completed]
       LOG Running tasks... [completed]
       LOG Applying modifications... [started]
-      LOG Applying modifications... [failed]
-      LOG → lint-staged automatic backup is missing!
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [skipped]
-      LOG → Skipped because of previous git error."
+      LOG Applying modifications... [completed]
+      LOG Cleaning up backup... [started]
+      LOG Cleaning up backup... [failed]
+      LOG → lint-staged automatic backup is missing!"
     `)
   })
 
