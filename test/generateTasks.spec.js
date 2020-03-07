@@ -229,15 +229,15 @@ describe('generateTasks', () => {
       pattern: '*.js',
       commands: 'root-js',
       fileList: [
-        `\\[dir\\]/test.js`,
+        `[[]dir[]]/test.js`,
         `test\\*string.js`,
         `test\\$string.js`,
         `space\\ name.js`,
-        `\\'single\\-quotes\\'.js`,
-        `\\"double\\-quotes\\".js`,
+        `\\'single-quotes\\'.js`,
+        `\\"double-quotes\\".js`,
         '\\`backticks\\`.js',
         `\\(brackets1\\).js`,
-        `\\[brackets2\\].js`,
+        `[[]brackets2[]].js`,
         `\\{brackets3\\}.js`
       ]
     })
