@@ -381,7 +381,7 @@ describe('runAll', () => {
     ).rejects.toThrowError()
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR
+      ERROR 
         × lint-staged failed due to a git error.
       ERROR   Any lost modifications can be restored from a git stash:
 
@@ -746,7 +746,7 @@ describe('runAll', () => {
       "
       WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
-      WARN
+      WARN 
         ‼ lint-staged prevented an empty git commit.
           Use the --allow-empty option to continue, or check your task configuration
       "
@@ -879,9 +879,9 @@ describe('runAll', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR
+      ERROR 
         × lint-staged failed due to a git error.
-      ERROR
+      ERROR 
           The initial commit is needed for lint-staged to work.
           Please use the --no-verify flag to skip running lint-staged."
     `)
