@@ -24,13 +24,12 @@
     "lint:base": "eslint --rule \"prettier/prettier: 2\"",
     "lint": "npm run lint:base -- .",
     "lint:fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
-    "test": "jest --coverage",
+    "test": "jest",
     "test:watch": "jest --watch"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./bin/lint-staged.js"
+      "pre-commit": "node ./bin/lint-staged.js"
     }
   },
   "dependencies": {

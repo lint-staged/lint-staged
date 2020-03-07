@@ -381,7 +381,7 @@ describe('runAll', () => {
     ).rejects.toThrowError()
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR 
+      ERROR
         × lint-staged failed due to a git error.
       ERROR   Any lost modifications can be restored from a git stash:
 
@@ -746,7 +746,7 @@ describe('runAll', () => {
       "
       WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
-      WARN 
+      WARN
         ‼ lint-staged prevented an empty git commit.
           Use the --allow-empty option to continue, or check your task configuration
       "
@@ -843,6 +843,24 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: workTreeDir })).toMatch('test')
     expect(await readFile('test.js', workTreeDir)).toEqual(testJsFilePretty)
   })
+
+  it('should handle brackets in file path', async () => {
+    // Stage pretty file
+    await fs.ensureDir(path.join(cwd, '[dir]'))
+    await appendFile('[dir]/test.js', testJsFilePretty)
+    await execGit(['add', '[dir]/test.js'])
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await gitCommit({ escape: true, config: { '*.js': 'prettier --list-different' } })
+
+    // Nothing is wrong, so a new commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
+    " test
+    "
+    `)
+    expect(await readFile('[dir]/test.js')).toEqual(testJsFilePretty)
+  })
 })
 
 describe('runAll', () => {
@@ -861,9 +879,9 @@ describe('runAll', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR 
+      ERROR
         × lint-staged failed due to a git error.
-      ERROR 
+      ERROR
           The initial commit is needed for lint-staged to work.
           Please use the --no-verify flag to skip running lint-staged."
     `)
