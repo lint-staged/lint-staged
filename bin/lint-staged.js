@@ -31,6 +31,7 @@ cmdline
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file')
   .option('-d, --debug', 'print additional debug information', false)
+  .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option(
     '-p, --concurrent <parallel tasks>',
     'the number of tasks to run concurrently, or false to run tasks serially',
@@ -71,6 +72,7 @@ const options = {
   configPath: cmdline.config,
   debug: !!cmdline.debug,
   maxArgLength: getMaxArgLength() / 2,
+  stash: !!cmdline.stash, // commander inverts `no-<x>` flags to `!x`
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell

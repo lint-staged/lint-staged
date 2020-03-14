@@ -65,14 +65,14 @@ describe('gitWorkflow', () => {
     }
   })
 
-  describe('dropBackup', () => {
+  describe('cleanup', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git')
       })
       const ctx = {}
-      await expect(gitWorkflow.dropBackup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
+      await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
         `"lint-staged automatic backup is missing!"`
       )
       expect(ctx).toEqual({

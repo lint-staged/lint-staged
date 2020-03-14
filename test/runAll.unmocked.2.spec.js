@@ -106,8 +106,8 @@ describe('runAll', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Creating backup... [started]
-      LOG Creating backup... [failed]
+      LOG Preparing... [started]
+      LOG Preparing... [failed]
       LOG → Merge state could not be restored due to an error!
       LOG Running tasks... [started]
       LOG Running tasks... [skipped]
@@ -115,8 +115,8 @@ describe('runAll', () => {
       LOG Applying modifications... [started]
       LOG Applying modifications... [skipped]
       LOG → Skipped because of previous git error.
-      LOG Cleaning up backup... [started]
-      LOG Cleaning up backup... [skipped]
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [skipped]
       LOG → Skipped because of previous git error.
       ERROR 
         × lint-staged failed due to a git error.
