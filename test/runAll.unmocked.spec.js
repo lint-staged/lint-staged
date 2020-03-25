@@ -115,8 +115,7 @@ describe('runAll', () => {
   })
 
   it('should exit early with no staged files', async () => {
-    const status = await runAll({ config: { '*.js': 'echo success' }, cwd })
-    expect(status).toEqual('No tasks to run.')
+    expect(() => runAll({ config: { '*.js': 'echo success' }, cwd })).resolves
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
