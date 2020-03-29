@@ -843,6 +843,27 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: workTreeDir })).toMatch('test')
     expect(await readFile('test.js', workTreeDir)).toEqual(testJsFilePretty)
   })
+  ;['on', 'off'].forEach(quotePath => {
+    it(`should handle files with non-ascii characters when core.quotepath is ${quotePath}`, async () => {
+      await execGit(['config', 'core.quotepath', quotePath])
+
+      // Stage multiple ugly files
+      await appendFile('привет.js', testJsFileUgly)
+      await execGit(['add', 'привет.js'])
+
+      await appendFile('👋.js', testJsFileUgly)
+      await execGit(['add', '👋.js'])
+
+      // Run lint-staged with `prettier --write` and commit pretty file
+      await gitCommit(fixJsConfig)
+
+      // Nothing is wrong, so a new commit is created and file is pretty
+      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+      expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
+      expect(await readFile('привет.js')).toEqual(testJsFilePretty)
+      expect(await readFile('👋.js')).toEqual(testJsFilePretty)
+    })
+  })
 })
 
 describe('runAll', () => {
