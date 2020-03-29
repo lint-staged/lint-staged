@@ -843,8 +843,10 @@ describe('runAll', () => {
     expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: workTreeDir })).toMatch('test')
     expect(await readFile('test.js', workTreeDir)).toEqual(testJsFilePretty)
   })
-  ;['on', 'off'].forEach(quotePath => {
-    it(`should handle files with non-ascii characters when core.quotepath is ${quotePath}`, async () => {
+
+  test.each([['on'], ['off']])(
+    'should handle files with non-ascii characters when core.quotepath is %s',
+    async quotePath => {
       await execGit(['config', 'core.quotepath', quotePath])
 
       // Stage multiple ugly files
@@ -866,8 +868,8 @@ describe('runAll', () => {
       expect(await readFile('привет.js')).toEqual(testJsFilePretty)
       expect(await readFile('你好.js')).toEqual(testJsFilePretty)
       expect(await readFile('👋.js')).toEqual(testJsFilePretty)
-    })
-  })
+    }
+  )
 })
 
 describe('runAll', () => {
