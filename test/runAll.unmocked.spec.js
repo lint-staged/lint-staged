@@ -857,10 +857,10 @@ describe('runAll', () => {
       await appendFile('👋.js', testJsFileUgly)
       await execGit(['add', '👋.js'])
 
-      // Run lint-staged with `prettier --write` and commit pretty file
+      // Run lint-staged with `prettier --write` and commit pretty files
       await gitCommit(fixJsConfig)
 
-      // Nothing is wrong, so a new commit is created and file is pretty
+      // Nothing is wrong, so a new commit is created and files are pretty
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
       expect(await readFile('привет.js')).toEqual(testJsFilePretty)
