@@ -851,6 +851,9 @@ describe('runAll', () => {
       await appendFile('привет.js', testJsFileUgly)
       await execGit(['add', 'привет.js'])
 
+      await appendFile('你好.js', testJsFileUgly)
+      await execGit(['add', '你好.js'])
+
       await appendFile('👋.js', testJsFileUgly)
       await execGit(['add', '👋.js'])
 
@@ -861,6 +864,7 @@ describe('runAll', () => {
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
       expect(await readFile('привет.js')).toEqual(testJsFilePretty)
+      expect(await readFile('你好.js')).toEqual(testJsFilePretty)
       expect(await readFile('👋.js')).toEqual(testJsFilePretty)
     })
   })
