@@ -18,7 +18,7 @@ LOG Cleaning up... [completed]"
 
 exports[`runAll should resolve the promise with no files 1`] = `
 "
-LOG No staged files found."
+LOG i No staged files found."
 `;
 
 exports[`runAll should skip applying unstaged modifications if there are errors during linting 1`] = `
@@ -36,8 +36,8 @@ LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks.
-LOG Reverting to original state... [started]
-LOG Reverting to original state... [completed]
+LOG Reverting to original state because of errors... [started]
+LOG Reverting to original state because of errors... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]
 LOG {
@@ -67,8 +67,8 @@ LOG Running tasks... [failed]
 LOG Applying modifications... [started]
 LOG Applying modifications... [skipped]
 LOG → Skipped because of errors from tasks.
-LOG Reverting to original state... [started]
-LOG Reverting to original state... [completed]
+LOG Reverting to original state because of errors... [started]
+LOG Reverting to original state because of errors... [completed]
 LOG Cleaning up... [started]
 LOG Cleaning up... [completed]
 LOG {
@@ -85,5 +85,5 @@ LOG {
 
 exports[`runAll should use an injected logger 1`] = `
 "
-LOG No staged files found."
+LOG i No staged files found."
 `;
