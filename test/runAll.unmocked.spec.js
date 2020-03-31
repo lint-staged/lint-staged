@@ -1038,6 +1038,14 @@ describe('runAll', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty) // file was still fixed
     expect(await readFile('test2.js')).toEqual(testJsFileUnfixable)
   })
+
+  it('should handle files that begin with dash', async () => {
+    await appendFile('--looks-like-flag.js', testJsFileUgly)
+    await execGit(['add', '--', '--looks-like-flag.js'])
+    await expect(gitCommit(fixJsConfig)).resolves.toEqual(undefined)
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await readFile('--looks-like-flag.js')).toEqual(testJsFilePretty)
+  })
 })
 
 describe('runAll', () => {
