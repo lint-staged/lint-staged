@@ -70,9 +70,21 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
-      # Upload coverage artifact
+      # Download coverage artifact
       - uses: actions/download-artifact@v1
         with:
           name: coverage
       # Run codecov.io
       - uses: codecov/codecov-action@v1
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      # Release using semantic-release.
+      # While this runs on all branches, it will only release latest from master
+      - uses: codfish/semantic-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
