@@ -21,9 +21,13 @@ jobs:
     strategy:
       matrix:
         # Test with Node.js v10 (LTS), v12 (LTS), and v13 (latest)
-        node: [10, 12, 13]
+        node: 
+          - 10
+          - 12
+          - 13
         # Test with Ubuntu and macOS
-        os: [ubuntu-latest, macOS-latest]
+        os: 
+          - ubuntu-latest
     name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
