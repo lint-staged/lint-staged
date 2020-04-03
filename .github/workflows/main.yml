@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   push:
@@ -47,14 +47,21 @@ jobs:
           key: yarn-${{ runner.os }}-${{ runner.node }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             yarn-${{ runner.os }}-${{ runner.node }}-
+      # Print current Node.js version
       - run: node --version
+      # Print current Yarn version
       - run: yarn --version
+      # Print current Git version
       - run: git --version
+      # Install node_modules
       - run: yarn
+      # Run tests
       - run: yarn test
+      # Upload coverage artifact from a single matrix entry
       - uses: actions/upload-artifact@v1
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '13'
         with:
-          name: coverage-${{ runner.os }}-${{ runner.node }}
+          name: coverage
           path: coverage
 
   codecov:
@@ -62,8 +69,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - uses: actions/checkout@v2
+      # Upload coverage artifact
       - uses: actions/download-artifact@v1
         with:
-          name: coverage-${{ runner.os }}-${{ runner.node }}
-      - uses: actions/checkout@v2
+          name: coverage
+      # Run codecov.io
       - uses: codecov/codecov-action@v1
