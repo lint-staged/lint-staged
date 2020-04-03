@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  push:
+    # Run on pushes to specific branches
+    branches:
+      - master
+      - next
+      - beta
+      - alpha
+    # Do not run on tags
+    tags-ignore:
+      - "*"
+  pull_request:
+    # Run on to branches with an open PR
+    branches:
+      - "*"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        # Test with Node.js v10 (LTS), v12 (LTS), and v13 (latest)
+        node: [10, 12, 13]
+        # Test with Ubuntu and macOS
+        os: [ubuntu-latest, macOS-latest]
+    name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      # Get yarn's cache dir path
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # Cache the above yarn cache dir
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ runner.node }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-${{ runner.node }}-
+      - run: node --version
+      - run: yarn --version
+      - run: git --version
+      - run: yarn
+      - run: yarn test
