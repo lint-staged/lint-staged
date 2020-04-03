@@ -65,7 +65,7 @@ jobs:
           path: coverage
 
   codecov:
-    name: codecov.io
+    name: Codecov
     runs-on: ubuntu-latest
     needs: test
     steps:
