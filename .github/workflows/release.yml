@@ -1,6 +1,10 @@
 name: Release
 
-on: [push]
+on:
+  push:
+    # Run on pushes only to master
+    branches:
+      - master
 
 jobs:
   release:
@@ -14,7 +18,7 @@ jobs:
         with:
           node-version: 12
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
       - name: Release
         uses: codfish/semantic-release-action@v1
         env:
