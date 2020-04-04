@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    # Run on pushes to specific branches
+    branches:
+      - master
+      - next
+      - beta
+      - alpha
+    # Do not run on tags
+    tags-ignore:
+      - "*"
+  pull_request:
+    # Run on to branches with an open PR
+    branches:
+      - "*"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        # Test with Node.js v10 (LTS), v12 (LTS), and v13 (latest)
+        node: 
+          - 10
+          - 12
+          - 13
+        # Test with Ubuntu and macOS
+        os: 
+          - ubuntu-latest
+    name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      # Get yarn's cache dir path
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # Cache the above yarn cache dir
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ runner.node }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-${{ runner.node }}-
+      # Print current Node.js version
+      - run: node --version
+      # Print current Yarn version
+      - run: yarn --version
+      # Print current Git version
+      - run: git --version
+      # Install node_modules
+      - run: yarn
+      # Run tests
+      - run: yarn test
+      # Upload coverage artifact from a single matrix entry
+      - uses: actions/upload-artifact@v1
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '13'
+        with:
+          name: coverage
+          path: coverage
+
+  codecov:
+    name: Codecov
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      # Download coverage artifact
+      - uses: actions/download-artifact@v1
+        with:
+          name: coverage
+      # Run codecov.io
+      - uses: codecov/codecov-action@v1
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      # Release using semantic-release.
+      # While this runs on all branches, it will only release latest from master
+      - uses: codfish/semantic-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
