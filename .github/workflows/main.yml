@@ -81,11 +81,13 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: test
+    # Trigger release for only pushes to branches defined above
+    if: github.event == 'push'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '13'
       # Release using semantic-release.
       # While this runs on all branches, it will only release latest from master
       - uses: codfish/semantic-release-action@v1
