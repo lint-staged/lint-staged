@@ -82,6 +82,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
       # Release using semantic-release.
       # While this runs on all branches, it will only release latest from master
       - uses: codfish/semantic-release-action@v1
