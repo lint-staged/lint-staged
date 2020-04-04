@@ -5,7 +5,7 @@ jest.mock('../lib/execGit')
 
 describe('getStagedFiles', () => {
   it('should return array of file names', async () => {
-    execGit.mockImplementationOnce(async () => 'foo.js\nbar.js')
+    execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles()
     expect(staged).toEqual(['foo.js', 'bar.js'])
   })

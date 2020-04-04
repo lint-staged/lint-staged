@@ -33,8 +33,7 @@ describe('runAll', () => {
   })
 
   it('should resolve the promise with no tasks', async () => {
-    const res = await runAll({ config: {} })
-    expect(res).toEqual('No tasks to run.')
+    await expect(runAll({ config: {} })).resolves
   })
 
   it('should resolve the promise with no files', async () => {
