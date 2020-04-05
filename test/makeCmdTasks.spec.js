@@ -61,7 +61,7 @@ describe('makeCmdTasks', () => {
   it('should work with function task returning a string', async () => {
     const res = await makeCmdTasks({ commands: () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('[Function] test')
   })
 
   it('should work with function task returning array of string', async () => {
@@ -71,8 +71,8 @@ describe('makeCmdTasks', () => {
       files: ['test.js']
     })
     expect(res.length).toBe(2)
-    expect(res[0].title).toEqual('[Function] test ...')
-    expect(res[1].title).toEqual('[Function] test2 ...')
+    expect(res[0].title).toEqual('[Function] test')
+    expect(res[1].title).toEqual('[Function] test2')
   })
 
   it('should work with function task accepting arguments', async () => {
@@ -82,8 +82,35 @@ describe('makeCmdTasks', () => {
       files: ['test.js', 'test2.js']
     })
     expect(res.length).toBe(2)
-    expect(res[0].title).toEqual('[Function] test ...')
-    expect(res[1].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('[Function] test')
+    expect(res[1].title).toEqual('[Function] test')
+  })
+
+  it('should strip arguments regardless of order', async () => {
+    const res = await makeCmdTasks({
+      commands: filenames => `test ${filenames.reverse().join(' ')}`,
+      gitDir,
+      files: ['test.js', 'test2.js']
+    })
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('[Function] test')
+  })
+
+  it('should strip package runner commands', async () => {
+    const res = await makeCmdTasks({
+      commands: [
+        filenames => `yarn test -o --watch ${filenames[0]}`,
+        filenames => `npx --no-install test ${filenames[0]}`,
+        filenames => `npm --version ${filenames[0]}`
+      ],
+      gitDir,
+      files: ['test.js']
+    })
+    const [cmd1, cmd2, cmd3] = res
+
+    expect(cmd1.title).toEqual('[Function] test -o --watch')
+    expect(cmd2.title).toEqual('[Function] test')
+    expect(cmd3.title).toEqual('[Function] npm --version')
   })
 
   it('should work with array of mixed string and function tasks', async () => {
@@ -93,17 +120,17 @@ describe('makeCmdTasks', () => {
       files: ['test.js', 'test2.js', 'test3.js']
     })
     expect(res.length).toBe(5)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('[Function] test')
     expect(res[1].title).toEqual('test2')
-    expect(res[2].title).toEqual('[Function] test ...')
-    expect(res[3].title).toEqual('[Function] test ...')
-    expect(res[4].title).toEqual('[Function] test ...')
+    expect(res[2].title).toEqual('[Function] test')
+    expect(res[3].title).toEqual('[Function] test')
+    expect(res[4].title).toEqual('[Function] test')
   })
 
   it('should work with async function tasks', async () => {
     const res = await makeCmdTasks({ commands: async () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('[Function] test')
   })
 
   it("should throw when function task doesn't return string | string[]", async () => {
