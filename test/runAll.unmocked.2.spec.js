@@ -124,7 +124,7 @@ describe('runAll', () => {
 
           > git stash list
           stash@{0}: On master: automatic lint-staged backup
-          > git stash pop stash@{0}
+          > git stash apply --index stash@{0}
       "
     `)
   })
