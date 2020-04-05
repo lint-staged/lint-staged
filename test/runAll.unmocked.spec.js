@@ -428,7 +428,7 @@ describe('runAll', () => {
 
           > git stash list
           stash@{0}: On master: automatic lint-staged backup
-          > git stash pop stash@{0}
+          > git stash apply --index stash@{0}
       "
     `)
 
@@ -604,6 +604,29 @@ describe('runAll', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
+    expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
+    expect(Buffer.from(await readFile('binary'), 'binary').toString()).toEqual('Hello, World!')
+  })
+
+  it('should keep untracked files when taks fails', async () => {
+    // Stage unfixable file
+    await appendFile('test.js', testJsFileUnfixable)
+    await execGit(['add', 'test.js'])
+
+    // Add untracked files
+    await appendFile('test-untracked.js', testJsFilePretty)
+    await appendFile('.gitattributes', 'binary\n')
+    await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
+
+    // Run lint-staged with `prettier --list-different` and commit pretty file
+    await expect(
+      gitCommit({ config: { '*.js': 'prettier --list-different' } })
+    ).rejects.toThrowError()
+
+    // Something was wrong so the repo is returned to original state
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
+    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
+    expect(await readFile('test.js')).toEqual(testJsFileUnfixable)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
     expect(Buffer.from(await readFile('binary'), 'binary').toString()).toEqual('Hello, World!')
   })
