@@ -34,29 +34,50 @@ describe('runAll', () => {
 
   it('should resolve the promise with no tasks', async () => {
     await expect(runAll({ config: {} })).resolves
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should resolve the promise with no files', async () => {
     await runAll({ config: { '*.js': ['echo "sample"'] } })
-    expect(console.printHistory()).toMatchSnapshot()
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG i No staged files found."
+    `)
   })
 
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
-    expect(logger.printHistory()).toMatchSnapshot()
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG i No staged files found."
+    `)
   })
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     await runAll({ config: { '*.js': ['echo "sample"'] } })
-    expect(console.printHistory()).toMatchSnapshot()
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG echo \\"sample\\" [started]
+      LOG echo \\"sample\\" [completed]
+      LOG Running tasks for *.js [completed]
+      LOG Running tasks... [completed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [completed]
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [completed]"
+    `)
   })
 
   it('should skip applying unstaged modifications if there are errors during linting', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
       Promise.resolve({
@@ -68,12 +89,30 @@ describe('runAll', () => {
       })
     )
 
-    try {
-      await runAll({ config: { '*.js': ['echo "sample"'] } })
-    } catch (err) {
-      console.log(err)
-    }
-    expect(console.printHistory()).toMatchSnapshot()
+    await expect(
+      runAll({ config: { '*.js': ['echo "sample"'] } })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG echo \\"sample\\" [started]
+      LOG echo \\"sample\\" [failed]
+      LOG → 
+      LOG Running tasks for *.js [failed]
+      LOG → 
+      LOG Running tasks... [failed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [skipped]
+      LOG → Skipped because of errors from tasks.
+      LOG Reverting to original state because of errors... [started]
+      LOG Reverting to original state because of errors... [completed]
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [completed]"
+    `)
   })
 
   it('should skip tasks and restore state if terminated', async () => {
@@ -96,7 +135,37 @@ describe('runAll', () => {
     } catch (err) {
       console.log(err)
     }
-    expect(console.printHistory()).toMatchSnapshot()
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG echo \\"sample\\" [started]
+      LOG echo \\"sample\\" [failed]
+      LOG → 
+      LOG Running tasks for *.js [failed]
+      LOG → 
+      LOG Running tasks... [failed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [skipped]
+      LOG → Skipped because of errors from tasks.
+      LOG Reverting to original state because of errors... [started]
+      LOG Reverting to original state because of errors... [completed]
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [completed]
+      LOG {
+        name: 'ListrError',
+        errors: [
+          {
+            privateMsg: '\\\\n\\\\n\\\\n‼ echo was terminated with SIGINT',
+            context: {taskError: true}
+          }
+        ],
+        context: {taskError: true}
+      }"
+    `)
   })
 })
 
