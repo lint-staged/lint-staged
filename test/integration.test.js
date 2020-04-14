@@ -33,9 +33,11 @@ const fixJsConfig = { config: { '*.js': 'prettier --write' } }
 let tmpDir
 let cwd
 
-// Get file content
-const readFile = async (filename, dir = cwd) =>
-  fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
+// Get file content, coercing Windows `\r\n` newlines to `\n`
+const readFile = async (filename, dir = cwd) => {
+  const file = await fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
+  return file.replace(/(\r\n|\r|\n)/gm, '\n')
+}
 
 // Append to file, creating if it doesn't exist
 const appendFile = async (filename, content, dir = cwd) =>
