@@ -17,9 +17,9 @@ resolveGitRepo.mockImplementation(async () => {
 })
 getStagedFiles.mockImplementation(async () => [])
 
-const globalConsoleTemp = console
-
 describe('runAll', () => {
+  const globalConsoleTemp = console
+
   beforeAll(() => {
     console = makeConsoleMock()
   })
@@ -33,11 +33,12 @@ describe('runAll', () => {
   })
 
   it('should resolve the promise with no tasks', async () => {
-    await expect(runAll({ config: {} })).resolves
-    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
+    expect.assertions(1)
+    await expect(runAll({ config: {} })).resolves.toEqual(undefined)
   })
 
   it('should resolve the promise with no files', async () => {
+    expect.assertions(1)
     await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
