@@ -5,10 +5,10 @@ import os from 'os'
 import path from 'path'
 import nanoid from 'nanoid'
 
+jest.unmock('execa')
+
 import execGitBase from '../lib/execGit'
 import runAll from '../lib/runAll'
-
-jest.unmock('execa')
 
 jest.setTimeout(20000)
 
@@ -70,8 +70,8 @@ const execGit = async (args, options = {}) => execGitBase(args, { cwd, ...option
 
 // Execute runAll before git commit to emulate lint-staged
 const gitCommit = async (options, args = ['-m test']) => {
-  await runAll({ quiet: true, ...options, cwd })
-  await execGit(['commit', ...args])
+  await runAll({ quiet: true, cwd, ...options })
+  await execGit(['commit', ...args], { cwd, ...options })
 }
 
 describe('runAll', () => {
@@ -945,6 +945,7 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
+
       LOG Preparing... [started]
       LOG Preparing... [completed]
       LOG Running tasks... [started]
@@ -986,6 +987,7 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
+
       LOG Preparing... [started]
       LOG Preparing... [completed]
       LOG Hiding unstaged changes to partially staged files... [started]
@@ -1041,6 +1043,7 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
+
       LOG Preparing... [started]
       LOG Preparing... [completed]
       LOG Running tasks... [started]
@@ -1072,26 +1075,49 @@ describe('runAll', () => {
 })
 
 describe('runAll', () => {
-  it('Should throw when run on an empty git repo without an initial commit', async () => {
+  it('Should skip backup when run on an empty git repo without an initial commit', async () => {
+    const globalConsoleTemp = console
+    console = makeConsoleMock()
     const tmpDir = await createTempDir()
     const cwd = normalize(tmpDir)
-    const logger = makeConsoleMock()
 
     await execGit('init', { cwd })
     await execGit(['config', 'user.name', '"test"'], { cwd })
     await execGit(['config', 'user.email', '"test@test.com"'], { cwd })
     await appendFile('test.js', testJsFilePretty, cwd)
     await execGit(['add', 'test.js'], { cwd })
-    await expect(
-      runAll({ config: { '*.js': 'prettier --list-different' }, cwd, quiet: true }, logger)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
+
+    await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"fatal: your current branch 'master' does not have any commits yet"`
+    )
+
+    await gitCommit({
+      config: { '*.js': 'prettier --list-different' },
+      cwd,
+      debut: true,
+      quiet: false
+    })
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR 
-        × lint-staged failed due to a git error.
-      ERROR 
-          The initial commit is needed for lint-staged to work.
-          Please use the --no-verify flag to skip running lint-staged."
+      WARN ‼ Skipping backup because there’s no initial commit yet.
+
+      LOG Preparing... [started]
+      LOG Preparing... [completed]
+      LOG Running tasks... [started]
+      LOG Running tasks for *.js [started]
+      LOG prettier --list-different [started]
+      LOG prettier --list-different [completed]
+      LOG Running tasks for *.js [completed]
+      LOG Running tasks... [completed]
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [completed]"
     `)
+
+    // Nothing is wrong, so the initial commit is created
+    expect(await execGit(['rev-list', '--count', 'HEAD'], { cwd })).toEqual('1')
+    expect(await execGit(['log', '-1', '--pretty=%B'], { cwd })).toMatch('test')
+    expect(await readFile('test.js', cwd)).toEqual(testJsFilePretty)
+    console = globalConsoleTemp
   })
 })
