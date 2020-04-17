@@ -217,7 +217,7 @@ module.exports = {
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
+  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.map(filename => `'${filename}'`).join(' ')}`)
 }
 ```
 
