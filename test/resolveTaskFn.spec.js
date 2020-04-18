@@ -19,6 +19,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      all: true,
       preferLocal: true,
       reject: false,
       shell: false
@@ -36,6 +37,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      all: true,
       preferLocal: true,
       reject: false,
       shell: false
@@ -54,6 +56,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      all: true,
       preferLocal: true,
       reject: false,
       shell: true
@@ -71,6 +74,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      all: true,
       preferLocal: true,
       reject: false,
       shell: true
@@ -88,6 +92,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
+      all: true,
       cwd: '../',
       preferLocal: true,
       reject: false,
@@ -102,6 +107,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('jest', ['test.js'], {
+      all: true,
       preferLocal: true,
       reject: false,
       shell: false
@@ -119,6 +125,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
+      all: true,
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -129,9 +136,8 @@ describe('resolveTaskFn', () => {
   it('should throw error for failed linters', async () => {
     expect.assertions(1)
     execa.mockResolvedValueOnce({
-      stdout: 'Mock error',
-      stderr: '',
-      code: 0,
+      all: 'Mock error',
+      code: 1,
       failed: true,
       cmd: 'mock cmd'
     })
@@ -143,8 +149,7 @@ describe('resolveTaskFn', () => {
       expect(err.privateMsg).toMatchInlineSnapshot(`
         "
         × mock-fail-linter found some errors. Please fix them and try committing again.
-        Mock error
-        "
+        Mock error"
       `)
     }
   })
@@ -152,9 +157,8 @@ describe('resolveTaskFn', () => {
   it('should throw error for killed processes', async () => {
     expect.assertions(1)
     execa.mockResolvedValueOnce({
-      stdout: 'Mock error',
-      stderr: '',
-      code: 0,
+      all: 'Mock error',
+      code: 1,
       failed: false,
       killed: false,
       signal: 'SIGINT',
@@ -175,8 +179,7 @@ describe('resolveTaskFn', () => {
   it('should throw error for not-found tasks', async () => {
     expect.assertions(1)
     execa.mockResolvedValueOnce({
-      stdout: '',
-      stderr: '',
+      all: '',
       code: 'ENOENT',
       failed: true,
       cmd: 'mock cmd'
@@ -202,9 +205,8 @@ describe('resolveTaskFn', () => {
 
   it('should set taskError on context to true on error', async () => {
     execa.mockResolvedValueOnce({
-      stdout: 'Mock error',
-      stderr: '',
-      code: 0,
+      all: 'Mock error',
+      code: 1,
       failed: true,
       cmd: 'mock cmd'
     })
