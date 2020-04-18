@@ -141,12 +141,11 @@ describe('resolveTaskFn', () => {
       await taskFn()
     } catch (err) {
       expect(err.privateMsg).toMatchInlineSnapshot(`
-                "
-
-
-                × mock-fail-linter found some errors. Please fix them and try committing again.
-                Mock error"
-            `)
+        "
+        × mock-fail-linter found some errors. Please fix them and try committing again.
+        Mock error
+        "
+      `)
     }
   })
 
@@ -167,11 +166,29 @@ describe('resolveTaskFn', () => {
       await taskFn()
     } catch (err) {
       expect(err.privateMsg).toMatchInlineSnapshot(`
-                "
+        "
+        ‼ mock-killed-linter was terminated with SIGINT"
+      `)
+    }
+  })
 
-
-                ‼ mock-killed-linter was terminated with SIGINT"
-            `)
+  it('should throw error for not-found tasks', async () => {
+    expect.assertions(1)
+    execa.mockResolvedValueOnce({
+      stdout: '',
+      stderr: '',
+      code: 'ENOENT',
+      failed: true,
+      cmd: 'mock cmd'
+    })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-not-found-linter' })
+    try {
+      await taskFn()
+    } catch (err) {
+      expect(err.privateMsg).toMatchInlineSnapshot(`
+        "
+        × mock-not-found-linter not found (ENOENT). Please check your configuration."
+      `)
     }
   })
 

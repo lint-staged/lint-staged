@@ -203,7 +203,7 @@ describe('runAll', () => {
         name: 'ListrError',
         errors: [
           {
-            privateMsg: '\\\\n\\\\n\\\\n‼ echo was terminated with SIGINT',
+            privateMsg: '\\\\n‼ echo was terminated with SIGINT',
             context: {taskError: true}
           }
         ],
