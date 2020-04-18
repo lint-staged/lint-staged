@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = wallaby => ({
+module.exports = (wallaby) => ({
   files: [
     { pattern: 'test/__fixtures__/*', instrument: false },
     'lib/*.js',

@@ -77,7 +77,7 @@ describe('makeCmdTasks', () => {
 
   it('should work with function task accepting arguments', async () => {
     const res = await makeCmdTasks({
-      commands: filenames => filenames.map(file => `test ${file}`),
+      commands: (filenames) => filenames.map((file) => `test ${file}`),
       gitDir,
       files: ['test.js', 'test2.js']
     })
@@ -88,7 +88,7 @@ describe('makeCmdTasks', () => {
 
   it('should work with array of mixed string and function tasks', async () => {
     const res = await makeCmdTasks({
-      commands: [() => 'test', 'test2', files => files.map(file => `test ${file}`)],
+      commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       gitDir,
       files: ['test.js', 'test2.js', 'test3.js']
     })

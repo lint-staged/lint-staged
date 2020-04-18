@@ -38,7 +38,7 @@ const createTempDir = async () => {
  * @param {String} dirname
  * @returns {Promise<Void>}
  */
-const removeTempDir = async dirname => {
+const removeTempDir = async (dirname) => {
   await fs.remove(dirname)
 }
 
@@ -50,7 +50,7 @@ const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.join(dir, filename), content)
 
 // Wrap execGit to always pass `gitOps`
-const execGit = async args => execGitBase(args, { cwd })
+const execGit = async (args) => execGitBase(args, { cwd })
 
 // Execute runAll before git commit to emulate lint-staged
 const gitCommit = async (options, args = ['-m test']) => {

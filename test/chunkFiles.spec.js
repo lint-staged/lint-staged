@@ -16,7 +16,7 @@ describe('chunkFiles', () => {
 
   it('should chunk too long argument string', () => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20 })
-    expect(chunkedFiles).toEqual(files.map(file => [file]))
+    expect(chunkedFiles).toEqual(files.map((file) => [file]))
   })
 
   it('should take into account relative setting', () => {
