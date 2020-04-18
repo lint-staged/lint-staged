@@ -1,9 +1,9 @@
-import fs from 'fs-extra'
 import makeConsoleMock from 'consolemock'
+import fs from 'fs-extra'
+import { nanoid } from 'nanoid'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
-import nanoid from 'nanoid'
 
 jest.mock('../lib/file')
 

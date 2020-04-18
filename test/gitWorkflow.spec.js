@@ -1,8 +1,8 @@
 import fs from 'fs-extra'
+import { nanoid } from 'nanoid'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
-import nanoid from 'nanoid'
 
 import execGitBase from '../lib/execGit'
 import GitWorkflow from '../lib/gitWorkflow'
