@@ -81,7 +81,7 @@ const options = {
 debug('Options parsed from command-line:', options)
 
 lintStaged(options)
-  .then(passed => {
+  .then((passed) => {
     process.exitCode = passed ? 0 : 1
   })
   .catch(() => {

@@ -12,11 +12,11 @@ import lintStaged from '../lib/index'
 jest.mock('../lib/getStagedFiles')
 
 const replaceSerializer = (from, to) => ({
-  test: val => typeof val === 'string' && from.test(val),
-  print: val => val.replace(from, to)
+  test: (val) => typeof val === 'string' && from.test(val),
+  print: (val) => val.replace(from, to)
 })
 
-const mockCosmiconfigWith = result => {
+const mockCosmiconfigWith = (result) => {
   cosmiconfig.mockImplementationOnce(() => ({
     search: () => Promise.resolve(result)
   }))

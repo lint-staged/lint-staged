@@ -1,4 +1,4 @@
-const mockFn = jest.fn(path => {
+const mockFn = jest.fn((path) => {
   if (path.includes('missing')) {
     throw new Error(`not found: ${path}`)
   }

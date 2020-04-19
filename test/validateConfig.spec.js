@@ -39,11 +39,11 @@ describe('validateConfig', () => {
   it('should not throw and should print nothing for function task', () => {
     expect(() =>
       validateConfig({
-        '*.js': filenames => {
+        '*.js': (filenames) => {
           const files = filenames.join(' ')
           return `eslint --fix ${files} && git add ${files}`
         },
-        '*.css': [filenames => filenames.map(filename => `eslint --fix ${filename}`)]
+        '*.css': [(filenames) => filenames.map((filename) => `eslint --fix ${filename}`)]
       })
     ).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()

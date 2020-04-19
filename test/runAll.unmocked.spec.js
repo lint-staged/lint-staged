@@ -1,9 +1,9 @@
-import fs from 'fs-extra'
 import makeConsoleMock from 'consolemock'
+import fs from 'fs-extra'
+import { nanoid } from 'nanoid'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
-import nanoid from 'nanoid'
 
 jest.unmock('execa')
 
@@ -13,12 +13,12 @@ import runAll from '../lib/runAll'
 jest.setTimeout(20000)
 
 const testJsFilePretty = `module.exports = {
-  foo: "bar"
+  foo: "bar",
 };
 `
 
 const testJsFileUgly = `module.exports = {
-    'foo': 'bar',
+    'foo': 'bar'
 }
 `
 
@@ -46,7 +46,7 @@ const createTempDir = async () => {
  * @param {String} dirname
  * @returns {Promise<Void>}
  */
-const removeTempDir = async dirname => {
+const removeTempDir = async (dirname) => {
   await fs.remove(dirname)
 }
 
@@ -412,7 +412,7 @@ describe('runAll', () => {
     await expect(
       gitCommit({
         config: {
-          '*.js': files => [
+          '*.js': (files) => [
             `touch ${cwd}/.git/index.lock`,
             `prettier --write ${files.join(' ')}`,
             `git add ${files.join(' ')}`
@@ -440,14 +440,14 @@ describe('runAll', () => {
     expect(await execGit(['diff'])).not.toEqual(diff)
     expect(await execGit(['diff'])).toMatchInlineSnapshot(`
       "diff --git a/test.js b/test.js
-      index f80f875..1c5643c 100644
+      index 1eff6a0..8baadc8 100644
       --- a/test.js
       +++ b/test.js
       @@ -1,3 +1,3 @@
        module.exports = {
-      -    'foo': 'bar',
+      -    'foo': 'bar'
       -}
-      +  foo: \\"bar\\"
+      +  foo: \\"bar\\",
       +};"
     `)
 
@@ -905,7 +905,7 @@ describe('runAll', () => {
 
   test.each([['on'], ['off']])(
     'should handle files with non-ascii characters when core.quotepath is %s',
-    async quotePath => {
+    async (quotePath) => {
       await execGit(['config', 'core.quotepath', quotePath])
 
       // Stage multiple ugly files
@@ -1015,7 +1015,7 @@ describe('runAll', () => {
     expect(await readFile('test.js')).toMatchInlineSnapshot(`
       "<<<<<<< ours
       module.exports = {
-        foo: \\"bar\\"
+        foo: \\"bar\\",
       };
       =======
       const obj = {
