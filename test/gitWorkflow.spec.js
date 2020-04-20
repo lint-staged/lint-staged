@@ -65,6 +65,29 @@ describe('gitWorkflow', () => {
     }
   })
 
+  describe('prepare', () => {
+    it('should handle errors', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+      jest.doMock('execa', () => Promise.reject({}))
+      const ctx = {}
+      // mock a simple failure
+      gitWorkflow.getPartiallyStagedFiles = () => ['foo']
+      gitWorkflow.getHiddenFilepath = () => {
+        throw new Error('test')
+      }
+      await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"test"`
+      )
+      expect(ctx).toEqual({
+        gitError: true,
+        hasPartiallyStagedFiles: true
+      })
+    })
+  })
+
   describe('cleanup', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({

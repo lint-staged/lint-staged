@@ -3,19 +3,22 @@ import execa from 'execa'
 import normalize from 'normalize-path'
 import path from 'path'
 
-import resolveGitRepo from '../lib/resolveGitRepo'
 import getStagedFiles from '../lib/getStagedFiles'
+import GitWorkflow from '../lib/gitWorkflow'
+import resolveGitRepo from '../lib/resolveGitRepo'
 import runAll, { shouldSkip } from '../lib/runAll'
 
-jest.mock('../lib/resolveGitRepo')
+jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
+jest.mock('../lib/resolveGitRepo')
+
+getStagedFiles.mockImplementation(async () => [])
 
 resolveGitRepo.mockImplementation(async () => {
   const cwd = process.cwd()
   return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
 })
-getStagedFiles.mockImplementation(async () => [])
 
 describe('runAll', () => {
   const globalConsoleTemp = console
@@ -74,6 +77,46 @@ describe('runAll', () => {
       LOG Applying modifications... [completed]
       LOG Cleaning up... [started]
       LOG Cleaning up... [completed]"
+    `)
+  })
+
+  it('should skip tasks if previous git error', async () => {
+    expect.assertions(2)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    GitWorkflow.mockImplementationOnce(() => ({
+      ...jest.requireActual('../lib/gitWorkflow'),
+      prepare: (ctx) => {
+        ctx.gitError = true
+        throw new Error('test')
+      }
+    }))
+
+    await expect(
+      runAll({ config: { '*.js': ['echo "sample"'] } })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Preparing... [started]
+      LOG Preparing... [failed]
+      LOG → test
+      LOG Running tasks... [started]
+      LOG Running tasks... [skipped]
+      LOG → Skipped because of previous git error.
+      LOG Applying modifications... [started]
+      LOG Applying modifications... [skipped]
+      LOG → Skipped because of previous git error.
+      LOG Cleaning up... [started]
+      LOG Cleaning up... [skipped]
+      LOG → Skipped because of previous git error.
+      ERROR 
+        × lint-staged failed due to a git error.
+      ERROR   Any lost modifications can be restored from a git stash:
+
+          > git stash list
+          stash@{0}: On master: automatic lint-staged backup
+          > git stash apply --index stash@{0}
+      "
     `)
   })
 
@@ -171,6 +214,13 @@ describe('runAll', () => {
 })
 
 describe('shouldSkip', () => {
+  describe('shouldSkipApplyModifications', () => {
+    it('should return error message when there is an unkown git error', () => {
+      const result = shouldSkip.shouldSkipApplyModifications({ gitError: true })
+      expect(typeof result === 'string').toEqual(true)
+    })
+  })
+
   describe('shouldSkipRevert', () => {
     it('should return error message when there is an unkown git error', () => {
       const result = shouldSkip.shouldSkipRevert({ gitError: true })
