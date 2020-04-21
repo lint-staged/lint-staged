@@ -107,14 +107,21 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       LOG Preparing... [started]
-      LOG Preparing... [failed]
-      LOG → Merge state could not be restored due to an error!
+      LOG Preparing... [completed]
       LOG Running tasks... [started]
-      LOG Running tasks... [skipped]
-      LOG → Skipped because of previous git error.
+      LOG Running tasks for *.js [started]
+      LOG prettier --list-different [started]
+      LOG prettier --list-different [failed]
+      LOG → 
+      LOG Running tasks for *.js [failed]
+      LOG → 
+      LOG Running tasks... [failed]
       LOG Applying modifications... [started]
       LOG Applying modifications... [skipped]
-      LOG → Skipped because of previous git error.
+      LOG → Skipped because of errors from tasks.
+      LOG Reverting to original state because of errors... [started]
+      LOG Reverting to original state because of errors... [failed]
+      LOG → Merge state could not be restored due to an error!
       LOG Cleaning up... [started]
       LOG Cleaning up... [skipped]
       LOG → Skipped because of previous git error.
