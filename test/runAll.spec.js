@@ -6,8 +6,8 @@ import path from 'path'
 import getStagedFiles from '../lib/getStagedFiles'
 import GitWorkflow from '../lib/gitWorkflow'
 import resolveGitRepo from '../lib/resolveGitRepo'
-import runAll, { shouldSkip } from '../lib/runAll'
-import { GitError, RestoreOriginalStateError } from '../lib/symbols'
+import runAll from '../lib/runAll'
+import { GitError } from '../lib/symbols'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
@@ -188,28 +188,5 @@ describe('runAll', () => {
       INFO ❯ Cleaning up...
       LOG ✔ Cleaning up..."
     `)
-  })
-})
-
-describe('shouldSkip', () => {
-  describe('shouldSkipApplyModifications', () => {
-    it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipApplyModifications({ errors: new Set([GitError]) })
-      expect(typeof result === 'string').toEqual(true)
-    })
-  })
-
-  describe('shouldSkipRevert', () => {
-    it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipRevert({ errors: new Set([GitError]) })
-      expect(typeof result === 'string').toEqual(true)
-    })
-  })
-
-  describe('shouldSkipCleanup', () => {
-    it('should return error message when reverting to original state fails', () => {
-      const result = shouldSkip.shouldSkipCleanup({ errors: new Set([RestoreOriginalStateError]) })
-      expect(typeof result === 'string').toEqual(true)
-    })
   })
 })
