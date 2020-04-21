@@ -22,11 +22,17 @@ describe('lintStaged', () => {
       { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
       makeConsoleMock()
     )
-    expect(Listr.mock.calls[0][1]).toEqual({
-      dateFormat: false,
-      exitOnError: false,
-      renderer: 'silent'
-    })
+    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
+      Object {
+        "ctx": Object {
+          "errors": Set {},
+          "hasPartiallyStagedFiles": false,
+        },
+        "dateFormat": false,
+        "exitOnError": false,
+        "renderer": "silent",
+      }
+    `)
   })
 
   it('should pass debug flag to Listr', async () => {
@@ -38,10 +44,16 @@ describe('lintStaged', () => {
       },
       makeConsoleMock()
     )
-    expect(Listr.mock.calls[0][1]).toEqual({
-      dateFormat: false,
-      exitOnError: false,
-      renderer: 'verbose'
-    })
+    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
+      Object {
+        "ctx": Object {
+          "errors": Set {},
+          "hasPartiallyStagedFiles": false,
+        },
+        "dateFormat": false,
+        "exitOnError": false,
+        "renderer": "verbose",
+      }
+    `)
   })
 })

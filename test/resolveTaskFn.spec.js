@@ -1,8 +1,11 @@
 import execa from 'execa'
 
 import resolveTaskFn from '../lib/resolveTaskFn'
+import { TaskError } from '../lib/symbols'
 
 const defaultOpts = { files: ['test.js'] }
+
+const defaultCtx = { errors: new Set() }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
@@ -16,7 +19,7 @@ describe('resolveTaskFn', () => {
       command: 'node --arg=true ./myscript.js'
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
@@ -33,7 +36,7 @@ describe('resolveTaskFn', () => {
       command: 'node --arg=true ./myscript.js test.js'
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
@@ -51,7 +54,7 @@ describe('resolveTaskFn', () => {
       command: 'node --arg=true ./myscript.js test.js'
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
@@ -68,7 +71,7 @@ describe('resolveTaskFn', () => {
       command: 'node --arg=true ./myscript.js'
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
@@ -85,7 +88,7 @@ describe('resolveTaskFn', () => {
       gitDir: '../'
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
       cwd: '../',
@@ -99,7 +102,7 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('jest', ['test.js'], {
       preferLocal: true,
@@ -116,7 +119,7 @@ describe('resolveTaskFn', () => {
       relative: true
     })
 
-    await taskFn()
+    await taskFn(defaultCtx)
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
       cwd: process.cwd(),
@@ -137,7 +140,7 @@ describe('resolveTaskFn', () => {
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
-    await expect(taskFn()).rejects.toThrow('mock-fail-linter found some errors')
+    await expect(taskFn(defaultCtx)).rejects.toThrow('mock-fail-linter found some errors')
   })
 
   it('should throw error for killed processes', async () => {
@@ -153,18 +156,20 @@ describe('resolveTaskFn', () => {
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
-    await expect(taskFn()).rejects.toThrow('mock-killed-linter was terminated with SIGINT')
+    await expect(taskFn(defaultCtx)).rejects.toThrow(
+      'mock-killed-linter was terminated with SIGINT'
+    )
   })
 
-  it('should not set taskError on context if no error occur', async () => {
+  it('should not add TaskError if no error occur', async () => {
     expect.assertions(1)
-    const context = {}
+    const context = { errors: new Set() }
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
     await taskFn(context)
-    expect(context.taskError).toBeUndefined()
+    expect(context.errors.has(TaskError)).toEqual(false)
   })
 
-  it('should set taskError on context to true on error', async () => {
+  it('should add TaskError on error', async () => {
     execa.mockResolvedValueOnce({
       stdout: 'Mock error',
       stderr: '',
@@ -172,13 +177,10 @@ describe('resolveTaskFn', () => {
       failed: true,
       cmd: 'mock cmd'
     })
-    const context = {}
+    const context = { errors: new Set() }
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
-    expect.assertions(1)
-    try {
-      await taskFn(context)
-    } catch (err) {
-      expect(context.taskError).toEqual(true)
-    }
+    expect.assertions(2)
+    await expect(taskFn(context)).rejects.toThrow('mock-fail-linter found some errors')
+    expect(context.errors.has(TaskError)).toEqual(true)
   })
 })

@@ -7,6 +7,7 @@ import getStagedFiles from '../lib/getStagedFiles'
 import GitWorkflow from '../lib/gitWorkflow'
 import resolveGitRepo from '../lib/resolveGitRepo'
 import runAll, { shouldSkip } from '../lib/runAll'
+import { GitError, RestoreOriginalStateError } from '../lib/symbols'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
@@ -86,7 +87,7 @@ describe('runAll', () => {
     GitWorkflow.mockImplementationOnce(() => ({
       ...jest.requireActual('../lib/gitWorkflow'),
       prepare: (ctx) => {
-        ctx.gitError = true
+        ctx.errors.add(GitError)
         throw new Error('test')
       }
     }))
@@ -153,7 +154,7 @@ describe('runAll', () => {
   })
 
   it('should skip tasks and restore state if terminated', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
       Promise.resolve({
@@ -167,11 +168,9 @@ describe('runAll', () => {
       })
     )
 
-    try {
-      await runAll({ config: { '*.js': ['echo "sample"'] } })
-    } catch (err) {
-      console.log(err)
-    }
+    await expect(
+      runAll({ config: { '*.js': ['echo "sample"'] } })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
@@ -187,8 +186,7 @@ describe('runAll', () => {
       INFO ❯ Reverting to original state because of errors...
       LOG ✔ Reverting to original state because of errors...
       INFO ❯ Cleaning up...
-      LOG ✔ Cleaning up...
-      LOG {taskError: true}"
+      LOG ✔ Cleaning up..."
     `)
   })
 })
@@ -196,21 +194,21 @@ describe('runAll', () => {
 describe('shouldSkip', () => {
   describe('shouldSkipApplyModifications', () => {
     it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipApplyModifications({ gitError: true })
+      const result = shouldSkip.shouldSkipApplyModifications({ errors: new Set([GitError]) })
       expect(typeof result === 'string').toEqual(true)
     })
   })
 
   describe('shouldSkipRevert', () => {
     it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipRevert({ gitError: true })
+      const result = shouldSkip.shouldSkipRevert({ errors: new Set([GitError]) })
       expect(typeof result === 'string').toEqual(true)
     })
   })
 
   describe('shouldSkipCleanup', () => {
     it('should return error message when reverting to original state fails', () => {
-      const result = shouldSkip.shouldSkipCleanup({ gitRestoreOriginalStateError: true })
+      const result = shouldSkip.shouldSkipCleanup({ errors: new Set([RestoreOriginalStateError]) })
       expect(typeof result === 'string').toEqual(true)
     })
   })

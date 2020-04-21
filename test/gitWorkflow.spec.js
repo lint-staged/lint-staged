@@ -72,7 +72,7 @@ describe('gitWorkflow', () => {
         gitConfigDir: path.resolve(cwd, './.git')
       })
       jest.doMock('execa', () => Promise.reject({}))
-      const ctx = {}
+      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
       // mock a simple failure
       gitWorkflow.getPartiallyStagedFiles = () => ['foo']
       gitWorkflow.getHiddenFilepath = () => {
@@ -81,10 +81,14 @@ describe('gitWorkflow', () => {
       await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrowErrorMatchingInlineSnapshot(
         `"test"`
       )
-      expect(ctx).toEqual({
-        gitError: true,
-        hasPartiallyStagedFiles: true
-      })
+      expect(ctx).toMatchInlineSnapshot(`
+        Object {
+          "errors": Set {
+            Symbol(GitError),
+          },
+          "hasPartiallyStagedFiles": true,
+        }
+      `)
     })
   })
 
@@ -94,14 +98,19 @@ describe('gitWorkflow', () => {
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git')
       })
-      const ctx = {}
+      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
       await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
         `"lint-staged automatic backup is missing!"`
       )
-      expect(ctx).toEqual({
-        gitError: true,
-        gitGetBackupStashError: true
-      })
+      expect(ctx).toMatchInlineSnapshot(`
+        Object {
+          "errors": Set {
+            Symbol(GetBackupStashError),
+            Symbol(GitError),
+          },
+          "hasPartiallyStagedFiles": false,
+        }
+      `)
     })
   })
 
@@ -113,14 +122,19 @@ describe('gitWorkflow', () => {
       })
       const totallyRandom = `totally_random_file-${Date.now().toString()}`
       gitWorkflow.partiallyStagedFiles = [totallyRandom]
-      const ctx = {}
+      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
       await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
         `"error: pathspec '${totallyRandom}' did not match any file(s) known to git"`
       )
-      expect(ctx).toEqual({
-        gitError: true,
-        gitHideUnstagedChangesError: true
-      })
+      expect(ctx).toMatchInlineSnapshot(`
+        Object {
+          "errors": Set {
+            Symbol(GitError),
+            Symbol(HideUnstagedChangesError),
+          },
+          "hasPartiallyStagedFiles": false,
+        }
+      `)
     })
   })
 })
