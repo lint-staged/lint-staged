@@ -803,7 +803,7 @@ describe('runAll', () => {
       WARN 
         ‼ lint-staged prevented an empty git commit.
         Use the --allow-empty option to continue, or check your task configuration
-        "
+      "
     `)
 
     // Something was wrong so the repo is returned to original state
