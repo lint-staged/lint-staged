@@ -65,18 +65,18 @@ describe('runAll', () => {
     await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ echo \\"sample\\"
+      LOG ✔ echo \\"sample\\"
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up..."
     `)
   })
 
@@ -93,28 +93,21 @@ describe('runAll', () => {
 
     await expect(
       runAll({ config: { '*.js': ['echo "sample"'] } })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [failed]
-      LOG → test
-      LOG Running tasks... [started]
-      LOG Running tasks... [skipped]
-      LOG → Skipped because of previous git error.
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of previous git error.
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [skipped]
-      LOG → Skipped because of previous git error.
+      INFO ❯ Preparing...
+      ERROR ✖ test
+      INFO ❯ Running tasks...
+      INFO ❯ Applying modifications...
+      INFO ❯ Cleaning up...
       ERROR 
         × lint-staged failed due to a git error.
       ERROR   Any lost modifications can be restored from a git stash:
 
           > git stash list
-          stash@{0}: On master: automatic lint-staged backup
+          stash@{0}: automatic lint-staged backup
           > git stash apply --index stash@{0}
       "
     `)
@@ -135,27 +128,27 @@ describe('runAll', () => {
 
     await expect(
       runAll({ config: { '*.js': ['echo "sample"'] } })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ echo \\"sample\\"
+      ERROR ✖ echo found some errors. Please fix them and try committing again.
+      ✖ 
+      ✖ Linter finished with error
+      ERROR ✖ echo found some errors. Please fix them and try committing again.
+      ✖ 
+      ✖ Linter finished with error
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      INFO ❯ Reverting to original state because of errors...
+      LOG ✔ Reverting to original state because of errors...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up..."
     `)
   })
 
@@ -182,33 +175,20 @@ describe('runAll', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]
-      LOG {
-        name: 'ListrError',
-        errors: [
-          {
-            privateMsg: '\\\\n\\\\n\\\\n‼ echo was terminated with SIGINT',
-            context: {taskError: true}
-          }
-        ],
-        context: {taskError: true}
-      }"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ echo \\"sample\\"
+      ERROR ✖ echo was terminated with SIGINT
+      ERROR ✖ echo was terminated with SIGINT
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      INFO ❯ Reverting to original state because of errors...
+      LOG ✔ Reverting to original state because of errors...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up...
+      LOG {taskError: true}"
     `)
   })
 })

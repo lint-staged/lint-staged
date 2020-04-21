@@ -102,35 +102,30 @@ describe('runAll', () => {
     // Run lint-staged with `prettier --list-different`
     await expect(
       gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --list-different [started]
-      LOG prettier --list-different [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [failed]
-      LOG → Merge state could not be restored due to an error!
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [skipped]
-      LOG → Skipped because of previous git error.
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --list-different
+      ERROR ✖ prettier found some errors. Please fix them and try committing again.
+      ✖ ../../../..${cwd}/test.js
+      ERROR ✖ prettier found some errors. Please fix them and try committing again.
+      ✖ ../../../..${cwd}/test.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      INFO ❯ Reverting to original state because of errors...
+      ERROR ✖ Merge state could not be restored due to an error!
+      INFO ❯ Cleaning up...
       ERROR 
         × lint-staged failed due to a git error.
       ERROR   Any lost modifications can be restored from a git stash:
 
           > git stash list
-          stash@{0}: On master: automatic lint-staged backup
+          stash@{0}: automatic lint-staged backup
           > git stash apply --index stash@{0}
       "
     `)

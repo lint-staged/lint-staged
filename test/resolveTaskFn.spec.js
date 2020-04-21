@@ -137,17 +137,7 @@ describe('resolveTaskFn', () => {
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
-    try {
-      await taskFn()
-    } catch (err) {
-      expect(err.privateMsg).toMatchInlineSnapshot(`
-                "
-
-
-                × mock-fail-linter found some errors. Please fix them and try committing again.
-                Mock error"
-            `)
-    }
+    await expect(taskFn()).rejects.toThrow('mock-fail-linter found some errors')
   })
 
   it('should throw error for killed processes', async () => {
@@ -163,16 +153,7 @@ describe('resolveTaskFn', () => {
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
-    try {
-      await taskFn()
-    } catch (err) {
-      expect(err.privateMsg).toMatchInlineSnapshot(`
-                "
-
-
-                ‼ mock-killed-linter was terminated with SIGINT"
-            `)
-    }
+    await expect(taskFn()).rejects.toThrow('mock-killed-linter was terminated with SIGINT')
   })
 
   it('should not set taskError on context if no error occur', async () => {

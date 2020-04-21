@@ -53,6 +53,16 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
+  it('should return true when passed', async () => {
+    expect.assertions(1)
+    const config = {
+      '*': 'node -e "process.exit(0)"'
+    }
+    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
+    const passed = await lintStaged({ config, quiet: true }, logger)
+    expect(passed).toEqual(true)
+  })
+
   it('should use use the console if no logger is passed', async () => {
     expect.assertions(1)
     mockCosmiconfigWith({ config: {} })

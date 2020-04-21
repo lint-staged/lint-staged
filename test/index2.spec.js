@@ -1,8 +1,8 @@
-import Listr from 'listr'
+import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
-jest.mock('listr')
+jest.mock('listr2')
 jest.mock('../lib/resolveGitRepo')
 
 // eslint-disable-next-line import/first

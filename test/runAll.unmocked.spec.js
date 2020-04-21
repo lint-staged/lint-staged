@@ -160,7 +160,7 @@ describe('runAll', () => {
     try {
       await gitCommit({ config: { '*.js': 'prettier --list-different' } })
     } catch (error) {
-      expect(error.message).toMatchInlineSnapshot(`"Something went wrong"`)
+      expect(error.message).toMatchInlineSnapshot(`"lint-staged failed"`)
     }
 
     // Something was wrong so the repo is returned to original state
@@ -180,7 +180,7 @@ describe('runAll', () => {
     try {
       await gitCommit(fixJsConfig)
     } catch (error) {
-      expect(error.message).toMatchInlineSnapshot(`"Something went wrong"`)
+      expect(error.message).toMatchInlineSnapshot(`"lint-staged failed"`)
     }
 
     // Something was wrong so the repo is returned to original state
@@ -236,22 +236,22 @@ describe('runAll', () => {
     await gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Hiding unstaged changes to partially staged files... [started]
-      LOG Hiding unstaged changes to partially staged files... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --list-different [started]
-      LOG prettier --list-different [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
-      LOG Restoring unstaged changes to partially staged files... [started]
-      LOG Restoring unstaged changes to partially staged files... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Hiding unstaged changes to partially staged files...
+      LOG ✔ Hiding unstaged changes to partially staged files...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --list-different
+      LOG ✔ prettier --list-different
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications...
+      INFO ❯ Restoring unstaged changes to partially staged files...
+      LOG ✔ Restoring unstaged changes to partially staged files...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up..."
     `)
 
     // Nothing is wrong, so a new commit is created and file is pretty
@@ -314,28 +314,24 @@ describe('runAll', () => {
     ).rejects.toThrowError()
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Hiding unstaged changes to partially staged files... [started]
-      LOG Hiding unstaged changes to partially staged files... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --list-different [started]
-      LOG prettier --list-different [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Restoring unstaged changes to partially staged files... [started]
-      LOG Restoring unstaged changes to partially staged files... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Hiding unstaged changes to partially staged files...
+      LOG ✔ Hiding unstaged changes to partially staged files...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --list-different
+      ERROR ✖ prettier found some errors. Please fix them and try committing again.
+      ✖ ../../../..${cwd}/test.js
+      ERROR ✖ prettier found some errors. Please fix them and try committing again.
+      ✖ ../../../..${cwd}/test.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      INFO ❯ Restoring unstaged changes to partially staged files...
+      INFO ❯ Reverting to original state because of errors...
+      LOG ✔ Reverting to original state because of errors...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up..."
     `)
 
     // Something was wrong so the repo is returned to original state
@@ -359,7 +355,7 @@ describe('runAll', () => {
     try {
       await gitCommit(fixJsConfig)
     } catch (error) {
-      expect(error.message).toMatchInlineSnapshot(`"Something went wrong"`)
+      expect(error.message).toMatchInlineSnapshot(`"lint-staged failed"`)
     }
 
     // Something was wrong so the repo is returned to original state
@@ -427,7 +423,7 @@ describe('runAll', () => {
       ERROR   Any lost modifications can be restored from a git stash:
 
           > git stash list
-          stash@{0}: On master: automatic lint-staged backup
+          stash@{0}: automatic lint-staged backup
           > git stash apply --index stash@{0}
       "
     `)
@@ -579,7 +575,7 @@ describe('runAll', () => {
     // Do not use `gitCommit` wrapper here
     await expect(
       runAll({ config: { '*.js': 'prettier --list-different' }, cwd, quiet: true })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     // Something went wrong, so runAll failed and merge is still going
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -766,19 +762,18 @@ describe('runAll', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG [Function] git ... [started]
-      LOG [Function] git ... [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [failed]
-      LOG → lint-staged automatic backup is missing!"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ [Function] git ...
+      LOG ✔ [Function] git ...
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications...
+      INFO ❯ Cleaning up...
+      ERROR ✖ lint-staged automatic backup is missing!"
     `)
   })
 
@@ -799,7 +794,7 @@ describe('runAll', () => {
     // use the old syntax with manual `git add` to provide a warning message
     await expect(
       gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
@@ -807,8 +802,8 @@ describe('runAll', () => {
 
       WARN 
         ‼ lint-staged prevented an empty git commit.
-          Use the --allow-empty option to continue, or check your task configuration
-      "
+        Use the --allow-empty option to continue, or check your task configuration
+        "
     `)
 
     // Something was wrong so the repo is returned to original state
@@ -946,16 +941,16 @@ describe('runAll', () => {
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
 
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --write [started]
-      LOG prettier --write [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --write
+      LOG ✔ prettier --write
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications..."
     `)
 
     // Nothing is wrong, so a new commit is created
@@ -988,21 +983,20 @@ describe('runAll', () => {
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
 
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Hiding unstaged changes to partially staged files... [started]
-      LOG Hiding unstaged changes to partially staged files... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG [Function] prettier ... [started]
-      LOG [Function] prettier ... [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
-      LOG Restoring unstaged changes to partially staged files... [started]
-      LOG Restoring unstaged changes to partially staged files... [failed]
-      LOG → Unstaged changes could not be restored due to a merge conflict!
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Hiding unstaged changes to partially staged files...
+      LOG ✔ Hiding unstaged changes to partially staged files...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ [Function] prettier ...
+      LOG ✔ [Function] prettier ...
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications...
+      INFO ❯ Restoring unstaged changes to partially staged files...
+      ERROR ✖ Unstaged changes could not be restored due to a merge conflict!
       ERROR 
         × lint-staged failed due to a git error."
     `)
@@ -1038,25 +1032,11 @@ describe('runAll', () => {
         quiet: false,
         stash: false
       })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN ‼ Skipping backup because \`--no-stash\` was used.
-
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --write [started]
-      LOG prettier --write [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]"
-    `)
+    expect(console.printHistory()).toMatch(
+      'prettier found some errors. Please fix them and try committing again'
+    )
 
     // Something was wrong, so the commit was aborted
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -1102,16 +1082,16 @@ describe('runAll', () => {
       "
       WARN ‼ Skipping backup because there’s no initial commit yet.
 
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG prettier --list-different [started]
-      LOG prettier --list-different [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]"
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --list-different
+      LOG ✔ prettier --list-different
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications..."
     `)
 
     // Nothing is wrong, so the initial commit is created
