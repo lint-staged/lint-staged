@@ -26,7 +26,8 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
-          "hasPartiallyStagedFiles": false,
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
           "shouldBackup": true,
         },
         "dateFormat": false,
@@ -49,7 +50,8 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
-          "hasPartiallyStagedFiles": false,
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
           "shouldBackup": true,
         },
         "dateFormat": false,

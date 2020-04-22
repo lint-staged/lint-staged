@@ -321,10 +321,8 @@ describe('runAll', () => {
       INFO ❯ Running tasks...
       INFO ❯ Running tasks for *.js
       INFO ❯ prettier --list-different
-      ERROR ✖ prettier found some errors. Please fix them and try committing again.
-      ✖ ../../../..${cwd}/test.js
-      ERROR ✖ prettier found some errors. Please fix them and try committing again.
-      ✖ ../../../..${cwd}/test.js
+      ERROR ✖ prettier --list-different [FAILED]
+      ERROR ✖ prettier --list-different [FAILED]
       LOG ✔ Running tasks...
       INFO ❯ Applying modifications...
       INFO ❯ Restoring unstaged changes to partially staged files...
@@ -1034,9 +1032,21 @@ describe('runAll', () => {
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatch(
-      'prettier found some errors. Please fix them and try committing again'
-    )
+    expect(console.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN ‼ Skipping backup because \`--no-stash\` was used.
+
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --write
+      ERROR ✖ prettier --write [FAILED]
+      ERROR ✖ prettier --write [FAILED]
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      LOG ✔ Applying modifications..."
+    `)
 
     // Something was wrong, so the commit was aborted
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

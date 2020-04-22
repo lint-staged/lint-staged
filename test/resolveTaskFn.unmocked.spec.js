@@ -11,6 +11,6 @@ describe('resolveTaskFn', () => {
       shell: true
     })
 
-    await expect(taskFn()).resolves.toMatchInlineSnapshot(`"√ node passed!"`)
+    await expect(taskFn()).resolves.toMatchInlineSnapshot(`undefined`)
   })
 })

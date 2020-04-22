@@ -1,6 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lintStaged should exit with code 1 on linter errors 1`] = `""`;
+exports[`lintStaged should exit with code 1 on linter errors 1`] = `
+"
+ERROR 
+× node -e \\"process.exit(1)\\" failed without output (FAILED)."
+`;
 
 exports[`lintStaged should load an npm config package when specified 1`] = `
 "
