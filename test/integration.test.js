@@ -5,10 +5,11 @@ import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
 
+jest.unmock('cosmiconfig')
 jest.unmock('execa')
 
 import execGitBase from '../lib/execGit'
-import runAll from '../lib/runAll'
+import lintStaged from '../lib/index'
 
 jest.setTimeout(20000)
 
@@ -68,25 +69,32 @@ const writeFile = async (filename, content, dir = cwd) =>
 // Wrap execGit to always pass `gitOps`
 const execGit = async (args, options = {}) => execGitBase(args, { cwd, ...options })
 
-// Execute runAll before git commit to emulate lint-staged
+/**
+ * Execute lintStaged before git commit to emulate lint-staged cli.
+ * The Node.js API doesn't throw on failures, but will return `false`.
+ */
 const gitCommit = async (options, args = ['-m test']) => {
-  await runAll({ quiet: true, cwd, ...options })
+  const passed = await lintStaged({ cwd, ...options })
+  if (!passed) throw new Error('lint-staged failed')
   await execGit(['commit', ...args], { cwd, ...options })
 }
 
-describe('runAll', () => {
-  it('should throw when not in a git directory', async () => {
+describe('lint-staged', () => {
+  it('should fail when not in a git directory', async () => {
     const nonGitDir = await createTempDir()
-    await expect(runAll({ cwd: nonGitDir })).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"lint-staged failed"`
-    )
+    const logger = makeConsoleMock()
+    await expect(lintStaged({ ...fixJsConfig, cwd: nonGitDir }, logger)).resolves.toEqual(false)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      ERROR × Current directory is not a git directory!"
+    `)
     await removeTempDir(nonGitDir)
   })
 })
 
 const globalConsoleTemp = console
 
-describe('runAll', () => {
+describe('lint-staged', () => {
   beforeAll(() => {
     console = makeConsoleMock()
   })
@@ -115,7 +123,7 @@ describe('runAll', () => {
   })
 
   it('should exit early with no staged files', async () => {
-    expect(() => runAll({ config: { '*.js': 'echo success' }, cwd })).resolves
+    expect(() => lintStaged({ config: { '*.js': 'echo success' }, cwd })).resolves
   })
 
   it('Should commit entire staged file when no errors from linter', async () => {
@@ -204,9 +212,7 @@ describe('runAll', () => {
             fs.writeFileSync(testFile, Buffer.from(testJsFileUnfixable, 'binary'))
             return `prettier --write ${testFile}`
           }
-        },
-        quiet: false,
-        debug: true
+        }
       })
     ).rejects.toThrowError()
 
@@ -233,7 +239,7 @@ describe('runAll', () => {
     await appendFile('test.js', appended)
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
-    await gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
+    await gitCommit({ config: { '*.js': 'prettier --list-different' } })
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       INFO ❯ Preparing...
@@ -310,27 +316,11 @@ describe('runAll', () => {
 
     // Run lint-staged with `prettier --list-different` to break the linter
     await expect(
-      gitCommit({ config: { '*.js': 'prettier --list-different' }, quiet: false })
+      gitCommit({ config: { '*.js': 'prettier --list-different' } })
     ).rejects.toThrowError()
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      INFO ❯ Preparing...
-      LOG ✔ Preparing...
-      INFO ❯ Hiding unstaged changes to partially staged files...
-      LOG ✔ Hiding unstaged changes to partially staged files...
-      INFO ❯ Running tasks...
-      INFO ❯ Running tasks for *.js
-      INFO ❯ prettier --list-different
-      ERROR ✖ prettier --list-different [FAILED]
-      ERROR ✖ prettier --list-different [FAILED]
-      LOG ✔ Running tasks...
-      INFO ❯ Applying modifications...
-      INFO ❯ Restoring unstaged changes to partially staged files...
-      INFO ❯ Reverting to original state because of errors...
-      LOG ✔ Reverting to original state because of errors...
-      INFO ❯ Cleaning up...
-      LOG ✔ Cleaning up..."
-    `)
+
+    const output = console.printHistory()
+    expect(output).toMatch('Reverting to original state because of errors')
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -414,7 +404,9 @@ describe('runAll', () => {
         }
       })
     ).rejects.toThrowError()
-    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
+
+    const output = console.printHistory()
+    expect(output).toMatch('Another git process seems to be running in this repository')
 
     // Something was wrong so new commit wasn't created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -501,7 +493,7 @@ describe('runAll', () => {
     await execGit(['add', '.'])
 
     // Do not use `gitCommit` wrapper here
-    await runAll({ ...fixJsConfig, cwd, quiet: true })
+    await lintStaged({ ...fixJsConfig, cwd, quiet: true })
     await execGit(['commit', '--no-edit'])
 
     // Nothing is wrong, so a new commit is created and file is pretty
@@ -562,10 +554,10 @@ describe('runAll', () => {
 
     // Do not use `gitCommit` wrapper here
     await expect(
-      runAll({ config: { '*.js': 'prettier --list-different' }, cwd, quiet: true })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
+      lintStaged({ config: { '*.js': 'prettier --list-different' }, cwd, quiet: true })
+    ).resolves.toEqual(false) // Did not pass so returns `false`
 
-    // Something went wrong, so runAll failed and merge is still going
+    // Something went wrong, so lintStaged failed and merge is still going
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
     expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
     expect(await readFile('test.js')).toEqual(fileInBranchB)
@@ -653,7 +645,7 @@ describe('runAll', () => {
     await fs.remove(readmeFile) // Remove file from previous commit
     await appendFile('test.js', testJsFilePretty)
     await execGit(['add', 'test.js'])
-    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    await lintStaged({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
   })
@@ -681,7 +673,7 @@ describe('runAll', () => {
       AD test.js"
     `)
 
-    await runAll({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    await lintStaged({ cwd, config: { '*.{js,md}': 'prettier --list-different' } })
     expect(await fs.exists(testFile)).toEqual(false)
     expect(await fs.exists(newReadmeFile)).toEqual(false)
     expect(await execGit(['status', '--porcelain'])).toEqual(status)
@@ -693,8 +685,8 @@ describe('runAll', () => {
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
     await expect(
-      runAll({ allowEmpty: true, cwd, config: { '*.{js,md}': 'prettier --list-different' } })
-    ).rejects.toThrowError()
+      lintStaged({ allowEmpty: true, cwd, config: { '*.{js,md}': 'prettier --list-different' } })
+    ).resolves.toEqual(false)
     const exists = await fs.exists(readmeFile)
     expect(exists).toEqual(false)
   })
@@ -740,12 +732,7 @@ describe('runAll', () => {
 
     // Remove backup stash during run
     await expect(
-      gitCommit({
-        config: { '*.js': () => 'git stash drop' },
-        shell: true,
-        debug: true,
-        quiet: false
-      })
+      gitCommit({ config: { '*.js': () => 'git stash drop' }, shell: true })
     ).rejects.toThrowError()
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
@@ -787,6 +774,26 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
+
+      INFO ❯ Preparing...
+      LOG ✔ Preparing...
+      INFO ❯ Running tasks...
+      INFO ❯ Running tasks for *.js
+      INFO ❯ prettier --write
+      LOG ✔ prettier --write
+      INFO ❯ git add
+      LOG ✔ git add
+      LOG ✔ Running tasks for *.js
+      LOG ✔ Running tasks...
+      INFO ❯ Applying modifications...
+      ERROR ✖ Prevented an empty git commit!
+      INFO ❯ Reverting to original state because of errors...
+      LOG ✔ Reverting to original state because of errors...
+      INFO ❯ Cleaning up...
+      LOG ✔ Cleaning up...
+      WARN 
+        ‼ lint-staged prevented an empty git commit.
+        Use the --allow-empty option to continue, or check your task configuration
       "
     `)
 
@@ -845,11 +852,7 @@ describe('runAll', () => {
     await execGit(['add', 'test.js'], { cwd: submoduleDir })
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
-    await runAll({
-      config: { '*.js': 'prettier --list-different' },
-      cwd: submoduleDir,
-      quiet: true
-    })
+    await lintStaged({ config: { '*.js': 'prettier --list-different' }, cwd: submoduleDir })
     await execGit(['commit', '-m test'], { cwd: submoduleDir })
 
     // Nothing is wrong, so a new commit is created
@@ -869,11 +872,7 @@ describe('runAll', () => {
     await execGit(['add', 'test.js'], { cwd: workTreeDir })
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
-    await runAll({
-      config: { '*.js': 'prettier --list-different' },
-      cwd: workTreeDir,
-      quiet: true
-    })
+    await lintStaged({ config: { '*.js': 'prettier --list-different' }, cwd: workTreeDir })
     await execGit(['commit', '-m test'], { cwd: workTreeDir })
 
     // Nothing is wrong, so a new commit is created
@@ -917,8 +916,7 @@ describe('runAll', () => {
     // Run lint-staged with --no-stash
     await gitCommit({
       ...fixJsConfig,
-      stash: false,
-      quiet: false
+      stash: false
     })
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
@@ -958,7 +956,6 @@ describe('runAll', () => {
             return `prettier --write ${testFile}`
           }
         },
-        quiet: false,
         stash: false
       })
     ).rejects.toThrowError()
@@ -980,7 +977,9 @@ describe('runAll', () => {
       INFO ❯ Applying modifications...
       LOG ✔ Applying modifications...
       INFO ❯ Restoring unstaged changes to partially staged files...
-      ERROR ✖ Unstaged changes could not be restored due to a merge conflict!"
+      ERROR ✖ Unstaged changes could not be restored due to a merge conflict!
+      ERROR 
+        × lint-staged failed due to a git error."
     `)
 
     // Something was wrong so the commit was aborted
@@ -1011,26 +1010,12 @@ describe('runAll', () => {
     await expect(
       gitCommit({
         ...fixJsConfig,
-        quiet: false,
         stash: false
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN ‼ Skipping backup because \`--no-stash\` was used.
-
-      INFO ❯ Preparing...
-      LOG ✔ Preparing...
-      INFO ❯ Running tasks...
-      INFO ❯ Running tasks for *.js
-      INFO ❯ prettier --write
-      ERROR ✖ prettier --write [FAILED]
-      ERROR ✖ prettier --write [FAILED]
-      LOG ✔ Running tasks...
-      INFO ❯ Applying modifications...
-      LOG ✔ Applying modifications..."
-    `)
+    const output = console.printHistory()
+    expect(output).toMatch('Skipping backup because `--no-stash` was used')
 
     // Something was wrong, so the commit was aborted
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -1048,7 +1033,7 @@ describe('runAll', () => {
   })
 })
 
-describe('runAll', () => {
+describe('lintStaged', () => {
   it('Should skip backup when run on an empty git repo without an initial commit', async () => {
     const globalConsoleTemp = console
     console = makeConsoleMock()
@@ -1068,8 +1053,7 @@ describe('runAll', () => {
     await gitCommit({
       config: { '*.js': 'prettier --list-different' },
       cwd,
-      debut: true,
-      quiet: false
+      debut: true
     })
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
