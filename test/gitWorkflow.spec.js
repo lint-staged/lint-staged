@@ -130,8 +130,8 @@ describe('gitWorkflow', () => {
       const totallyRandom = `totally_random_file-${Date.now().toString()}`
       gitWorkflow.partiallyStagedFiles = [totallyRandom]
       const ctx = getInitialState()
-      await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"error: pathspec 'totally_random_file-1587728648348' did not match any file(s) known to git"`
+      await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowError(
+        `pathspec '${totallyRandom}' did not match any file(s) known to git`
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
