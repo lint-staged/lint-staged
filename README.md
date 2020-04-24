@@ -72,6 +72,7 @@ Options:
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -x, --shell                        skip parsing of tasks for better shell support (default:
                                      false)
+  -v, --verbose                      always show task output (default: false)
   -h, --help                         output usage information
 ```
 
@@ -88,6 +89,7 @@ Options:
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
+- **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
 
@@ -199,7 +201,7 @@ type TaskFn = (filenames: string[]) => string | string[] | Promise<string | stri
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`)
+  '**/*.js?(x)': (filenames) => filenames.map((filename) => `prettier --write '${filename}'`)
 }
 ```
 
@@ -217,7 +219,8 @@ module.exports = {
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
+  '**/*.js?(x)': (filenames) =>
+    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`
 }
 ```
 
@@ -228,7 +231,7 @@ module.exports = {
 const micromatch = require('micromatch')
 
 module.exports = {
-  '*': allFiles => {
+  '*': (allFiles) => {
     const match = micromatch(allFiles, ['*.js', '*.ts'])
     return `eslint ${match.join(' ')}`
   }
@@ -244,7 +247,7 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 const micromatch = require('micromatch')
 
 module.exports = {
-  '*.js': files => {
+  '*.js': (files) => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
     return `eslint ${match.join(' ')}`
@@ -260,9 +263,9 @@ Please note that for most cases, globs can achieve the same effect. For the abov
 const path = require('path')
 
 module.exports = {
-  '*.ts': absolutePaths => {
+  '*.ts': (absolutePaths) => {
     const cwd = process.cwd()
-    const relativePaths = absolutePaths.map(file => path.relative(cwd, file))
+    const relativePaths = absolutePaths.map((file) => path.relative(cwd, file))
     return `ng lint myProjectName --files ${relativePaths.join(' ')}`
   }
 }
@@ -422,12 +425,16 @@ Parameters to `lintStaged` are equivalent to their CLI counterparts:
 
 ```js
 const success = await lintStaged({
+  allowEmpty: false,
+  concurrent: true,
   configPath: './path/to/configuration/file',
+  debug: false,
   maxArgLength: null,
-  relative: false,
-  shell: false,
   quiet: false,
-  debug: false
+  relative: false,
+  shell: false
+  stash: true,
+  verbose: false
 })
 ```
 
@@ -435,14 +442,16 @@ You can also pass config directly with `config` option:
 
 ```js
 const success = await lintStaged({
-  config: {
-    '*.js': 'eslint --fix'
-  },
+  allowEmpty: false,
+  concurrent: true,
+  config: { '*.js': 'eslint --fix' },
+  debug: false,
   maxArgLength: null,
+  quiet: false,
   relative: false,
   shell: false,
-  quiet: false,
-  debug: false
+  stash: true,
+  verbose: false
 })
 ```
 
@@ -518,7 +527,7 @@ const { CLIEngine } = require('eslint')
 const cli = new CLIEngine({})
 
 module.exports = {
-  '*.js': files =>
-    'eslint --max-warnings=0 ' + files.filter(file => !cli.isPathIgnored(file)).join(' ')
+  '*.js': (files) =>
+    'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' ')
 }
 ```

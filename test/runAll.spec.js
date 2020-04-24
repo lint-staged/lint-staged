@@ -38,26 +38,29 @@ describe('runAll', () => {
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    await expect(runAll({ config: {} })).resolves.toEqual(undefined)
+    await expect(runAll({ config: {} })).resolves.toMatchInlineSnapshot(`
+            Object {
+              "errors": Set {},
+              "hasPartiallyStagedFiles": null,
+              "output": Array [
+                "i No staged files found.",
+              ],
+              "shouldBackup": true,
+            }
+          `)
   })
 
   it('should resolve the promise with no files', async () => {
     expect.assertions(1)
     await runAll({ config: { '*.js': ['echo "sample"'] } })
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG i No staged files found."
-    `)
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG i No staged files found."
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should not skip tasks if there are files', async () => {
@@ -102,15 +105,7 @@ describe('runAll', () => {
       ERROR ✖ test
       INFO ❯ Running tasks...
       INFO ❯ Applying modifications...
-      INFO ❯ Cleaning up...
-      ERROR 
-        × lint-staged failed due to a git error.
-      ERROR   Any lost modifications can be restored from a git stash:
-
-          > git stash list
-          stash@{0}: automatic lint-staged backup
-          > git stash apply --index stash@{0}
-      "
+      INFO ❯ Cleaning up..."
     `)
   })
 

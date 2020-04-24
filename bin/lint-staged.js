@@ -40,6 +40,7 @@ cmdline
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
+  .option('-v, --verbose', 'always show task output', false)
   .parse(process.argv)
 
 if (cmdline.debug) {
@@ -75,7 +76,8 @@ const options = {
   stash: !!cmdline.stash, // commander inverts `no-<x>` flags to `!x`
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
-  shell: !!cmdline.shell
+  shell: !!cmdline.shell,
+  verbose: !!cmdline.verbose
 }
 
 debug('Options parsed from command-line:', options)

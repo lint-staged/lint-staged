@@ -78,7 +78,7 @@ describe('runAll', () => {
   it('should throw when not in a git directory', async () => {
     const nonGitDir = await createTempDir()
     await expect(runAll({ cwd: nonGitDir })).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Current directory is not a git directory!"`
+      `"lint-staged failed"`
     )
     await removeTempDir(nonGitDir)
   })
@@ -414,17 +414,7 @@ describe('runAll', () => {
         }
       })
     ).rejects.toThrowError()
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR 
-        × lint-staged failed due to a git error.
-      ERROR   Any lost modifications can be restored from a git stash:
-
-          > git stash list
-          stash@{0}: automatic lint-staged backup
-          > git stash apply --index stash@{0}
-      "
-    `)
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
 
     // Something was wrong so new commit wasn't created
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -797,10 +787,6 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
-
-      WARN 
-        ‼ lint-staged prevented an empty git commit.
-        Use the --allow-empty option to continue, or check your task configuration
       "
     `)
 
@@ -994,9 +980,7 @@ describe('runAll', () => {
       INFO ❯ Applying modifications...
       LOG ✔ Applying modifications...
       INFO ❯ Restoring unstaged changes to partially staged files...
-      ERROR ✖ Unstaged changes could not be restored due to a merge conflict!
-      ERROR 
-        × lint-staged failed due to a git error."
+      ERROR ✖ Unstaged changes could not be restored due to a merge conflict!"
     `)
 
     // Something was wrong so the commit was aborted
