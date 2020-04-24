@@ -78,10 +78,6 @@ See https://github.com/okonet/lint-staged#configuration."
 
 exports[`lintStaged should use config object 1`] = `
 "
-LOG Running lint-staged with the following config:
-LOG {
-  '*': 'node -e \\"process.exit(1)\\"'
-}
 ERROR × Failed to get staged files!"
 `;
 

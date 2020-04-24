@@ -3993,10 +3993,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-listr2@1.3.7:
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/listr2/-/listr2-1.3.7.tgz#37a9971e077f9bc9490b3462ce19f2cd25cc0d3e"
-  integrity sha512-yeSjMMLwW7TQqUh0a4kW9uBF6K+vtOEFYzJdhgMWS0dYFBtT3O6gT8ng9f29P8tXKN281gKyGDR1P9OLXf3FsQ==
+listr2@1.3.8:
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/listr2/-/listr2-1.3.8.tgz#30924d79de1e936d8c40af54b6465cb814a9c828"
+  integrity sha512-iRDRVTgSDz44tBeBBg/35TQz4W+EZBWsDUq7hPpqeUHm7yLPNll0rkwW3lIX9cPAK7l+x95mGWLpxjqxftNfZA==
   dependencies:
     "@samverschueren/stream-to-observable" "^0.3.0"
     chalk "^3.0.0"

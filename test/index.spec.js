@@ -135,7 +135,7 @@ describe('lintStaged', () => {
       '*': 'node -e "process.exit(1)"'
     }
     expect.assertions(1)
-    await lintStaged({ config, debug: true, quiet: true }, logger)
+    await lintStaged({ config, quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 

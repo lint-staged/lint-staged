@@ -56,7 +56,7 @@ describe('lintStaged', () => {
         },
         "dateFormat": false,
         "exitOnError": false,
-        "renderer": "verbose",
+        "renderer": "test",
       }
     `)
   })
