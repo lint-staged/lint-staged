@@ -202,4 +202,33 @@ describe('resolveTaskFn', () => {
     )
     expect(context.errors.has(TaskError)).toEqual(true)
   })
+
+  it('should add output even when task succeeds if `verbose: true`', async () => {
+    expect.assertions(2)
+    execa.mockResolvedValueOnce({
+      stdout: 'Mock success',
+      stderr: '',
+      code: 0,
+      failed: false,
+      killed: false,
+      signal: undefined,
+      cmd: 'mock cmd'
+    })
+
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd', verbose: true })
+    const context = getInitialState()
+    await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
+    expect(context).toMatchInlineSnapshot(`
+      Object {
+        "errors": Set {},
+        "hasPartiallyStagedFiles": null,
+        "output": Array [
+          "
+      i mock cmd:
+      Mock success",
+        ],
+        "shouldBackup": null,
+      }
+    `)
+  })
 })
