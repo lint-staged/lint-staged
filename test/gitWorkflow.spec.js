@@ -5,8 +5,11 @@ import os from 'os'
 import path from 'path'
 
 import execGitBase from '../lib/execGit'
+import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
+import { getInitialState } from '../lib/state'
 
+jest.mock('../lib/file.js')
 jest.unmock('execa')
 
 jest.setTimeout(20000)
@@ -72,7 +75,7 @@ describe('gitWorkflow', () => {
         gitConfigDir: path.resolve(cwd, './.git')
       })
       jest.doMock('execa', () => Promise.reject({}))
-      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
+      const ctx = getInitialState()
       // mock a simple failure
       gitWorkflow.getPartiallyStagedFiles = () => ['foo']
       gitWorkflow.getHiddenFilepath = () => {
@@ -87,6 +90,8 @@ describe('gitWorkflow', () => {
             Symbol(GitError),
           },
           "hasPartiallyStagedFiles": true,
+          "output": Array [],
+          "shouldBackup": null,
         }
       `)
     })
@@ -98,7 +103,7 @@ describe('gitWorkflow', () => {
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git')
       })
-      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
+      const ctx = getInitialState()
       await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
         `"lint-staged automatic backup is missing!"`
       )
@@ -108,7 +113,9 @@ describe('gitWorkflow', () => {
             Symbol(GetBackupStashError),
             Symbol(GitError),
           },
-          "hasPartiallyStagedFiles": false,
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
+          "shouldBackup": null,
         }
       `)
     })
@@ -122,9 +129,9 @@ describe('gitWorkflow', () => {
       })
       const totallyRandom = `totally_random_file-${Date.now().toString()}`
       gitWorkflow.partiallyStagedFiles = [totallyRandom]
-      const ctx = { hasPartiallyStagedFiles: false, errors: new Set() }
+      const ctx = getInitialState()
       await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"error: pathspec '${totallyRandom}' did not match any file(s) known to git"`
+        `"error: pathspec 'totally_random_file-1587728648348' did not match any file(s) known to git"`
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
@@ -132,7 +139,35 @@ describe('gitWorkflow', () => {
             Symbol(GitError),
             Symbol(HideUnstagedChangesError),
           },
-          "hasPartiallyStagedFiles": false,
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
+          "shouldBackup": null,
+        }
+      `)
+    })
+  })
+
+  describe('restoreMergeStatus', () => {
+    it('should handle error when restoring merge state fails', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git')
+      })
+      gitWorkflow.mergeHeadBuffer = true
+      writeFile.mockImplementation(() => Promise.reject('test'))
+      const ctx = getInitialState()
+      await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"Merge state could not be restored due to an error!"`
+      )
+      expect(ctx).toMatchInlineSnapshot(`
+        Object {
+          "errors": Set {
+            Symbol(GitError),
+            Symbol(RestoreMergeStatusError),
+          },
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
+          "shouldBackup": null,
         }
       `)
     })
