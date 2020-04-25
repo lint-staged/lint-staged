@@ -173,15 +173,4 @@ describe('lintStaged', () => {
 
     expect(logger.printHistory()).toMatchSnapshot()
   })
-
-  it('should exit with code 1 on linter errors', async () => {
-    const config = {
-      '*': 'node -e "process.exit(1)"'
-    }
-    mockCosmiconfigWith({ config })
-    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const passed = await lintStaged({ quiet: true, shell: true }, logger)
-    expect(logger.printHistory()).toMatchSnapshot()
-    expect(passed).toBe(false)
-  })
 })
