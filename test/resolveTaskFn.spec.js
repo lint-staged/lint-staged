@@ -15,7 +15,7 @@ describe('resolveTaskFn', () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
-      command: 'node --arg=true ./myscript.js'
+      command: 'node --arg=true ./myscript.js',
     })
 
     await taskFn()
@@ -23,7 +23,7 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -32,7 +32,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       isFn: true,
-      command: 'node --arg=true ./myscript.js test.js'
+      command: 'node --arg=true ./myscript.js test.js',
     })
 
     await taskFn()
@@ -40,7 +40,7 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -50,7 +50,7 @@ describe('resolveTaskFn', () => {
       ...defaultOpts,
       isFn: true,
       shell: true,
-      command: 'node --arg=true ./myscript.js test.js'
+      command: 'node --arg=true ./myscript.js test.js',
     })
 
     await taskFn()
@@ -58,7 +58,7 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: true,
     })
   })
 
@@ -67,7 +67,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       shell: true,
-      command: 'node --arg=true ./myscript.js'
+      command: 'node --arg=true ./myscript.js',
     })
 
     await taskFn()
@@ -75,7 +75,7 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
       preferLocal: true,
       reject: false,
-      shell: true
+      shell: true,
     })
   })
 
@@ -84,7 +84,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       command: 'git diff',
-      gitDir: '../'
+      gitDir: '../',
     })
 
     await taskFn()
@@ -93,7 +93,7 @@ describe('resolveTaskFn', () => {
       cwd: '../',
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -106,7 +106,7 @@ describe('resolveTaskFn', () => {
     expect(execa).lastCalledWith('jest', ['test.js'], {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -115,7 +115,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       command: 'git diff',
-      relative: true
+      relative: true,
     })
 
     await taskFn()
@@ -124,7 +124,7 @@ describe('resolveTaskFn', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -135,7 +135,7 @@ describe('resolveTaskFn', () => {
       stderr: '',
       code: 0,
       failed: true,
-      cmd: 'mock cmd'
+      cmd: 'mock cmd',
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
@@ -151,7 +151,7 @@ describe('resolveTaskFn', () => {
       failed: false,
       killed: false,
       signal: 'SIGINT',
-      cmd: 'mock cmd'
+      cmd: 'mock cmd',
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
@@ -169,7 +169,7 @@ describe('resolveTaskFn', () => {
       failed: false,
       killed: true,
       signal: undefined,
-      cmd: 'mock cmd'
+      cmd: 'mock cmd',
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
@@ -192,7 +192,7 @@ describe('resolveTaskFn', () => {
       stderr: '',
       code: 0,
       failed: true,
-      cmd: 'mock cmd'
+      cmd: 'mock cmd',
     })
     const context = getInitialState()
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
@@ -212,7 +212,7 @@ describe('resolveTaskFn', () => {
       failed: false,
       killed: false,
       signal: undefined,
-      cmd: 'mock cmd'
+      cmd: 'mock cmd',
     })
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd', verbose: true })

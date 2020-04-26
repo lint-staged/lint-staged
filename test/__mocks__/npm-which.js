@@ -7,7 +7,7 @@ const mockFn = jest.fn((path) => {
 
 module.exports = function npmWhich() {
   return {
-    sync: mockFn
+    sync: mockFn,
   }
 }
 

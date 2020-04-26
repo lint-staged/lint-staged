@@ -42,7 +42,7 @@ describe('lintStaged', () => {
     await lintStaged(
       {
         configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
-        debug: true
+        debug: true,
       },
       makeConsoleMock()
     )

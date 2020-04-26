@@ -2,7 +2,7 @@ import {
   applyModificationsSkipped,
   cleanupSkipped,
   restoreOriginalStateSkipped,
-  restoreUnstagedChangesSkipped
+  restoreUnstagedChangesSkipped,
 } from '../lib/state'
 import { GitError, RestoreOriginalStateError } from '../lib/symbols'
 

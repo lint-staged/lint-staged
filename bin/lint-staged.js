@@ -15,8 +15,8 @@ const pkg = require('../package.json')
 require('please-upgrade-node')(
   Object.assign({}, pkg, {
     engines: {
-      node: '>=10.13.0' // First LTS release of 'Dubnium'
-    }
+      node: '>=10.13.0', // First LTS release of 'Dubnium'
+    },
   })
 )
 
@@ -81,7 +81,7 @@ const options = {
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
-  verbose: !!cmdline.verbose
+  verbose: !!cmdline.verbose,
 }
 
 debug('Options parsed from command-line:', options)

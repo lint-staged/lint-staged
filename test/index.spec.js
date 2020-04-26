@@ -13,12 +13,12 @@ jest.mock('../lib/getStagedFiles')
 
 const replaceSerializer = (from, to) => ({
   test: (val) => typeof val === 'string' && from.test(val),
-  print: (val) => val.replace(from, to)
+  print: (val) => val.replace(from, to),
 })
 
 const mockCosmiconfigWith = (result) => {
   cosmiconfig.mockImplementationOnce(() => ({
-    search: () => Promise.resolve(result)
+    search: () => Promise.resolve(result),
   }))
 }
 
@@ -46,7 +46,7 @@ describe('lintStaged', () => {
   it('should use cosmiconfig if no params are passed', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged(undefined, logger)
@@ -56,7 +56,7 @@ describe('lintStaged', () => {
   it('should return true when passed', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'node -e "process.exit(0)"'
+      '*': 'node -e "process.exit(0)"',
     }
     getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
     const passed = await lintStaged({ config, quiet: true }, logger)
@@ -78,7 +78,7 @@ describe('lintStaged', () => {
   it('should output config in debug mode', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged({ debug: true, quiet: true }, logger)
@@ -88,7 +88,7 @@ describe('lintStaged', () => {
   it('should not output config in normal mode', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged({ quiet: true }, logger)
@@ -110,7 +110,7 @@ describe('lintStaged', () => {
       {
         configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
         debug: true,
-        quiet: true
+        quiet: true,
       },
       logger
     )
@@ -123,7 +123,7 @@ describe('lintStaged', () => {
       {
         configPath: path.join(__dirname, '__mocks__', 'advanced-config.js'),
         debug: true,
-        quiet: true
+        quiet: true,
       },
       logger
     )
@@ -132,7 +132,7 @@ describe('lintStaged', () => {
 
   it('should use config object', async () => {
     const config = {
-      '*': 'node -e "process.exit(1)"'
+      '*': 'node -e "process.exit(1)"',
     }
     expect.assertions(1)
     await lintStaged({ config, quiet: true }, logger)

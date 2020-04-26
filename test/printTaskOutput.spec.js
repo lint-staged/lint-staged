@@ -2,7 +2,7 @@ import printTaskOutput from '../lib/printTaskOutput'
 
 const logger = {
   error: jest.fn(() => {}),
-  log: jest.fn(() => {})
+  log: jest.fn(() => {}),
 }
 
 describe('printTaskOutput', () => {

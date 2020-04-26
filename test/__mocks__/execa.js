@@ -6,7 +6,7 @@ const execa = jest.fn(() =>
     cmd: 'mock cmd',
     failed: false,
     killed: false,
-    signal: null
+    signal: null,
   })
 )
 

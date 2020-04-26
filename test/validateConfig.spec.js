@@ -23,14 +23,14 @@ describe('validateConfig', () => {
 
   it('should throw and should print validation errors for invalid config', () => {
     const invalidConfig = {
-      foo: false
+      foo: false,
     }
     expect(() => validateConfig(invalidConfig)).toThrowErrorMatchingSnapshot()
   })
 
   it('should not throw and should print nothing for valid config', () => {
     const validSimpleConfig = {
-      '*.js': ['eslint --fix', 'git add']
+      '*.js': ['eslint --fix', 'git add'],
     }
     expect(() => validateConfig(validSimpleConfig)).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
@@ -43,7 +43,7 @@ describe('validateConfig', () => {
           const files = filenames.join(' ')
           return `eslint --fix ${files} && git add ${files}`
         },
-        '*.css': [(filenames) => filenames.map((filename) => `eslint --fix ${filename}`)]
+        '*.css': [(filenames) => filenames.map((filename) => `eslint --fix ${filename}`)],
       })
     ).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
@@ -56,11 +56,11 @@ describe('validateConfig', () => {
       globOptions: { matchBase: false },
       ignore: ['test.js'],
       linters: {
-        '*.js': ['eslint']
+        '*.js': ['eslint'],
       },
       relative: true,
       renderer: 'silent',
-      subTaskConcurrency: 10
+      subTaskConcurrency: 10,
     }
 
     expect(() => validateConfig(advancedConfig)).toThrowErrorMatchingSnapshot()
@@ -69,7 +69,7 @@ describe('validateConfig', () => {
 
   it('should not throw when config contains deprecated key but with valid task', () => {
     const stillValidConfig = {
-      concurrent: 'my command'
+      concurrent: 'my command',
     }
     expect(() => validateConfig(stillValidConfig)).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()

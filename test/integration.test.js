@@ -211,8 +211,8 @@ describe('lint-staged', () => {
           '*.js': () => {
             fs.writeFileSync(testFile, Buffer.from(testJsFileUnfixable, 'binary'))
             return `prettier --write ${testFile}`
-          }
-        }
+          },
+        },
       })
     ).rejects.toThrowError()
 
@@ -399,9 +399,9 @@ describe('lint-staged', () => {
           '*.js': (files) => [
             `touch ${cwd}/.git/index.lock`,
             `prettier --write ${files.join(' ')}`,
-            `git add ${files.join(' ')}`
-          ]
-        }
+            `git add ${files.join(' ')}`,
+          ],
+        },
       })
     ).rejects.toThrowError()
 
@@ -619,7 +619,7 @@ describe('lint-staged', () => {
     // Run lint-staged with `prettier --list-different` and commit pretty file
     await gitCommit({ config: { '*.{js,md}': 'prettier --list-different' } }, [
       '--amend',
-      '--no-edit'
+      '--no-edit',
     ])
 
     // Nothing is wrong, so the commit was amended
@@ -818,7 +818,7 @@ describe('lint-staged', () => {
     // Here we also pass '--allow-empty' to gitCommit because this part is not the full lint-staged
     await gitCommit({ allowEmpty: true, config: { '*.js': 'prettier --write' } }, [
       '-m test',
-      '--allow-empty'
+      '--allow-empty',
     ])
 
     // Nothing was wrong so the empty commit is created
@@ -916,7 +916,7 @@ describe('lint-staged', () => {
     // Run lint-staged with --no-stash
     await gitCommit({
       ...fixJsConfig,
-      stash: false
+      stash: false,
     })
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
@@ -954,9 +954,9 @@ describe('lint-staged', () => {
           '*.js': () => {
             fs.writeFileSync(testFile, Buffer.from(testJsFileUnfixable, 'binary'))
             return `prettier --write ${testFile}`
-          }
+          },
         },
-        stash: false
+        stash: false,
       })
     ).rejects.toThrowError()
 
@@ -1010,7 +1010,7 @@ describe('lint-staged', () => {
     await expect(
       gitCommit({
         ...fixJsConfig,
-        stash: false
+        stash: false,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
@@ -1053,7 +1053,7 @@ describe('lintStaged', () => {
     await gitCommit({
       config: { '*.js': 'prettier --list-different' },
       cwd,
-      debut: true
+      debut: true,
     })
 
     expect(console.printHistory()).toMatchInlineSnapshot(`

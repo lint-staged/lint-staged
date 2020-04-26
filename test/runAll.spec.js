@@ -92,7 +92,7 @@ describe('runAll', () => {
       prepare: (ctx) => {
         ctx.errors.add(GitError)
         throw new Error('test')
-      }
+      },
     }))
 
     await expect(
@@ -118,7 +118,7 @@ describe('runAll', () => {
         stderr: 'Linter finished with error',
         code: 1,
         failed: true,
-        cmd: 'mock cmd'
+        cmd: 'mock cmd',
       })
     )
 
@@ -155,7 +155,7 @@ describe('runAll', () => {
         failed: false,
         killed: true,
         signal: 'SIGINT',
-        cmd: 'mock cmd'
+        cmd: 'mock cmd',
       })
     )
 

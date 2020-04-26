@@ -72,7 +72,7 @@ describe('gitWorkflow', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git')
+        gitConfigDir: path.resolve(cwd, './.git'),
       })
       jest.doMock('execa', () => Promise.reject({}))
       const ctx = getInitialState()
@@ -101,7 +101,7 @@ describe('gitWorkflow', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git')
+        gitConfigDir: path.resolve(cwd, './.git'),
       })
       const ctx = getInitialState()
       await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -125,7 +125,7 @@ describe('gitWorkflow', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git')
+        gitConfigDir: path.resolve(cwd, './.git'),
       })
       const totallyRandom = `totally_random_file-${Date.now().toString()}`
       gitWorkflow.partiallyStagedFiles = [totallyRandom]
@@ -151,7 +151,7 @@ describe('gitWorkflow', () => {
     it('should handle error when restoring merge state fails', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git')
+        gitConfigDir: path.resolve(cwd, './.git'),
       })
       gitWorkflow.mergeHeadBuffer = true
       writeFile.mockImplementation(() => Promise.reject('test'))

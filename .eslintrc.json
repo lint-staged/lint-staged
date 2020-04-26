@@ -1,11 +1,23 @@
 {
-  "extends": ["okonet/node"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "sourceType": "script"
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "plugins": ["node", "import", "prettier"],
   "rules": {
     "no-console": "off",
     "node/no-unsupported-features/node-builtins": "off",
     "node/no-unsupported-features/es-syntax": ["error", { "version": ">=10.13.0" }],
     "node/no-unsupported-features/es-builtins": ["error", { "version": ">=10.13.0" }],
-    "prettier/prettier": "off",
-    "require-atomic-updates": "off"
+    "prettier/prettier": "error"
   }
 }

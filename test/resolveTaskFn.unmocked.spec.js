@@ -8,7 +8,7 @@ describe('resolveTaskFn', () => {
       command: 'node -e "process.exit(1)" || echo $?',
       files: ['package.json'],
       isFn: true,
-      shell: true
+      shell: true,
     })
 
     await expect(taskFn()).resolves.toMatchInlineSnapshot(`undefined`)
