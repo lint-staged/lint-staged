@@ -40,7 +40,11 @@ cmdline
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
-  .option('-v, --verbose', 'always show task output', false)
+  .option(
+    '-v, --verbose',
+    'show task output even when tasks succeed; by default only failed output is shown',
+    false
+  )
   .parse(process.argv)
 
 if (cmdline.debug) {

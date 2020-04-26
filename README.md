@@ -72,8 +72,9 @@ Options:
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -x, --shell                        skip parsing of tasks for better shell support (default:
                                      false)
-  -v, --verbose                      always show task output (default: false)
-  -h, --help                         output usage information
+  -v, --verbose                      show task output even when tasks succeed; by default only
+                                     failed output is shown (default: false)
+  -h, --help                         display help for command
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
