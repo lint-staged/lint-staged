@@ -90,6 +90,16 @@ describe('lint-staged', () => {
     `)
     await removeTempDir(nonGitDir)
   })
+
+  it('should fail without output when not in a git directory and quiet', async () => {
+    const nonGitDir = await createTempDir()
+    const logger = makeConsoleMock()
+    await expect(
+      lintStaged({ ...fixJsConfig, cwd: nonGitDir, quiet: true }, logger)
+    ).resolves.toEqual(false)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+    await removeTempDir(nonGitDir)
+  })
 })
 
 const globalConsoleTemp = console

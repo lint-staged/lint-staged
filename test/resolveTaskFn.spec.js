@@ -203,6 +203,32 @@ describe('resolveTaskFn', () => {
     expect(context.errors.has(TaskError)).toEqual(true)
   })
 
+  it('should not add output when there is none', async () => {
+    expect.assertions(2)
+    execa.mockResolvedValueOnce({
+      stdout: '',
+      stderr: '',
+      code: 0,
+      failed: false,
+      killed: false,
+      signal: undefined,
+      cmd: 'mock cmd',
+    })
+
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd', verbose: true })
+    const context = getInitialState()
+    await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
+    expect(context).toMatchInlineSnapshot(`
+      Object {
+        "errors": Set {},
+        "hasPartiallyStagedFiles": null,
+        "output": Array [],
+        "quiet": false,
+        "shouldBackup": null,
+      }
+    `)
+  })
+
   it('should add output even when task succeeds if `verbose: true`', async () => {
     expect.assertions(2)
     execa.mockResolvedValueOnce({
@@ -227,6 +253,65 @@ describe('resolveTaskFn', () => {
       i mock cmd:
       Mock success",
         ],
+        "quiet": false,
+        "shouldBackup": null,
+      }
+    `)
+  })
+
+  it('should not add title to output when task errors while quiet', async () => {
+    expect.assertions(2)
+    execa.mockResolvedValueOnce({
+      stdout: '',
+      stderr: 'stderr',
+      code: 1,
+      failed: true,
+      killed: false,
+      signal: undefined,
+      cmd: 'mock cmd',
+    })
+
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
+    const context = getInitialState({ quiet: true })
+    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
+    expect(context).toMatchInlineSnapshot(`
+      Object {
+        "errors": Set {
+          Symbol(TaskError),
+        },
+        "hasPartiallyStagedFiles": null,
+        "output": Array [
+          "stderr",
+        ],
+        "quiet": true,
+        "shouldBackup": null,
+      }
+    `)
+  })
+
+  it('should not print anything when task errors without output while quiet', async () => {
+    expect.assertions(2)
+    execa.mockResolvedValueOnce({
+      stdout: '',
+      stderr: '',
+      code: 1,
+      failed: true,
+      killed: false,
+      signal: undefined,
+      cmd: 'mock cmd',
+    })
+
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
+    const context = getInitialState({ quiet: true })
+    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
+    expect(context).toMatchInlineSnapshot(`
+      Object {
+        "errors": Set {
+          Symbol(TaskError),
+        },
+        "hasPartiallyStagedFiles": null,
+        "output": Array [],
+        "quiet": true,
         "shouldBackup": null,
       }
     `)

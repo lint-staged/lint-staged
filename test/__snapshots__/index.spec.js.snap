@@ -5,8 +5,7 @@ exports[`lintStaged should load an npm config package when specified 1`] = `
 LOG Running lint-staged with the following config:
 LOG {
   '*': 'mytask'
-}
-ERROR × Failed to get staged files!"
+}"
 `;
 
 exports[`lintStaged should load config file when specified 1`] = `
@@ -14,22 +13,17 @@ exports[`lintStaged should load config file when specified 1`] = `
 LOG Running lint-staged with the following config:
 LOG {
   '*': 'mytask'
-}
-ERROR × Failed to get staged files!"
+}"
 `;
 
-exports[`lintStaged should not output config in normal mode 1`] = `
-"
-ERROR × Failed to get staged files!"
-`;
+exports[`lintStaged should not output config in normal mode 1`] = `""`;
 
 exports[`lintStaged should output config in debug mode 1`] = `
 "
 LOG Running lint-staged with the following config:
 LOG {
   '*': 'mytask'
-}
-ERROR × Failed to get staged files!"
+}"
 `;
 
 exports[`lintStaged should parse function linter from js config 1`] = `
@@ -38,8 +32,7 @@ LOG Running lint-staged with the following config:
 LOG {
   '*.css': filenames => \`echo \${filenames.join(' ')}\`,
   '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
-}
-ERROR × Failed to get staged files!"
+}"
 `;
 
 exports[`lintStaged should print helpful error message when config file is not found 2`] = `
@@ -70,10 +63,7 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration."
 `;
 
-exports[`lintStaged should use config object 1`] = `
-"
-ERROR × Failed to get staged files!"
-`;
+exports[`lintStaged should use config object 1`] = `""`;
 
 exports[`lintStaged should use cosmiconfig if no params are passed 1`] = `
 "

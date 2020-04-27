@@ -91,6 +91,7 @@ describe('gitWorkflow', () => {
           },
           "hasPartiallyStagedFiles": true,
           "output": Array [],
+          "quiet": false,
           "shouldBackup": null,
         }
       `)
@@ -115,6 +116,7 @@ describe('gitWorkflow', () => {
           },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
+          "quiet": false,
           "shouldBackup": null,
         }
       `)
@@ -141,6 +143,7 @@ describe('gitWorkflow', () => {
           },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
+          "quiet": false,
           "shouldBackup": null,
         }
       `)
@@ -167,6 +170,7 @@ describe('gitWorkflow', () => {
           },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
+          "quiet": false,
           "shouldBackup": null,
         }
       `)

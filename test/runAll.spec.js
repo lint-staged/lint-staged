@@ -45,6 +45,20 @@ describe('runAll', () => {
               "output": Array [
                 "i No staged files found.",
               ],
+              "quiet": false,
+              "shouldBackup": true,
+            }
+          `)
+  })
+
+  it('should not print output when no staged files and quiet', async () => {
+    expect.assertions(1)
+    await expect(runAll({ config: {}, quiet: true })).resolves.toMatchInlineSnapshot(`
+            Object {
+              "errors": Set {},
+              "hasPartiallyStagedFiles": null,
+              "output": Array [],
+              "quiet": true,
               "shouldBackup": true,
             }
           `)
@@ -61,6 +75,13 @@ describe('runAll', () => {
     const logger = makeConsoleMock()
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+  })
+
+  it('should exit without output when no staged files match configured tasks and quiet', async () => {
+    expect.assertions(1)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    await runAll({ config: { '*.css': ['echo "sample"'] }, quiet: true })
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should not skip tasks if there are files', async () => {
