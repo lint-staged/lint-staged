@@ -13,12 +13,12 @@ jest.mock('../lib/getStagedFiles')
 
 const replaceSerializer = (from, to) => ({
   test: (val) => typeof val === 'string' && from.test(val),
-  print: (val) => val.replace(from, to)
+  print: (val) => val.replace(from, to),
 })
 
 const mockCosmiconfigWith = (result) => {
   cosmiconfig.mockImplementationOnce(() => ({
-    search: () => Promise.resolve(result)
+    search: () => Promise.resolve(result),
   }))
 }
 
@@ -46,11 +46,21 @@ describe('lintStaged', () => {
   it('should use cosmiconfig if no params are passed', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged(undefined, logger)
     expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should return true when passed', async () => {
+    expect.assertions(1)
+    const config = {
+      '*': 'node -e "process.exit(0)"',
+    }
+    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
+    const passed = await lintStaged({ config, quiet: true }, logger)
+    expect(passed).toEqual(true)
   })
 
   it('should use use the console if no logger is passed', async () => {
@@ -68,7 +78,7 @@ describe('lintStaged', () => {
   it('should output config in debug mode', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged({ debug: true, quiet: true }, logger)
@@ -78,7 +88,7 @@ describe('lintStaged', () => {
   it('should not output config in normal mode', async () => {
     expect.assertions(1)
     const config = {
-      '*': 'mytask'
+      '*': 'mytask',
     }
     mockCosmiconfigWith({ config })
     await lintStaged({ quiet: true }, logger)
@@ -100,7 +110,7 @@ describe('lintStaged', () => {
       {
         configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
         debug: true,
-        quiet: true
+        quiet: true,
       },
       logger
     )
@@ -113,7 +123,7 @@ describe('lintStaged', () => {
       {
         configPath: path.join(__dirname, '__mocks__', 'advanced-config.js'),
         debug: true,
-        quiet: true
+        quiet: true,
       },
       logger
     )
@@ -122,10 +132,10 @@ describe('lintStaged', () => {
 
   it('should use config object', async () => {
     const config = {
-      '*': 'node -e "process.exit(1)"'
+      '*': 'node -e "process.exit(1)"',
     }
     expect.assertions(1)
-    await lintStaged({ config, debug: true, quiet: true }, logger)
+    await lintStaged({ config, quiet: true }, logger)
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -162,16 +172,5 @@ describe('lintStaged', () => {
     ).rejects.toThrowError()
 
     expect(logger.printHistory()).toMatchSnapshot()
-  })
-
-  it('should exit with code 1 on linter errors', async () => {
-    const config = {
-      '*': 'node -e "process.exit(1)"'
-    }
-    mockCosmiconfigWith({ config })
-    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
-    const passed = await lintStaged({ quiet: true, shell: true }, logger)
-    expect(logger.printHistory()).toMatchSnapshot()
-    expect(passed).toBe(false)
   })
 })

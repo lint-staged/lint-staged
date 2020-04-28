@@ -1,8 +1,8 @@
-import Listr from 'listr'
+import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
-jest.mock('listr')
+jest.mock('listr2')
 jest.mock('../lib/resolveGitRepo')
 
 // eslint-disable-next-line import/first
@@ -22,11 +22,20 @@ describe('lintStaged', () => {
       { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
       makeConsoleMock()
     )
-    expect(Listr.mock.calls[0][1]).toEqual({
-      dateFormat: false,
-      exitOnError: false,
-      renderer: 'silent'
-    })
+    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
+      Object {
+        "ctx": Object {
+          "errors": Set {},
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
+          "quiet": true,
+          "shouldBackup": true,
+        },
+        "dateFormat": false,
+        "exitOnError": false,
+        "renderer": "silent",
+      }
+    `)
   })
 
   it('should pass debug flag to Listr', async () => {
@@ -34,14 +43,23 @@ describe('lintStaged', () => {
     await lintStaged(
       {
         configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
-        debug: true
+        debug: true,
       },
       makeConsoleMock()
     )
-    expect(Listr.mock.calls[0][1]).toEqual({
-      dateFormat: false,
-      exitOnError: false,
-      renderer: 'verbose'
-    })
+    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
+      Object {
+        "ctx": Object {
+          "errors": Set {},
+          "hasPartiallyStagedFiles": null,
+          "output": Array [],
+          "quiet": false,
+          "shouldBackup": true,
+        },
+        "dateFormat": false,
+        "exitOnError": false,
+        "renderer": "test",
+      }
+    `)
   })
 })

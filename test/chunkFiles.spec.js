@@ -23,7 +23,7 @@ describe('chunkFiles', () => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20, relative: true })
     expect(chunkedFiles).toEqual([
       [files[0], files[1]],
-      [files[2], files[3]]
+      [files[2], files[3]],
     ])
   })
 })

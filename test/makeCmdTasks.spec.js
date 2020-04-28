@@ -31,7 +31,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: ['test', 'test2'],
       gitDir,
-      files: ['test.js']
+      files: ['test.js'],
     })
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
@@ -45,7 +45,7 @@ describe('makeCmdTasks', () => {
     expect(execa).lastCalledWith('test', ['test.js'], {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
@@ -54,7 +54,7 @@ describe('makeCmdTasks', () => {
     expect(execa).lastCalledWith('test2', ['test.js'], {
       preferLocal: true,
       reject: false,
-      shell: false
+      shell: false,
     })
   })
 
@@ -68,7 +68,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: () => ['test', 'test2'],
       gitDir,
-      files: ['test.js']
+      files: ['test.js'],
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('[Function] test ...')
@@ -79,7 +79,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: (filenames) => filenames.map((file) => `test ${file}`),
       gitDir,
-      files: ['test.js', 'test2.js']
+      files: ['test.js', 'test2.js'],
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('[Function] test ...')
@@ -90,7 +90,7 @@ describe('makeCmdTasks', () => {
     const res = await makeCmdTasks({
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       gitDir,
-      files: ['test.js', 'test2.js', 'test3.js']
+      files: ['test.js', 'test2.js', 'test3.js'],
     })
     expect(res.length).toBe(5)
     expect(res[0].title).toEqual('[Function] test ...')

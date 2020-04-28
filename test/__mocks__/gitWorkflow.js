@@ -4,7 +4,7 @@ const stub = {
   applyModifications: jest.fn().mockImplementation(() => Promise.resolve()),
   restoreUnstagedChanges: jest.fn().mockImplementation(() => Promise.resolve()),
   restoreOriginalState: jest.fn().mockImplementation(() => Promise.resolve()),
-  cleanup: jest.fn().mockImplementation(() => Promise.resolve())
+  cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
 }
 
 module.exports = () => stub

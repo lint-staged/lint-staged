@@ -20,11 +20,11 @@ jobs:
   test:
     strategy:
       matrix:
-        # Test with Node.js v10 (LTS), v12 (LTS), and v13 (latest)
+        # Test with Node.js v10 (LTS), v12 (LTS), and v14 (latest)
         node:
           - 10
           - 12
-          - 13
+          - 14
         # Test with Ubuntu and macOS
         os:
           - ubuntu-latest
@@ -58,9 +58,9 @@ jobs:
       - run: yarn
       # Run tests
       - run: yarn test
-      # Upload coverage artifact from a single matrix entry
+      # Upload coverage artifact from Node.js LTS
       - uses: actions/upload-artifact@v1
-        if: matrix.os == 'ubuntu-latest' && matrix.node == '13'
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '12'
         with:
           name: coverage
           path: coverage
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '13'
+          node-version: '12' # release using Node.js LTS
       # Release using semantic-release.
       # While this runs on all branches, it will only release latest from master
       - uses: codfish/semantic-release-action@v1

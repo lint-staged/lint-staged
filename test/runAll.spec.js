@@ -6,7 +6,8 @@ import path from 'path'
 import getStagedFiles from '../lib/getStagedFiles'
 import GitWorkflow from '../lib/gitWorkflow'
 import resolveGitRepo from '../lib/resolveGitRepo'
-import runAll, { shouldSkip } from '../lib/runAll'
+import runAll from '../lib/runAll'
+import { GitError } from '../lib/symbols'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
@@ -37,26 +38,50 @@ describe('runAll', () => {
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    await expect(runAll({ config: {} })).resolves.toEqual(undefined)
+    await expect(runAll({ config: {} })).resolves.toMatchInlineSnapshot(`
+            Object {
+              "errors": Set {},
+              "hasPartiallyStagedFiles": null,
+              "output": Array [
+                "i No staged files found.",
+              ],
+              "quiet": false,
+              "shouldBackup": true,
+            }
+          `)
+  })
+
+  it('should not print output when no staged files and quiet', async () => {
+    expect.assertions(1)
+    await expect(runAll({ config: {}, quiet: true })).resolves.toMatchInlineSnapshot(`
+            Object {
+              "errors": Set {},
+              "hasPartiallyStagedFiles": null,
+              "output": Array [],
+              "quiet": true,
+              "shouldBackup": true,
+            }
+          `)
   })
 
   it('should resolve the promise with no files', async () => {
     expect.assertions(1)
     await runAll({ config: { '*.js': ['echo "sample"'] } })
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG i No staged files found."
-    `)
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()
     await runAll({ config: { '*.js': ['echo "sample"'] }, debug: true }, logger)
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG i No staged files found."
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+  })
+
+  it('should exit without output when no staged files match configured tasks and quiet', async () => {
+    expect.assertions(1)
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    await runAll({ config: { '*.css': ['echo "sample"'] }, quiet: true })
+    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should not skip tasks if there are files', async () => {
@@ -65,18 +90,18 @@ describe('runAll', () => {
     await runAll({ config: { '*.js': ['echo "sample"'] } })
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [completed]
-      LOG Running tasks for *.js [completed]
-      LOG Running tasks... [completed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      LOG [STARTED] Preparing...
+      LOG [SUCCESS] Preparing...
+      LOG [STARTED] Running tasks...
+      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] echo \\"sample\\"
+      LOG [SUCCESS] echo \\"sample\\"
+      LOG [SUCCESS] Running tasks for *.js
+      LOG [SUCCESS] Running tasks...
+      LOG [STARTED] Applying modifications...
+      LOG [SUCCESS] Applying modifications...
+      LOG [STARTED] Cleaning up...
+      LOG [SUCCESS] Cleaning up..."
     `)
   })
 
@@ -86,37 +111,22 @@ describe('runAll', () => {
     GitWorkflow.mockImplementationOnce(() => ({
       ...jest.requireActual('../lib/gitWorkflow'),
       prepare: (ctx) => {
-        ctx.gitError = true
+        ctx.errors.add(GitError)
         throw new Error('test')
-      }
+      },
     }))
 
     await expect(
       runAll({ config: { '*.js': ['echo "sample"'] } })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [failed]
-      LOG → test
-      LOG Running tasks... [started]
-      LOG Running tasks... [skipped]
-      LOG → Skipped because of previous git error.
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of previous git error.
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [skipped]
-      LOG → Skipped because of previous git error.
-      ERROR 
-        × lint-staged failed due to a git error.
-      ERROR   Any lost modifications can be restored from a git stash:
-
-          > git stash list
-          stash@{0}: On master: automatic lint-staged backup
-          > git stash apply --index stash@{0}
-      "
+      LOG [STARTED] Preparing...
+      ERROR [FAILED] test
+      LOG [STARTED] Running tasks...
+      LOG [STARTED] Applying modifications...
+      LOG [STARTED] Cleaning up..."
     `)
   })
 
@@ -129,38 +139,34 @@ describe('runAll', () => {
         stderr: 'Linter finished with error',
         code: 1,
         failed: true,
-        cmd: 'mock cmd'
+        cmd: 'mock cmd',
       })
     )
 
     await expect(
       runAll({ config: { '*.js': ['echo "sample"'] } })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Something went wrong"`)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]"
+      LOG [STARTED] Preparing...
+      LOG [SUCCESS] Preparing...
+      LOG [STARTED] Running tasks...
+      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] echo \\"sample\\"
+      ERROR [FAILED] echo \\"sample\\" [1]
+      ERROR [FAILED] echo \\"sample\\" [1]
+      LOG [SUCCESS] Running tasks...
+      LOG [STARTED] Applying modifications...
+      LOG [STARTED] Reverting to original state because of errors...
+      LOG [SUCCESS] Reverting to original state because of errors...
+      LOG [STARTED] Cleaning up...
+      LOG [SUCCESS] Cleaning up..."
     `)
   })
 
   it('should skip tasks and restore state if terminated', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
       Promise.resolve({
@@ -170,68 +176,29 @@ describe('runAll', () => {
         failed: false,
         killed: true,
         signal: 'SIGINT',
-        cmd: 'mock cmd'
+        cmd: 'mock cmd',
       })
     )
 
-    try {
-      await runAll({ config: { '*.js': ['echo "sample"'] } })
-    } catch (err) {
-      console.log(err)
-    }
+    await expect(
+      runAll({ config: { '*.js': ['echo "sample"'] } })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG Preparing... [started]
-      LOG Preparing... [completed]
-      LOG Running tasks... [started]
-      LOG Running tasks for *.js [started]
-      LOG echo \\"sample\\" [started]
-      LOG echo \\"sample\\" [failed]
-      LOG → 
-      LOG Running tasks for *.js [failed]
-      LOG → 
-      LOG Running tasks... [failed]
-      LOG Applying modifications... [started]
-      LOG Applying modifications... [skipped]
-      LOG → Skipped because of errors from tasks.
-      LOG Reverting to original state because of errors... [started]
-      LOG Reverting to original state because of errors... [completed]
-      LOG Cleaning up... [started]
-      LOG Cleaning up... [completed]
-      LOG {
-        name: 'ListrError',
-        errors: [
-          {
-            privateMsg: '\\\\n\\\\n\\\\n‼ echo was terminated with SIGINT',
-            context: {taskError: true}
-          }
-        ],
-        context: {taskError: true}
-      }"
+      LOG [STARTED] Preparing...
+      LOG [SUCCESS] Preparing...
+      LOG [STARTED] Running tasks...
+      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] echo \\"sample\\"
+      ERROR [FAILED] echo \\"sample\\" [SIGINT]
+      ERROR [FAILED] echo \\"sample\\" [SIGINT]
+      LOG [SUCCESS] Running tasks...
+      LOG [STARTED] Applying modifications...
+      LOG [STARTED] Reverting to original state because of errors...
+      LOG [SUCCESS] Reverting to original state because of errors...
+      LOG [STARTED] Cleaning up...
+      LOG [SUCCESS] Cleaning up..."
     `)
-  })
-})
-
-describe('shouldSkip', () => {
-  describe('shouldSkipApplyModifications', () => {
-    it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipApplyModifications({ gitError: true })
-      expect(typeof result === 'string').toEqual(true)
-    })
-  })
-
-  describe('shouldSkipRevert', () => {
-    it('should return error message when there is an unkown git error', () => {
-      const result = shouldSkip.shouldSkipRevert({ gitError: true })
-      expect(typeof result === 'string').toEqual(true)
-    })
-  })
-
-  describe('shouldSkipCleanup', () => {
-    it('should return error message when reverting to original state fails', () => {
-      const result = shouldSkip.shouldSkipCleanup({ gitRestoreOriginalStateError: true })
-      expect(typeof result === 'string').toEqual(true)
-    })
   })
 })
