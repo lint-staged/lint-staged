@@ -1,8 +1,11 @@
+import normalize from 'normalize-path'
+import path from 'path'
+
 import chunkFiles from '../lib/chunkFiles'
 
 describe('chunkFiles', () => {
   const files = ['example.js', 'foo.js', 'bar.js', 'foo/bar.js']
-  const baseDir = '/opt/git/example.git'
+  const baseDir = normalize('/opt/git/example.git')
 
   it('should default to sane value', () => {
     const chunkedFiles = chunkFiles({ baseDir, files: ['foo.js'], relative: true })
@@ -25,5 +28,10 @@ describe('chunkFiles', () => {
       [files[0], files[1]],
       [files[2], files[3]],
     ])
+  })
+
+  it('should resolve paths when relative: false', () => {
+    const chunkedFiles = chunkFiles({ baseDir, files, relative: false })
+    expect(chunkedFiles).toEqual([files.map((file) => normalize(path.resolve(baseDir, file)))])
   })
 })
