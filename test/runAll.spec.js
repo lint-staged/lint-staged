@@ -201,4 +201,33 @@ describe('runAll', () => {
       LOG [SUCCESS] Cleaning up..."
     `)
   })
+
+  it('should resolve matched files to cwd when using relative option', async () => {
+    // A staged file inside test/, which will be our cwd
+    getStagedFiles.mockImplementationOnce(async () => ['test/foo.js'])
+
+    // We are only interested in the `matchedFileChunks` generation
+    let expected
+    const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
+    GitWorkflow.mockImplementationOnce(mockConstructor)
+
+    const mockTask = jest.fn(() => ['echo "sample"'])
+
+    // actual cwd
+    const cwd = process.cwd()
+    // For the test, set cwd in test/
+    const innerCwd = path.join(cwd, 'test/')
+    try {
+      // Run lint-staged in `innerCwd` with relative option
+      // This means the sample task will receive `foo.js`
+      await runAll({ config: { '*.js': mockTask }, stash: false, relative: true, cwd: innerCwd })
+    } catch {} // eslint-disable-line no-empty
+
+    // task received relative `foo.js`
+    expect(mockTask).toHaveBeenCalledTimes(1)
+    expect(mockTask).toHaveBeenCalledWith(['foo.js'])
+    // GitWorkflow received absolute `test/foo.js`
+    expect(mockConstructor).toHaveBeenCalledTimes(1)
+    expect(expected).toEqual([[normalize(path.join(cwd, 'test/foo.js'))]])
+  })
 })
