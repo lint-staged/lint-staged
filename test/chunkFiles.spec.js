@@ -13,13 +13,13 @@ describe('chunkFiles', () => {
   })
 
   it('should not chunk short argument string', () => {
-    const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 1000 })
+    const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 1000, relative: true })
     expect(chunkedFiles).toEqual([files])
   })
 
   it('should chunk too long argument string', () => {
-    const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20 })
-    expect(chunkedFiles).toEqual(files.map((file) => [file]))
+    const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20, relative: false })
+    expect(chunkedFiles).toEqual(files.map((file) => [normalize(path.resolve(baseDir, file))]))
   })
 
   it('should take into account relative setting', () => {
@@ -30,8 +30,13 @@ describe('chunkFiles', () => {
     ])
   })
 
-  it('should resolve paths when relative: false', () => {
-    const chunkedFiles = chunkFiles({ baseDir, files, relative: false })
+  it('should resolve absolute paths by default', () => {
+    const chunkedFiles = chunkFiles({ baseDir, files })
+    expect(chunkedFiles).toEqual([files.map((file) => normalize(path.resolve(baseDir, file)))])
+  })
+
+  it('should resolve absolute paths by default even when maxArgLength is set', () => {
+    const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 262144 })
     expect(chunkedFiles).toEqual([files.map((file) => normalize(path.resolve(baseDir, file)))])
   })
 })
