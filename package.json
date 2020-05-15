@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
+    "cli-truncate": "2.1.0",
     "commander": "^5.1.0",
     "cosmiconfig": "^6.0.0",
     "debug": "^4.1.1",
