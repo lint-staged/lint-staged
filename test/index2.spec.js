@@ -31,8 +31,8 @@ describe('lintStaged', () => {
           "quiet": true,
           "shouldBackup": true,
         },
-        "dateFormat": false,
         "exitOnError": false,
+        "nonTTYRenderer": "verbose",
         "renderer": "silent",
       }
     `)
@@ -56,9 +56,9 @@ describe('lintStaged', () => {
           "quiet": false,
           "shouldBackup": true,
         },
-        "dateFormat": false,
         "exitOnError": false,
-        "renderer": "test",
+        "nonTTYRenderer": "verbose",
+        "renderer": "verbose",
       }
     `)
   })
