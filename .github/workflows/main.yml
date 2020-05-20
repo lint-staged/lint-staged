@@ -20,10 +20,11 @@ jobs:
   test:
     strategy:
       matrix:
-        # Test with Node.js v10 (LTS), v12 (LTS), and v14 (latest)
+        # Test with Node.js v10 (last LTS version), v12 (current LTS), v13, and v14 (latest)
         node:
           - 10
           - 12
+          - 13
           - 14
         # Test with Ubuntu and macOS
         os:
