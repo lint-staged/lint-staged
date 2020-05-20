@@ -39,7 +39,7 @@
     "debug": "^4.1.1",
     "dedent": "^0.7.0",
     "execa": "^4.0.1",
-    "listr2": "^2.0.2",
+    "listr2": "^2.0.4",
     "log-symbols": "^4.0.0",
     "micromatch": "^4.0.2",
     "normalize-path": "^3.0.0",
