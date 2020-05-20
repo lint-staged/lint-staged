@@ -12,13 +12,6 @@ if (supportsColor) {
 process.on('SIGINT', () => {})
 
 const pkg = require('../package.json')
-require('please-upgrade-node')(
-  Object.assign({}, pkg, {
-    engines: {
-      node: '>=10.13.0', // First LTS release of 'Dubnium'
-    },
-  })
-)
 
 const cmdline = require('commander')
 const debugLib = require('debug')
