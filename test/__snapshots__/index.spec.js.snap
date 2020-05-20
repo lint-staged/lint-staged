@@ -53,6 +53,11 @@ ERROR Please make sure you have created it correctly.
 See https://github.com/okonet/lint-staged#configuration.
 `;
 
+exports[`lintStaged should print helpful error message when wrong Node.js version 1`] = `
+"
+ERROR × Your current Node.js v9.0.0 doesn't satisfy the required range for lint-staged (MOCK RANGE). Please upgrade Node.js!"
+`;
+
 exports[`lintStaged should throw when invalid config is provided 2`] = `
 "
 ERROR Could not parse lint-staged config.
