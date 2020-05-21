@@ -215,6 +215,30 @@ module.exports = {
 }
 ```
 
+### Example: Run `tsc` for staged files only
+
+As typescript compiler do not accept mix `--project` argument with source files on command line.
+
+Generate a temporary typescript configuration file for lint only, do not forget ignore `tsconfig.lint.json` in `.gitignore`
+
+```js
+// .lintstagedrc.js
+const fs = require('fs');
+
+const generateTSConfig = stagedFilenames => {
+  const tsconfig = JSON.parse(fs.readFileSync('tsconfig.json', 'utf8'));
+  tsconfig.include = stagedFilenames;
+  fs.writeFileSync("tsconfig.lint.json", JSON.stringify(tsconfig));
+  return "tsc --noEmit --project tsconfig.lint.json";
+};
+module.exports = {
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --ext .js,.jsx,.ts,.tsx --fix",
+    generateTSConfig
+  ]
+}
+```
+
 ### Example: Run eslint on entire repo if more than 10 staged files
 
 ```js
