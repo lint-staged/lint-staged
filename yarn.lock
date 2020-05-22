@@ -4078,11 +4078,6 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-nanoid@^3.1.7:
-  version "3.1.7"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.7.tgz#3705ccf590b6a51fbd1794fcf204ce7b5dc46c01"
-  integrity sha512-ruOwuatdEf4BxQmZopZqhIMudQ9V83aKocr+q2Y7KasnDNvo2OgbgZBYago5hSD0tCmoSl4flIw9ytDLIVM2IQ==
-
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"

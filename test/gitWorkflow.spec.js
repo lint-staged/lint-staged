@@ -1,40 +1,17 @@
 import fs from 'fs-extra'
-import { nanoid } from 'nanoid'
 import normalize from 'normalize-path'
-import os from 'os'
 import path from 'path'
 
 import execGitBase from '../lib/execGit'
 import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
+import { createTempDir } from './utils/tempDir'
 
 jest.mock('../lib/file.js')
 jest.unmock('execa')
 
 jest.setTimeout(20000)
-
-const isAppveyor = !!process.env.APPVEYOR
-const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
-
-/**
- * Create temporary directory and return its path
- * @returns {Promise<String>}
- */
-const createTempDir = async () => {
-  const dirname = path.resolve(osTmpDir, 'lint-staged-test', nanoid())
-  await fs.ensureDir(dirname)
-  return dirname
-}
-
-/**
- * Remove temporary directory
- * @param {String} dirname
- * @returns {Promise<Void>}
- */
-const removeTempDir = async (dirname) => {
-  await fs.remove(dirname)
-}
 
 let tmpDir, cwd
 
@@ -55,6 +32,8 @@ const initGitRepo = async () => {
   await execGit(['commit', '-m initial commit'])
 }
 
+const isAppveyor = !!process.env.APPVEYOR
+
 describe('gitWorkflow', () => {
   beforeEach(async () => {
     tmpDir = await createTempDir()
@@ -64,7 +43,7 @@ describe('gitWorkflow', () => {
 
   afterEach(async () => {
     if (!isAppveyor) {
-      await removeTempDir(tmpDir)
+      await fs.remove(tmpDir)
     }
   })
 

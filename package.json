@@ -63,7 +63,6 @@
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "nanoid": "^3.1.7",
     "prettier": "^2.0.5"
   },
   "config": {
