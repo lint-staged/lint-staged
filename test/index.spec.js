@@ -8,13 +8,9 @@ jest.unmock('execa')
 import getStagedFiles from '../lib/getStagedFiles'
 // eslint-disable-next-line import/first
 import lintStaged from '../lib/index'
+import { replaceSerializer } from './utils/replaceSerializer'
 
 jest.mock('../lib/getStagedFiles')
-
-const replaceSerializer = (from, to) => ({
-  test: (val) => typeof val === 'string' && from.test(val),
-  print: (val) => val.replace(from, to),
-})
 
 const mockCosmiconfigWith = (result) => {
   cosmiconfig.mockImplementationOnce(() => ({

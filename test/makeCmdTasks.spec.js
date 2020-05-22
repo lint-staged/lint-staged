@@ -61,7 +61,7 @@ describe('makeCmdTasks', () => {
   it('should work with function task returning a string', async () => {
     const res = await makeCmdTasks({ commands: () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('test')
   })
 
   it('should work with function task returning array of string', async () => {
@@ -71,8 +71,8 @@ describe('makeCmdTasks', () => {
       files: ['test.js'],
     })
     expect(res.length).toBe(2)
-    expect(res[0].title).toEqual('[Function] test ...')
-    expect(res[1].title).toEqual('[Function] test2 ...')
+    expect(res[0].title).toEqual('test')
+    expect(res[1].title).toEqual('test2')
   })
 
   it('should work with function task accepting arguments', async () => {
@@ -82,8 +82,8 @@ describe('makeCmdTasks', () => {
       files: ['test.js', 'test2.js'],
     })
     expect(res.length).toBe(2)
-    expect(res[0].title).toEqual('[Function] test ...')
-    expect(res[1].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('test test.js')
+    expect(res[1].title).toEqual('test test2.js')
   })
 
   it('should work with array of mixed string and function tasks', async () => {
@@ -93,17 +93,17 @@ describe('makeCmdTasks', () => {
       files: ['test.js', 'test2.js', 'test3.js'],
     })
     expect(res.length).toBe(5)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('test')
     expect(res[1].title).toEqual('test2')
-    expect(res[2].title).toEqual('[Function] test ...')
-    expect(res[3].title).toEqual('[Function] test ...')
-    expect(res[4].title).toEqual('[Function] test ...')
+    expect(res[2].title).toEqual('test test.js')
+    expect(res[3].title).toEqual('test test2.js')
+    expect(res[4].title).toEqual('test test3.js')
   })
 
   it('should work with async function tasks', async () => {
     const res = await makeCmdTasks({ commands: async () => 'test', gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
-    expect(res[0].title).toEqual('[Function] test ...')
+    expect(res[0].title).toEqual('test')
   })
 
   it("should throw when function task doesn't return string | string[]", async () => {
@@ -119,5 +119,18 @@ describe('makeCmdTasks', () => {
 
 Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
 `)
+  })
+
+  it('should truncate task title', async () => {
+    const longString = new Array(1000)
+      .fill()
+      .map((_, index) => index)
+      .join('')
+
+    const res = await makeCmdTasks({ commands: () => longString, gitDir, files: ['test.js'] })
+    expect(res.length).toBe(1)
+    expect(res[0].title).toMatchInlineSnapshot(
+      `"0123456789101112131415161718192021222324252627282930313233343536373839404142434…"`
+    )
   })
 })
