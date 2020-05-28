@@ -19,6 +19,8 @@ let tmpDir, cwd
 const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.resolve(dir, filename), content)
 
+const readFile = async (filename, dir = cwd) => fs.readFile(path.resolve(dir, filename))
+
 /** Wrap execGit to always pass `gitOps` */
 const execGit = async (args) => execGitBase(args, { cwd })
 
@@ -161,6 +163,20 @@ describe('gitWorkflow', () => {
           "shouldBackup": null,
         }
       `)
+    })
+    it('should checkout renamed file when hiding changes', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      const origContent = await readFile('README.md')
+      await execGit(['mv', 'README.md', 'TEST.md'])
+      await appendFile('TEST.md', 'added content')
+
+      gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
+      const ctx = getInitialState()
+      await gitWorkflow.hideUnstagedChanges(ctx)
+      expect(await readFile('TEST.md')).toStrictEqual(origContent)
     })
   })
 
