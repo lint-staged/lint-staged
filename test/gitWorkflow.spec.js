@@ -102,6 +102,41 @@ describe('gitWorkflow', () => {
     })
   })
 
+  describe('getPartiallyStagedFiles', () => {
+    it('should return unquoted files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('file with spaces.txt', 'staged content')
+      await appendFile('file_without_spaces.txt', 'staged content')
+      await execGit(['add', 'file with spaces.txt'])
+      await execGit(['add', 'file_without_spaces.txt'])
+      await appendFile('file with spaces.txt', 'not staged content')
+      await appendFile('file_without_spaces.txt', 'not staged content')
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'file with spaces.txt',
+        'file_without_spaces.txt',
+      ])
+    })
+    it('should include to and from for renamed files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('original.txt', 'test content')
+      await execGit(['add', 'original.txt'])
+      await execGit(['commit', '-m "Add original.txt"'])
+      await appendFile('original.txt', 'additional content')
+      await execGit(['mv', 'original.txt', 'renamed.txt'])
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'renamed.txt\u0000original.txt',
+      ])
+    })
+  })
+
   describe('hideUnstagedChanges', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
