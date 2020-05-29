@@ -19,6 +19,8 @@ let tmpDir, cwd
 const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.resolve(dir, filename), content)
 
+const readFile = async (filename, dir = cwd) => fs.readFile(path.resolve(dir, filename))
+
 /** Wrap execGit to always pass `gitOps` */
 const execGit = async (args) => execGitBase(args, { cwd })
 
@@ -102,6 +104,41 @@ describe('gitWorkflow', () => {
     })
   })
 
+  describe('getPartiallyStagedFiles', () => {
+    it('should return unquoted files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('file with spaces.txt', 'staged content')
+      await appendFile('file_without_spaces.txt', 'staged content')
+      await execGit(['add', 'file with spaces.txt'])
+      await execGit(['add', 'file_without_spaces.txt'])
+      await appendFile('file with spaces.txt', 'not staged content')
+      await appendFile('file_without_spaces.txt', 'not staged content')
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'file with spaces.txt',
+        'file_without_spaces.txt',
+      ])
+    })
+    it('should include to and from for renamed files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('original.txt', 'test content')
+      await execGit(['add', 'original.txt'])
+      await execGit(['commit', '-m "Add original.txt"'])
+      await appendFile('original.txt', 'additional content')
+      await execGit(['mv', 'original.txt', 'renamed.txt'])
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'renamed.txt\u0000original.txt',
+      ])
+    })
+  })
+
   describe('hideUnstagedChanges', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
@@ -126,6 +163,20 @@ describe('gitWorkflow', () => {
           "shouldBackup": null,
         }
       `)
+    })
+    it('should checkout renamed file when hiding changes', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      const origContent = await readFile('README.md')
+      await execGit(['mv', 'README.md', 'TEST.md'])
+      await appendFile('TEST.md', 'added content')
+
+      gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
+      const ctx = getInitialState()
+      await gitWorkflow.hideUnstagedChanges(ctx)
+      expect(await readFile('TEST.md')).toStrictEqual(origContent)
     })
   })
 
