@@ -33,6 +33,7 @@ describe('lintStaged', () => {
         },
         "exitOnError": false,
         "nonTTYRenderer": "verbose",
+        "registerSignalListeners": false,
         "renderer": "silent",
       }
     `)
@@ -58,6 +59,7 @@ describe('lintStaged', () => {
         },
         "exitOnError": false,
         "nonTTYRenderer": "verbose",
+        "registerSignalListeners": false,
         "renderer": "verbose",
       }
     `)
