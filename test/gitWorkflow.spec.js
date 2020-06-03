@@ -1,46 +1,25 @@
 import fs from 'fs-extra'
-import { nanoid } from 'nanoid'
 import normalize from 'normalize-path'
-import os from 'os'
 import path from 'path'
 
 import execGitBase from '../lib/execGit'
 import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
+import { createTempDir } from './utils/tempDir'
 
 jest.mock('../lib/file.js')
 jest.unmock('execa')
 
 jest.setTimeout(20000)
 
-const isAppveyor = !!process.env.APPVEYOR
-const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
-
-/**
- * Create temporary directory and return its path
- * @returns {Promise<String>}
- */
-const createTempDir = async () => {
-  const dirname = path.resolve(osTmpDir, 'lint-staged-test', nanoid())
-  await fs.ensureDir(dirname)
-  return dirname
-}
-
-/**
- * Remove temporary directory
- * @param {String} dirname
- * @returns {Promise<Void>}
- */
-const removeTempDir = async (dirname) => {
-  await fs.remove(dirname)
-}
-
 let tmpDir, cwd
 
 /** Append to file, creating if it doesn't exist */
 const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.resolve(dir, filename), content)
+
+const readFile = async (filename, dir = cwd) => fs.readFile(path.resolve(dir, filename))
 
 /** Wrap execGit to always pass `gitOps` */
 const execGit = async (args) => execGitBase(args, { cwd })
@@ -55,6 +34,8 @@ const initGitRepo = async () => {
   await execGit(['commit', '-m initial commit'])
 }
 
+const isAppveyor = !!process.env.APPVEYOR
+
 describe('gitWorkflow', () => {
   beforeEach(async () => {
     tmpDir = await createTempDir()
@@ -64,7 +45,7 @@ describe('gitWorkflow', () => {
 
   afterEach(async () => {
     if (!isAppveyor) {
-      await removeTempDir(tmpDir)
+      await fs.remove(tmpDir)
     }
   })
 
@@ -123,6 +104,41 @@ describe('gitWorkflow', () => {
     })
   })
 
+  describe('getPartiallyStagedFiles', () => {
+    it('should return unquoted files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('file with spaces.txt', 'staged content')
+      await appendFile('file_without_spaces.txt', 'staged content')
+      await execGit(['add', 'file with spaces.txt'])
+      await execGit(['add', 'file_without_spaces.txt'])
+      await appendFile('file with spaces.txt', 'not staged content')
+      await appendFile('file_without_spaces.txt', 'not staged content')
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'file with spaces.txt',
+        'file_without_spaces.txt',
+      ])
+    })
+    it('should include to and from for renamed files', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      await appendFile('original.txt', 'test content')
+      await execGit(['add', 'original.txt'])
+      await execGit(['commit', '-m "Add original.txt"'])
+      await appendFile('original.txt', 'additional content')
+      await execGit(['mv', 'original.txt', 'renamed.txt'])
+
+      expect(await gitWorkflow.getPartiallyStagedFiles()).toStrictEqual([
+        'renamed.txt\u0000original.txt',
+      ])
+    })
+  })
+
   describe('hideUnstagedChanges', () => {
     it('should handle errors', async () => {
       const gitWorkflow = new GitWorkflow({
@@ -147,6 +163,20 @@ describe('gitWorkflow', () => {
           "shouldBackup": null,
         }
       `)
+    })
+    it('should checkout renamed file when hiding changes', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      const origContent = await readFile('README.md')
+      await execGit(['mv', 'README.md', 'TEST.md'])
+      await appendFile('TEST.md', 'added content')
+
+      gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
+      const ctx = getInitialState()
+      await gitWorkflow.hideUnstagedChanges(ctx)
+      expect(await readFile('TEST.md')).toStrictEqual(origContent)
     })
   })
 

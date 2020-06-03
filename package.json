@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
+    "cli-truncate": "2.1.0",
     "commander": "^5.1.0",
     "cosmiconfig": "^6.0.0",
     "debug": "^4.1.1",
@@ -62,7 +63,6 @@
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "nanoid": "^3.1.7",
     "prettier": "^2.0.5"
   },
   "config": {

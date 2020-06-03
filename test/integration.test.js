@@ -1,8 +1,7 @@
 import makeConsoleMock from 'consolemock'
 import fs from 'fs-extra'
-import { nanoid } from 'nanoid'
+import ansiSerializer from 'jest-snapshot-serializer-ansi'
 import normalize from 'normalize-path'
-import os from 'os'
 import path from 'path'
 
 jest.unmock('cosmiconfig')
@@ -10,6 +9,8 @@ jest.unmock('execa')
 
 import execGitBase from '../lib/execGit'
 import lintStaged from '../lib/index'
+import { replaceSerializer } from './utils/replaceSerializer'
+import { createTempDir } from './utils/tempDir'
 
 jest.setTimeout(20000)
 
@@ -28,28 +29,6 @@ const testJsFileUnfixable = `const obj = {
 `
 
 const fixJsConfig = { config: { '*.js': 'prettier --write' } }
-
-const isAppveyor = !!process.env.APPVEYOR
-const osTmpDir = isAppveyor ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
-
-/**
- * Create temporary directory and return its path
- * @returns {Promise<String>}
- */
-const createTempDir = async () => {
-  const dirname = path.resolve(osTmpDir, 'lint-staged-test', nanoid())
-  await fs.ensureDir(dirname)
-  return dirname
-}
-
-/**
- * Remove temporary directory
- * @param {String} dirname
- * @returns {Promise<Void>}
- */
-const removeTempDir = async (dirname) => {
-  await fs.remove(dirname)
-}
 
 let tmpDir
 let cwd
@@ -88,7 +67,7 @@ describe('lint-staged', () => {
       "
       ERROR × Current directory is not a git directory!"
     `)
-    await removeTempDir(nonGitDir)
+    await fs.remove(nonGitDir)
   })
 
   it('should fail without output when not in a git directory and quiet', async () => {
@@ -98,11 +77,13 @@ describe('lint-staged', () => {
       lintStaged({ ...fixJsConfig, cwd: nonGitDir, quiet: true }, logger)
     ).resolves.toEqual(false)
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
-    await removeTempDir(nonGitDir)
+    await fs.remove(nonGitDir)
   })
 })
 
 const globalConsoleTemp = console
+
+const isAppveyor = !!process.env.APPVEYOR
 
 describe('lint-staged', () => {
   beforeAll(() => {
@@ -124,7 +105,7 @@ describe('lint-staged', () => {
   afterEach(async () => {
     console.clearHistory()
     if (!isAppveyor) {
-      await removeTempDir(tmpDir)
+      await fs.remove(tmpDir)
     }
   })
 
@@ -751,8 +732,8 @@ describe('lint-staged', () => {
       LOG [SUCCESS] Preparing...
       LOG [STARTED] Running tasks...
       LOG [STARTED] Running tasks for *.js
-      LOG [STARTED] [Function] git ...
-      LOG [SUCCESS] [Function] git ...
+      LOG [STARTED] git stash drop
+      LOG [SUCCESS] git stash drop
       LOG [SUCCESS] Running tasks for *.js
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
@@ -970,6 +951,19 @@ describe('lint-staged', () => {
       })
     ).rejects.toThrowError()
 
+    // Hide filepath from test snapshot because it's not important and varies in CI
+    const replaceFilepathSerializer = replaceSerializer(
+      /prettier --write (.*)?$/gm,
+      `prettier --write FILEPATH`
+    )
+
+    // Awkwardly merge two serializers
+    expect.addSnapshotSerializer({
+      test: (val) => ansiSerializer.test(val) || replaceFilepathSerializer.test(val),
+      print: (val, serialize) =>
+        replaceFilepathSerializer.print(ansiSerializer.print(val, serialize)),
+    })
+
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ‼ Skipping backup because \`--no-stash\` was used.
@@ -980,8 +974,8 @@ describe('lint-staged', () => {
       LOG [SUCCESS] Hiding unstaged changes to partially staged files...
       LOG [STARTED] Running tasks...
       LOG [STARTED] Running tasks for *.js
-      LOG [STARTED] [Function] prettier ...
-      LOG [SUCCESS] [Function] prettier ...
+      LOG [STARTED] prettier --write FILEPATH
+      LOG [SUCCESS] prettier --write FILEPATH
       LOG [SUCCESS] Running tasks for *.js
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
