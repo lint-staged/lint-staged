@@ -1053,6 +1053,39 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
+
+  /**
+   * Ugly hacks to skip the following tests on Windows, until escaping filenames is figured out
+   */
+  const itSkipWindows = process.platform === 'win32' ? it.skip : it
+
+  itSkipWindows('should handle simple filename with shell option', async () => {
+    const FILENAME = 'test.js'
+    await appendFile(FILENAME, testJsFileUgly)
+    await execGit(['add', '--', FILENAME])
+    await expect(gitCommit({ ...fixJsConfig, shell: true })).resolves.toEqual(undefined)
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    expect(await readFile(FILENAME)).toEqual(testJsFilePretty)
+  })
+
+  itSkipWindows('should handle complex filename with shell option', async () => {
+    const FILENAME = `&& touch 'evil.js'' && test.js`
+    await appendFile(FILENAME, testJsFileUgly)
+    expect(await readFile(FILENAME)).toEqual(testJsFileUgly)
+    await execGit(['add', '--', FILENAME])
+
+    // The `cat` and `type` commands throw if the input filepath cannot be found
+    await expect(
+      gitCommit({
+        config: { '*.js': process.platform === 'win32' ? 'type' : 'cat' },
+        shell: true,
+        quiet: false,
+      })
+    ).resolves.toEqual(undefined)
+
+    expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    await expect(fs.access(path.resolve(cwd, 'evil.js'))).rejects.toThrowError('ENOENT')
+  })
 })
 
 describe('lintStaged', () => {

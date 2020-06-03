@@ -1,5 +1,6 @@
 import execa from 'execa'
 
+import { escape } from '../lib/escape'
 import resolveTaskFn from '../lib/resolveTaskFn'
 import { getInitialState } from '../lib/state'
 import { TaskError } from '../lib/symbols'
@@ -72,7 +73,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execa).lastCalledWith(`node --arg=true ./myscript.js ${escape('test.js')}`, {
       preferLocal: true,
       reject: false,
       shell: true,

@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`escapeUnixShellArg handles \`!1\` 1`] = `"\\\\!1"`;
+
+exports[`escapeUnixShellArg handles \`!A\` 1`] = `"\\\\!A"`;
+
+exports[`escapeUnixShellArg handles \`"!/'"\` 1`] = `"\\\\\\"\\\\!\\\\/\\\\'\\\\\\""`;
+
+exports[`escapeUnixShellArg handles \`"\\T\` 1`] = `"\\\\\\"\\\\\\\\T"`;
+
+exports[`escapeUnixShellArg handles \`"Jeff's!"\` 1`] = `"\\\\\\"Jeff\\\\'s\\\\!\\\\\\""`;
+
+exports[`escapeUnixShellArg handles \`$PATH\` 1`] = `"\\\\$PATH"`;
+
+exports[`escapeUnixShellArg handles \`%PATH%\` 1`] = `"\\\\%PATH\\\\%"`;
+
+exports[`escapeUnixShellArg handles \`&\` 1`] = `"\\\\&"`;
+
+exports[`escapeUnixShellArg handles \`()%!^"<>&|\` 1`] = `"\\\\(\\\\)\\\\%\\\\!\\\\^\\\\\\"\\\\<\\\\>\\\\&\\\\|"`;
+
+exports[`escapeUnixShellArg handles \`*@$$A$@#?-_\` 1`] = `"\\\\*\\\\@\\\\$\\\\$A\\\\$\\\\@\\\\#\\\\?\\\\-_"`;
+
+exports[`escapeUnixShellArg handles \`<>|&^\` 1`] = `"\\\\<\\\\>\\\\|\\\\&\\\\^"`;
+
+exports[`escapeUnixShellArg handles \`>\\.\` 1`] = `"\\\\>\\\\\\\\\\\\."`;
+
+exports[`escapeUnixShellArg handles \`\\\\""T\` 1`] = `"\\\\\\\\\\\\\\\\\\\\\\"\\\\\\"T"`;
+
+exports[`escapeUnixShellArg handles \`\\\\\\\` 1`] = `"\\\\\\\\\\\\\\\\\\\\\\\\"`;
+
+exports[`escapeUnixShellArg handles \`\\\` 1`] = `"\\\\\\\\"`;
+
+exports[`escapeUnixShellArg handles \`C:Program Filesshe said, "you had me at hello"\` 1`] = `"C\\\\:Program\\\\\\\\ Filesshe\\\\\\\\ said\\\\,\\\\\\\\ \\\\\\"you\\\\\\\\ had\\\\\\\\ me\\\\\\\\ at\\\\\\\\ hello\\\\\\""`;
+
+exports[`escapeUnixShellArg handles \`Hello"world\` 1`] = `"Hello\\\\\\"world"`;
+
+exports[`escapeUnixShellArg handles \`Hello, world\` 1`] = `"Hello\\\\,\\\\\\\\ world"`;
+
+exports[`escapeUnixShellArg handles \`arg;,ument"2\` 1`] = `"arg\\\\;\\\\,ument\\\\\\"2"`;
+
+exports[`escapeUnixShellArg handles \`argument 1\` 1`] = `"argument\\\\\\\\ 1"`;
+
+exports[`escapeUnixShellArg handles \`child.exe\` 1`] = `"child\\\\.exe"`;
+
+exports[`escapeUnixShellArg handles \`malicious argument"&whoami\` 1`] = `"malicious\\\\\\\\ argument\\\\\\"\\\\&whoami"`;
+
+exports[`escapeUnixShellArg handles \`no\` 1`] = `"no"`;
+
+exports[`escapeUnixShellArg handles \`somedirectory withspaces"\` 1`] = `"somedirectory\\\\\\\\ withspaces\\\\\\""`;
+
+exports[`escapeUnixShellArg handles \`somepath withspaces\` 1`] = `"somepath\\\\\\\\ withspaces"`;
+
+exports[`escapeUnixShellArg handles \`ul\` 1`] = `"ul"`;
+
+exports[`escapeUnixShellArg handles \`yes\` 1`] = `"yes"`;
+
+exports[`escapeWinCmdArg handles \`!1\` 1`] = `"!1"`;
+
+exports[`escapeWinCmdArg handles \`!A\` 1`] = `"!A"`;
+
+exports[`escapeWinCmdArg handles \`"!/'"\` 1`] = `"\\"!/'\\""`;
+
+exports[`escapeWinCmdArg handles \`"\\T\` 1`] = `"\\"\\\\T"`;
+
+exports[`escapeWinCmdArg handles \`"Jeff's!"\` 1`] = `"\\"Jeff's!\\""`;
+
+exports[`escapeWinCmdArg handles \`$PATH\` 1`] = `"$PATH"`;
+
+exports[`escapeWinCmdArg handles \`%PATH%\` 1`] = `"%PATH%"`;
+
+exports[`escapeWinCmdArg handles \`&\` 1`] = `"&"`;
+
+exports[`escapeWinCmdArg handles \`()%!^"<>&|\` 1`] = `"()%!^\\"<>&|"`;
+
+exports[`escapeWinCmdArg handles \`*@$$A$@#?-_\` 1`] = `"*@$$A$@#?-_"`;
+
+exports[`escapeWinCmdArg handles \`<>|&^\` 1`] = `"<>|&^"`;
+
+exports[`escapeWinCmdArg handles \`>\\.\` 1`] = `">\\\\."`;
+
+exports[`escapeWinCmdArg handles \`\\\\""T\` 1`] = `"\\\\\\\\\\"\\"T"`;
+
+exports[`escapeWinCmdArg handles \`\\\\\\\` 1`] = `"\\\\\\\\\\\\"`;
+
+exports[`escapeWinCmdArg handles \`\\\` 1`] = `"\\\\"`;
+
+exports[`escapeWinCmdArg handles \`C:Program Filesshe said, "you had me at hello"\` 1`] = `"C:Program Filesshe said, \\"you had me at hello\\""`;
+
+exports[`escapeWinCmdArg handles \`Hello"world\` 1`] = `"Hello\\"world"`;
+
+exports[`escapeWinCmdArg handles \`Hello, world\` 1`] = `"Hello, world"`;
+
+exports[`escapeWinCmdArg handles \`arg;,ument"2\` 1`] = `"arg;,ument\\"2"`;
+
+exports[`escapeWinCmdArg handles \`argument 1\` 1`] = `"argument 1"`;
+
+exports[`escapeWinCmdArg handles \`child.exe\` 1`] = `"child.exe"`;
+
+exports[`escapeWinCmdArg handles \`malicious argument"&whoami\` 1`] = `"malicious argument\\"&whoami"`;
+
+exports[`escapeWinCmdArg handles \`no\` 1`] = `"no"`;
+
+exports[`escapeWinCmdArg handles \`somedirectory withspaces"\` 1`] = `"somedirectory withspaces\\""`;
+
+exports[`escapeWinCmdArg handles \`somepath withspaces\` 1`] = `"somepath withspaces"`;
+
+exports[`escapeWinCmdArg handles \`ul\` 1`] = `"ul"`;
+
+exports[`escapeWinCmdArg handles \`yes\` 1`] = `"yes"`;
