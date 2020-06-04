@@ -38,6 +38,7 @@
     "cosmiconfig": "^6.0.0",
     "debug": "^4.1.1",
     "dedent": "^0.7.0",
+    "enquirer": "^2.3.5",
     "execa": "^4.0.1",
     "listr2": "^2.0.2",
     "log-symbols": "^4.0.0",
