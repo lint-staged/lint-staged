@@ -352,7 +352,7 @@ Please note that if you are using the `shell` option with a functional configura
 
 ```js
 // .lintstagedrc.js
-const { escape } = require('lint-staged')
+const { escape } = require('lint-staged/utils')
 
 module.exports = {
   '**/*.js?(x)': (filenames) => `eslint ${filenames.map(escape).join(' ')}`,
@@ -575,6 +575,30 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 ```
 
 </details>
+
+## Utility functions
+
+_Lint-staged_ offers certain utility functions to make it easier to integrate into your project:
+
+### `escape`
+
+A method to escape a command line argument (typically a filename) for safer usage. **This should always be used in functional tasks when the `--shell` option is used!**.
+
+<details>
+  <summary>Click to expand</summary>
+
+```js
+const { escape } = require('lint-staged/utils')
+const filename = '/a directory with spaces!/file.js'
+console.log(escape(filename)) // '\/a\\ directory\\ with\\ spaces\!\/file\.js'
+```
+
+</details>
+
+#### Notes:
+
+- Spaces are double-escaped with `\\`. This is because [execa](https://github.com/sindresorhus/execa) has special handling for splitting from spaces.
+- **The escape method currently does nothing when `process.platform === 'win32'`!** If you want to help make it work on Windows, please open let us know!
 
 ## Frequently Asked Questions
 

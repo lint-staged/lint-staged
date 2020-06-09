@@ -17,7 +17,8 @@
   "main": "./lib/index.js",
   "files": [
     "bin",
-    "lib"
+    "lib",
+    "utils.js"
   ],
   "scripts": {
     "cz": "git-cz",
