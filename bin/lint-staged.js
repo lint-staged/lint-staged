@@ -43,6 +43,7 @@ cmdline
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'Unsafely skip parsing and run tasks in a real shell', false)
+  .option('--unsafe-shell-disable-warnings', 'Unsafely enable shell and disable warning', false)
   .option(
     '-v, --verbose',
     'show task output even when tasks succeed; by default only failed output is shown',
@@ -86,6 +87,7 @@ const options = {
   quiet: !!cmdlineOptions.quiet,
   relative: !!cmdlineOptions.relative,
   shell: !!cmdlineOptions.shell,
+  unsafeShellDisableWarnings: !!cmdlineOptions.unsafeShellDisableWarnings,
   verbose: !!cmdlineOptions.verbose,
 }
 
