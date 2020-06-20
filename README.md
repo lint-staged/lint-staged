@@ -343,9 +343,9 @@ module.exports = {
 
 By default lint-staged runs the configured task using [execa](https://github.com/sindresorhus/execa#shell), which handles parsing and escaping of the command and its arguments. Lint-staged also supports using execa's `shell` option via the `--shell` flag. This skips parsing and runs the command directly in a shell, `/bin/sh` or `cmd.exe` depending on the current platform.
 
-**Using the shell option is not adviced because it's slower and insecure, and might lead to problems when running on multiple platforms!**
+**Using the shell option is not advised because it's slower and insecure, and might lead to problems when running on multiple platforms!**
 
-Please note that if you are using the `shell` option with a functional configuration, _lint-staged_ cannot escape the filenames since the function is supposed to generate the entire command string. The default `escape` method can be required for use:
+When using the `--shell` option, lint-staged will try to escape filenames before passing them to the shell (currently only on Unix shells). Please note that when using function configurations, you have to escape them yourself! We recommend you use the default `escape` method:
 
 <details>
   <summary>Click to expand</summary>
@@ -598,7 +598,7 @@ console.log(escape(filename)) // '\/a\\ directory\\ with\\ spaces\!\/file\.js'
 #### Notes:
 
 - Spaces are double-escaped with `\\`. This is because [execa](https://github.com/sindresorhus/execa) has special handling for splitting from spaces.
-- **The escape method currently does nothing when `process.platform === 'win32'`!** If you want to help make it work on Windows, please open let us know!
+- **Does not currently work on Windows (`process.platform === 'win32'`)!** Caling this method on Windows will return the same unescaped filename, so it does not prevent any security issues. If you want to help make it work on Windows, please let us know!
 
 ## Frequently Asked Questions
 

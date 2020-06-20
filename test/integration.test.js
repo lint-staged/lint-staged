@@ -1055,21 +1055,24 @@ describe('lint-staged', () => {
   })
 
   itSkipWindows('should handle complex filename with shell option', async () => {
-    const FILENAME = `&& touch 'evil.js'' && test.js`
+    // try to inject a file by supplying a bad filename
+    const FILENAME = `test.js && touch 'evil.js' && cat test.js`
     await appendFile(FILENAME, testJsFileUgly)
     expect(await readFile(FILENAME)).toEqual(testJsFileUgly)
     await execGit(['add', '--', FILENAME])
 
-    // The `cat` and `type` commands throw if the input filepath cannot be found
+    // The `cat` command throws if the input filepath cannot be found, for example
+    // if the filename is escaped incorrectly
     await expect(
       gitCommit({
-        config: { '*.js': process.platform === 'win32' ? 'type' : 'cat' },
+        config: { '*.js': 'cat' },
         shell: true,
         quiet: false,
       })
     ).resolves.toEqual(undefined)
 
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+    // injected file shouldn't be found, since the filename was properly escaped
     await expect(fs.access(path.resolve(cwd, 'evil.js'))).rejects.toThrowError('ENOENT')
   })
 })
