@@ -29,9 +29,9 @@ const files = [
 
 // Mocks get hoisted
 jest.mock('../lib/resolveGitRepo.js')
-const gitDir = path.join(os.tmpdir(), 'tmp-lint-staged')
-resolveGitRepo.mockResolvedValue({ gitDir })
-const cwd = gitDir
+const baseDir = path.join(os.tmpdir(), 'tmp-lint-staged')
+resolveGitRepo.mockResolvedValue({ baseDir })
+const cwd = baseDir
 
 const config = {
   '*.js': 'root-js',
@@ -49,7 +49,7 @@ describe('generateTasks', () => {
       config: {
         '*': 'lint',
       },
-      gitDir,
+      baseDir,
       files,
     })
     task.fileList.forEach((file) => {
@@ -59,7 +59,7 @@ describe('generateTasks', () => {
 
   it('should not match non-children files', async () => {
     const relPath = path.join(process.cwd(), '..')
-    const result = await generateTasks({ config, cwd, gitDir: relPath, files })
+    const result = await generateTasks({ config, cwd, baseDir: relPath, files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
@@ -69,7 +69,7 @@ describe('generateTasks', () => {
   })
 
   it('should return an empty file list for linters with no matches.', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
 
     result.forEach((task) => {
       if (task.commands === 'unknown-js' || task.commands === 'parent-dir-css-or-js') {
@@ -81,74 +81,74 @@ describe('generateTasks', () => {
   })
 
   it('should match pattern "*.js"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
       commands: 'root-js',
       fileList: [
-        `${gitDir}/test.js`,
-        `${gitDir}/deeper/test.js`,
-        `${gitDir}/deeper/test2.js`,
-        `${gitDir}/even/deeper/test.js`,
-        `${gitDir}/.hidden/test.js`,
+        `${baseDir}/test.js`,
+        `${baseDir}/deeper/test.js`,
+        `${baseDir}/deeper/test2.js`,
+        `${baseDir}/even/deeper/test.js`,
+        `${baseDir}/.hidden/test.js`,
       ].map(normalizePath),
     })
   })
 
   it('should match pattern "**/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
     const linter = result.find((item) => item.pattern === '**/*.js')
     expect(linter).toEqual({
       pattern: '**/*.js',
       commands: 'any-js',
       fileList: [
-        `${gitDir}/test.js`,
-        `${gitDir}/deeper/test.js`,
-        `${gitDir}/deeper/test2.js`,
-        `${gitDir}/even/deeper/test.js`,
-        `${gitDir}/.hidden/test.js`,
+        `${baseDir}/test.js`,
+        `${baseDir}/deeper/test.js`,
+        `${baseDir}/deeper/test2.js`,
+        `${baseDir}/even/deeper/test.js`,
+        `${baseDir}/.hidden/test.js`,
       ].map(normalizePath),
     })
   })
 
   it('should match pattern "deeper/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
     const linter = result.find((item) => item.pattern === 'deeper/*.js')
     expect(linter).toEqual({
       pattern: 'deeper/*.js',
       commands: 'deeper-js',
-      fileList: [`${gitDir}/deeper/test.js`, `${gitDir}/deeper/test2.js`].map(normalizePath),
+      fileList: [`${baseDir}/deeper/test.js`, `${baseDir}/deeper/test2.js`].map(normalizePath),
     })
   })
 
   it('should match pattern ".hidden/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
     const linter = result.find((item) => item.pattern === '.hidden/*.js')
     expect(linter).toEqual({
       pattern: '.hidden/*.js',
       commands: 'hidden-js',
-      fileList: [`${gitDir}/.hidden/test.js`].map(normalizePath),
+      fileList: [`${baseDir}/.hidden/test.js`].map(normalizePath),
     })
   })
 
   it('should match pattern "*.{css,js}"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files })
+    const result = await generateTasks({ config, cwd, baseDir, files })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
       pattern: '*.{css,js}',
       commands: 'root-css-or-js',
       fileList: [
-        `${gitDir}/test.js`,
-        `${gitDir}/deeper/test.js`,
-        `${gitDir}/deeper/test2.js`,
-        `${gitDir}/even/deeper/test.js`,
-        `${gitDir}/.hidden/test.js`,
-        `${gitDir}/test.css`,
-        `${gitDir}/deeper/test.css`,
-        `${gitDir}/deeper/test2.css`,
-        `${gitDir}/even/deeper/test.css`,
-        `${gitDir}/.hidden/test.css`,
+        `${baseDir}/test.js`,
+        `${baseDir}/deeper/test.js`,
+        `${baseDir}/deeper/test2.js`,
+        `${baseDir}/even/deeper/test.js`,
+        `${baseDir}/.hidden/test.js`,
+        `${baseDir}/test.css`,
+        `${baseDir}/deeper/test.css`,
+        `${baseDir}/deeper/test2.css`,
+        `${baseDir}/even/deeper/test.css`,
+        `${baseDir}/.hidden/test.css`,
       ].map(normalizePath),
     })
   })
@@ -156,35 +156,35 @@ describe('generateTasks', () => {
   it('should not match files in parent directory by default', async () => {
     const result = await generateTasks({
       config,
-      cwd: path.join(gitDir, 'deeper'),
-      gitDir,
+      cwd: path.join(baseDir, 'deeper'),
+      baseDir,
       files,
     })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
       commands: 'root-js',
-      fileList: [`${gitDir}/deeper/test.js`, `${gitDir}/deeper/test2.js`].map(normalizePath),
+      fileList: [`${baseDir}/deeper/test.js`, `${baseDir}/deeper/test2.js`].map(normalizePath),
     })
   })
 
   it('should match files in parent directory when pattern starts with "../"', async () => {
     const result = await generateTasks({
       config,
-      cwd: path.join(gitDir, 'deeper'),
-      gitDir,
+      cwd: path.join(baseDir, 'deeper'),
+      baseDir,
       files,
     })
     const linter = result.find((item) => item.pattern === '../*.{css,js}')
     expect(linter).toEqual({
       commands: 'parent-dir-css-or-js',
-      fileList: [`${gitDir}/test.js`, `${gitDir}/test.css`].map(normalizePath),
+      fileList: [`${baseDir}/test.js`, `${baseDir}/test.css`].map(normalizePath),
       pattern: '../*.{css,js}',
     })
   })
 
   it('should be able to return relative paths for "*.{css,js}"', async () => {
-    const result = await generateTasks({ config, cwd, gitDir, files, relative: true })
+    const result = await generateTasks({ config, cwd, baseDir, files, relative: true })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
       pattern: '*.{css,js}',
