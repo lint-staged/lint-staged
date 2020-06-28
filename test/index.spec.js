@@ -2,23 +2,19 @@ import { cosmiconfig } from 'cosmiconfig'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
-jest.unmock('execa')
+jest.mock('execa')
 
 // eslint-disable-next-line import/first
-import getStagedFiles from '../lib/getStagedFiles'
 // eslint-disable-next-line import/first
 import lintStaged from '../lib/index'
 import { replaceSerializer } from './utils/replaceSerializer'
-
-jest.mock('../lib/getStagedFiles')
 
 const mockCosmiconfigWith = (result) => {
   cosmiconfig.mockImplementationOnce(() => ({
     search: () => Promise.resolve(result),
   }))
 }
-
-jest.mock('../lib/gitWorkflow')
+jest.mock('../lib/gitWorkflow.js')
 
 async function withMockedConsole(mockConsole, fn) {
   const previousConsole = console
@@ -54,7 +50,7 @@ describe('lintStaged', () => {
     const config = {
       '*': 'node -e "process.exit(0)"',
     }
-    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
+
     const passed = await lintStaged({ config, quiet: true }, logger)
     expect(passed).toEqual(true)
   })

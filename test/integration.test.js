@@ -617,13 +617,13 @@ describe('lint-staged', () => {
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
     expect(await readFile('README.md')).toMatchInlineSnapshot(`
-                        "# Test
+      "# Test
 
-                        ## Amended
+      ## Amended
 
-                        ## Edited
-                        "
-                `)
+      ## Edited
+      "
+    `)
     expect(await readFile('test-untracked.js')).toEqual(testJsFilePretty)
     const status = await execGit(['status'])
     expect(status).toMatch('modified:   README.md')

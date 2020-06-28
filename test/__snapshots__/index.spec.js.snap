@@ -65,10 +65,7 @@ See https://github.com/okonet/lint-staged#configuration."
 
 exports[`lintStaged should use config object 1`] = `""`;
 
-exports[`lintStaged should use cosmiconfig if no params are passed 1`] = `
-"
-ERROR × Failed to get staged files!"
-`;
+exports[`lintStaged should use cosmiconfig if no params are passed 1`] = `""`;
 
 exports[`lintStaged should use use the console if no logger is passed 1`] = `
 "
