@@ -23,4 +23,10 @@ describe('getStagedFiles', () => {
     const staged = await getStagedFiles()
     expect(staged).toEqual(null)
   })
+
+  it('should call with ls-files when lintAllFiles is true', async () => {
+    execGit.mockImplementationOnce(async () => '')
+    await getStagedFiles(null, true)
+    expect(execGit).toHaveBeenLastCalledWith(['ls-files', '-z'], null)
+  })
 })

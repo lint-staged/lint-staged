@@ -40,6 +40,7 @@ cmdline
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
+  .option('--lint-all-files', 'lint all files tracked by git, not just staged ones', false)
   .option(
     '-v, --verbose',
     'show task output even when tasks succeed; by default only failed output is shown',
@@ -81,6 +82,7 @@ const options = {
   quiet: !!cmdline.quiet,
   relative: !!cmdline.relative,
   shell: !!cmdline.shell,
+  lintAllFiles: !!cmdline.lintAllFiles,
   verbose: !!cmdline.verbose,
 }
 

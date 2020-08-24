@@ -72,6 +72,8 @@ Options:
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -x, --shell                        skip parsing of tasks for better shell support (default:
                                      false)
+  --lint-all-files                   lint all files tracked by git, not just staged ones (default:
+                                     false)
   -v, --verbose                      show task output even when tasks succeed; by default only
                                      failed output is shown (default: false)
   -h, --help                         display help for command
@@ -90,6 +92,7 @@ Options:
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
+- **`--lint-all-files`**: By default linter commands will be executed on staged files, use this to have it run on all files tracked by git. Useful to verify that hooks weren't skipped or after introducing lint-staged to a repository.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
@@ -436,6 +439,7 @@ const success = await lintStaged({
   relative: false,
   shell: false
   stash: true,
+  lintAllFiles: false,
   verbose: false
 })
 ```
@@ -454,6 +458,7 @@ const success = await lintStaged({
   relative: false,
   shell: false,
   stash: true,
+  lintAllFiles: false,
   verbose: false
 })
 ```
