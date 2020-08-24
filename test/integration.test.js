@@ -490,7 +490,7 @@ describe('lint-staged', () => {
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-      "Merge branch 'branch-b'
+      "Merge branch 'branch-b' into master
 
       # Conflicts:
       #	test.js
