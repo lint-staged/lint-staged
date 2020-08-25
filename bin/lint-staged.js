@@ -4,7 +4,7 @@
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 const { supportsColor } = require('chalk')
-if (supportsColor) {
+if (supportsColor && supportsColor.level) {
   process.env.FORCE_COLOR = supportsColor.level.toString()
 }
 

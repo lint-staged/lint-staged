@@ -489,13 +489,10 @@ describe('lint-staged', () => {
 
     // Nothing is wrong, so a new commit is created and file is pretty
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
-    expect(await execGit(['log', '-1', '--pretty=%B'])).toMatchInlineSnapshot(`
-      "Merge branch 'branch-b'
-
-      # Conflicts:
-      #	test.js
-      "
-    `)
+    const log = await execGit(['log', '-1', '--pretty=%B'])
+    expect(log).toMatch(`Merge branch 'branch-b`)
+    expect(log).toMatch(`Conflicts:`)
+    expect(log).toMatch(`test.js`)
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
   })
 
