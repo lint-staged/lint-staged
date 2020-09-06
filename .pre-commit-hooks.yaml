@@ -1,0 +1,4 @@
+- id: lint-staged
+  name: lint-staged
+  entry: lint-staged
+  language: node
