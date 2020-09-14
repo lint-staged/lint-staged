@@ -233,8 +233,9 @@ const micromatch = require('micromatch')
 
 module.exports = {
   '*': (allFiles) => {
-    const match = micromatch(allFiles, ['*.js', '*.ts'])
-    return `eslint ${match.join(' ')}`
+    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts']);
+    const docFiles = micromatch(allFiles, ['**/*.md']);
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
   }
 }
 ```
