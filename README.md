@@ -191,7 +191,7 @@ going to execute `eslint` and if it exits with `0` code, it will execute `pretti
 
 ## Using JS functions to customize tasks
 
-When supplying configuration in JS format it is possible to define the task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
+When supplying configuration in JS format it is possible to define the config or task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
 
 ```ts
 type TaskFn = (filenames: string[]) => string | string[] | Promise<string | string[]>
@@ -238,6 +238,18 @@ module.exports = {
     return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
   }
 }
+```
+Or,
+
+```js
+// lint-staged.config.js
+const micromatch = require('micromatch')
+
+module.exports = (allStagedFiles) => {
+    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
+    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+  }
 ```
 
 ### Example: Ignore files from match

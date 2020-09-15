@@ -36,6 +36,12 @@ describe('validateConfig', () => {
     expect(console.printHistory()).toMatchSnapshot()
   })
 
+  it('should not throw and should print nothing for function config', () => {
+    const functionConfig = (stagedFiles) => [`eslint ${stagedFiles.join(' ')}`]
+    expect(() => validateConfig(functionConfig)).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
   it('should not throw and should print nothing for function task', () => {
     expect(() =>
       validateConfig({
