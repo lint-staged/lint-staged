@@ -189,13 +189,32 @@ For example:
 
 going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
-## Using JS functions to customize tasks
+## Using JS configuration file
 
-When supplying configuration in JS format it is possible to define the config or task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
+Writing `lint-staged.config.js` file (or, other JS file which needs to be mentioned in CLI command through `c` flag) is the most powerful way to configure `lint-staged`. From the configuration file, you can export a function which gets an array of all staged file paths as parameter and returns command(s) as string or array of string. This function can be either sync or async. Signature of this function:
 
 ```ts
-type TaskFn = (filenames: string[]) => string | string[] | Promise<string | string[]>
+(filenames: string[]) => string | string[] | Promise<string | string[]>
 ```
+
+### Example:
+
+```js
+// lint-staged.config.js
+const micromatch = require('micromatch')
+
+module.exports = (allStagedFiles) => {
+    const shFiles =  micromatch(allStagedFiles, ['**/src/**/*.sh']);
+    if (shFiles.length) {
+      return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
+    }
+    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
+    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+  }
+```
+
+You can also supply configuration as an object to enjoy in-built filter mechanism like other configuration methods. One extra advantage in the case of JS config is that it is possible to define the task as a function, which has signature of the above function (The only difference is that task functions don't receive array of all staged file paths as parameter unless they have `*` filter pattern).
 
 ### Example: Wrap filenames in single quotes and run once per file
 
@@ -226,6 +245,7 @@ module.exports = {
 ```
 
 ### Example: Use your own globs
+It's better to use function-based configuration if your use case is this.
 
 ```js
 // lint-staged.config.js
@@ -238,18 +258,6 @@ module.exports = {
     return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
   }
 }
-```
-Or,
-
-```js
-// lint-staged.config.js
-const micromatch = require('micromatch')
-
-module.exports = (allStagedFiles) => {
-    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
-    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
-  }
 ```
 
 ### Example: Ignore files from match
