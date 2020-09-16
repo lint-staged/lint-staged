@@ -191,13 +191,21 @@ going to execute `eslint` and if it exits with `0` code, it will execute `pretti
 
 ## Using JS configuration file
 
-Writing `lint-staged.config.js` file (or, other JS file which needs to be mentioned in CLI command through `c` flag) is the most powerful way to configure `lint-staged`. From the configuration file, you can export a function which gets an array of all staged file paths as parameter and returns command(s) as string or array of string. This function can be either sync or async. Signature of this function:
+Writing the configuration file in JavaScript is the most powerful way to configure _lint-staged_ (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function, or an object.
+
+If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files, and return a command string, or an array or command strings. These strings are considered complete and should include the filename arguments, if wanted.
+
+If the `exports` value is an object, its keys should be glob matches (like in the normal non-js config format). The values can either be like in the normal config, or individual functions like described above. Instead of receiving all matched files, the functions in the exported object will only receive the staged files matching the corresponding glob key.
+
+### Function signature
+
+The function can also be async:
 
 ```ts
 (filenames: string[]) => string | string[] | Promise<string | string[]>
 ```
 
-### Example:
+### Example: Export a function to build your own matchers
 
 ```js
 // lint-staged.config.js
@@ -214,7 +222,6 @@ module.exports = (allStagedFiles) => {
   }
 ```
 
-You can also supply configuration as an object to enjoy in-built filter mechanism like other configuration methods. One extra advantage in the case of JS config is that it is possible to define the task as a function, which has signature of the above function (The only difference is that task functions don't receive array of all staged file paths as parameter unless they have `*` filter pattern).
 
 ### Example: Wrap filenames in single quotes and run once per file
 
@@ -245,7 +252,7 @@ module.exports = {
 ```
 
 ### Example: Use your own globs
-It's better to use function-based configuration if your use case is this.
+It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged/README.md#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
 // lint-staged.config.js
