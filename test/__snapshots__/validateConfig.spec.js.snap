@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`validateConfig should not throw and should print nothing for function config 1`] = `""`;
+
 exports[`validateConfig should not throw and should print nothing for function task 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for valid config 1`] = `""`;

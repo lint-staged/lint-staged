@@ -2,6 +2,8 @@ import makeConsoleMock from 'consolemock'
 
 import validateConfig from '../lib/validateConfig'
 
+import formatConfig from '../lib/formatConfig'
+
 describe('validateConfig', () => {
   const originalConsole = global.console
   beforeAll(() => {
@@ -33,6 +35,12 @@ describe('validateConfig', () => {
       '*.js': ['eslint --fix', 'git add'],
     }
     expect(() => validateConfig(validSimpleConfig)).not.toThrow()
+    expect(console.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not throw and should print nothing for function config', () => {
+    const functionConfig = (stagedFiles) => [`eslint ${stagedFiles.join(' ')}`]
+    expect(() => validateConfig(formatConfig(functionConfig))).not.toThrow()
     expect(console.printHistory()).toMatchSnapshot()
   })
 
