@@ -189,13 +189,39 @@ For example:
 
 going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
-## Using JS functions to customize tasks
+## Using JS configuration file
 
-When supplying configuration in JS format it is possible to define the task as a function, which will receive an array of staged filenames/paths and should return the complete command as a string. It is also possible to return an array of complete command strings, for example when the task supports only a single file input. The function can be either sync or async.
+Writing the configuration file in JavaScript is the most powerful way to configure _lint-staged_ (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function, or an object.
+
+If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files, and return a command string, or an array or command strings. These strings are considered complete and should include the filename arguments, if wanted.
+
+If the `exports` value is an object, its keys should be glob matches (like in the normal non-js config format). The values can either be like in the normal config, or individual functions like described above. Instead of receiving all matched files, the functions in the exported object will only receive the staged files matching the corresponding glob key.
+
+### Function signature
+
+The function can also be async:
 
 ```ts
-type TaskFn = (filenames: string[]) => string | string[] | Promise<string | string[]>
+(filenames: string[]) => string | string[] | Promise<string | string[]>
 ```
+
+### Example: Export a function to build your own matchers
+
+```js
+// lint-staged.config.js
+const micromatch = require('micromatch')
+
+module.exports = (allStagedFiles) => {
+    const shFiles =  micromatch(allStagedFiles, ['**/src/**/*.sh']);
+    if (shFiles.length) {
+      return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
+    }
+    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
+    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+  }
+```
+
 
 ### Example: Wrap filenames in single quotes and run once per file
 
@@ -226,6 +252,7 @@ module.exports = {
 ```
 
 ### Example: Use your own globs
+It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged/README.md#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
 // lint-staged.config.js
@@ -233,8 +260,9 @@ const micromatch = require('micromatch')
 
 module.exports = {
   '*': (allFiles) => {
-    const match = micromatch(allFiles, ['*.js', '*.ts'])
-    return `eslint ${match.join(' ')}`
+    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts']);
+    const docFiles = micromatch(allFiles, ['**/*.md']);
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
   }
 }
 ```
