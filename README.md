@@ -97,8 +97,14 @@ Options:
 Starting with v3.1 you can now use different ways of configuring it:
 
 - `lint-staged` object in your `package.json`
-- `.lintstagedrc` file in JSON or YML format
+- `.lintstagedrc` file in JSON or YML format, or you can be explicit with the extension:
+  - `.lintstagedrc.json`
+  - `.lintstagedrc.yaml`
+  - `.lintstagedrc.yml`
+  - `.lintstagedrc.js`
+  - `.lintstagedrc.cjs`
 - `lint-staged.config.js` file in JS format
+  - `lint-staged.config.cjs` may also be used in case you have `"type": "module"` set in your `package.json`
 - Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
@@ -211,24 +217,23 @@ The function can also be async:
 // lint-staged.config.js
 const micromatch = require('micromatch')
 
-module.exports = (allStagedFiles) => {
-    const shFiles =  micromatch(allStagedFiles, ['**/src/**/*.sh']);
-    if (shFiles.length) {
-      return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
-    }
-    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
-    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+module.exports = allStagedFiles => {
+  const shFiles = micromatch(allStagedFiles, ['**/src/**/*.sh'])
+  if (shFiles.length) {
+    return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
   }
+  const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts'])
+  const docFiles = micromatch(allStagedFiles, ['**/*.md'])
+  return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
+}
 ```
-
 
 ### Example: Wrap filenames in single quotes and run once per file
 
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': (filenames) => filenames.map((filename) => `prettier --write '${filename}'`)
+  '**/*.js?(x)': filenames => filenames.map(filename => `prettier --write '${filename}'`)
 }
 ```
 
@@ -246,12 +251,12 @@ module.exports = {
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': (filenames) =>
-    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`
+  '**/*.js?(x)': filenames => (filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`)
 }
 ```
 
 ### Example: Use your own globs
+
 It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged/README.md#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
@@ -259,10 +264,10 @@ It's better to use the [function-based configuration (seen above)](https://githu
 const micromatch = require('micromatch')
 
 module.exports = {
-  '*': (allFiles) => {
-    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts']);
-    const docFiles = micromatch(allFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+  '*': allFiles => {
+    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts'])
+    const docFiles = micromatch(allFiles, ['**/*.md'])
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
   }
 }
 ```
@@ -276,7 +281,7 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 const micromatch = require('micromatch')
 
 module.exports = {
-  '*.js': (files) => {
+  '*.js': files => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
     return `eslint ${match.join(' ')}`
@@ -292,9 +297,9 @@ Please note that for most cases, globs can achieve the same effect. For the abov
 const path = require('path')
 
 module.exports = {
-  '*.ts': (absolutePaths) => {
+  '*.ts': absolutePaths => {
     const cwd = process.cwd()
-    const relativePaths = absolutePaths.map((file) => path.relative(cwd, file))
+    const relativePaths = absolutePaths.map(file => path.relative(cwd, file))
     return `ng lint myProjectName --files ${relativePaths.join(' ')}`
   }
 }
@@ -558,7 +563,7 @@ const { CLIEngine } = require('eslint')
 const cli = new CLIEngine({})
 
 module.exports = {
-  '*.js': (files) =>
-    'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' ')
+  '*.js': files =>
+    'eslint --max-warnings=0 ' + files.filter(file => !cli.isPathIgnored(file)).join(' ')
 }
 ```
