@@ -2,6 +2,8 @@
 
 'use strict'
 
+const fs = require('fs')
+
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 const { supportsColor } = require('chalk')
 if (supportsColor && supportsColor.level) {
@@ -23,13 +25,14 @@ require('please-upgrade-node')(
 const cmdline = require('commander')
 const debugLib = require('debug')
 const lintStaged = require('../lib')
+const { CONFIG_STDIN_ERROR } = require('../lib/messages')
 
 const debug = debugLib('lint-staged:bin')
 
 cmdline
   .version(pkg.version)
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
-  .option('-c, --config [path]', 'path to configuration file')
+  .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
   .option('-d, --debug', 'print additional debug information', false)
   .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option(
@@ -85,6 +88,22 @@ const options = {
 }
 
 debug('Options parsed from command-line:', options)
+
+if (options.configPath === '-') {
+  delete options.configPath
+  try {
+    options.config = fs.readFileSync(process.stdin.fd, 'utf8').toString().trim()
+  } catch {
+    console.error(CONFIG_STDIN_ERROR)
+    process.exit(1)
+  }
+
+  try {
+    options.config = JSON.parse(options.config)
+  } catch {
+    // Let config parsing complain if it's not JSON
+  }
+}
 
 lintStaged(options)
   .then((passed) => {

@@ -12,10 +12,10 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Related blogs posts and talks
 
-- [Make Linting Great Again](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
-- [Running Jest Tests Before Each Git Commit](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
-- [AgentConf: Make Linting Great Again](https://www.youtube.com/watch?v=-mhY7e-EsC4)
-- [SurviveJS Interview](https://survivejs.com/blog/lint-staged-interview/)
+- [Introductory Medium post - Andrey Okonetchnikov, 2016](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
+- [Running Jest Tests Before Each Git Commit - Ben McCormick, 2017](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
+- [AgentConf presentation - Andrey Okonetchnikov, 2018](https://www.youtube.com/watch?v=-mhY7e-EsC4)
+- [SurviveJS interview - Juho Vepsäläinen and Andrey Okonetchnikov, 2018](https://survivejs.com/blog/lint-staged-interview/)
 
 > If you've written one, please submit a PR with the link to it!
 
@@ -62,7 +62,7 @@ Options:
   -V, --version                      output the version number
   --allow-empty                      allow empty commits when tasks revert all staged changes
                                      (default: false)
-  -c, --config [path]                path to configuration file
+  -c, --config [path]                path to configuration file, or - to read from stdin
   -d, --debug                        print additional debug information (default: false)
   --no-stash                         disable the backup stash, and do not revert in case of
                                      errors
@@ -78,7 +78,7 @@ Options:
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
@@ -97,8 +97,11 @@ Options:
 Starting with v3.1 you can now use different ways of configuring it:
 
 - `lint-staged` object in your `package.json`
-- `.lintstagedrc` file in JSON or YML format
-- `lint-staged.config.js` file in JS format
+- `.lintstagedrc` file in JSON or YML format, or you can be explicit with the file extension:
+  - `.lintstagedrc.json`
+  - `.lintstagedrc.yaml`
+  - `.lintstagedrc.yml`
+- `lint-staged.config.js`, `.lintstagedrc.js`, or `.lintstagedrc.cjs` file in JS format
 - Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
