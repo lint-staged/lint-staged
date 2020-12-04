@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lintStaged should catch errors from js function config 2`] = `
+"
+ERROR Could not parse lint-staged config.
+
+Error: failed config
+ERROR 
+ERROR Please make sure you have created it correctly.
+See https://github.com/okonet/lint-staged#configuration."
+`;
