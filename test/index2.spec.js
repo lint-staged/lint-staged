@@ -64,4 +64,19 @@ describe('lintStaged', () => {
       }
     `)
   })
+
+  it('should catch errors from js function config', async () => {
+    const logger = makeConsoleMock()
+    const config = {
+      '*': () => {
+        throw new Error('failed config')
+      },
+    }
+
+    expect.assertions(2)
+    await expect(lintStaged({ config }, logger)).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"failed config"`
+    )
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
 })
