@@ -553,7 +553,7 @@ ESLint throws out `warning File ignored because of a matching ignore pattern. Us
 
 #### ESLint < 7
 
-Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
+Based on the discussion from [this issue](https://github.com/eslint/eslint/issues/9977), it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
 
 So you can setup a `.lintstagedrc.js` config file to do this:
 
@@ -570,11 +570,11 @@ module.exports = {
 
 #### ESlint >= 7
 
-In versions of ESlint > 7, isPathIgnored is an async function and now returns a promise, see: https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath. The code below can be used to reinstate the above functionality.
+In versions of ESlint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
 
-This particular code uses a tiny package, `node-filter-async` (https://www.npmjs.com/package/node-filter-async), to filter the files array with an async function, If you prefer to not have an extra dependency, it is quite simple to write a similar function.
+This particular code uses a tiny package, [node-filter-async](https://www.npmjs.com/package/node-filter-async), to filter the files array with an async function. If you prefer to not have an extra dependency, it is quite simple to write a similar function.
 
-Since 10.5.3 (https://github.com/okonet/lint-staged/releases), any errors due to a bad eslint config will come through to the console.
+Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad eslint config will come through to the console.
 
 ```js
 const { ESLint } = require("eslint");
