@@ -551,7 +551,9 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 
 ESLint throws out `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
 
-Based on the discussion from https://github.com/eslint/eslint/issues/9977 , it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
+#### ESLint < 7
+
+Based on the discussion from [this issue](https://github.com/eslint/eslint/issues/9977), it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
 
 So you can setup a `.lintstagedrc.js` config file to do this:
 
@@ -564,4 +566,34 @@ module.exports = {
   '*.js': (files) =>
     'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' ')
 }
+```
+
+#### ESlint >= 7
+
+In versions of ESlint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
+
+This particular code uses a tiny package, [node-filter-async](https://www.npmjs.com/package/node-filter-async), to filter the files array with an async function. If you prefer to not have an extra dependency, it is quite simple to write a similar function.
+
+Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad eslint config will come through to the console.
+
+```js
+const { ESLint } = require("eslint");
+const filterAsync = require("node-filter-async").default;
+
+const eslintCli = new ESLint();
+
+const removeIgnoredFiles = async (files) => {
+  const filteredFiles = await filterAsync(files, async (file) => {
+    const isIgnored = await eslintCli.isPathIgnored(file);
+    return !isIgnored;
+  });
+  return filteredFiles.join(" ");
+};
+
+module.exports = {
+  "**/*.{ts,tsx,js,jsx}": async (files) => {
+    const filesToLint = await removeIgnoredFiles(files);
+    return [`eslint --max-warnings=0 ${filesToLint}`];
+  },
+};
 ```
