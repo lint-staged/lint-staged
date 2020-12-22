@@ -16,6 +16,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 - [Running Jest Tests Before Each Git Commit - Ben McCormick, 2017](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
 - [AgentConf presentation - Andrey Okonetchnikov, 2018](https://www.youtube.com/watch?v=-mhY7e-EsC4)
 - [SurviveJS interview - Juho Vepsäläinen and Andrey Okonetchnikov, 2018](https://survivejs.com/blog/lint-staged-interview/)
+- [Prettier your CSharp with `dotnet-format` and `lint-staged`](https://blog.johnnyreilly.com/2020/12/prettier-your-csharp-with-dotnet-format-and-lint-staged.html)
 
 > If you've written one, please submit a PR with the link to it!
 
