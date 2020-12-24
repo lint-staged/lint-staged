@@ -386,6 +386,32 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 }
 ```
 
+
+### Automatically fix code style with `prettier` for any format prettier supports
+
+```js
+// lint-staged.config.js
+const micromatch = require('micromatch'); // you should add this as a dev-dependency
+const prettier = require('prettier');
+
+const prettierSupportedExtensions = prettier
+  .getSupportInfo()
+  .languages.map(({ extensions }) => extensions)
+  .flat();
+const addQuotes = (a) => `"${a}"`;
+
+module.exports = (allStagedFiles) => {
+  const prettierFiles = micromatch(
+    allStagedFiles,
+    prettierSupportedExtensions.map((extension) => `**/*${extension}`)
+  );
+  return [
+    `prettier --write ${prettierFiles.map(addQuotes).join(' ')}`,
+  ];
+};
+
+```
+
 ### Automatically fix code style with `prettier` for javascript, typescript, markdown, HTML, or CSS
 
 ```json
