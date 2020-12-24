@@ -214,6 +214,7 @@ The function can also be async:
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
+const addQuotes = (a) => `"${a}"`
 
 module.exports = (allStagedFiles) => {
     const shFiles =  micromatch(allStagedFiles, ['**/src/**/*.sh']);
@@ -222,7 +223,7 @@ module.exports = (allStagedFiles) => {
     }
     const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
     const docFiles = micromatch(allStagedFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+    return [`eslint ${codeFiles.map(addQuotes).join(' ')}`, `mdl ${docFiles.map(addQuotes).join(' ')}`];
   }
 ```
 
@@ -249,9 +250,10 @@ module.exports = {
 
 ```js
 // .lintstagedrc.js
+const addQuotes = (a) => `"${a}"`
 module.exports = {
   '**/*.js?(x)': (filenames) =>
-    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`
+    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.map(addQuotes).join(' ')}`
 }
 ```
 
@@ -261,12 +263,13 @@ It's better to use the [function-based configuration (seen above)](https://githu
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
+const addQuotes = (a) => `"${a}"`
 
 module.exports = {
   '*': (allFiles) => {
     const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts']);
     const docFiles = micromatch(allFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+    return [`eslint ${codeFiles.map(addQuotes).join(' ')}`, `mdl ${docFiles.map(addQuotes).join(' ')}`];
   }
 }
 ```
@@ -278,12 +281,13 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
+const addQuotes = (a) => `"${a}"`
 
 module.exports = {
   '*.js': (files) => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
-    return `eslint ${match.join(' ')}`
+    return `eslint ${match.map(addQuotes).join(' ')}`
   }
 }
 ```
@@ -294,12 +298,13 @@ Please note that for most cases, globs can achieve the same effect. For the abov
 
 ```js
 const path = require('path')
+const addQuotes = (a) => `"${a}"`
 
 module.exports = {
   '*.ts': (absolutePaths) => {
     const cwd = process.cwd()
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file))
-    return `ng lint myProjectName --files ${relativePaths.join(' ')}`
+    return `ng lint myProjectName --files ${relativePaths.map(addQuotes).join(' ')}`
   }
 }
 ```
