@@ -409,7 +409,6 @@ module.exports = (allStagedFiles) => {
     `prettier --write ${prettierFiles.map(addQuotes).join(' ')}`,
   ];
 };
-
 ```
 
 ### Automatically fix code style with `prettier` for javascript, typescript, markdown, HTML, or CSS
