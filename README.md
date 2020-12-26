@@ -446,9 +446,15 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 <details>
   <summary>Click to expand</summary>
 
+You need to add `micromatch` as a dev dependency.
+
+```sh
+$ npm i --save-dev micromatch
+```
+
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch') // you should add this as a dev-dependency
+const micromatch = require('micromatch')
 const prettier = require('prettier')
 
 const prettierSupportedExtensions = prettier
