@@ -211,51 +211,74 @@ The function can also be async:
 
 ### Example: Export a function to build your own matchers
 
+<details>
+  <summary>Click to expand</summary>
+
 ```js
 // lint-staged.config.js
 const micromatch = require('micromatch')
 
 module.exports = (allStagedFiles) => {
-    const shFiles =  micromatch(allStagedFiles, ['**/src/**/*.sh']);
-    if (shFiles.length) {
-      return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
-    }
-    const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts']);
-    const docFiles = micromatch(allStagedFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
+  const shFiles = micromatch(allStagedFiles, ['**/src/**/*.sh'])
+  if (shFiles.length) {
+    return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
   }
+  const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts'])
+  const docFiles = micromatch(allStagedFiles, ['**/*.md'])
+  return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
+}
 ```
 
+</details>
 
 ### Example: Wrap filenames in single quotes and run once per file
+
+<details>
+  <summary>Click to expand</summary>
 
 ```js
 // .lintstagedrc.js
 module.exports = {
-  '**/*.js?(x)': (filenames) => filenames.map((filename) => `prettier --write '${filename}'`)
+  '**/*.js?(x)': (filenames) => filenames.map((filename) => `prettier --write '${filename}'`),
 }
 ```
 
+</details>
+
 ### Example: Run `tsc` on changes to TypeScript files, but do not pass any filename arguments
+
+<details>
+  <summary>Click to expand</summary>
 
 ```js
 // lint-staged.config.js
 module.exports = {
-  '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit'
+  '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit',
 }
 ```
 
+</details>
+
 ### Example: Run eslint on entire repo if more than 10 staged files
+
+<details>
+  <summary>Click to expand</summary>
 
 ```js
 // .lintstagedrc.js
 module.exports = {
   '**/*.js?(x)': (filenames) =>
-    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`
+    filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`,
 }
 ```
 
+</details>
+
 ### Example: Use your own globs
+
+<details>
+  <summary>Click to expand</summary>
+
 It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged/README.md#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
@@ -264,14 +287,19 @@ const micromatch = require('micromatch')
 
 module.exports = {
   '*': (allFiles) => {
-    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts']);
-    const docFiles = micromatch(allFiles, ['**/*.md']);
-    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`];
-  }
+    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts'])
+    const docFiles = micromatch(allFiles, ['**/*.md'])
+    return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
+  },
 }
 ```
 
+</details>
+
 ### Example: Ignore files from match
+
+<details>
+  <summary>Click to expand</summary>
 
 If for some reason you want to ignore files from the glob match, you can use `micromatch.not()`:
 
@@ -284,13 +312,18 @@ module.exports = {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
     return `eslint ${match.join(' ')}`
-  }
+  },
 }
 ```
 
 Please note that for most cases, globs can achieve the same effect. For the above example, a matching glob would be `!(*test).js`.
 
+</details>
+
 ### Example: Use relative paths for commands
+
+<details>
+  <summary>Click to expand</summary>
 
 ```js
 const path = require('path')
@@ -300,9 +333,11 @@ module.exports = {
     const cwd = process.cwd()
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file))
     return `ng lint myProjectName --files ${relativePaths.join(' ')}`
-  }
+  },
 }
 ```
+
+</details>
 
 ## Reformatting the code
 
@@ -340,13 +375,21 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 
 ### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
+<details>
+  <summary>Click to expand</summary>
+
 ```json
 {
   "*.{js,jsx}": "eslint"
 }
 ```
 
+</details>
+
 ### Automatically fix code style with `--fix` and add to commit
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -356,7 +399,12 @@ _Note we don’t pass a path as an argument for the runners. This is important s
 
 This will run `eslint --fix` and automatically add changes to the commit.
 
+</details>
+
 ### Reuse npm script
+
+<details>
+  <summary>Click to expand</summary>
 
 If you wish to reuse a npm script defined in your package.json:
 
@@ -374,7 +422,12 @@ The following is equivalent:
 }
 ```
 
+</details>
+
 ### Use environment variables with linting commands
+
+<details>
+  <summary>Click to expand</summary>
 
 Linting commands _do not_ support the shell convention of expanding environment variables. To enable the convention yourself, use a tool like [`cross-env`](https://github.com/kentcdodds/cross-env).
 
@@ -386,32 +439,39 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 }
 ```
 
+</details>
 
 ### Automatically fix code style with `prettier` for any format prettier supports
 
+<details>
+  <summary>Click to expand</summary>
+
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch'); // you should add this as a dev-dependency
-const prettier = require('prettier');
+const micromatch = require('micromatch') // you should add this as a dev-dependency
+const prettier = require('prettier')
 
 const prettierSupportedExtensions = prettier
   .getSupportInfo()
   .languages.map(({ extensions }) => extensions)
-  .flat();
-const addQuotes = (a) => `"${a}"`;
+  .flat()
+const addQuotes = (a) => `"${a}"`
 
 module.exports = (allStagedFiles) => {
   const prettierFiles = micromatch(
     allStagedFiles,
     prettierSupportedExtensions.map((extension) => `**/*${extension}`)
-  );
-  return [
-    `prettier --write ${prettierFiles.map(addQuotes).join(' ')}`,
-  ];
-};
+  )
+  return [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`]
+}
 ```
 
+</details>
+
 ### Automatically fix code style with `prettier` for javascript, typescript, markdown, HTML, or CSS
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -419,7 +479,12 @@ module.exports = (allStagedFiles) => {
 }
 ```
 
+</details>
+
 ### Stylelint for CSS with defaults and for SCSS with SCSS syntax
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -428,7 +493,12 @@ module.exports = (allStagedFiles) => {
 }
 ```
 
+</details>
+
 ### Run PostCSS sorting and Stylelint to check
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -436,7 +506,12 @@ module.exports = (allStagedFiles) => {
 }
 ```
 
+</details>
+
 ### Minify the images
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -452,8 +527,12 @@ module.exports = (allStagedFiles) => {
 See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-in-place-minify-the-images-before-adding-to-the-git-repo-5acda0b4c57e) for benefits of this approach.
 
 </details>
+</details>
 
 ### Typecheck your staged files with flow
+
+<details>
+  <summary>Click to expand</summary>
 
 ```json
 {
@@ -461,9 +540,14 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 }
 ```
 
+</details>
+
 ## Frequently Asked Questions
 
 ### Can I use `lint-staged` via node?
+
+<details>
+  <summary>Click to expand</summary>
 
 Yes!
 
@@ -511,13 +595,18 @@ const success = await lintStaged({
   relative: false,
   shell: false,
   stash: true,
-  verbose: false
+  verbose: false,
 })
 ```
 
 The `maxArgLength` option configures chunking of tasks into multiple parts that are run one after the other. This is to avoid issues on Windows platforms where the maximum length of the command line argument string is limited to 8192 characters. Lint-staged might generate a very long argument string when there are many staged files. This option is set automatically from the cli, but not via the Node.js API by default.
 
+</details>
+
 ### Using with JetBrains IDEs _(WebStorm, PyCharm, IntelliJ IDEA, RubyMine, etc.)_
+
+<details>
+  <summary>Click to expand</summary>
 
 _**Update**_: The latest version of JetBrains IDEs now support running hooks as you would expect.
 
@@ -551,7 +640,12 @@ husky v0.x
 
 _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comment=27-2710654) for the fix!_
 
+</details>
+
 ### How to use `lint-staged` in a multi package monorepo?
+
+<details>
+  <summary>Click to expand</summary>
 
 Starting with v5.0, `lint-staged` automatically resolves the git root **without any** additional configuration. You configure `lint-staged` as you normally would if your project root and git root were the same directory.
 
@@ -560,7 +654,12 @@ If you wish to use `lint-staged` in a multi package monorepo, it is recommended 
 
 Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
 
+</details>
+
 ### Can I lint files outside of the current project folder?
+
+<details>
+  <summary>Click to expand</summary>
 
 tl;dr: Yes, but the pattern should start with `../`.
 
@@ -573,11 +672,21 @@ Note that patterns like `*.js`, `**/*.js` will still only match the project file
 
 Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).
 
+</details>
+
 ### How can i ignore files from `.eslintignore` ?
+
+<details>
+  <summary>Click to expand</summary>
 
 ESLint throws out `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
 
+</details>
+
 #### ESLint < 7
+
+<details>
+  <summary>Click to expand</summary>
 
 Based on the discussion from [this issue](https://github.com/eslint/eslint/issues/9977), it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
 
@@ -590,11 +699,16 @@ const cli = new CLIEngine({})
 
 module.exports = {
   '*.js': (files) =>
-    'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' ')
+    'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' '),
 }
 ```
 
+</details>
+
 #### ESlint >= 7
+
+<details>
+  <summary>Click to expand</summary>
 
 In versions of ESlint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
 
@@ -603,23 +717,25 @@ This particular code uses a tiny package, [node-filter-async](https://www.npmjs.
 Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad eslint config will come through to the console.
 
 ```js
-const { ESLint } = require("eslint");
-const filterAsync = require("node-filter-async").default;
+const { ESLint } = require('eslint')
+const filterAsync = require('node-filter-async').default
 
-const eslintCli = new ESLint();
+const eslintCli = new ESLint()
 
 const removeIgnoredFiles = async (files) => {
   const filteredFiles = await filterAsync(files, async (file) => {
-    const isIgnored = await eslintCli.isPathIgnored(file);
-    return !isIgnored;
-  });
-  return filteredFiles.join(" ");
-};
+    const isIgnored = await eslintCli.isPathIgnored(file)
+    return !isIgnored
+  })
+  return filteredFiles.join(' ')
+}
 
 module.exports = {
-  "**/*.{ts,tsx,js,jsx}": async (files) => {
-    const filesToLint = await removeIgnoredFiles(files);
-    return [`eslint --max-warnings=0 ${filesToLint}`];
+  '**/*.{ts,tsx,js,jsx}': async (files) => {
+    const filesToLint = await removeIgnoredFiles(files)
+    return [`eslint --max-warnings=0 ${filesToLint}`]
   },
-};
+}
 ```
+
+</details>
