@@ -468,7 +468,7 @@ module.exports = (allStagedFiles) => {
     allStagedFiles,
     prettierSupportedExtensions.map((extension) => `**/*${extension}`)
   )
-  return [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`]
+  return prettierFiles.lengh > 0 ? [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`] : []
 }
 ```
 
