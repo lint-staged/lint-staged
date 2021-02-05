@@ -76,7 +76,7 @@ const getMaxArgLength = () => {
 
 const options = {
   allowEmpty: !!cmdline.allowEmpty,
-  concurrent: cmdline.concurrent,
+  concurrent: JSON.parse(cmdline.concurrent),
   configPath: cmdline.config,
   debug: !!cmdline.debug,
   maxArgLength: getMaxArgLength() / 2,
