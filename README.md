@@ -28,7 +28,7 @@ The fastest way to start using lint-staged is to run following command in your t
 npx mrm lint-staged
 ```
 
-It will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
+It will install and configure [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
 
 Don't forget to commit changes to `package.json` to share this setup with your team!
 
