@@ -353,7 +353,7 @@ Prior to version 10, tasks had to manually include `git add` as the final step. 
 
 ## Examples
 
-All examples assuming you’ve already set up lint-staged and husky in the `package.json`.
+All examples assuming you’ve already set up lint-staged and [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks) in the `package.json`.
 
 ```json
 {
@@ -362,10 +362,8 @@ All examples assuming you’ve already set up lint-staged and husky in the `pack
   "scripts": {
     "my-custom-script": "linter --arg1 --arg2"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
   },
   "lint-staged": {}
 }
