@@ -28,9 +28,9 @@ The fastest way to start using lint-staged is to run following command in your t
 npx mrm lint-staged
 ```
 
-It will install and configure [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
+It will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
 
-Don't forget to commit changes to `package.json` to share this setup with your team!
+Don't forget to commit changes to `package.json` and `.husky` to share this setup with your team!
 
 Now change a few files, `git add` or `git add --patch` some of them to your commit and try to `git commit` them.
 
@@ -353,7 +353,7 @@ Prior to version 10, tasks had to manually include `git add` as the final step. 
 
 ## Examples
 
-All examples assuming you’ve already set up lint-staged and [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks) in the `package.json`.
+All examples assuming you’ve already set up lint-staged in the `package.json` and [husky](https://github.com/typicode/husky).
 
 ```json
 {
@@ -362,11 +362,17 @@ All examples assuming you’ve already set up lint-staged and [simple-git-hooks]
   "scripts": {
     "my-custom-script": "linter --arg1 --arg2"
   },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
-  },
   "lint-staged": {}
 }
+```
+
+In `.husky/pre-commit`
+
+```shell
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged
 ```
 
 _Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you._
