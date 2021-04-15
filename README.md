@@ -6,11 +6,11 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 
 ## Why
 
-Linting makes more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a lint process on a whole project is slow and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
+Linting makes more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a lint process on a whole project is slow, and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
-## Related blogs posts and talks
+## Related blog posts and talks
 
 - [Introductory Medium post - Andrey Okonetchnikov, 2016](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 - [Running Jest Tests Before Each Git Commit - Ben McCormick, 2017](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
@@ -22,23 +22,23 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Installation and setup
 
-The fastest way to start using lint-staged is to run following command in your terminal:
+The fastest way to start using lint-staged is to run the following command in your terminal:
 
 ```bash
 npx mrm lint-staged
 ```
 
-It will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on code quality tools from `package.json` dependencies so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io), [ESlint](https://eslint.org) prior that.
+This command will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on the code quality tools from your project's `package.json` dependencies, so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io) and [ESLint](https://eslint.org) prior to that.
 
 Don't forget to commit changes to `package.json` and `.husky` to share this setup with your team!
 
-Now change a few files, `git add` or `git add --patch` some of them to your commit and try to `git commit` them.
+Now change a few files, `git add` or `git add --patch` some of them to your commit, and try to `git commit` them.
 
 See [examples](#examples) and [configuration](#configuration) for more information.
 
 ## Changelog
 
-See [Releases](https://github.com/okonet/lint-staged/releases)
+See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
@@ -48,10 +48,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases)
   If your task previously contained a `git add` step, please remove this.
   The automatic behaviour ensures there are less race-conditions,
   since trying to run multiple git operations at the same time usually results in an error.
-- From `v10.0.0` onwards _lint-staged_ uses git stashes to improve speed and provide backups while running.
-  Since git stashes require at least an initial commit, you shouldn't run _lint-staged_ in an empty repo.
-- From `v10.0.0` onwards _lint-staged_ requires Node.js version 10.13.0 or later.
-- From `v10.0.0` onwards _lint-staged_ will abort the commit if linter tasks undo all staged changes. To allow creating empty commit, please use the `--allow-empty` option.
+- From `v10.0.0` onwards, lint-staged uses git stashes to improve speed and provide backups while running.
+  Since git stashes require at least an initial commit, you shouldn't run lint-staged in an empty repo.
+- From `v10.0.0` onwards, lint-staged requires Node.js version 10.13.0 or later.
+- From `v10.0.0` onwards, lint-staged will abort the commit if linter tasks undo all staged changes. To allow creating an empty commit, please use the `--allow-empty` option.
 
 ## Command line flags
 
@@ -79,7 +79,7 @@ Options:
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
@@ -95,7 +95,7 @@ Options:
 
 ## Configuration
 
-Starting with v3.1 you can now use different ways of configuring it:
+Starting with v3.1 you can now use different ways of configuring lint-staged:
 
 - `lint-staged` object in your `package.json`
 - `.lintstagedrc` file in JSON or YML format, or you can be explicit with the file extension:
@@ -135,7 +135,7 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ## Filtering files
 
-Linter commands work on a subset of all staged files, defined by a _glob pattern_. `lint-staged´ uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
+Linter commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
 
 - If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
   - **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
@@ -144,7 +144,7 @@ Linter commands work on a subset of all staged files, defined by a _glob pattern
   - **`"./*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
   - **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
 
-When matching, `lint-staged` will do the following
+When matching, lint-staged will do the following
 
 - Resolve the git root automatically, no configuration needed.
 - Pick the staged files which are present inside the project directory.
@@ -153,11 +153,11 @@ When matching, `lint-staged` will do the following
 
 **NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
 
-Also see [How to use `lint-staged` in a multi package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
+Also see [How to use `lint-staged` in a multi-package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
 
 ### Ignoring files
 
-The concept of `lint-staged` is to run configured linter (or other) tasks on files that are staged in git. `lint-staged` will always pass a list of all staged files to the task, and ignoring any files should be configured in the task itself.
+The concept of `lint-staged` is to run configured linter tasks (or other tasks) on files that are staged in git. `lint-staged` will always pass a list of all staged files to the task, and ignoring any files should be configured in the task itself.
 
 Consider a project that uses [`prettier`](https://prettier.io/) to keep code format consistent across all files. The project also stores minified 3rd-party vendor libraries in the `vendor/` directory. To keep `prettier` from throwing errors on these files, the vendor directory should be added to prettier's ignore configuration, the `.prettierignore` file. Running `npx prettier .` will ignore the entire vendor directory, throwing no errors. When `lint-staged` is added to the project and configured to run prettier, all modified and staged files in the vendor directory will be ignored by prettier, even though it receives them as input.
 
@@ -167,7 +167,7 @@ In advanced scenarios, where it is impossible to configure the linter task itsel
 
 Supported are any executables installed locally or globally via `npm` as well as any executable from your \$PATH.
 
-> Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn’t have it installed.
+> Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn't have it installed.
 
 `lint-staged` uses [execa](https://github.com/sindresorhus/execa#preferlocal) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
 
@@ -195,11 +195,11 @@ going to execute `eslint` and if it exits with `0` code, it will execute `pretti
 
 ## Using JS configuration file
 
-Writing the configuration file in JavaScript is the most powerful way to configure _lint-staged_ (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function, or an object.
+Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
 
-If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files, and return a command string, or an array or command strings. These strings are considered complete and should include the filename arguments, if wanted.
+If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files and return a command string or an array of command strings. These strings are considered complete and should include the filename arguments, if wanted.
 
-If the `exports` value is an object, its keys should be glob matches (like in the normal non-js config format). The values can either be like in the normal config, or individual functions like described above. Instead of receiving all matched files, the functions in the exported object will only receive the staged files matching the corresponding glob key.
+If the `exports` value is an object, its keys should be glob matches (like in the normal non-js config format). The values can either be like in the normal config or individual functions like described above. Instead of receiving all matched files, the functions in the exported object will only receive the staged files matching the corresponding glob key.
 
 ### Function signature
 
@@ -259,7 +259,7 @@ module.exports = {
 
 </details>
 
-### Example: Run eslint on entire repo if more than 10 staged files
+### Example: Run ESLint on entire repo if more than 10 staged files
 
 <details>
   <summary>Click to expand</summary>
@@ -353,7 +353,7 @@ Prior to version 10, tasks had to manually include `git add` as the final step. 
 
 ## Examples
 
-All examples assuming you’ve already set up lint-staged in the `package.json` and [husky](https://github.com/typicode/husky).
+All examples assume you've already set up lint-staged in the `package.json` file and [husky](https://github.com/typicode/husky) in its own config file.
 
 ```json
 {
@@ -375,7 +375,7 @@ In `.husky/pre-commit`
 npx lint-staged
 ```
 
-_Note we don’t pass a path as an argument for the runners. This is important since lint-staged will do this for you._
+_Note: we don't pass a path as an argument for the runners. This is important since lint-staged will do this for you._
 
 ### ESLint with default parameters for `*.js` and `*.jsx` running as a pre-commit hook
 
@@ -472,13 +472,15 @@ module.exports = (allStagedFiles) => {
     allStagedFiles,
     prettierSupportedExtensions.map((extension) => `**/*${extension}`)
   )
-  return prettierFiles.length > 0 ? [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`] : []
+  return prettierFiles.length > 0
+    ? [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`]
+    : []
 }
 ```
 
 </details>
 
-### Automatically fix code style with `prettier` for javascript, typescript, markdown, HTML, or CSS
+### Automatically fix code style with `prettier` for JavaScript, TypeScript, Markdown, HTML, or CSS
 
 <details>
   <summary>Click to expand</summary>
@@ -652,7 +654,7 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 
 </details>
 
-### How to use `lint-staged` in a multi package monorepo?
+### How to use `lint-staged` in a multi-package monorepo?
 
 <details>
   <summary>Click to expand</summary>
@@ -684,7 +686,7 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 
 </details>
 
-### How can i ignore files from `.eslintignore` ?
+### How can I ignore files from `.eslintignore`?
 
 <details>
   <summary>Click to expand</summary>
@@ -715,16 +717,16 @@ module.exports = {
 
 </details>
 
-#### ESlint >= 7
+#### ESLint >= 7
 
 <details>
   <summary>Click to expand</summary>
 
-In versions of ESlint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
+In versions of ESLint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
 
 This particular code uses a tiny package, [node-filter-async](https://www.npmjs.com/package/node-filter-async), to filter the files array with an async function. If you prefer to not have an extra dependency, it is quite simple to write a similar function.
 
-Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad eslint config will come through to the console.
+Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad ESLint config will come through to the console.
 
 ```js
 const { ESLint } = require('eslint')
