@@ -74,17 +74,19 @@ const getMaxArgLength = () => {
   }
 }
 
+const cmdlineOptions = cmdline.opts()
+
 const options = {
-  allowEmpty: !!cmdline.allowEmpty,
-  concurrent: JSON.parse(cmdline.concurrent),
-  configPath: cmdline.config,
-  debug: !!cmdline.debug,
+  allowEmpty: !!cmdlineOptions.allowEmpty,
+  concurrent: JSON.parse(cmdlineOptions.concurrent),
+  configPath: cmdlineOptions.config,
+  debug: !!cmdlineOptions.debug,
   maxArgLength: getMaxArgLength() / 2,
-  stash: !!cmdline.stash, // commander inverts `no-<x>` flags to `!x`
-  quiet: !!cmdline.quiet,
-  relative: !!cmdline.relative,
-  shell: !!cmdline.shell,
-  verbose: !!cmdline.verbose,
+  stash: !!cmdlineOptions.stash, // commander inverts `no-<x>` flags to `!x`
+  quiet: !!cmdlineOptions.quiet,
+  relative: !!cmdlineOptions.relative,
+  shell: !!cmdlineOptions.shell,
+  verbose: !!cmdlineOptions.verbose,
 }
 
 debug('Options parsed from command-line:', options)
