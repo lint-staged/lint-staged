@@ -26,11 +26,6 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "./bin/lint-staged.js"
-    }
-  },
   "dependencies": {
     "chalk": "^4.1.1",
     "cli-truncate": "^2.1.0",
