@@ -17,7 +17,7 @@ const pkg = require('../package.json')
 require('please-upgrade-node')(
   Object.assign({}, pkg, {
     engines: {
-      node: '>=10.13.0', // First LTS release of 'Dubnium'
+      node: '>=12.13.0', // First LTS release of 'Erbium'
     },
   })
 )
