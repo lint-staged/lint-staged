@@ -25,7 +25,7 @@ This project contains a script that will run arbitrary shell tasks with a list o
 The fastest way to start using lint-staged is to run the following command in your terminal:
 
 ```bash
-npx mrm lint-staged
+npx mrm@2 lint-staged
 ```
 
 This command will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on the code quality tools from your project's `package.json` dependencies, so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io) and [ESLint](https://eslint.org) prior to that.
