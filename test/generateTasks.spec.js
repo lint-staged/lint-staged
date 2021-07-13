@@ -16,7 +16,7 @@ const files = [
   '.hidden/test.js',
 
   'test.css',
-  'deeper/test.css',
+  'deeper/test1.css',
   'deeper/test2.css',
   'even/deeper/test.css',
   '.hidden/test.css',
@@ -146,11 +146,30 @@ describe('generateTasks', () => {
         `${gitDir}/even/deeper/test.js`,
         `${gitDir}/.hidden/test.js`,
         `${gitDir}/test.css`,
-        `${gitDir}/deeper/test.css`,
+        `${gitDir}/deeper/test1.css`,
         `${gitDir}/deeper/test2.css`,
         `${gitDir}/even/deeper/test.css`,
         `${gitDir}/.hidden/test.css`,
       ].map(normalizePath),
+    })
+  })
+
+  it('should match pattern "test{1..2}.css"', async () => {
+    const result = await generateTasks({
+      config: {
+        'test{1..2}.css': 'lint',
+      },
+      cwd,
+      gitDir,
+      files,
+    })
+
+    const linter = result.find((item) => item.pattern === 'test{1..2}.css')
+
+    expect(linter).toEqual({
+      pattern: 'test{1..2}.css',
+      commands: 'lint',
+      fileList: [`${gitDir}/deeper/test1.css`, `${gitDir}/deeper/test2.css`].map(normalizePath),
     })
   })
 
@@ -208,7 +227,7 @@ describe('generateTasks', () => {
       commands: 'lint',
       fileList: [
         `${gitDir}/test.css`,
-        `${gitDir}/deeper/test.css`,
+        `${gitDir}/deeper/test1.css`,
         `${gitDir}/deeper/test2.css`,
         `${gitDir}/even/deeper/test.css`,
         `${gitDir}/.hidden/test.css`,
@@ -265,7 +284,7 @@ describe('generateTasks', () => {
         'even/deeper/test.js',
         '.hidden/test.js',
         'test.css',
-        'deeper/test.css',
+        'deeper/test1.css',
         'deeper/test2.css',
         'even/deeper/test.css',
         '.hidden/test.css',
