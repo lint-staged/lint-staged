@@ -236,8 +236,8 @@ describe('lintStaged', () => {
     // Serialize Windows, Linux and MacOS paths consistently
     expect.addSnapshotSerializer(
       replaceSerializer(
-        /Error: ENOENT: no such file or directory, open '([^']+)'/,
-        `Error: ENOENT: no such file or directory, open '${nonExistentConfig}'`
+        /ENOENT: no such file or directory, open '([^']+)'/,
+        `ENOENT: no such file or directory, open '${nonExistentConfig}'`
       )
     )
 
@@ -246,12 +246,12 @@ describe('lintStaged', () => {
     ).rejects.toThrowError()
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
+
       ERROR Could not parse lint-staged config.
 
-      ENOENT: no such file or directory, open '/Users/iiro/git/lint-staged/fake-config-file.yml'
+      ENOENT: no such file or directory, open 'fake-config-file.yml'
       ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
+      See https://github.com/okonet/lint-staged#configuration.
     `)
   })
 })
