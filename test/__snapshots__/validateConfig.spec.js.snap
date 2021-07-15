@@ -152,3 +152,15 @@ Please refer to https://github.com/okonet/lint-staged#configuration for more inf
 `;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 2`] = `""`;
+
+exports[`validateConfig should warn about \`*.{js}\` and return fixed config 1`] = `
+"
+WARN ‼ Detected incorrect braces with only single value: \`*.{js}\`. Reformatted as: \`*.js\`
+"
+`;
+
+exports[`validateConfig should warn about \`*.{ts}{x}\` and return fixed config 1`] = `
+"
+WARN ‼ Detected incorrect braces with only single value: \`*.{ts}{x}\`. Reformatted as: \`*.tsx\`
+"
+`;

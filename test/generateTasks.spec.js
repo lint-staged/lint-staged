@@ -1,4 +1,3 @@
-import makeConsoleMock from 'consolemock'
 import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
@@ -171,74 +170,6 @@ describe('generateTasks', () => {
       commands: 'lint',
       fileList: [`${gitDir}/deeper/test1.css`, `${gitDir}/deeper/test2.css`].map(normalizePath),
     })
-  })
-
-  it('should match pattern "*.{js}" and show warning', async () => {
-    const logger = makeConsoleMock()
-    const result = await generateTasks(
-      {
-        config: {
-          '*.{js}': 'lint',
-        },
-        cwd,
-        gitDir,
-        files,
-      },
-      logger
-    )
-    const linter = result.find((item) => item.pattern === '*.js')
-
-    expect(linter).toEqual({
-      pattern: '*.js',
-      commands: 'lint',
-      fileList: [
-        `${gitDir}/test.js`,
-        `${gitDir}/deeper/test.js`,
-        `${gitDir}/deeper/test2.js`,
-        `${gitDir}/even/deeper/test.js`,
-        `${gitDir}/.hidden/test.js`,
-      ].map(normalizePath),
-    })
-
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{js}\`. Reformatted as: \`*.js\`
-      "
-    `)
-  })
-
-  it('should match pattern "*.{c}{s}{s}" and show warning', async () => {
-    const logger = makeConsoleMock()
-    const result = await generateTasks(
-      {
-        config: {
-          '*.{c}{s}{s}': 'lint',
-        },
-        cwd,
-        gitDir,
-        files,
-      },
-      logger
-    )
-    const linter = result.find((item) => item.pattern === '*.css')
-
-    expect(linter).toEqual({
-      pattern: '*.css',
-      commands: 'lint',
-      fileList: [
-        `${gitDir}/test.css`,
-        `${gitDir}/deeper/test1.css`,
-        `${gitDir}/deeper/test2.css`,
-        `${gitDir}/even/deeper/test.css`,
-        `${gitDir}/.hidden/test.css`,
-      ].map(normalizePath),
-    })
-
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{c}{s}{s}\`. Reformatted as: \`*.css\`
-      "
-    `)
   })
 
   it('should not match files in parent directory by default', async () => {
