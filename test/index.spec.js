@@ -74,8 +74,7 @@ describe('lintStaged', () => {
       "
       ERROR Could not parse lint-staged config.
 
-      Error: Configuration should not be empty!
-      ERROR 
+      Configuration should not be empty!
       ERROR Please make sure you have created it correctly.
       See https://github.com/okonet/lint-staged#configuration."
     `)
@@ -137,8 +136,7 @@ describe('lintStaged', () => {
       "
       ERROR Could not parse lint-staged config.
 
-      Error: Configuration should not be empty!
-      ERROR 
+      Configuration should not be empty!
       ERROR Please make sure you have created it correctly.
       See https://github.com/okonet/lint-staged#configuration."
     `)
@@ -225,7 +223,6 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
       ERROR Config could not be found.
-      ERROR 
       ERROR Please make sure you have created it correctly.
       See https://github.com/okonet/lint-staged#configuration."
     `)
@@ -249,13 +246,12 @@ describe('lintStaged', () => {
     ).rejects.toThrowError()
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`
-
+      "
       ERROR Could not parse lint-staged config.
 
-      Error: ENOENT: no such file or directory, open 'fake-config-file.yml'
-      ERROR 
+      ENOENT: no such file or directory, open '/Users/iiro/git/lint-staged/fake-config-file.yml'
       ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration.
+      See https://github.com/okonet/lint-staged#configuration."
     `)
   })
 })
