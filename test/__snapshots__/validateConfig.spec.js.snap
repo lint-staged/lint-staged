@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateConfig should not throw and should print nothing for function config 1`] = `""`;
-
 exports[`validateConfig should not throw and should print nothing for function task 1`] = `""`;
 
 exports[`validateConfig should not throw and should print nothing for valid config 1`] = `""`;
@@ -19,7 +17,7 @@ exports[`validateConfig should throw and should print validation errors for inva
 "
 `;
 
-exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object!"`;
+exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function!"`;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 1`] = `
 "× Validation Error:
@@ -101,3 +99,5 @@ exports[`validateConfig should warn about \`*.{ts}{x}\` and return fixed config 
 WARN ‼ Detected incorrect braces with only single value: \`*.{ts}{x}\`. Reformatted as: \`*.tsx\`
 "
 `;
+
+exports[`validateConfig should wrap function config into object 1`] = `""`;

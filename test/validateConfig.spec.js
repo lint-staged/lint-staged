@@ -2,8 +2,6 @@ import makeConsoleMock from 'consolemock'
 
 import validateConfig from '../lib/validateConfig'
 
-import formatConfig from '../lib/formatConfig'
-
 describe('validateConfig', () => {
   let logger
 
@@ -25,19 +23,21 @@ describe('validateConfig', () => {
     expect(() => validateConfig(invalidConfig, logger)).toThrowErrorMatchingSnapshot()
   })
 
+  it('should wrap function config into object', () => {
+    const functionConfig = (stagedFiles) => [`eslint --fix ${stagedFiles}', 'git add`]
+
+    expect(validateConfig(functionConfig, logger)).toEqual({
+      '*': functionConfig,
+    })
+    expect(logger.printHistory()).toMatchSnapshot()
+  })
+
   it('should not throw and should print nothing for valid config', () => {
     const validSimpleConfig = {
       '*.js': ['eslint --fix', 'git add'],
     }
 
     expect(() => validateConfig(validSimpleConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
-  })
-
-  it('should not throw and should print nothing for function config', () => {
-    const functionConfig = (stagedFiles) => [`eslint ${stagedFiles.join(' ')}`]
-
-    expect(() => validateConfig(formatConfig(functionConfig), logger)).not.toThrow()
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
