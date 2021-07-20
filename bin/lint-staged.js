@@ -42,7 +42,7 @@ cmdline
   )
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
-  .option('-x, --shell', 'skip parsing of tasks for better shell support', false)
+  .option('-x, --shell <path>', 'skip parsing of tasks for better shell support', false)
   .option(
     '-v, --verbose',
     'show task output even when tasks succeed; by default only failed output is shown',
@@ -85,7 +85,7 @@ const options = {
   stash: !!cmdlineOptions.stash, // commander inverts `no-<x>` flags to `!x`
   quiet: !!cmdlineOptions.quiet,
   relative: !!cmdlineOptions.relative,
-  shell: !!cmdlineOptions.shell,
+  shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
   verbose: !!cmdlineOptions.verbose,
 }
 
