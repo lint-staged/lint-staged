@@ -79,6 +79,23 @@ describe('resolveTaskFn', () => {
     })
   })
 
+  it('should work with path to custom shell', async () => {
+    expect.assertions(2)
+    const taskFn = resolveTaskFn({
+      ...defaultOpts,
+      shell: '/bin/bash',
+      command: 'node --arg=true ./myscript.js',
+    })
+
+    await taskFn()
+    expect(execa).toHaveBeenCalledTimes(1)
+    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      preferLocal: true,
+      reject: false,
+      shell: '/bin/bash',
+    })
+  })
+
   it('should pass `gitDir` as `cwd` to `execa()` gitDir !== process.cwd for git commands', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({

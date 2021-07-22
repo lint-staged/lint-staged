@@ -71,7 +71,7 @@ Options:
                                      tasks serially (default: true)
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
-  -x, --shell                        skip parsing of tasks for better shell support (default:
+  -x, --shell <path>                 skip parsing of tasks for better shell support (default:
                                      false)
   -v, --verbose                      show task output even when tasks succeed; by default only
                                      failed output is shown (default: false)
@@ -90,7 +90,7 @@ Options:
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
-- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option.
+- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
