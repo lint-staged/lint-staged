@@ -1,6 +1,40 @@
 import makeConsoleMock from 'consolemock'
 
-import validateConfig from '../lib/validateConfig'
+import validateConfig, { BRACES_REGEXP } from '../lib/validateConfig'
+
+describe('BRACES_REGEXP', () => {
+  it(`should match '*.{js}'`, () => {
+    expect('*.{js}'.match(BRACES_REGEXP))
+  })
+
+  it(`should match 'file_{10}'`, () => {
+    expect('file_{test}'.match(BRACES_REGEXP))
+  })
+
+  it(`should match '*.{spec\\.js}'`, () => {
+    expect('*.{spec\\.js}'.match(BRACES_REGEXP))
+  })
+
+  it(`should not match '.{js,ts}'`, () => {
+    expect('.{js,ts}'.match(BRACES_REGEXP))
+  })
+
+  it(`should not match 'file_{1..10}'`, () => {
+    expect('file_{1..10}'.match(BRACES_REGEXP))
+  })
+
+  it(`should not match '*.\\{js\\}'`, () => {
+    expect('*.\\{js\\}'.match(BRACES_REGEXP))
+  })
+
+  it(`should not match '*.\\{js}'`, () => {
+    expect('*.\\{js}'.match(BRACES_REGEXP))
+  })
+
+  it(`should not match '*.{js\\}'`, () => {
+    expect('*.{js\\}'.match(BRACES_REGEXP))
+  })
+})
 
 describe('validateConfig', () => {
   let logger
@@ -29,7 +63,7 @@ describe('validateConfig', () => {
     expect(validateConfig(functionConfig, logger)).toEqual({
       '*': functionConfig,
     })
-    expect(logger.printHistory()).toMatchSnapshot()
+    expect(logger.printHistory()).toEqual('')
   })
 
   it('should not throw and should print nothing for valid config', () => {
@@ -38,7 +72,7 @@ describe('validateConfig', () => {
     }
 
     expect(() => validateConfig(validSimpleConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
+    expect(logger.printHistory()).toEqual('')
   })
 
   it('should not throw and should print nothing for function task', () => {
@@ -51,7 +85,7 @@ describe('validateConfig', () => {
     }
 
     expect(() => validateConfig(functionTask, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
+    expect(logger.printHistory()).toEqual('')
   })
 
   it('should throw when detecting deprecated advanced configuration', () => {
@@ -78,7 +112,7 @@ describe('validateConfig', () => {
     }
 
     expect(() => validateConfig(stillValidConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
+    expect(logger.printHistory()).toEqual('')
   })
 
   it('should warn about `*.{js}` and return fixed config', () => {
@@ -97,5 +131,14 @@ describe('validateConfig', () => {
 
     expect(() => validateConfig(incorrectBracesConfig, logger)).not.toThrow()
     expect(logger.printHistory()).toMatchSnapshot()
+  })
+
+  it('should not warn about `*.\\{js\\}`', () => {
+    const incorrectBracesConfig = {
+      '*.\\{js\\}': 'eslint',
+    }
+
+    expect(() => validateConfig(incorrectBracesConfig, logger)).not.toThrow()
+    expect(logger.printHistory()).toEqual('')
   })
 })
