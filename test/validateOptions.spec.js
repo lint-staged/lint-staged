@@ -55,7 +55,7 @@ describe('validateOptions', () => {
       "
       ERROR × Validation Error:
 
-        Invalid value for option shell: /bin/sh
+        Invalid value for option 'shell': /bin/sh
 
         Promise.reject is not a constructor
 

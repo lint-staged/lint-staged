@@ -111,12 +111,9 @@ describe('makeCmdTasks', () => {
       .toThrowErrorMatchingInlineSnapshot(`
             "× Validation Error:
 
-              Invalid value for '[Function]'.
+              Invalid value for '[Function]': null
 
-              Function task should return a string or an array of strings.
-             
-              Configured value is: null
-            "
+              Function task should return a string or an array of strings"
           `)
   })
 

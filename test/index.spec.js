@@ -70,14 +70,7 @@ describe('lintStaged', () => {
       `[Error: Configuration should not be empty!]`
     )
 
-    expect(mockedConsole.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR Could not parse lint-staged config.
-
-      Configuration should not be empty!
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
-    `)
+    expect(mockedConsole.printHistory()).toMatchInlineSnapshot(`""`)
 
     console = previousConsole
   })
@@ -132,14 +125,7 @@ describe('lintStaged', () => {
       `[Error: Configuration should not be empty!]`
     )
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR Could not parse lint-staged config.
-
-      Configuration should not be empty!
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should load config file when specified', async () => {
@@ -222,9 +208,7 @@ describe('lintStaged', () => {
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR Config could not be found.
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
+      ERROR Config could not be found."
     `)
   })
 
@@ -245,13 +229,6 @@ describe('lintStaged', () => {
       lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
     ).rejects.toThrowError()
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-
-      ERROR Could not parse lint-staged config.
-
-      ENOENT: no such file or directory, open 'fake-config-file.yml'
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration.
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 })

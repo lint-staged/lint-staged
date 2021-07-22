@@ -77,6 +77,7 @@ describe('lintStaged', () => {
     await expect(lintStaged({ config }, logger)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"failed config"`
     )
-    expect(logger.printHistory()).toMatchSnapshot()
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 })
