@@ -71,7 +71,7 @@ Options:
                                      tasks serially (default: true)
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
-  -x, --shell <path>                 skip parsing of tasks for better shell support (default:
+  -x, --shell [path]                 skip parsing of tasks for better shell support (default:
                                      false)
   -v, --verbose                      show task output even when tasks succeed; by default only
                                      failed output is shown (default: false)
