@@ -15,6 +15,10 @@ describe('BRACES_REGEXP', () => {
     expect('*.{spec\\.js}'.match(BRACES_REGEXP)).toBeTruthy()
   })
 
+  it(`should match '*.{js\\,ts}'`, () => {
+    expect('*.{js\\,ts}'.match(BRACES_REGEXP)).toBeTruthy()
+  })
+
   it(`should not match '.{js,ts}'`, () => {
     expect('.{js,ts}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
