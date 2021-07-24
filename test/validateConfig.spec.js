@@ -4,35 +4,35 @@ import validateConfig, { BRACES_REGEXP } from '../lib/validateConfig'
 
 describe('BRACES_REGEXP', () => {
   it(`should match '*.{js}'`, () => {
-    expect('*.{js}'.match(BRACES_REGEXP))
+    expect('*.{js}'.match(BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should match 'file_{10}'`, () => {
-    expect('file_{test}'.match(BRACES_REGEXP))
+    expect('file_{test}'.match(BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should match '*.{spec\\.js}'`, () => {
-    expect('*.{spec\\.js}'.match(BRACES_REGEXP))
+    expect('*.{spec\\.js}'.match(BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should not match '.{js,ts}'`, () => {
-    expect('.{js,ts}'.match(BRACES_REGEXP))
+    expect('.{js,ts}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
 
   it(`should not match 'file_{1..10}'`, () => {
-    expect('file_{1..10}'.match(BRACES_REGEXP))
+    expect('file_{1..10}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
 
   it(`should not match '*.\\{js\\}'`, () => {
-    expect('*.\\{js\\}'.match(BRACES_REGEXP))
+    expect('*.\\{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
 
   it(`should not match '*.\\{js}'`, () => {
-    expect('*.\\{js}'.match(BRACES_REGEXP))
+    expect('*.\\{js}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
 
   it(`should not match '*.{js\\}'`, () => {
-    expect('*.{js\\}'.match(BRACES_REGEXP))
+    expect('*.{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
   })
 })
 
