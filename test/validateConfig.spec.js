@@ -1,48 +1,6 @@
 import makeConsoleMock from 'consolemock'
 
-import validateConfig, { BRACES_REGEXP } from '../lib/validateConfig'
-
-describe('BRACES_REGEXP', () => {
-  it(`should match '*.{js}'`, () => {
-    expect('*.{js}'.match(BRACES_REGEXP)).toBeTruthy()
-  })
-
-  it(`should match 'file_{10}'`, () => {
-    expect('file_{test}'.match(BRACES_REGEXP)).toBeTruthy()
-  })
-
-  it(`should match '*.{spec\\.js}'`, () => {
-    expect('*.{spec\\.js}'.match(BRACES_REGEXP)).toBeTruthy()
-  })
-
-  it(`should match '*.{js\\,ts}'`, () => {
-    expect('*.{js\\,ts}'.match(BRACES_REGEXP)).toBeTruthy()
-  })
-
-  it("should not match '*.${js}'", () => {
-    expect('*.${js}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-
-  it(`should not match '.{js,ts}'`, () => {
-    expect('.{js,ts}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-
-  it(`should not match 'file_{1..10}'`, () => {
-    expect('file_{1..10}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-
-  it(`should not match '*.\\{js\\}'`, () => {
-    expect('*.\\{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-
-  it(`should not match '*.\\{js}'`, () => {
-    expect('*.\\{js}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-
-  it(`should not match '*.{js\\}'`, () => {
-    expect('*.{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
-  })
-})
+import validateConfig from '../lib/validateConfig'
 
 describe('validateConfig', () => {
   let logger
@@ -120,33 +78,6 @@ describe('validateConfig', () => {
     }
 
     expect(() => validateConfig(stillValidConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toEqual('')
-  })
-
-  it('should warn about `*.{js}` and return fixed config', () => {
-    const incorrectBracesConfig = {
-      '*.{js}': 'eslint',
-    }
-
-    expect(() => validateConfig(incorrectBracesConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
-  })
-
-  it('should warn about `*.{ts}{x}` and return fixed config', () => {
-    const incorrectBracesConfig = {
-      '*.{ts}{x}': 'eslint',
-    }
-
-    expect(() => validateConfig(incorrectBracesConfig, logger)).not.toThrow()
-    expect(logger.printHistory()).toMatchSnapshot()
-  })
-
-  it('should not warn about `*.\\{js\\}`', () => {
-    const incorrectBracesConfig = {
-      '*.\\{js\\}': 'eslint',
-    }
-
-    expect(() => validateConfig(incorrectBracesConfig, logger)).not.toThrow()
     expect(logger.printHistory()).toEqual('')
   })
 })

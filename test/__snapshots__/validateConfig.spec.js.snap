@@ -114,15 +114,3 @@ ERROR Could not parse lint-staged config.
 
 See https://github.com/okonet/lint-staged#configuration."
 `;
-
-exports[`validateConfig should warn about \`*.{js}\` and return fixed config 1`] = `
-"
-WARN ‼ Detected incorrect braces with only single value: \`*.{js}\`. Reformatted as: \`*.js\`
-"
-`;
-
-exports[`validateConfig should warn about \`*.{ts}{x}\` and return fixed config 1`] = `
-"
-WARN ‼ Detected incorrect braces with only single value: \`*.{ts}{x}\`. Reformatted as: \`*.tsx\`
-"
-`;
