@@ -445,36 +445,14 @@ For example, here is `jest` running on all `.js` files with the `NODE_ENV` varia
 
 </details>
 
-### Automatically fix code style with `prettier` for any format prettier supports
+### Automatically fix code style with `prettier` for any format Prettier supports
 
 <details>
   <summary>Click to expand</summary>
 
-You need to add `micromatch` as a dev dependency.
-
-```sh
-$ npm i --save-dev micromatch
-```
-
-```js
-// lint-staged.config.js
-const micromatch = require('micromatch')
-const prettier = require('prettier')
-
-const prettierSupportedExtensions = prettier
-  .getSupportInfo()
-  .languages.map(({ extensions }) => extensions)
-  .flat()
-const addQuotes = (a) => `"${a}"`
-
-module.exports = (allStagedFiles) => {
-  const prettierFiles = micromatch(
-    allStagedFiles,
-    prettierSupportedExtensions.map((extension) => `**/*${extension}`)
-  )
-  return prettierFiles.length > 0
-    ? [`prettier --write ${prettierFiles.map(addQuotes).join(' ')}`]
-    : []
+```json
+{
+  "*": "prettier --ignore-unknown --write"
 }
 ```
 
