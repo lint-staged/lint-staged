@@ -70,15 +70,7 @@ describe('lintStaged', () => {
       `[Error: Configuration should not be empty!]`
     )
 
-    expect(mockedConsole.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR Could not parse lint-staged config.
-
-      Error: Configuration should not be empty!
-      ERROR 
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
-    `)
+    expect(mockedConsole.printHistory()).toMatchInlineSnapshot(`""`)
 
     console = previousConsole
   })
@@ -133,15 +125,7 @@ describe('lintStaged', () => {
       `[Error: Configuration should not be empty!]`
     )
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR Could not parse lint-staged config.
-
-      Error: Configuration should not be empty!
-      ERROR 
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should load config file when specified', async () => {
@@ -224,10 +208,7 @@ describe('lintStaged', () => {
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR Config could not be found.
-      ERROR 
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration."
+      ERROR Config could not be found."
     `)
   })
 
@@ -239,8 +220,8 @@ describe('lintStaged', () => {
     // Serialize Windows, Linux and MacOS paths consistently
     expect.addSnapshotSerializer(
       replaceSerializer(
-        /Error: ENOENT: no such file or directory, open '([^']+)'/,
-        `Error: ENOENT: no such file or directory, open '${nonExistentConfig}'`
+        /ENOENT: no such file or directory, open '([^']+)'/,
+        `ENOENT: no such file or directory, open '${nonExistentConfig}'`
       )
     )
 
@@ -248,14 +229,6 @@ describe('lintStaged', () => {
       lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
     ).rejects.toThrowError()
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-
-      ERROR Could not parse lint-staged config.
-
-      Error: ENOENT: no such file or directory, open 'fake-config-file.yml'
-      ERROR 
-      ERROR Please make sure you have created it correctly.
-      See https://github.com/okonet/lint-staged#configuration.
-    `)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 })

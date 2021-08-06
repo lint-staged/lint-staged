@@ -41,7 +41,7 @@ describe('validateOptions', () => {
 
     const logger = makeConsoleMock()
 
-    mockAccess.mockImplementationOnce(() => new Promise.reject())
+    mockAccess.mockImplementationOnce(() => Promise.reject(new Error('Failed')))
 
     await expect(validateOptions({ shell: '/bin/sh' }, logger)).rejects.toThrowError(
       InvalidOptionsError
@@ -55,9 +55,9 @@ describe('validateOptions', () => {
       "
       ERROR × Validation Error:
 
-        Invalid value for option shell: /bin/sh
+        Invalid value for option 'shell': /bin/sh
 
-        Promise.reject is not a constructor
+        Failed
 
       See https://github.com/okonet/lint-staged#command-line-flags"
     `)

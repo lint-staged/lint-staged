@@ -1,154 +1,116 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateConfig should not throw and should print nothing for function config 1`] = `""`;
-
-exports[`validateConfig should not throw and should print nothing for function task 1`] = `""`;
-
-exports[`validateConfig should not throw and should print nothing for valid config 1`] = `""`;
-
-exports[`validateConfig should not throw when config contains deprecated key but with valid task 1`] = `""`;
-
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
-"● Validation Error:
+"× Validation Error:
 
-  Invalid value for 'foo'.
+  Invalid value for 'foo': false
 
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: false
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+  Should be a string, a function, or an array of strings and functions."
 `;
 
-exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object!"`;
+exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function!"`;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 1`] = `
-"● Validation Error:
+"× Validation Error:
 
-  Invalid value for 'chunkSize'.
+  Invalid value for 'chunkSize': 10
 
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: 10
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'chunkSize'.
+  Invalid value for 'concurrent': false
 
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: 10
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'concurrent'.
+  Invalid value for 'globOptions': {matchBase: false}
 
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: false
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'concurrent'.
+  Invalid value for 'ignore': ['test.js']
 
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: false
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'globOptions'.
+  Invalid value for 'linters': {'*.js': ['eslint']}
 
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: {matchBase: false}
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'globOptions'.
+  Invalid value for 'relative': true
 
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: {matchBase: false}
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'ignore'.
+  Invalid value for 'renderer': 'silent'
 
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: ['test.js']
+  Advanced configuration has been deprecated.
 
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
+× Validation Error:
 
-  Invalid value for 'linters'.
+  Invalid value for 'subTaskConcurrency': 10
 
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: {'*.js': ['eslint']}
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'linters'.
-
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: {'*.js': ['eslint']}
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'relative'.
-
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: true
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'relative'.
-
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: true
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'renderer'.
-
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: 'silent'
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'subTaskConcurrency'.
-
-  Advanced configuration has been deprecated. For more info, please visit: https://github.com/okonet/lint-staged.
- 
-  Configured value is: 10
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information...
-● Validation Error:
-
-  Invalid value for 'subTaskConcurrency'.
-
-  Should be a string, a function, or an array of strings and functions.
- 
-  Configured value is: 10
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
+  Advanced configuration has been deprecated."
 `;
 
-exports[`validateConfig should throw when detecting deprecated advanced configuration 2`] = `""`;
+exports[`validateConfig should throw when detecting deprecated advanced configuration 2`] = `
+"
+ERROR Could not parse lint-staged config.
+
+× Validation Error:
+
+  Invalid value for 'chunkSize': 10
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'concurrent': false
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'globOptions': {matchBase: false}
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'ignore': ['test.js']
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'linters': {'*.js': ['eslint']}
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'relative': true
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'renderer': 'silent'
+
+  Advanced configuration has been deprecated.
+
+× Validation Error:
+
+  Invalid value for 'subTaskConcurrency': 10
+
+  Advanced configuration has been deprecated.
+
+See https://github.com/okonet/lint-staged#configuration."
+`;

@@ -109,16 +109,12 @@ describe('makeCmdTasks', () => {
   it("should throw when function task doesn't return string | string[]", async () => {
     await expect(makeCmdTasks({ commands: () => null, gitDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-"● Validation Error:
+            "× Validation Error:
 
-  Invalid value for '[Function]'.
+              Invalid value for '[Function]': null
 
-  Function task should return a string or an array of strings.
- 
-  Configured value is: null
-
-Please refer to https://github.com/okonet/lint-staged#configuration for more information..."
-`)
+              Function task should return a string or an array of strings"
+          `)
   })
 
   it('should truncate task title', async () => {
