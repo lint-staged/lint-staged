@@ -671,8 +671,6 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 
 ESLint throws out `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warnings that breaks the linting process ( if you used `--max-warnings=0` which is recommended ).
 
-</details>
-
 #### ESLint < 7
 
 <details>
@@ -727,5 +725,7 @@ module.exports = {
   },
 }
 ```
+
+</details>
 
 </details>
