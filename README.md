@@ -700,21 +700,19 @@ module.exports = {
 
 In versions of ESLint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
 
-This particular code uses a tiny package, [node-filter-async](https://www.npmjs.com/package/node-filter-async), to filter the files array with an async function. If you prefer to not have an extra dependency, it is quite simple to write a similar function.
-
 Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad ESLint config will come through to the console.
 
 ```js
 const { ESLint } = require('eslint')
-const filterAsync = require('node-filter-async').default
-
-const eslintCli = new ESLint()
 
 const removeIgnoredFiles = async (files) => {
-  const filteredFiles = await filterAsync(files, async (file) => {
-    const isIgnored = await eslintCli.isPathIgnored(file)
-    return !isIgnored
-  })
+  const eslint = new ESLint()
+  const isIgnored = await Promise.all(
+    files.map((file) => {
+      return eslint.isPathIgnored(file)
+    })
+  )
+  const filteredFiles = files.filter((_, i) => !isIgnored[i])
   return filteredFiles.join(' ')
 }
 
