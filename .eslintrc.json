@@ -1,10 +1,11 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true
     },
+    "requireConfigFile": false,
     "sourceType": "script"
   },
   "env": {
