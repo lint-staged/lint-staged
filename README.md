@@ -369,7 +369,7 @@ All examples assume you've already set up lint-staged in the `package.json` file
 In `.husky/pre-commit`
 
 ```shell
-#!/bin/sh
+#!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh"
 
 npx lint-staged
