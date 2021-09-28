@@ -2,7 +2,7 @@ import {
   applyModificationsSkipped,
   cleanupSkipped,
   restoreOriginalStateSkipped,
-  restoreUnstagedChangesSkipped,
+  restorePartialChangesSkipped,
 } from '../lib/state'
 import { GitError, RestoreOriginalStateError } from '../lib/symbols'
 
@@ -18,9 +18,9 @@ describe('applyModificationsSkipped', () => {
   })
 })
 
-describe('restoreUnstagedChangesSkipped', () => {
+describe('restorePartialChangesSkipped', () => {
   it('should return error message when there is an unkown git error', () => {
-    const result = restoreUnstagedChangesSkipped({ errors: new Set([GitError]) })
+    const result = restorePartialChangesSkipped({ errors: new Set([GitError]) })
     expect(typeof result === 'string').toEqual(true)
   })
 })
