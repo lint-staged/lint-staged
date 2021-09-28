@@ -3,12 +3,10 @@ import normalize from 'normalize-path'
 import path from 'path'
 
 import execGitBase from '../lib/execGit'
-import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
 import { createTempDir } from './utils/tempDir'
 
-jest.mock('../lib/file.js')
 jest.unmock('execa')
 
 jest.setTimeout(20000)
@@ -97,6 +95,7 @@ describe('gitWorkflow', () => {
         'file_without_spaces.txt',
       ])
     })
+
     it('should include to and from for renamed files', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
@@ -139,6 +138,7 @@ describe('gitWorkflow', () => {
         }
       `)
     })
+
     it('should checkout renamed file when hiding changes', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
@@ -152,33 +152,6 @@ describe('gitWorkflow', () => {
       const ctx = getInitialState()
       await gitWorkflow.hideUnstagedChanges(ctx)
       expect(await readFile('TEST.md')).toStrictEqual(origContent)
-    })
-  })
-
-  describe('restoreMergeStatus', () => {
-    it('should handle error when restoring merge state fails', async () => {
-      const gitWorkflow = new GitWorkflow({
-        gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git'),
-      })
-      gitWorkflow.mergeHeadBuffer = true
-      writeFile.mockImplementation(() => Promise.reject('test'))
-      const ctx = getInitialState()
-      await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"Merge state could not be restored due to an error!"`
-      )
-      expect(ctx).toMatchInlineSnapshot(`
-        Object {
-          "errors": Set {
-            Symbol(GitError),
-            Symbol(RestoreMergeStatusError),
-          },
-          "hasPartiallyStagedFiles": null,
-          "output": Array [],
-          "quiet": false,
-          "shouldBackup": null,
-        }
-      `)
     })
   })
 })

@@ -9,7 +9,6 @@ import resolveGitRepo from '../lib/resolveGitRepo'
 import runAll from '../lib/runAll'
 import { GitError } from '../lib/symbols'
 
-jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
 jest.mock('../lib/resolveGitRepo')
@@ -41,6 +40,7 @@ describe('runAll', () => {
     await expect(runAll({ config: {} })).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
+              "hasInitialCommit": true,
               "hasPartiallyStagedFiles": null,
               "output": Array [
                 "→ No staged files found.",
@@ -56,6 +56,7 @@ describe('runAll', () => {
     await expect(runAll({ config: {}, quiet: true })).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
+              "hasInitialCommit": true,
               "hasPartiallyStagedFiles": null,
               "output": Array [],
               "quiet": true,

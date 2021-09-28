@@ -26,6 +26,7 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
+          "hasInitialCommit": true,
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": true,
@@ -52,6 +53,7 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
+          "hasInitialCommit": true,
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": false,
