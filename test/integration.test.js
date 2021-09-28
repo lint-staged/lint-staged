@@ -217,7 +217,7 @@ describe('lint-staged', () => {
     // Git status is a bit messed up because the horrible things we did
     // in the config above were done before creating the initial backup stash,
     // and thus included in it.
-    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"AM test.js"`)
+    expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"UU test.js"`)
   })
 
   it('Should commit partial change from partially staged file when no errors from linter', async () => {
@@ -245,8 +245,8 @@ describe('lint-staged', () => {
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
       LOG [SUCCESS] Applying modifications...
-      LOG [STARTED] Restoring unstaged changes to partially staged files...
-      LOG [SUCCESS] Restoring unstaged changes to partially staged files...
+      LOG [STARTED] Restoring partial changes...
+      LOG [SUCCESS] Restoring partial changes...
       LOG [STARTED] Cleaning up...
       LOG [SUCCESS] Cleaning up..."
     `)
@@ -311,7 +311,7 @@ describe('lint-staged', () => {
     ).rejects.toThrowError()
 
     const output = console.printHistory()
-    expect(output).toMatch('Reverting to original state because of errors')
+    expect(output).toMatch('Reverting because of errors')
 
     // Something was wrong so the repo is returned to original state
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -425,9 +425,7 @@ describe('lint-staged', () => {
     await fs.remove(`${cwd}/.git/index.lock`)
 
     // Luckily there is a stash
-    expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(
-      `"stash@{0}: lint-staged automatic backup"`
-    )
+    expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(`""`)
     await execGit(['reset', '--hard'])
     await execGit(['stash', 'pop', '--index'])
 
@@ -730,13 +728,22 @@ describe('lint-staged', () => {
       LOG [STARTED] Running tasks...
       LOG [STARTED] Running tasks for *.js
       LOG [STARTED] git stash drop
-      LOG [SUCCESS] git stash drop
-      LOG [SUCCESS] Running tasks for *.js
+      ERROR [FAILED] git stash drop [FAILED]
+      ERROR [FAILED] git stash drop [FAILED]
       LOG [SUCCESS] Running tasks...
+      LOG [STARTED] Reverting because of errors...
+      ERROR [FAILED] Cannot read properties of null (reading 'reduce')
       LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications...
+      INFO [SKIPPED] 
+      [SKIPPED]   × lint-staged failed due to a git error.
       LOG [STARTED] Cleaning up...
-      ERROR [FAILED] lint-staged automatic backup is missing!"
+      INFO [SKIPPED] 
+      [SKIPPED]   × lint-staged failed due to a git error.
+      ERROR 
+        × lint-staged failed due to a git error.
+      ERROR 
+      × git stash drop:
+      No stash entries found."
     `)
   })
 
@@ -775,8 +782,6 @@ describe('lint-staged', () => {
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
       ERROR [FAILED] Prevented an empty git commit!
-      LOG [STARTED] Reverting to original state because of errors...
-      LOG [SUCCESS] Reverting to original state because of errors...
       LOG [STARTED] Cleaning up...
       LOG [SUCCESS] Cleaning up...
       WARN 
@@ -977,7 +982,7 @@ describe('lint-staged', () => {
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
       LOG [SUCCESS] Applying modifications...
-      LOG [STARTED] Restoring unstaged changes to partially staged files...
+      LOG [STARTED] Restoring partial changes...
       ERROR [FAILED] Unstaged changes could not be restored due to a merge conflict!
       ERROR 
         ✖ lint-staged failed due to a git error."

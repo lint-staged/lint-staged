@@ -79,31 +79,6 @@ describe('gitWorkflow', () => {
     })
   })
 
-  describe('cleanup', () => {
-    it('should handle errors', async () => {
-      const gitWorkflow = new GitWorkflow({
-        gitDir: cwd,
-        gitConfigDir: path.resolve(cwd, './.git'),
-      })
-      const ctx = getInitialState()
-      await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"lint-staged automatic backup is missing!"`
-      )
-      expect(ctx).toMatchInlineSnapshot(`
-        Object {
-          "errors": Set {
-            Symbol(GetBackupStashError),
-            Symbol(GitError),
-          },
-          "hasPartiallyStagedFiles": null,
-          "output": Array [],
-          "quiet": false,
-          "shouldBackup": null,
-        }
-      `)
-    })
-  })
-
   describe('getPartiallyStagedFiles', () => {
     it('should return unquoted files', async () => {
       const gitWorkflow = new GitWorkflow({
