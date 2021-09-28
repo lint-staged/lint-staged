@@ -4,7 +4,7 @@ import {
   restoreOriginalStateSkipped,
   restorePartialChangesSkipped,
 } from '../lib/state'
-import { GitError, RestoreOriginalStateError } from '../lib/symbols'
+import { GitError } from '../lib/symbols'
 
 describe('applyModificationsSkipped', () => {
   it('should return false when backup is disabled', () => {
@@ -34,7 +34,7 @@ describe('restoreOriginalStateSkipped', () => {
 
 describe('shouldSkipCleanup', () => {
   it('should return error message when reverting to original state fails', () => {
-    const result = cleanupSkipped({ errors: new Set([RestoreOriginalStateError]) })
+    const result = cleanupSkipped({ errors: new Set([GitError]) })
     expect(typeof result === 'string').toEqual(true)
   })
 })
