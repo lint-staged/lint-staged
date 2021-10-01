@@ -24,7 +24,8 @@
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "rimraf node_modules/rxjs/src node_modules/rxjs/bundles node_modules/rxjs/_esm5 node_modules/rxjs/_esm2015"
   },
   "dependencies": {
     "chalk": "^4.1.1",
@@ -39,6 +40,7 @@
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
     "please-upgrade-node": "^3.2.0",
+    "rimraf": "^3.0.2",
     "string-argv": "0.3.1",
     "stringify-object": "^3.3.0"
   },
