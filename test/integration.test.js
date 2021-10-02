@@ -149,6 +149,19 @@ describe('lint-staged', () => {
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
 
+  it('Should warn when task contains deprecated `git add`', async () => {
+    // Stage ugly file
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with `prettier --write` and commit pretty file
+    await gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+
+    expect(console.printHistory()).toMatch(
+      'Some of your tasks use `git add` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.'
+    )
+  })
+
   it('Should fail to commit entire staged file when errors from linter', async () => {
     // Stage ugly file
     await appendFile('test.js', testJsFileUgly)
@@ -664,27 +677,24 @@ describe('lint-staged', () => {
 
     // Run lint-staged with prettier --write to automatically fix the file
     // Since prettier reverts all changes, the commit should fail
-    // use the old syntax with manual `git add` to provide a warning message
     await expect(
-      gitCommit({ config: { '*.js': ['prettier --write', 'git add'] } })
+      gitCommit({ config: { '*.js': ['prettier --write'] } })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ⚠ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
-
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
       LOG [STARTED] Running tasks...
       LOG [STARTED] Running tasks for *.js
       LOG [STARTED] prettier --write
       LOG [SUCCESS] prettier --write
-      LOG [STARTED] git add
-      LOG [SUCCESS] git add
       LOG [SUCCESS] Running tasks for *.js
       LOG [SUCCESS] Running tasks...
       LOG [STARTED] Applying modifications...
       ERROR [FAILED] Prevented an empty git commit!
+      LOG [STARTED] Reverting because of errors...
+      ERROR [FAILED] error: unrecognized input
       LOG [STARTED] Cleaning up...
       LOG [SUCCESS] Cleaning up...
       WARN 
