@@ -62,4 +62,17 @@ describe('validateOptions', () => {
       See https://github.com/okonet/lint-staged#command-line-flags"
     `)
   })
+
+  it('should warn when deprecated stash option is used', async () => {
+    const logger = makeConsoleMock()
+
+    await expect(validateOptions({ stash: false }, logger)).resolves.toBeUndefined()
+
+    expect(logger.history()).toHaveLength(1)
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN ⚠ The \`--no-stash\` option has been renamed to \`--no-reset\`.
+      "
+    `)
+  })
 })

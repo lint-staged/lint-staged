@@ -22,15 +22,18 @@ require('please-upgrade-node')(
   })
 )
 
-const cmdline = require('commander')
+const { Command, Option } = require('commander')
 const debugLib = require('debug')
 const lintStaged = require('../lib')
 const { CONFIG_STDIN_ERROR } = require('../lib/messages')
 
 const debug = debugLib('lint-staged:bin')
 
-cmdline
-  .version(pkg.version)
+const program = new Command('lint-staged')
+
+program.version(pkg.version)
+
+program
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
   .option('-d, --debug', 'print additional debug information', false)
@@ -48,9 +51,13 @@ cmdline
     'show task output even when tasks succeed; by default only failed output is shown',
     false
   )
-  .parse(process.argv)
 
-if (cmdline.debug) {
+// Added for backwards-compatibility
+program.addOption(new Option('--no-stash').hideHelp())
+
+program.parse(process.argv)
+
+if (program.debug) {
   debugLib.enable('lint-staged*')
 }
 
@@ -74,19 +81,20 @@ const getMaxArgLength = () => {
   }
 }
 
-const cmdlineOptions = cmdline.opts()
+const programOpts = program.opts()
 
 const options = {
-  allowEmpty: !!cmdlineOptions.allowEmpty,
-  concurrent: JSON.parse(cmdlineOptions.concurrent),
-  configPath: cmdlineOptions.config,
-  debug: !!cmdlineOptions.debug,
+  allowEmpty: !!programOpts.allowEmpty,
+  concurrent: JSON.parse(programOpts.concurrent),
+  configPath: programOpts.config,
+  debug: !!programOpts.debug,
   maxArgLength: getMaxArgLength() / 2,
-  quiet: !!cmdlineOptions.quiet,
-  relative: !!cmdlineOptions.relative,
-  reset: !!cmdlineOptions.reset, // commander inverts `no-<x>` flags to `!x`
-  shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
-  verbose: !!cmdlineOptions.verbose,
+  quiet: !!programOpts.quiet,
+  relative: !!programOpts.relative,
+  reset: !!programOpts.reset, // commander inverts `no-<x>` flags to `!x`
+  shell: programOpts.shell /* Either a boolean or a string pointing to the shell */,
+  stash: programOpts.stash /** kept for backwards-compatibility */,
+  verbose: !!programOpts.verbose,
 }
 
 debug('Options parsed from command-line:', options)
