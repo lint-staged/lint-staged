@@ -46,7 +46,7 @@ describe('runAll', () => {
                 "→ No staged files found.",
               ],
               "quiet": false,
-              "shouldBackup": true,
+              "shouldReset": true,
             }
           `)
   })
@@ -60,7 +60,7 @@ describe('runAll', () => {
               "hasPartiallyStagedFiles": null,
               "output": Array [],
               "quiet": true,
-              "shouldBackup": true,
+              "shouldReset": true,
             }
           `)
   })
@@ -226,7 +226,7 @@ describe('runAll', () => {
     try {
       // Run lint-staged in `innerCwd` with relative option
       // This means the sample task will receive `foo.js`
-      await runAll({ config: { '*.js': mockTask }, stash: false, relative: true, cwd: innerCwd })
+      await runAll({ config: { '*.js': mockTask }, reset: false, relative: true, cwd: innerCwd })
     } catch {} // eslint-disable-line no-empty
 
     // task received relative `foo.js`

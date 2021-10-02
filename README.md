@@ -65,8 +65,7 @@ Options:
                                      (default: false)
   -c, --config [path]                path to configuration file, or - to read from stdin
   -d, --debug                        print additional debug information (default: false)
-  --no-stash                         disable the backup stash, and do not revert in case of
-                                     errors
+  --no-reset                         do not reset changes in case of errors
   -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run
                                      tasks serially (default: true)
   -q, --quiet                        disable lint-staged’s own console output (default: false)
@@ -87,7 +86,7 @@ Options:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
-- **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
+- **`--no-reset`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
@@ -565,8 +564,8 @@ const success = await lintStaged({
   maxArgLength: null,
   quiet: false,
   relative: false,
+  reset: true,
   shell: false
-  stash: true,
   verbose: false
 })
 ```
@@ -583,8 +582,8 @@ const success = await lintStaged({
   maxArgLength: null,
   quiet: false,
   relative: false,
+  reset: true,
   shell: false,
-  stash: true,
   verbose: false,
 })
 ```

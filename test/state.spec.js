@@ -8,12 +8,12 @@ import { GitError } from '../lib/symbols'
 
 describe('applyModificationsSkipped', () => {
   it('should return false when backup is disabled', () => {
-    const result = applyModificationsSkipped({ shouldBackup: false })
+    const result = applyModificationsSkipped({ shouldReset: false })
     expect(result).toEqual(false)
   })
 
   it('should return error message when there is an unkown git error', () => {
-    const result = applyModificationsSkipped({ shouldBackup: true, errors: new Set([GitError]) })
+    const result = applyModificationsSkipped({ shouldReset: true, errors: new Set([GitError]) })
     expect(typeof result === 'string').toEqual(true)
   })
 })
