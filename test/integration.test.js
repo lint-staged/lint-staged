@@ -819,15 +819,15 @@ describe('lint-staged', () => {
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
 
-    // Run lint-staged with --no-stash
+    // Run lint-staged with --no-reset
     await gitCommit({
       ...fixJsConfig,
-      stash: false,
+      reset: false,
     })
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ⚠ Skipping backup because \`--no-stash\` was used.
+      WARN ⚠ Changes won't be reset because \`--no-reset\` was used.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
@@ -847,7 +847,7 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
   })
 
-  it('should abort commit without reverting with --no-stash 1', async () => {
+  it('should abort commit without reverting with --no-reset 1', async () => {
     // Stage file
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
@@ -862,7 +862,7 @@ describe('lint-staged', () => {
             return `prettier --write ${testFile}`
           },
         },
-        stash: false,
+        reset: false,
       })
     ).rejects.toThrowError()
 
@@ -881,7 +881,7 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ⚠ Skipping backup because \`--no-stash\` was used.
+      WARN ⚠ Changes won't be reset because \`--no-reset\` was used.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
@@ -919,22 +919,22 @@ describe('lint-staged', () => {
     `)
   })
 
-  it('should abort commit without reverting with --no-stash 2', async () => {
+  it('should abort commit without reverting with --no-reset 2', async () => {
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
     await appendFile('test2.js', testJsFileUnfixable)
     await execGit(['add', 'test2.js'])
 
-    // Run lint-staged with --no-stash
+    // Run lint-staged with --no-reset
     await expect(
       gitCommit({
         ...fixJsConfig,
-        stash: false,
+        reset: false,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     const output = console.printHistory()
-    expect(output).toMatch('Skipping backup because `--no-stash` was used')
+    expect(output).toMatch("Changes won't be reset because `--no-reset` was used")
 
     // Something was wrong, so the commit was aborted
     expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -998,7 +998,7 @@ describe('lintStaged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ⚠ Skipping backup because there’s no initial commit yet.
+      WARN ⚠ Changes won't be reset because there’s no initial commit yet.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...

@@ -241,7 +241,7 @@ describe('resolveTaskFn', () => {
         "hasPartiallyStagedFiles": null,
         "output": Array [],
         "quiet": false,
-        "shouldBackup": null,
+        "shouldReset": null,
       }
     `)
   })
@@ -271,7 +271,7 @@ describe('resolveTaskFn', () => {
       Mock success",
         ],
         "quiet": false,
-        "shouldBackup": null,
+        "shouldReset": null,
       }
     `)
   })
@@ -301,7 +301,7 @@ describe('resolveTaskFn', () => {
           "stderr",
         ],
         "quiet": true,
-        "shouldBackup": null,
+        "shouldReset": null,
       }
     `)
   })
@@ -329,7 +329,7 @@ describe('resolveTaskFn', () => {
         "hasPartiallyStagedFiles": null,
         "output": Array [],
         "quiet": true,
-        "shouldBackup": null,
+        "shouldReset": null,
       }
     `)
   })
