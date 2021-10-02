@@ -53,7 +53,7 @@ describe('validateBraces', () => {
     expect(fixedBraces).toEqual('*.js')
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{js}\`. Reformatted as: \`*.js\`
+      WARN ⚠ Detected incorrect braces with only single value: \`*.{js}\`. Reformatted as: \`*.js\`
       "
     `)
   })
@@ -66,7 +66,7 @@ describe('validateBraces', () => {
     expect(fixedBraces).toEqual('*.tsx')
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{ts}{x}\`. Reformatted as: \`*.tsx\`
+      WARN ⚠ Detected incorrect braces with only single value: \`*.{ts}{x}\`. Reformatted as: \`*.tsx\`
       "
     `)
   })
@@ -79,7 +79,7 @@ describe('validateBraces', () => {
     expect(fixedBraces).toEqual('*.{js,ts}')
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{js,{ts}}\`. Reformatted as: \`*.{js,ts}\`
+      WARN ⚠ Detected incorrect braces with only single value: \`*.{js,{ts}}\`. Reformatted as: \`*.{js,ts}\`
       "
     `)
   })
@@ -108,7 +108,7 @@ describe('validateBraces', () => {
     expect(fixedBraces).toEqual('*.{{js,ts},css}')
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{{js,ts},{css}}\`. Reformatted as: \`*.{{js,ts},css}\`
+      WARN ⚠ Detected incorrect braces with only single value: \`*.{{js,ts},{css}}\`. Reformatted as: \`*.{{js,ts},css}\`
       "
     `)
   })

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
-"× Validation Error:
+"✖ Validation Error:
 
   Invalid value for 'foo': false
 
@@ -11,49 +11,49 @@ exports[`validateConfig should throw and should print validation errors for inva
 exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function!"`;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 1`] = `
-"× Validation Error:
+"✖ Validation Error:
 
   Invalid value for 'chunkSize': 10
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'concurrent': false
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'globOptions': {matchBase: false}
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'ignore': ['test.js']
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'linters': {'*.js': ['eslint']}
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'relative': true
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'renderer': 'silent'
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'subTaskConcurrency': 10
 
@@ -64,49 +64,49 @@ exports[`validateConfig should throw when detecting deprecated advanced configur
 "
 ERROR Could not parse lint-staged config.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'chunkSize': 10
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'concurrent': false
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'globOptions': {matchBase: false}
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'ignore': ['test.js']
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'linters': {'*.js': ['eslint']}
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'relative': true
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'renderer': 'silent'
 
   Advanced configuration has been deprecated.
 
-× Validation Error:
+✖ Validation Error:
 
   Invalid value for 'subTaskConcurrency': 10
 

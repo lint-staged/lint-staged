@@ -35,7 +35,6 @@
     "enquirer": "^2.3.6",
     "execa": "^5.1.1",
     "listr2": "^3.12.2",
-    "log-symbols": "^4.1.0",
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
     "please-upgrade-node": "^3.2.0",

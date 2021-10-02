@@ -43,7 +43,7 @@ describe('runAll', () => {
               "errors": Set {},
               "hasPartiallyStagedFiles": null,
               "output": Array [
-                "i No staged files found.",
+                "→ No staged files found.",
               ],
               "quiet": false,
               "shouldBackup": true,
@@ -128,10 +128,10 @@ describe('runAll', () => {
       INFO [SKIPPED] Skipped because of previous git error.
       LOG [STARTED] Applying modifications...
       INFO [SKIPPED] 
-      [SKIPPED]   × lint-staged failed due to a git error.
+      [SKIPPED]   ✖ lint-staged failed due to a git error.
       LOG [STARTED] Cleaning up...
       INFO [SKIPPED] 
-      [SKIPPED]   × lint-staged failed due to a git error."
+      [SKIPPED]   ✖ lint-staged failed due to a git error."
     `)
   })
 

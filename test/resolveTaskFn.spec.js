@@ -267,7 +267,7 @@ describe('resolveTaskFn', () => {
         "hasPartiallyStagedFiles": null,
         "output": Array [
           "
-      i mock cmd:
+      → mock cmd:
       Mock success",
         ],
         "quiet": false,
