@@ -5,9 +5,9 @@
 const fs = require('fs')
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-const { supportsColor } = require('chalk')
-if (supportsColor && supportsColor.level) {
-  process.env.FORCE_COLOR = supportsColor.level.toString()
+const supportsColor = require('supports-color')
+if (supportsColor.stdout) {
+  process.env.FORCE_COLOR = supportsColor.stdout.level.toString()
 }
 
 // Do not terminate main Listr process on SIGINT

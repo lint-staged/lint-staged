@@ -27,8 +27,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
     "cli-truncate": "2.1.0",
+    "colorette": "^1.4.0",
     "commander": "^8.2.0",
     "cosmiconfig": "^7.0.1",
     "debug": "^4.3.2",
@@ -39,7 +39,8 @@
     "normalize-path": "^3.0.0",
     "please-upgrade-node": "^3.2.0",
     "string-argv": "0.3.1",
-    "stringify-object": "3.3.0"
+    "stringify-object": "3.3.0",
+    "supports-color": "8.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
