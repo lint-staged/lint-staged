@@ -154,4 +154,17 @@ describe('gitWorkflow', () => {
       expect(await readFile('TEST.md')).toStrictEqual(origContent)
     })
   })
+
+  describe('restoreOriginalState', () => {
+    it('should handle errors', async () => {
+      const gitWorkflow = new GitWorkflow({
+        gitDir: cwd,
+        gitConfigDir: path.resolve(cwd, './.git'),
+      })
+      const totallyRandom = `totally_random_file-${Date.now().toString()}`
+      gitWorkflow.partiallyStagedFiles = [totallyRandom]
+      const ctx = getInitialState()
+      await expect(gitWorkflow.restoreOriginalState(ctx)).rejects.toThrowError('ENOENT')
+    })
+  })
 })
