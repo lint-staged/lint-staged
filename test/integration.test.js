@@ -650,41 +650,6 @@ describe('lint-staged', () => {
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
 
-  it('should fail when backup stash is missing', async () => {
-    await appendFile('test.js', testJsFilePretty)
-    await execGit(['add', 'test.js'])
-
-    // Remove backup stash during run
-    await expect(
-      gitCommit({ config: { '*.js': () => 'git stash drop' }, shell: true })
-    ).rejects.toThrowError()
-
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
-      LOG [STARTED] git stash drop
-      ERROR [FAILED] git stash drop [FAILED]
-      ERROR [FAILED] git stash drop [FAILED]
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Reverting because of errors...
-      ERROR [FAILED] Cannot read properties of null (reading 'reduce')
-      LOG [STARTED] Applying modifications...
-      INFO [SKIPPED] 
-      [SKIPPED]   × lint-staged failed due to a git error.
-      LOG [STARTED] Cleaning up...
-      INFO [SKIPPED] 
-      [SKIPPED]   × lint-staged failed due to a git error.
-      ERROR 
-        × lint-staged failed due to a git error.
-      ERROR 
-      × git stash drop:
-      No stash entries found."
-    `)
-  })
-
   it('should fail when task reverts staged changes, to prevent an empty git commit', async () => {
     // Create and commit a pretty file without running lint-staged
     // This way the file will be available for the next step

@@ -68,7 +68,7 @@ describe('gitWorkflow', () => {
           "errors": Set {
             Symbol(GitError),
           },
-          "hasPartiallyStagedFiles": true,
+          "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": false,
           "shouldBackup": null,
