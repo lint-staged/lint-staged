@@ -43,7 +43,7 @@ describe('lintStaged', () => {
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR × Failed to get staged files!"
+      ERROR ✖ Failed to get staged files!"
     `)
   })
 

@@ -65,7 +65,7 @@ describe('lint-staged', () => {
     await expect(lintStaged({ ...fixJsConfig, cwd: nonGitDir }, logger)).resolves.toEqual(false)
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR × Current directory is not a git directory!"
+      ERROR ✖ Current directory is not a git directory!"
     `)
     await fs.remove(nonGitDir)
   })
@@ -761,7 +761,7 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
+      WARN ⚠ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
@@ -780,7 +780,7 @@ describe('lint-staged', () => {
       LOG [STARTED] Cleaning up...
       LOG [SUCCESS] Cleaning up...
       WARN 
-        ‼ lint-staged prevented an empty git commit.
+        ⚠ lint-staged prevented an empty git commit.
         Use the --allow-empty option to continue, or check your task configuration
       "
     `)
@@ -909,7 +909,7 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Skipping backup because \`--no-stash\` was used.
+      WARN ⚠ Skipping backup because \`--no-stash\` was used.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
@@ -963,7 +963,7 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Skipping backup because \`--no-stash\` was used.
+      WARN ⚠ Skipping backup because \`--no-stash\` was used.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...
@@ -980,7 +980,7 @@ describe('lint-staged', () => {
       LOG [STARTED] Restoring unstaged changes to partially staged files...
       ERROR [FAILED] Unstaged changes could not be restored due to a merge conflict!
       ERROR 
-        × lint-staged failed due to a git error."
+        ✖ lint-staged failed due to a git error."
     `)
 
     // Something was wrong so the commit was aborted
@@ -1080,7 +1080,7 @@ describe('lintStaged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Skipping backup because there’s no initial commit yet.
+      WARN ⚠ Skipping backup because there’s no initial commit yet.
 
       LOG [STARTED] Preparing...
       LOG [SUCCESS] Preparing...

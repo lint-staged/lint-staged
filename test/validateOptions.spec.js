@@ -53,7 +53,7 @@ describe('validateOptions', () => {
     expect(logger.history()).toHaveLength(1)
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      ERROR × Validation Error:
+      ERROR ✖ Validation Error:
 
         Invalid value for option 'shell': /bin/sh
 

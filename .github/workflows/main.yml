@@ -33,33 +33,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      # Get yarn's cache dir path
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      # Cache the above yarn cache dir
-      - uses: actions/cache@v1
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: yarn-${{ runner.os }}-${{ runner.node }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-${{ runner.node }}-
+          cache: 'npm'
       # Print current Node.js version
       - run: node --version
-      # Print current Yarn version
-      - run: yarn --version
+      # Print current npm version
+      - run: npm --version
       # Print current Git version
       - run: git --version
       # Install node_modules
-      - run: yarn
+      - run: npm ci
       # Run tests
-      - run: yarn test
+      - run: npm test
       # Upload coverage artifact from Node.js LTS
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v2
         if: matrix.os == 'ubuntu-latest' && matrix.node == '12'
         with:
           name: coverage
@@ -72,11 +61,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # Download coverage artifact
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v2
         with:
           name: coverage
       # Run codecov.io
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2
 
   release:
     name: Release
@@ -86,9 +75,9 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: '12' # release using Node.js LTS
+          node-version: '14' # release using Node.js LTS
       # Release using semantic-release.
       # While this runs on all branches, it will only release latest from master
       - uses: codfish/semantic-release-action@v1

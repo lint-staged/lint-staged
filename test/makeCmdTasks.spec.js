@@ -109,7 +109,7 @@ describe('makeCmdTasks', () => {
   it("should throw when function task doesn't return string | string[]", async () => {
     await expect(makeCmdTasks({ commands: () => null, gitDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-            "× Validation Error:
+            "✖ Validation Error:
 
               Invalid value for '[Function]': null
 

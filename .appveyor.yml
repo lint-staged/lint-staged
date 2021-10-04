@@ -9,7 +9,7 @@ matrix:
 install:
   - ps: Install-Product node $env:nodejs_version
   - set CI=true
-  - yarn install
+  - npm ci
 
 build: off
 
@@ -19,9 +19,9 @@ cache:
 
 test_script:
   - node --version
-  - yarn --version
+  - npm --version
   - git --version
-  - yarn test
+  - npm test
 
 branches:
   only:
