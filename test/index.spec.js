@@ -1,4 +1,4 @@
-import { cosmiconfig } from 'cosmiconfig'
+import { lilconfig } from 'lilconfig'
 import makeConsoleMock from 'consolemock'
 import path from 'path'
 
@@ -14,8 +14,8 @@ import { InvalidOptionsError } from '../lib/symbols'
 import validateOptions from '../lib/validateOptions'
 import { replaceSerializer } from './utils/replaceSerializer'
 
-const mockCosmiconfigWith = (result) => {
-  cosmiconfig.mockImplementationOnce(() => ({
+const mockLilconfigWith = (result) => {
+  lilconfig.mockImplementationOnce(() => ({
     search: () => Promise.resolve(result),
   }))
 }
@@ -33,11 +33,11 @@ describe('lintStaged', () => {
     logger.clearHistory()
   })
 
-  it('should use cosmiconfig if no params are passed', async () => {
+  it('should use lilconfig if no params are passed', async () => {
     expect.assertions(1)
 
     const config = { '*': 'mytask' }
-    mockCosmiconfigWith({ config })
+    mockLilconfigWith({ config })
 
     await lintStaged(undefined, logger)
 
@@ -60,7 +60,7 @@ describe('lintStaged', () => {
   it('should use use the console if no logger is passed', async () => {
     expect.assertions(2)
 
-    mockCosmiconfigWith({ config: {} })
+    mockLilconfigWith({ config: {} })
 
     const previousConsole = console
     const mockedConsole = makeConsoleMock()
@@ -79,7 +79,7 @@ describe('lintStaged', () => {
     expect.assertions(1)
 
     const config = { '*': 'mytask' }
-    mockCosmiconfigWith({ config })
+    mockLilconfigWith({ config })
 
     await lintStaged({ debug: true, quiet: true }, logger)
 
@@ -96,7 +96,7 @@ describe('lintStaged', () => {
     expect.assertions(1)
 
     const config = { '*': 'mytask' }
-    mockCosmiconfigWith({ config })
+    mockLilconfigWith({ config })
 
     await lintStaged({ quiet: true }, logger)
 
@@ -119,7 +119,7 @@ describe('lintStaged', () => {
 
   it('should throw when invalid config is provided', async () => {
     const config = {}
-    mockCosmiconfigWith({ config })
+    mockLilconfigWith({ config })
 
     await expect(lintStaged({ quiet: true }, logger)).rejects.toMatchInlineSnapshot(
       `[Error: Configuration should not be empty!]`
@@ -200,7 +200,7 @@ describe('lintStaged', () => {
   it('should print helpful error message when config file is not found', async () => {
     expect.assertions(2)
 
-    mockCosmiconfigWith(null)
+    mockLilconfigWith(null)
 
     await expect(lintStaged({ quiet: true }, logger)).rejects.toMatchInlineSnapshot(
       `[Error: Config could not be found]`
