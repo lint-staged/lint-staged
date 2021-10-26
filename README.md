@@ -105,7 +105,7 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
 - `lint-staged.config.js`, `.lintstagedrc.js`, or `.lintstagedrc.cjs` file in JS format
 - Pass a configuration file using the `--config` or `-c` flag
 
-See [lilconfig](https://github.com/antonk52/lilconfig) for more details on what formats are supported.
+See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
 
 Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
 

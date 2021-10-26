@@ -4,7 +4,7 @@ import ansiSerializer from 'jest-snapshot-serializer-ansi'
 import normalize from 'normalize-path'
 import path from 'path'
 
-jest.unmock('lilconfig')
+jest.unmock('cosmiconfig')
 jest.unmock('execa')
 
 import execGitBase from '../lib/execGit'
