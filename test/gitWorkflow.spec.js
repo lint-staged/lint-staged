@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import normalize from 'normalize-path'
 import path from 'path'
+import { EOL } from 'os'
 
 import execGitBase from '../lib/execGit'
 import { writeFile } from '../lib/file'
@@ -17,7 +18,7 @@ let tmpDir, cwd
 
 /** Append to file, creating if it doesn't exist */
 const appendFile = async (filename, content, dir = cwd) =>
-  fs.appendFile(path.resolve(dir, filename), content)
+  fs.appendFile(path.resolve(dir, filename), content + EOL, { encoding: 'utf-8' })
 
 const readFile = async (filename, dir = cwd) => fs.readFile(path.resolve(dir, filename))
 
@@ -29,7 +30,7 @@ const initGitRepo = async () => {
   await execGit('init')
   await execGit(['config', 'user.name', '"test"'])
   await execGit(['config', 'user.email', '"test@test.com"'])
-  await appendFile('README.md', '# Test\n')
+  await appendFile('README.md', '# Test')
   await execGit(['add', 'README.md'])
   await execGit(['commit', '-m initial commit'])
 }
@@ -177,7 +178,7 @@ describe('gitWorkflow', () => {
       const origContent = (await readFile('README.md')).toString()
 
       await execGit(['mv', 'README.md', 'TEST.md'])
-      await appendFile('TEST.md', 'added content')
+      await appendFile('TEST.md', '\nadded content')
 
       gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
       const ctx = getInitialState()
