@@ -1,7 +1,7 @@
 import normalize from 'normalize-path'
 import path from 'path'
 
-import resolveGitRepo from '../lib/resolveGitRepo'
+import resolveGitRepo, { determineGitDir } from '../lib/resolveGitRepo'
 
 /**
  * resolveGitRepo runs execa, so the mock needs to be disabled for these tests
@@ -47,5 +47,28 @@ describe('resolveGitRepo', () => {
   it('should return null when not in a git directory', async () => {
     const { gitDir } = await resolveGitRepo({ cwd: '/' }) // assume root is not a git directory
     expect(gitDir).toEqual(null)
+  })
+
+  describe('determineGitDir', () => {
+    it('should resolve to current working dir when relative dir is empty', () => {
+      const cwd = process.cwd()
+      const relativeDir = undefined
+      const rootDir = determineGitDir(cwd, relativeDir)
+      expect(rootDir).toEqual(normalize(cwd))
+    })
+
+    it('should resolve to parent dir when relative dir is child', () => {
+      const relativeDir = 'bar'
+      const cwd = process.cwd() + path.sep + 'bar'
+      const rootDir = determineGitDir(cwd, relativeDir)
+      expect(rootDir).toEqual(normalize(process.cwd()))
+    })
+
+    it('should resolve to parent dir when relative dir is child and child has trailing dir separator', () => {
+      const relativeDir = 'bar' + path.sep
+      const cwd = process.cwd() + path.sep + 'bar'
+      const rootDir = determineGitDir(cwd, relativeDir)
+      expect(rootDir).toEqual(normalize(process.cwd()))
+    })
   })
 })
