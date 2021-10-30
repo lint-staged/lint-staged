@@ -7,7 +7,6 @@ import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
 import { createTempDir } from './utils/tempDir'
-import { itSkipOnWindowsActions } from './utils/skipWindowsActions'
 
 jest.mock('../lib/file.js')
 jest.unmock('execa')
@@ -169,19 +168,21 @@ describe('gitWorkflow', () => {
     /**
      * @todo Why does this test fail on the GitHub Actions windows-latest runner?
      */
-    itSkipOnWindowsActions('should checkout renamed file when hiding changes', async () => {
+    it.only('should checkout renamed file when hiding changes', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git'),
       })
-      const origContent = await readFile('README.md')
+
+      const origContent = (await readFile('README.md')).toString()
+
       await execGit(['mv', 'README.md', 'TEST.md'])
       await appendFile('TEST.md', 'added content')
 
       gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
       const ctx = getInitialState()
       await gitWorkflow.hideUnstagedChanges(ctx)
-      expect(await readFile('TEST.md')).toStrictEqual(origContent)
+      expect((await readFile('TEST.md')).toString()).toStrictEqual(origContent)
     })
   })
 

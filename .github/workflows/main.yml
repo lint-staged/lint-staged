@@ -20,16 +20,9 @@ jobs:
   test:
     strategy:
       matrix:
-        # Test with Node.js v12 (LTS), v14 (LTS), v16 (LTS), and 17 (Current)
         node:
-          - 12
-          - 14
           - 16
-          - 17
-        # Test with Ubuntu, macOS, and Windows
         os:
-          - ubuntu-latest
-          - macos-latest
           - windows-latest
     name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -50,41 +43,4 @@ jobs:
       # Install node_modules
       - run: npm ci
       # Run tests
-      - run: npm test
-      # Upload coverage artifact from Node.js LTS
-      - uses: actions/upload-artifact@v2
-        if: matrix.os == 'ubuntu-latest' && matrix.node == '16'
-        with:
-          name: coverage
-          path: coverage
-
-  codecov:
-    name: Codecov
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      # Download coverage artifact
-      - uses: actions/download-artifact@v2
-        with:
-          name: coverage
-      # Run codecov.io
-      - uses: codecov/codecov-action@v2
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: test
-    # Trigger release for only pushes to branches defined above
-    if: github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16' # release using Node.js LTS
-      # Release using semantic-release.
-      # While this runs on all branches, it will only release latest from master
-      - uses: codfish/semantic-release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npx jest test/gitWorkflow.spec.js -t "should checkout renamed file when hiding changes"
