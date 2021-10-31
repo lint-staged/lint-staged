@@ -11,6 +11,7 @@ import execGitBase from '../lib/execGit'
 import lintStaged from '../lib/index'
 import { replaceSerializer } from './utils/replaceSerializer'
 import { createTempDir } from './utils/tempDir'
+import { isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'
 
 jest.setTimeout(20000)
 
@@ -36,7 +37,7 @@ let cwd
 // Get file content, coercing Windows `\r\n` newlines to `\n`
 const readFile = async (filename, dir = cwd) => {
   const file = await fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
-  return file.replace(/(\r\n|\r|\n)/gm, '\n')
+  return normalizeWindowsNewlines(file)
 }
 
 // Append to file, creating if it doesn't exist
@@ -97,6 +98,7 @@ describe('lint-staged', () => {
     await execGit('init')
     await execGit(['config', 'user.name', '"test"'])
     await execGit(['config', 'user.email', '"test@test.com"'])
+    if (isWindowsActions()) await execGit(['config', 'core.autocrlf', 'input'])
     await appendFile('README.md', '# Test\n')
     await execGit(['add', 'README.md'])
     await execGit(['commit', '-m initial commit'])
@@ -224,11 +226,12 @@ describe('lint-staged', () => {
     await execGit(['add', 'test.js'])
 
     // Edit pretty file but do not stage changes
-    const appended = '\nconsole.log("test");\n'
+    const appended = `\nconsole.log("test");\n`
     await appendFile('test.js', appended)
 
     // Run lint-staged with `prettier --list-different` and commit pretty file
     await gitCommit({ config: { '*.js': 'prettier --list-different' } })
+
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       LOG [STARTED] Preparing...
@@ -261,7 +264,8 @@ describe('lint-staged', () => {
     const status = await execGit(['status'])
     expect(status).toMatch('modified:   test.js')
     expect(status).toMatch('no changes added to commit')
-    expect(await readFile('test.js')).toEqual(testJsFilePretty + appended)
+    /** @todo `git` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
+    expect(normalizeWindowsNewlines(await readFile('test.js'))).toEqual(testJsFilePretty + appended)
   })
 
   it('Should commit partial change from partially staged file when no errors from linter and linter modifies file', async () => {

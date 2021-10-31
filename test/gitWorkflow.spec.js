@@ -7,7 +7,7 @@ import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
 import { createTempDir } from './utils/tempDir'
-import { isWindowsActions } from './utils/gitHubActions'
+import { normalizeWindowsNewlines } from './utils/crossPlatform'
 
 jest.mock('../lib/file.js')
 jest.unmock('execa')
@@ -177,17 +177,8 @@ describe('gitWorkflow', () => {
       const ctx = getInitialState()
       await gitWorkflow.hideUnstagedChanges(ctx)
 
-      if (isWindowsActions()) {
-        /**
-         * @todo `git mv` in GitHub Windows runners seem to remove
-         * the ending line terminator in this case.
-         */
-        const received = await readFile('TEST.md')
-        const normalized = received.trimEnd() + `\n`
-        expect(normalized).toStrictEqual(origContent)
-      } else {
-        expect(await readFile('TEST.md')).toStrictEqual(origContent)
-      }
+      /** @todo `git mv` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
+      expect(normalizeWindowsNewlines(await readFile('TEST.md'))).toStrictEqual(origContent)
     })
   })
 
