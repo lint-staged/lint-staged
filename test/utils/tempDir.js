@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import os from 'os'
 import path from 'path'
 
-const osTmpDir = process.env.APPVEYOR ? 'C:\\projects' : fs.realpathSync(os.tmpdir())
+const osTmpDir = fs.realpathSync(process.env.RUNNER_TEMP || os.tmpdir())
 
 /**
  * Create temporary random directory and return its path
