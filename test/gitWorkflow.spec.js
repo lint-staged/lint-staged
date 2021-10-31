@@ -7,6 +7,7 @@ import { writeFile } from '../lib/file'
 import GitWorkflow from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
 import { createTempDir } from './utils/tempDir'
+import { isWindowsActions } from './utils/gitHubActions'
 
 jest.mock('../lib/file.js')
 jest.unmock('execa')
@@ -19,7 +20,8 @@ let tmpDir, cwd
 const appendFile = async (filename, content, dir = cwd) =>
   fs.appendFile(path.resolve(dir, filename), content)
 
-const readFile = async (filename, dir = cwd) => fs.readFile(path.resolve(dir, filename))
+const readFile = async (filename, dir = cwd) =>
+  fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
 
 /** Wrap execGit to always pass `gitOps` */
 const execGit = async (args) => execGitBase(args, { cwd })
@@ -34,8 +36,6 @@ const initGitRepo = async () => {
   await execGit(['commit', '-m initial commit'])
 }
 
-const isAppveyor = !!process.env.APPVEYOR
-
 describe('gitWorkflow', () => {
   beforeEach(async () => {
     tmpDir = await createTempDir()
@@ -44,9 +44,7 @@ describe('gitWorkflow', () => {
   })
 
   afterEach(async () => {
-    if (!isAppveyor) {
-      await fs.remove(tmpDir)
-    }
+    await fs.remove(tmpDir)
   })
 
   describe('prepare', () => {
@@ -164,11 +162,13 @@ describe('gitWorkflow', () => {
         }
       `)
     })
+
     it('should checkout renamed file when hiding changes', async () => {
       const gitWorkflow = new GitWorkflow({
         gitDir: cwd,
         gitConfigDir: path.resolve(cwd, './.git'),
       })
+
       const origContent = await readFile('README.md')
       await execGit(['mv', 'README.md', 'TEST.md'])
       await appendFile('TEST.md', 'added content')
@@ -176,7 +176,18 @@ describe('gitWorkflow', () => {
       gitWorkflow.partiallyStagedFiles = await gitWorkflow.getPartiallyStagedFiles()
       const ctx = getInitialState()
       await gitWorkflow.hideUnstagedChanges(ctx)
-      expect(await readFile('TEST.md')).toStrictEqual(origContent)
+
+      if (isWindowsActions()) {
+        /**
+         * @todo `git mv` in GitHub Windows runners seem to remove
+         * the ending line terminator in this case.
+         */
+        const received = await readFile('TEST.md')
+        const normalized = received.trimEnd() + `\n`
+        expect(normalized).toStrictEqual(origContent)
+      } else {
+        expect(await readFile('TEST.md')).toStrictEqual(origContent)
+      }
     })
   })
 

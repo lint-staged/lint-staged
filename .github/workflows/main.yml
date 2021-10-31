@@ -50,9 +50,12 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-latest
     name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
+      - if: matrix.os == 'windows-latest'
+        run: git config --global core.autocrlf true
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

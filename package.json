@@ -22,7 +22,6 @@
   "scripts": {
     "cz": "git-cz",
     "lint": "eslint .",
-    "pretest": "npm run lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
