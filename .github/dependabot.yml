@@ -1,0 +1,13 @@
+version: 2
+
+updates:
+  # Production dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '00:00'
+    open-pull-requests-limit: 1
+    allow:
+      - dependency-type: 'direct'
