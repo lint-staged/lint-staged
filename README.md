@@ -73,6 +73,8 @@ Options:
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -x, --shell [path]                 skip parsing of tasks for better shell support (default:
                                      false)
+  --diff <gitref>                    run on the files changed on this branch since it forked
+                                     from <gitref> instead of the staged files (default: null)
   -v, --verbose                      show task output even when tasks succeed; by default only
                                      failed output is shown (default: false)
   -h, --help                         display help for command
@@ -91,6 +93,7 @@ Options:
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
+- **`--diff [string]`**: This uses the changed files between the current branch and the specified Git ref (e.g., `origin/master`).
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration

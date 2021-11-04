@@ -40,6 +40,7 @@ describe('runAll', () => {
     expect.assertions(1)
     await expect(runAll({ config: {} })).resolves.toMatchInlineSnapshot(`
             Object {
+              "diffRef": null,
               "errors": Set {},
               "hasPartiallyStagedFiles": null,
               "output": Array [
@@ -55,6 +56,22 @@ describe('runAll', () => {
     expect.assertions(1)
     await expect(runAll({ config: {}, quiet: true })).resolves.toMatchInlineSnapshot(`
             Object {
+              "diffRef": null,
+              "errors": Set {},
+              "hasPartiallyStagedFiles": null,
+              "output": Array [],
+              "quiet": true,
+              "shouldBackup": true,
+            }
+          `)
+  })
+
+  it('should not print output in diff mode when no changes and quiet', async () => {
+    expect.assertions(1)
+    await expect(runAll({ config: {}, quiet: true, diffRef: 'HEAD' })).resolves
+      .toMatchInlineSnapshot(`
+            Object {
+              "diffRef": "HEAD",
               "errors": Set {},
               "hasPartiallyStagedFiles": null,
               "output": Array [],

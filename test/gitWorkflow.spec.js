@@ -67,6 +67,7 @@ describe('gitWorkflow', () => {
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
+          "diffRef": null,
           "errors": Set {
             Symbol(GitError),
           },
@@ -91,6 +92,7 @@ describe('gitWorkflow', () => {
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
+          "diffRef": null,
           "errors": Set {
             Symbol(GetBackupStashError),
             Symbol(GitError),
@@ -153,6 +155,7 @@ describe('gitWorkflow', () => {
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
+          "diffRef": null,
           "errors": Set {
             Symbol(GitError),
             Symbol(HideUnstagedChangesError),
@@ -194,6 +197,7 @@ describe('gitWorkflow', () => {
       )
       expect(ctx).toMatchInlineSnapshot(`
         Object {
+          "diffRef": null,
           "errors": Set {
             Symbol(GitError),
             Symbol(RestoreMergeStatusError),

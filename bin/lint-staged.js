@@ -44,6 +44,11 @@ cmdline
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
   .option('-x, --shell [path]', 'skip parsing of tasks for better shell support', false)
   .option(
+    '--diff <gitref>',
+    'Run on files changed on this branch since it forked from <gitref>',
+    null
+  )
+  .option(
     '-v, --verbose',
     'show task output even when tasks succeed; by default only failed output is shown',
     false
@@ -87,6 +92,7 @@ const options = {
   relative: !!cmdlineOptions.relative,
   shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
   verbose: !!cmdlineOptions.verbose,
+  diffRef: cmdlineOptions.diff,
 }
 
 debug('Options parsed from command-line:', options)
