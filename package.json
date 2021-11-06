@@ -13,8 +13,13 @@
   "funding": {
     "url": "https://opencollective.com/lint-staged"
   },
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
+    "npm": ">=8.1.3"
+  },
+  "type": "module",
   "bin": "./bin/lint-staged.js",
-  "main": "./lib/index.js",
+  "exports": "./lib/index.js",
   "files": [
     "bin",
     "lib"

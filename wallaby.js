@@ -1,5 +1,3 @@
-'use strict'
-
 module.exports = (wallaby) => ({
   files: [
     { pattern: 'test/__fixtures__/*', instrument: false },
