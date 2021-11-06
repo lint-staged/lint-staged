@@ -40,8 +40,8 @@
     "listr2": "^3.13.3",
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
+    "object-inspect": "1.11.0",
     "string-argv": "0.3.1",
-    "stringify-object": "4.0.0",
     "supports-color": "9.0.2"
   },
   "devDependencies": {

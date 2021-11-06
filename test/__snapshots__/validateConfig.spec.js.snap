@@ -25,19 +25,19 @@ exports[`validateConfig should throw when detecting deprecated advanced configur
 
 ✖ Validation Error:
 
-  Invalid value for 'globOptions': {matchBase: false}
+  Invalid value for 'globOptions': { matchBase: false }
 
   Advanced configuration has been deprecated.
 
 ✖ Validation Error:
 
-  Invalid value for 'ignore': ['test.js']
+  Invalid value for 'ignore': [ 'test.js' ]
 
   Advanced configuration has been deprecated.
 
 ✖ Validation Error:
 
-  Invalid value for 'linters': {'*.js': ['eslint']}
+  Invalid value for 'linters': { '*.js': [ 'eslint' ] }
 
   Advanced configuration has been deprecated.
 
@@ -78,19 +78,19 @@ ERROR Could not parse lint-staged config.
 
 ✖ Validation Error:
 
-  Invalid value for 'globOptions': {matchBase: false}
+  Invalid value for 'globOptions': { matchBase: false }
 
   Advanced configuration has been deprecated.
 
 ✖ Validation Error:
 
-  Invalid value for 'ignore': ['test.js']
+  Invalid value for 'ignore': [ 'test.js' ]
 
   Advanced configuration has been deprecated.
 
 ✖ Validation Error:
 
-  Invalid value for 'linters': {'*.js': ['eslint']}
+  Invalid value for 'linters': { '*.js': [ 'eslint' ] }
 
   Advanced configuration has been deprecated.
 

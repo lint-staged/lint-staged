@@ -165,8 +165,8 @@ describe('lintStaged', () => {
       "
       LOG Running lint-staged with the following config:
       LOG {
-        '*.css': filenames => \`echo \${filenames.join(' ')}\`,
-        '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
+        '*.css': [Function: *.css],
+        '*.js': [Function: *.js]
       }"
     `)
   })
