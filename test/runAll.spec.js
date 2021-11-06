@@ -3,10 +3,10 @@ import execa from 'execa'
 import normalize from 'normalize-path'
 import path from 'path'
 
-import getStagedFiles from '../lib/getStagedFiles'
-import GitWorkflow from '../lib/gitWorkflow'
-import resolveGitRepo from '../lib/resolveGitRepo'
-import runAll from '../lib/runAll'
+import { getStagedFiles } from '../lib/getStagedFiles'
+import { GitWorkflow } from '../lib/gitWorkflow'
+import { resolveGitRepo } from '../lib/resolveGitRepo'
+import { runAll } from '../lib/runAll'
 import { GitError } from '../lib/symbols'
 
 jest.mock('../lib/file')

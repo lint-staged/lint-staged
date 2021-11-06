@@ -1,7 +1,7 @@
 import normalize from 'normalize-path'
 import path from 'path'
 
-import resolveGitRepo, { determineGitDir } from '../lib/resolveGitRepo'
+import { determineGitDir, resolveGitRepo } from '../lib/resolveGitRepo'
 
 /**
  * resolveGitRepo runs execa, so the mock needs to be disabled for these tests

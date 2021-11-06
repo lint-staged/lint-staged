@@ -7,7 +7,7 @@ import path from 'path'
 jest.unmock('cosmiconfig')
 jest.unmock('execa')
 
-import execGitBase from '../lib/execGit'
+import { execGit as execGitBase } from '../lib/execGit'
 import lintStaged from '../lib/index'
 import { replaceSerializer } from './utils/replaceSerializer'
 import { createTempDir } from './utils/tempDir'
