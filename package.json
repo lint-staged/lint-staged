@@ -31,36 +31,34 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "cli-truncate": "2.1.0",
-    "colorette": "^1.4.0",
-    "commander": "^8.2.0",
+    "cli-truncate": "3.1.0",
+    "colorette": "^2.0.16",
+    "commander": "^8.3.0",
     "cosmiconfig": "^7.0.1",
     "debug": "^4.3.2",
-    "enquirer": "^2.3.6",
     "execa": "^5.1.1",
-    "listr2": "^3.12.2",
+    "listr2": "^3.13.3",
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
-    "please-upgrade-node": "^3.2.0",
     "string-argv": "0.3.1",
-    "stringify-object": "3.3.0",
-    "supports-color": "8.1.1"
+    "stringify-object": "4.0.0",
+    "supports-color": "9.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/eslint-parser": "^7.15.7",
-    "@babel/plugin-proposal-object-rest-spread": "^7.15.6",
-    "@babel/preset-env": "^7.15.6",
-    "babel-jest": "^27.2.4",
+    "@babel/core": "^7.16.0",
+    "@babel/eslint-parser": "7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "babel-jest": "27.3.1",
     "consolemock": "^1.1.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "fs-extra": "^10.0.0",
-    "husky": "^7.0.2",
-    "jest": "^27.2.4",
+    "husky": "^7.0.4",
+    "jest": "^27.3.1",
+    "jest-mock-console": "1.2.3",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "prettier": "^2.4.1"
   },
@@ -68,19 +66,6 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "lib/**/*.js"
-    ],
-    "setupFiles": [
-      "./testSetup.js"
-    ],
-    "snapshotSerializers": [
-      "jest-snapshot-serializer-ansi"
-    ],
-    "testEnvironment": "node"
   },
   "keywords": [
     "lint",
