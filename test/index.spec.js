@@ -1,17 +1,15 @@
+import path from 'path'
+
 import { cosmiconfig } from 'cosmiconfig'
 import makeConsoleMock from 'consolemock'
-import path from 'path'
 
 jest.unmock('execa')
 
-// eslint-disable-next-line import/first
-import getStagedFiles from '../lib/getStagedFiles'
-// eslint-disable-next-line import/first
+import { getStagedFiles } from '../lib/getStagedFiles'
 import lintStaged from '../lib/index'
-// eslint-disable-next-line import/first
 import { InvalidOptionsError } from '../lib/symbols'
-// eslint-disable-next-line import/first
-import validateOptions from '../lib/validateOptions'
+import { validateOptions } from '../lib/validateOptions'
+
 import { replaceSerializer } from './utils/replaceSerializer'
 
 const mockCosmiconfigWith = (result) => {
@@ -22,7 +20,9 @@ const mockCosmiconfigWith = (result) => {
 
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
-jest.mock('../lib/validateOptions', () => jest.fn().mockImplementation(async () => {}))
+jest.mock('../lib/validateOptions', () => ({
+  validateOptions: jest.fn().mockImplementation(async () => {}),
+}))
 
 // TODO: Never run tests in the project's WC because this might change source files git status
 
@@ -165,8 +165,8 @@ describe('lintStaged', () => {
       "
       LOG Running lint-staged with the following config:
       LOG {
-        '*.css': filenames => \`echo \${filenames.join(' ')}\`,
-        '*.js': filenames => filenames.map(filename => \`echo \${filename}\`)
+        '*.css': [Function: *.css],
+        '*.js': [Function: *.js]
       }"
     `)
   })

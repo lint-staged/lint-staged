@@ -1,4 +1,4 @@
-import getRenderer from '../lib/getRenderer'
+import { getRenderer } from '../lib/getRenderer'
 
 describe('getRenderer', () => {
   it('should return silent renderer when quiet', () => {

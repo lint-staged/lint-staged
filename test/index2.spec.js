@@ -1,13 +1,13 @@
+import path from 'path'
+
 import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
-import path from 'path'
 
 jest.mock('listr2')
 jest.mock('../lib/resolveGitRepo')
 
-// eslint-disable-next-line import/first
 import lintStaged from '../lib/index'
-import resolveGitRepo from '../lib/resolveGitRepo'
+import { resolveGitRepo } from '../lib/resolveGitRepo'
 
 resolveGitRepo.mockImplementation(async () => ({ gitDir: 'foo', gitConfigDir: 'bar' }))
 

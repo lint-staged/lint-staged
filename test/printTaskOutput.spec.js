@@ -1,4 +1,4 @@
-import printTaskOutput from '../lib/printTaskOutput'
+import { printTaskOutput } from '../lib/printTaskOutput'
 
 const logger = {
   error: jest.fn(() => {}),

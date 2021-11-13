@@ -1,7 +1,8 @@
 import path from 'path'
+
 import execa from 'execa'
 
-import execGit, { GIT_GLOBAL_OPTIONS } from '../lib/execGit'
+import { execGit, GIT_GLOBAL_OPTIONS } from '../lib/execGit'
 
 test('GIT_GLOBAL_OPTIONS', () => {
   expect(GIT_GLOBAL_OPTIONS).toMatchInlineSnapshot(`

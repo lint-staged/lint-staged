@@ -1,7 +1,8 @@
-import normalize from 'normalize-path'
 import path from 'path'
 
-import chunkFiles from '../lib/chunkFiles'
+import normalize from 'normalize-path'
+
+import { chunkFiles } from '../lib/chunkFiles'
 
 describe('chunkFiles', () => {
   const files = ['example.js', 'foo.js', 'bar.js', 'foo/bar.js']

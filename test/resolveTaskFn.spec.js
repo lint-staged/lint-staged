@@ -1,6 +1,6 @@
 import execa from 'execa'
 
-import resolveTaskFn from '../lib/resolveTaskFn'
+import { resolveTaskFn } from '../lib/resolveTaskFn'
 import { getInitialState } from '../lib/state'
 import { TaskError } from '../lib/symbols'
 

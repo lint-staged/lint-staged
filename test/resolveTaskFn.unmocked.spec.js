@@ -1,4 +1,4 @@
-import resolveTaskFn from '../lib/resolveTaskFn'
+import { resolveTaskFn } from '../lib/resolveTaskFn'
 
 jest.unmock('execa')
 

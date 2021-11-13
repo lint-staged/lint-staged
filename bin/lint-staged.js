@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
-'use strict'
+import fs from 'fs'
 
-const fs = require('fs')
+import cmdline from 'commander'
+import debug from 'debug'
+import supportsColor from 'supports-color'
+
+import lintStaged from '../lib/index.js'
+import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-const supportsColor = require('supports-color')
 if (supportsColor.stdout) {
   process.env.FORCE_COLOR = supportsColor.stdout.level.toString()
 }
@@ -13,24 +17,11 @@ if (supportsColor.stdout) {
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
 
-const pkg = require('../package.json')
-require('please-upgrade-node')(
-  Object.assign({}, pkg, {
-    engines: {
-      node: '>=12.13.0', // First LTS release of 'Erbium'
-    },
-  })
-)
-
-const cmdline = require('commander')
-const debugLib = require('debug')
-const lintStaged = require('../lib')
-const { CONFIG_STDIN_ERROR } = require('../lib/messages')
-
-const debug = debugLib('lint-staged:bin')
+const packageJson = JSON.parse(fs.readFileSync('package.json'))
+const version = packageJson.version
 
 cmdline
-  .version(pkg.version)
+  .version(version)
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
   .option('-d, --debug', 'print additional debug information', false)
@@ -50,11 +41,11 @@ cmdline
   )
   .parse(process.argv)
 
+const debugLog = debug('lint-staged:bin')
 if (cmdline.debug) {
-  debugLib.enable('lint-staged*')
+  debug.enable('lint-staged*')
 }
-
-debug('Running `lint-staged@%s`', pkg.version)
+debugLog('Running `lint-staged@%s`', version)
 
 /**
  * Get the maximum length of a command-line argument string based on current platform
@@ -89,7 +80,7 @@ const options = {
   verbose: !!cmdlineOptions.verbose,
 }
 
-debug('Options parsed from command-line:', options)
+debugLog('Options parsed from command-line:', options)
 
 if (options.configPath === '-') {
   delete options.configPath

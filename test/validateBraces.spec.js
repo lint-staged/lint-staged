@@ -1,6 +1,6 @@
 import makeConsoleMock from 'consolemock'
 
-import validateBraces, { BRACES_REGEXP } from '../lib/validateBraces'
+import { validateBraces, BRACES_REGEXP } from '../lib/validateBraces'
 
 describe('BRACES_REGEXP', () => {
   it(`should match '*.{js}'`, () => {

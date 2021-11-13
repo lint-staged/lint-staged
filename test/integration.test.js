@@ -1,14 +1,16 @@
+import path from 'path'
+
 import makeConsoleMock from 'consolemock'
 import fs from 'fs-extra'
 import ansiSerializer from 'jest-snapshot-serializer-ansi'
 import normalize from 'normalize-path'
-import path from 'path'
 
 jest.unmock('cosmiconfig')
 jest.unmock('execa')
 
-import execGitBase from '../lib/execGit'
+import { execGit as execGitBase } from '../lib/execGit'
 import lintStaged from '../lib/index'
+
 import { replaceSerializer } from './utils/replaceSerializer'
 import { createTempDir } from './utils/tempDir'
 import { isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'

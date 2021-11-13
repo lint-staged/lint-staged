@@ -1,5 +1,5 @@
-import getStagedFiles from '../lib/getStagedFiles'
-import execGit from '../lib/execGit'
+import { getStagedFiles } from '../lib/getStagedFiles'
+import { execGit } from '../lib/execGit'
 
 jest.mock('../lib/execGit')
 
