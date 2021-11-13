@@ -60,12 +60,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      # Print current Node.js version
-      - run: node --version
-      # Print current npm version
-      - run: npm --version
-      # Print current Git version
-      - run: git --version
       # Install node_modules
       - uses: actions/cache@v2
         id: cache-node_modules
@@ -76,6 +70,16 @@ jobs:
             ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
+      # Print current Node.js version
+      - run: node --version
+      # Print current npm version
+      - run: npm --version
+      # Print current Git version
+      - run: git --version
+      # Print lint-staged version
+      - run: node bin/lint-staged.js --version
+      # Print lint-staged help text
+      - run: node bin/lint-staged.js --help
       # Run tests
       - run: npm test
       # Upload coverage artifact from Node.js LTS
