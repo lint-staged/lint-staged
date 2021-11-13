@@ -12,7 +12,7 @@
     "es6": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "prettier"],
+  "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
   "plugins": ["node", "import", "prettier"],
   "rules": {
     "no-console": "off",
