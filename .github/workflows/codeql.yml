@@ -4,10 +4,7 @@ on:
   push:
     # Run on pushes to specific branches
     branches:
-      - master
-      - next
-      - beta
-      - alpha
+      - "*"
     # Do not run on tags
     tags-ignore:
       - "*"
