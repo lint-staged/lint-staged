@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 import cmdline from 'commander'
 import debug from 'debug'
@@ -17,7 +19,8 @@ if (supportsColor.stdout) {
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
 
-const packageJson = JSON.parse(fs.readFileSync('package.json'))
+const packageJsonPath = path.join(fileURLToPath(import.meta.url), '../../package.json')
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
 const version = packageJson.version
 
 cmdline
