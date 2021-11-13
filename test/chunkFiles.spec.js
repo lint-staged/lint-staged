@@ -1,5 +1,6 @@
-import normalize from 'normalize-path'
 import path from 'path'
+
+import normalize from 'normalize-path'
 
 import { chunkFiles } from '../lib/chunkFiles'
 

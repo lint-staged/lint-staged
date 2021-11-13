@@ -1,5 +1,6 @@
-import makeConsoleMock from 'consolemock'
 import { constants, promises as fs } from 'fs'
+
+import makeConsoleMock from 'consolemock'
 
 import { validateOptions } from '../lib/validateOptions'
 import { InvalidOptionsError } from '../lib/symbols'

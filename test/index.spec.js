@@ -1,6 +1,7 @@
+import path from 'path'
+
 import { cosmiconfig } from 'cosmiconfig'
 import makeConsoleMock from 'consolemock'
-import path from 'path'
 
 jest.unmock('execa')
 
@@ -8,6 +9,7 @@ import { getStagedFiles } from '../lib/getStagedFiles'
 import lintStaged from '../lib/index'
 import { InvalidOptionsError } from '../lib/symbols'
 import { validateOptions } from '../lib/validateOptions'
+
 import { replaceSerializer } from './utils/replaceSerializer'
 
 const mockCosmiconfigWith = (result) => {

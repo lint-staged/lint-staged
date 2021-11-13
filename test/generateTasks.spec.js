@@ -1,6 +1,7 @@
-import normalize from 'normalize-path'
 import os from 'os'
 import path from 'path'
+
+import normalize from 'normalize-path'
 
 import { generateTasks } from '../lib/generateTasks'
 import { resolveGitRepo } from '../lib/resolveGitRepo'

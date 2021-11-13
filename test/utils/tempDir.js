@@ -1,6 +1,7 @@
-import fs from 'fs-extra'
 import os from 'os'
 import path from 'path'
+
+import fs from 'fs-extra'
 
 const osTmpDir = fs.realpathSync(process.env.RUNNER_TEMP || os.tmpdir())
 

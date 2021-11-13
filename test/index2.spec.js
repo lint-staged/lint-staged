@@ -1,6 +1,7 @@
+import path from 'path'
+
 import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
-import path from 'path'
 
 jest.mock('listr2')
 jest.mock('../lib/resolveGitRepo')

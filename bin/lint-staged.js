@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
+import fs from 'fs'
+
 import cmdline from 'commander'
 import debug from 'debug'
-import fs from 'fs'
 import supportsColor from 'supports-color'
 
 import lintStaged from '../lib/index.js'

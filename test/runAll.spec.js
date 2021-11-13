@@ -1,7 +1,8 @@
+import path from 'path'
+
 import makeConsoleMock from 'consolemock'
 import execa from 'execa'
 import normalize from 'normalize-path'
-import path from 'path'
 
 import { getStagedFiles } from '../lib/getStagedFiles'
 import { GitWorkflow } from '../lib/gitWorkflow'

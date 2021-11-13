@@ -1,11 +1,13 @@
+import path from 'path'
+
 import fs from 'fs-extra'
 import normalize from 'normalize-path'
-import path from 'path'
 
 import { execGit as execGitBase } from '../lib/execGit'
 import { writeFile } from '../lib/file'
 import { GitWorkflow } from '../lib/gitWorkflow'
 import { getInitialState } from '../lib/state'
+
 import { createTempDir } from './utils/tempDir'
 import { normalizeWindowsNewlines } from './utils/crossPlatform'
 
