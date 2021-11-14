@@ -193,6 +193,27 @@ describe('lintStaged', () => {
     `)
   })
 
+  it('should read config from relative ESM file', async () => {
+    expect.assertions(1)
+
+    await lintStaged(
+      {
+        configPath: path.join('test', '__mocks__', 'esm-config.mjs'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Running lint-staged with the following config:
+      LOG {
+        '*': 'mytask'
+      }"
+    `)
+  })
+
   it('should use config object', async () => {
     expect.assertions(1)
 
