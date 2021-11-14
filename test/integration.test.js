@@ -5,7 +5,7 @@ import fs from 'fs-extra'
 import ansiSerializer from 'jest-snapshot-serializer-ansi'
 import normalize from 'normalize-path'
 
-jest.unmock('cosmiconfig')
+jest.unmock('lilconfig')
 jest.unmock('execa')
 
 import { execGit as execGitBase } from '../lib/execGit'

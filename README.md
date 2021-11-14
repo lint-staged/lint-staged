@@ -114,9 +114,7 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
   whether your project's _package.json_ contains the `"type": "module"` option or not.
 - Pass a configuration file using the `--config` or `-c` flag
 
-See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
-
-Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns.
+Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
 
 #### `package.json` example:
 
@@ -202,7 +200,7 @@ For example:
 
 going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
-## Using JS configuration file
+## Using JS configuration files
 
 Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
 
