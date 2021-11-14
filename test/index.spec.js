@@ -149,12 +149,34 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should parse function linter from js config', async () => {
+  it('should parse function linter from absolute CJS config', async () => {
     expect.assertions(1)
 
     await lintStaged(
       {
         configPath: path.join(__dirname, '__mocks__', 'advanced-config.js'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Running lint-staged with the following config:
+      LOG {
+        '*.css': [Function: *.css],
+        '*.js': [Function: *.js]
+      }"
+    `)
+  })
+
+  it('should parse function linter from relative CJS config', async () => {
+    expect.assertions(1)
+
+    await lintStaged(
+      {
+        configPath: path.join('test', '__mocks__', 'advanced-config.js'),
         debug: true,
         quiet: true,
       },
@@ -181,7 +203,7 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
-  it('should load an npm config package when specified', async () => {
+  it('should load a CJS module when specified', async () => {
     expect.assertions(1)
 
     jest.mock('my-lint-staged-config')
