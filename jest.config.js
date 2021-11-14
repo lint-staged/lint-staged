@@ -7,6 +7,7 @@ const config = {
   testEnvironment: 'node',
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
+    '\\.mjs$': 'babel-jest',
   },
   /** Also transform ESM packages in `node_modules` */
   transformIgnorePatterns: [],

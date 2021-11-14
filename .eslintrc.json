@@ -33,7 +33,10 @@
     ],
     "no-console": "off",
     "node/no-unsupported-features/es-builtins": "error",
-    "node/no-unsupported-features/es-syntax": ["error", { "ignores": ["modules"] }],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      { "ignores": ["dynamicImport", "modules"] }
+    ],
     "node/no-unsupported-features/node-builtins": "error",
     "prettier/prettier": "error"
   }
