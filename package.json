@@ -24,7 +24,6 @@
     "lib"
   ],
   "scripts": {
-    "cz": "git-cz",
     "lint": "eslint .",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
@@ -60,11 +59,6 @@
     "jest-mock-console": "1.2.3",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "prettier": "^2.4.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   },
   "keywords": [
     "lint",
