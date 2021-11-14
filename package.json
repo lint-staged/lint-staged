@@ -58,7 +58,6 @@
     "fs-extra": "^10.0.0",
     "husky": "^7.0.4",
     "jest": "^27.3.1",
-    "jest-mock-console": "^1.2.3",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "prettier": "^2.4.1"
   },
