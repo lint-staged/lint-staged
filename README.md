@@ -102,7 +102,11 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
   - `.lintstagedrc.json`
   - `.lintstagedrc.yaml`
   - `.lintstagedrc.yml`
-- `lint-staged.config.js`, `.lintstagedrc.js`, or `.lintstagedrc.cjs` file in JS format
+  - `.lintstagedrc.mjs`
+  - `.lintstagedrc.js`
+  - `.lintstagedrc.cjs`
+- `lint-staged.config.mjs` file in ESM format
+- `lint-staged.config.js`, `.lintstagedrc.js`, or `.lintstagedrc.cjs` file in CommonJS format
 - Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.
