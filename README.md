@@ -106,11 +106,12 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
   - `.lintstagedrc.json`
   - `.lintstagedrc.yaml`
   - `.lintstagedrc.yml`
-  - `.lintstagedrc.mjs`
-  - `.lintstagedrc.js`
-  - `.lintstagedrc.cjs`
-- `lint-staged.config.mjs` file in ESM format
-- `lint-staged.config.js`, `.lintstagedrc.js`, or `.lintstagedrc.cjs` file in CommonJS format
+- `.lintstagedrc.mjs` or `lint-staged.config.mjs` file in ESM format
+  - the default export value should be a configuration: `export default { ... }`
+- `.lintstagedrc.cjs` or `lint-staged.config.cjs` file in CommonJS format
+  - the exports value should be a configuration: `module.exports = { ... }`
+- `lint-staged.config.js` or `.lintstagedrc.js` in either ESM or CommonJS format, depending on
+  whether your project's _package.json_ contains the `"type": "module"` option or not.
 - Pass a configuration file using the `--config` or `-c` flag
 
 See [cosmiconfig](https://github.com/davidtheclark/cosmiconfig) for more details on what formats are supported.

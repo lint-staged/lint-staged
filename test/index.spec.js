@@ -128,7 +128,7 @@ describe('lintStaged', () => {
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
-  it('should load config file when specified', async () => {
+  it('should load JSON config file', async () => {
     expect.assertions(1)
 
     await lintStaged(
@@ -149,7 +149,7 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should parse function linter from absolute CJS config', async () => {
+  it('should load CommonJS config file from absolute path', async () => {
     expect.assertions(1)
 
     await lintStaged(
@@ -171,7 +171,7 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should parse function linter from relative CJS config', async () => {
+  it('should load CommonJS config file from relative path', async () => {
     expect.assertions(1)
 
     await lintStaged(
@@ -193,12 +193,54 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should read config from relative ESM file', async () => {
+  it('should load CommonJS config file from .cjs file', async () => {
+    expect.assertions(1)
+
+    await lintStaged(
+      {
+        configPath: path.join('test', '__mocks__', 'my-config.cjs'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Running lint-staged with the following config:
+      LOG {
+        '*': 'mytask'
+      }"
+    `)
+  })
+
+  it('should load EMS config file from .mjs file', async () => {
     expect.assertions(1)
 
     await lintStaged(
       {
         configPath: path.join('test', '__mocks__', 'esm-config.mjs'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Running lint-staged with the following config:
+      LOG {
+        '*': 'mytask'
+      }"
+    `)
+  })
+
+  it('should load EMS config file from .js file', async () => {
+    expect.assertions(1)
+
+    await lintStaged(
+      {
+        configPath: path.join('test', '__mocks__', 'esm-config-in-js.js'),
         debug: true,
         quiet: true,
       },
