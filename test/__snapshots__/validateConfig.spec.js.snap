@@ -8,7 +8,7 @@ exports[`validateConfig should throw and should print validation errors for inva
   Should be a string, a function, or an array of strings and functions."
 `;
 
-exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function!"`;
+exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function"`;
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 1`] = `
 "✖ Validation Error:
