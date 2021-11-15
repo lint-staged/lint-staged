@@ -30,24 +30,25 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "cli-truncate": "3.1.0",
+    "cli-truncate": "^3.1.0",
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "cosmiconfig": "^7.0.1",
     "debug": "^4.3.2",
+    "enquirer": "^2.3.6",
     "execa": "^5.1.1",
     "listr2": "^3.13.3",
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
-    "object-inspect": "1.11.0",
-    "string-argv": "0.3.1",
-    "supports-color": "9.0.2"
+    "object-inspect": "^1.11.0",
+    "string-argv": "^0.3.1",
+    "supports-color": "^9.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
-    "@babel/eslint-parser": "7.16.3",
+    "@babel/eslint-parser": "^7.16.3",
     "@babel/preset-env": "^7.16.0",
-    "babel-jest": "27.3.1",
+    "babel-jest": "^27.3.1",
     "consolemock": "^1.1.0",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
@@ -57,7 +58,7 @@
     "fs-extra": "^10.0.0",
     "husky": "^7.0.4",
     "jest": "^27.3.1",
-    "jest-mock-console": "1.2.3",
+    "jest-mock-console": "^1.2.3",
     "jest-snapshot-serializer-ansi": "^1.0.0",
     "prettier": "^2.4.1"
   },
