@@ -42,6 +42,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v12
+
+- Since `v12.0.0` _lint-staged_ is a pure ESM module, so make sure your Node.js version is at least `12.20.0`, `14.13.1`, or `16.0.0`. Read more about ESM modules from the official [Node.js Documentation site here](https://nodejs.org/api/esm.html#introduction).
+
 #### v10
 
 - From `v10.0.0` onwards any new modifications to originally staged files will be automatically added to the commit.
