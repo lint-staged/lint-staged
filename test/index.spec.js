@@ -18,6 +18,14 @@ const mockLilConfig = (result) => {
   }))
 }
 
+/**
+ * This converts paths into `file://` urls, but this doesn't
+ * work with `import()` when using babel + jest.
+ */
+jest.mock('url', () => ({
+  pathToFileURL: (path) => path,
+}))
+
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
 jest.mock('../lib/validateOptions', () => ({
