@@ -14,8 +14,6 @@ describe('dynamicImport', () => {
   })
 
   it('should log errors into console', () => {
-    expect(() => dynamicImport('not-found.js')).rejects.toMatchInlineSnapshot(
-      `[Error: Cannot find module 'not-found.js' from 'lib/loadConfig.js']`
-    )
+    expect(() => dynamicImport('not-found.js')).rejects.toThrowError(`Cannot find module`)
   })
 })
