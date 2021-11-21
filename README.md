@@ -223,9 +223,9 @@ The function can also be async:
 
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch')
+import micromatch from 'micromatch'
 
-module.exports = (allStagedFiles) => {
+export default (allStagedFiles) => {
   const shFiles = micromatch(allStagedFiles, ['**/src/**/*.sh'])
   if (shFiles.length) {
     return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
@@ -245,7 +245,7 @@ module.exports = (allStagedFiles) => {
 
 ```js
 // .lintstagedrc.js
-module.exports = {
+export default {
   '**/*.js?(x)': (filenames) => filenames.map((filename) => `prettier --write '${filename}'`),
 }
 ```
@@ -259,7 +259,7 @@ module.exports = {
 
 ```js
 // lint-staged.config.js
-module.exports = {
+export default {
   '**/*.ts?(x)': () => 'tsc -p tsconfig.json --noEmit',
 }
 ```
@@ -273,7 +273,7 @@ module.exports = {
 
 ```js
 // .lintstagedrc.js
-module.exports = {
+export default {
   '**/*.js?(x)': (filenames) =>
     filenames.length > 10 ? 'eslint .' : `eslint ${filenames.join(' ')}`,
 }
@@ -290,9 +290,9 @@ It's better to use the [function-based configuration (seen above)](https://githu
 
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch')
+import micromatch from 'micromatch'
 
-module.exports = {
+export default {
   '*': (allFiles) => {
     const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts'])
     const docFiles = micromatch(allFiles, ['**/*.md'])
@@ -312,9 +312,9 @@ If for some reason you want to ignore files from the glob match, you can use `mi
 
 ```js
 // lint-staged.config.js
-const micromatch = require('micromatch')
+import micromatch from 'micromatch'
 
-module.exports = {
+export default {
   '*.js': (files) => {
     // from `files` filter those _NOT_ matching `*test.js`
     const match = micromatch.not(files, '*test.js')
@@ -333,9 +333,9 @@ Please note that for most cases, globs can achieve the same effect. For the abov
   <summary>Click to expand</summary>
 
 ```js
-const path = require('path')
+import path from 'path'
 
-module.exports = {
+export default {
   '*.ts': (absolutePaths) => {
     const cwd = process.cwd()
     const relativePaths = absolutePaths.map((file) => path.relative(cwd, file))
@@ -549,7 +549,7 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 Yes!
 
 ```js
-const lintStaged = require('lint-staged')
+import lintStaged from 'lint-staged'
 
 try {
   const success = await lintStaged()
@@ -688,13 +688,13 @@ Based on the discussion from [this issue](https://github.com/eslint/eslint/issue
 So you can setup a `.lintstagedrc.js` config file to do this:
 
 ```js
-const { CLIEngine } = require('eslint')
+import { CLIEngine } from 'eslint'
 
-const cli = new CLIEngine({})
-
-module.exports = {
-  '*.js': (files) =>
-    'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' '),
+export default {
+  '*.js': (files) => {
+    const cli = new CLIEngine({})
+    return 'eslint --max-warnings=0 ' + files.filter((file) => !cli.isPathIgnored(file)).join(' ')
+  },
 }
 ```
 
@@ -710,7 +710,7 @@ In versions of ESLint > 7, [isPathIgnored](https://eslint.org/docs/developer-gui
 Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad ESLint config will come through to the console.
 
 ```js
-const { ESLint } = require('eslint')
+import { ESLint } from 'eslint'
 
 const removeIgnoredFiles = async (files) => {
   const eslint = new ESLint()
@@ -723,7 +723,7 @@ const removeIgnoredFiles = async (files) => {
   return filteredFiles.join(' ')
 }
 
-module.exports = {
+export default {
   '**/*.{ts,tsx,js,jsx}': async (files) => {
     const filesToLint = await removeIgnoredFiles(files)
     return [`eslint --max-warnings=0 ${filesToLint}`]
