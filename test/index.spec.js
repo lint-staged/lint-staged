@@ -327,7 +327,7 @@ describe('lintStaged', () => {
   })
 
   it('should print helpful error message when explicit config file is not found', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
 
     const nonExistentConfig = 'fake-config-file.yml'
 
@@ -343,6 +343,7 @@ describe('lintStaged', () => {
       lintStaged({ configPath: nonExistentConfig, quiet: true }, logger)
     ).rejects.toThrowError()
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+    expect(logger.printHistory()).toMatch('ENOENT')
+    expect(logger.printHistory()).toMatch('Configuration could not be found')
   })
 })
