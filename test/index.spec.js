@@ -157,6 +157,27 @@ describe('lintStaged', () => {
     `)
   })
 
+  it('should load YAML config file', async () => {
+    expect.assertions(1)
+
+    await lintStaged(
+      {
+        configPath: path.join(__dirname, '__mocks__', 'my-config.yml'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG Running lint-staged with the following config:
+      LOG {
+        '*': 'mytask'
+      }"
+    `)
+  })
+
   it('should load CommonJS config file from absolute path', async () => {
     expect.assertions(1)
 
