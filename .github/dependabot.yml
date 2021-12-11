@@ -1,9 +1,9 @@
 version: 2
 
 updates:
-  # Production dependencies
   - package-ecosystem: 'npm'
     directory: '/'
+    versioning-strategy: 'increase'
     schedule:
       interval: 'weekly'
       day: 'monday'
