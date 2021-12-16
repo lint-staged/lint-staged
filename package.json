@@ -33,7 +33,6 @@
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "debug": "^4.3.3",
-    "enquirer": "^2.3.6",
     "execa": "^5.1.1",
     "lilconfig": "2.0.4",
     "listr2": "^3.13.5",
