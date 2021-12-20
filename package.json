@@ -38,7 +38,7 @@
     "listr2": "^3.13.5",
     "micromatch": "^4.0.4",
     "normalize-path": "^3.0.0",
-    "object-inspect": "^1.11.1",
+    "object-inspect": "^1.12.0",
     "string-argv": "^0.3.1",
     "supports-color": "^9.2.1",
     "yaml": "^1.10.2"
