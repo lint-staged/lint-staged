@@ -27,6 +27,7 @@ cmdline
   .version(version)
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
+  .option('--sparse-config', 'use sparse config mode, mostly used in a monorepo', false)
   .option('-d, --debug', 'print additional debug information', false)
   .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option(
@@ -74,6 +75,7 @@ const options = {
   allowEmpty: !!cmdlineOptions.allowEmpty,
   concurrent: JSON.parse(cmdlineOptions.concurrent),
   configPath: cmdlineOptions.config,
+  sparseConfig: !!cmdlineOptions.sparseConfig,
   debug: !!cmdlineOptions.debug,
   maxArgLength: getMaxArgLength() / 2,
   stash: !!cmdlineOptions.stash, // commander inverts `no-<x>` flags to `!x`

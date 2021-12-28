@@ -9,11 +9,13 @@ import { GitWorkflow } from '../lib/gitWorkflow'
 import { resolveGitRepo } from '../lib/resolveGitRepo'
 import { runAll } from '../lib/runAll'
 import { GitError } from '../lib/symbols'
+import { loadConfig } from '../lib/loadConfig'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
 jest.mock('../lib/resolveGitRepo')
+jest.mock('../lib/loadConfig')
 
 getStagedFiles.mockImplementation(async () => [])
 
@@ -104,6 +106,126 @@ describe('runAll', () => {
       LOG [STARTED] Cleaning up...
       LOG [SUCCESS] Cleaning up..."
     `)
+  })
+
+  describe('sparseConfig', () => {
+    const mockTaskForPackageA = jest.fn(() => ['echo "package A"'])
+    const mockTaskForPackageB = jest.fn(() => ['echo "package B"'])
+    beforeAll(() => {
+      loadConfig.mockImplementation((params) => {
+        const { searchStartPath } = params
+        const actualLoadConfig = jest.requireActual('../lib/loadConfig').loadConfig
+        if (searchStartPath) {
+          if (searchStartPath.endsWith('package/a')) {
+            return {
+              config: {
+                '*.js': mockTaskForPackageA,
+              },
+              filepath: path.join(searchStartPath, 'package.json'),
+            }
+          }
+          if (searchStartPath.endsWith('package/b')) {
+            return {
+              config: {
+                '*.js': mockTaskForPackageB,
+              },
+              filepath: path.join(searchStartPath, 'package.json'),
+            }
+          }
+        }
+        return actualLoadConfig(params)
+      })
+    })
+
+    afterEach(() => {
+      mockTaskForPackageA.mockClear()
+      mockTaskForPackageB.mockClear()
+    })
+
+    afterAll(() => {
+      loadConfig.mockReset()
+    })
+
+    it('should work with sparseConfig', async () => {
+      expect.assertions(5)
+      getStagedFiles.mockImplementationOnce(async () => ['package/a/foo.js', 'package/b/bar.js'])
+
+      await runAll({ sparseConfig: true })
+
+      expect(mockTaskForPackageA).toHaveBeenCalledTimes(1)
+      expect(mockTaskForPackageA).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.stringContaining('package/a/foo.js')])
+      )
+      expect(mockTaskForPackageB).toHaveBeenCalledTimes(1)
+      expect(mockTaskForPackageB).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.stringContaining('package/b/bar.js')])
+      )
+      expect(console.printHistory()).toMatchInlineSnapshot(`
+        "
+        LOG [STARTED] Preparing...
+        LOG [SUCCESS] Preparing...
+        LOG [STARTED] Running tasks...
+        LOG [STARTED] Running tasks for *.js under package/a
+        LOG [STARTED] echo \\"package A\\"
+        LOG [SUCCESS] echo \\"package A\\"
+        LOG [SUCCESS] Running tasks for *.js under package/a
+        LOG [SUCCESS] Running tasks...
+        LOG [STARTED] Running tasks...
+        LOG [STARTED] Running tasks for *.js under package/b
+        LOG [STARTED] echo \\"package B\\"
+        LOG [SUCCESS] echo \\"package B\\"
+        LOG [SUCCESS] Running tasks for *.js under package/b
+        LOG [SUCCESS] Running tasks...
+        LOG [STARTED] Applying modifications...
+        LOG [SUCCESS] Applying modifications...
+        LOG [STARTED] Cleaning up...
+        LOG [SUCCESS] Cleaning up..."
+      `)
+    })
+    it('should work with maxArgLength', async () => {
+      expect.assertions(1)
+      getStagedFiles.mockImplementationOnce(async () => [
+        'package/a/1.js',
+        'package/a/2.js',
+        'package/b/1.js',
+        'package/b/2.js',
+      ])
+      await runAll({ sparseConfig: true, maxArgLength: 1 })
+
+      expect(console.printHistory()).toMatchInlineSnapshot(`
+        "
+        LOG [STARTED] Preparing...
+        LOG [SUCCESS] Preparing...
+        LOG [STARTED] Running tasks (chunk 1/2)...
+        LOG [STARTED] Running tasks for *.js under package/a
+        LOG [STARTED] echo \\"package A\\"
+        LOG [SUCCESS] echo \\"package A\\"
+        LOG [SUCCESS] Running tasks for *.js under package/a
+        LOG [SUCCESS] Running tasks (chunk 1/2)...
+        LOG [STARTED] Running tasks (chunk 2/2)...
+        LOG [STARTED] Running tasks for *.js under package/a
+        LOG [STARTED] echo \\"package A\\"
+        LOG [SUCCESS] echo \\"package A\\"
+        LOG [SUCCESS] Running tasks for *.js under package/a
+        LOG [SUCCESS] Running tasks (chunk 2/2)...
+        LOG [STARTED] Running tasks (chunk 1/2)...
+        LOG [STARTED] Running tasks for *.js under package/b
+        LOG [STARTED] echo \\"package B\\"
+        LOG [SUCCESS] echo \\"package B\\"
+        LOG [SUCCESS] Running tasks for *.js under package/b
+        LOG [SUCCESS] Running tasks (chunk 1/2)...
+        LOG [STARTED] Running tasks (chunk 2/2)...
+        LOG [STARTED] Running tasks for *.js under package/b
+        LOG [STARTED] echo \\"package B\\"
+        LOG [SUCCESS] echo \\"package B\\"
+        LOG [SUCCESS] Running tasks for *.js under package/b
+        LOG [SUCCESS] Running tasks (chunk 2/2)...
+        LOG [STARTED] Applying modifications...
+        LOG [SUCCESS] Applying modifications...
+        LOG [STARTED] Cleaning up...
+        LOG [SUCCESS] Cleaning up..."
+      `)
+    })
   })
 
   it('should skip tasks if previous git error', async () => {
