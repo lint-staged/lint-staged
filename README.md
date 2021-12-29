@@ -68,6 +68,7 @@ Options:
   --allow-empty                      allow empty commits when tasks revert all staged changes
                                      (default: false)
   -c, --config [path]                path to configuration file, or - to read from stdin
+  --sparse-config                    read multiple configuration files from subdirectories, useful with monorepos (default: false)
   -d, --debug                        print additional debug information (default: false)
   --no-stash                         disable the backup stash, and do not revert in case of
                                      errors
@@ -650,6 +651,27 @@ If you wish to use `lint-staged` in a multi package monorepo, it is recommended 
 [`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
 
 Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+
+Or using `lint-staged` with `--sparse-config`. In sparse config mode, each git staged file will use the closest `lint-staged` configuration to run tasks.
+
+Assuming monorepo file structure as fllow:
+
+```
+-- monorepo
+ |- packages
+     |- foo
+        |- .lintstagedrc.json
+     |- bar
+        |- .lintstagedrc.json
+```
+
+if git staged files are 
+
+- packages/foo/index.js
+- packages/foo/lib.js
+- packages/bar/utils.js
+
+With `--sparse-config`, `packages/foo/index.js` and `packages/foo/lib.js` uses configuration from `packages/foo/.lintstagedrc.json`, while `packages/bar/utils.js` uses configuration from `packages/bar/.lintstagedrc.json`. If no `lint-staged` configuration can be found from file path, nothing happens.
 
 </details>
 
