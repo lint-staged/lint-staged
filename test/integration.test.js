@@ -1057,6 +1057,23 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
+
+  it('should work when setup --sparse-config', async () => {
+    await fs.ensureFile(path.join(cwd, 'package-a/test.js'))
+    await writeFile('package-a/test.js', testJsFileUgly)
+    await fs.ensureFile(path.join(cwd, 'package-a/.lintstagedrc'))
+    await writeFile('package-a/.lintstagedrc', JSON.stringify(fixJsConfig.config))
+    await fs.ensureFile(path.join(cwd, 'package-b/test.js'))
+    await writeFile('package-b/test.js', testJsFileUgly)
+
+    await execGit(['add', '.'])
+
+    await gitCommit({ sparseConfig: true })
+    // test.js in package-a should be prettier
+    expect(await readFile('package-a/test.js')).toEqual(testJsFilePretty)
+    // test.js in package-b should not be prettier
+    expect(await readFile('package-b/test.js')).toEqual(testJsFileUgly)
+  })
 })
 
 describe('lintStaged', () => {
