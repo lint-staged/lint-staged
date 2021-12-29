@@ -250,10 +250,10 @@ describe('runAll', () => {
       LOG [STARTED] Running tasks...
       INFO [SKIPPED] Skipped because of previous git error.
       LOG [STARTED] Applying modifications...
-      INFO [SKIPPED]
+      INFO [SKIPPED] 
       [SKIPPED]   ✖ lint-staged failed due to a git error.
       LOG [STARTED] Cleaning up...
-      INFO [SKIPPED]
+      INFO [SKIPPED] 
       [SKIPPED]   ✖ lint-staged failed due to a git error."
     `)
   })
