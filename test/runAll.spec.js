@@ -116,7 +116,7 @@ describe('runAll', () => {
         const { searchStartPath } = params
         const actualLoadConfig = jest.requireActual('../lib/loadConfig').loadConfig
         if (searchStartPath) {
-          if (searchStartPath.endsWith('package/a')) {
+          if (searchStartPath.endsWith(path.join('package/a'))) {
             return {
               config: {
                 '*.js': mockTaskForPackageA,
@@ -124,7 +124,7 @@ describe('runAll', () => {
               filepath: path.join(searchStartPath, 'package.json'),
             }
           }
-          if (searchStartPath.endsWith('package/b')) {
+          if (searchStartPath.endsWith(path.join('package/b'))) {
             return {
               config: {
                 '*.js': mockTaskForPackageB,
@@ -250,10 +250,10 @@ describe('runAll', () => {
       LOG [STARTED] Running tasks...
       INFO [SKIPPED] Skipped because of previous git error.
       LOG [STARTED] Applying modifications...
-      INFO [SKIPPED] 
+      INFO [SKIPPED]
       [SKIPPED]   ✖ lint-staged failed due to a git error.
       LOG [STARTED] Cleaning up...
-      INFO [SKIPPED] 
+      INFO [SKIPPED]
       [SKIPPED]   ✖ lint-staged failed due to a git error."
     `)
   })
