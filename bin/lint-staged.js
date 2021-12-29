@@ -27,7 +27,7 @@ cmdline
   .version(version)
   .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
-  .option('--sparse-config', 'use sparse config mode, mostly used in a monorepo', false)
+  .option('--sparse-config', 'read multiple configuration files from subdirectories, useful with monorepos', false)
   .option('-d, --debug', 'print additional debug information', false)
   .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option(
