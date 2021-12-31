@@ -9,6 +9,7 @@ import { getStagedFiles } from '../lib/getStagedFiles'
 import lintStaged from '../lib/index'
 import { InvalidOptionsError } from '../lib/symbols'
 import { validateOptions } from '../lib/validateOptions'
+import { clearLoadConfigCache } from '../lib/loadConfig'
 
 import { replaceSerializer } from './utils/replaceSerializer'
 
@@ -39,6 +40,10 @@ describe('lintStaged', () => {
 
   beforeEach(() => {
     logger.clearHistory()
+  })
+
+  afterEach(() => {
+    clearLoadConfigCache()
   })
 
   it('should use lilconfig if no params are passed', async () => {

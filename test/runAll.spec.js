@@ -9,7 +9,7 @@ import { GitWorkflow } from '../lib/gitWorkflow'
 import { resolveGitRepo } from '../lib/resolveGitRepo'
 import { runAll } from '../lib/runAll'
 import { GitError } from '../lib/symbols'
-import { loadConfig } from '../lib/loadConfig'
+import { loadConfigAndValidateWithCache } from '../lib/loadConfig'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
@@ -112,9 +112,10 @@ describe('runAll', () => {
     const mockTaskForPackageA = jest.fn(() => ['echo "package A"'])
     const mockTaskForPackageB = jest.fn(() => ['echo "package B"'])
     beforeAll(() => {
-      loadConfig.mockImplementation((params) => {
+      loadConfigAndValidateWithCache.mockImplementation((params) => {
         const { searchStartPath } = params
-        const actualLoadConfig = jest.requireActual('../lib/loadConfig').loadConfig
+        const actualLoadConfig =
+          jest.requireActual('../lib/loadConfig').loadConfigAndValidateWithCache
         if (searchStartPath) {
           if (searchStartPath.endsWith(path.join('package/a'))) {
             return {
@@ -143,7 +144,7 @@ describe('runAll', () => {
     })
 
     afterAll(() => {
-      loadConfig.mockReset()
+      loadConfigAndValidateWithCache.mockReset()
     })
 
     it('should work with sparseConfig', async () => {

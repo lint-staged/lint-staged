@@ -1059,12 +1059,12 @@ describe('lint-staged', () => {
   })
 
   it('should work when setup --sparse-config', async () => {
-    await fs.ensureFile(path.join(cwd, 'package-a/test.js'))
-    await writeFile('package-a/test.js', testJsFileUgly)
-    await fs.ensureFile(path.join(cwd, 'package-a/.lintstagedrc'))
-    await writeFile('package-a/.lintstagedrc', JSON.stringify(fixJsConfig.config))
-    await fs.ensureFile(path.join(cwd, 'package-b/test.js'))
-    await writeFile('package-b/test.js', testJsFileUgly)
+    await fs.outputFile(path.join(cwd, 'package-a/test.js'), testJsFileUgly)
+    await fs.outputFile(
+      path.join(cwd, 'package-a/package.json'),
+      JSON.stringify({ 'lint-staged': fixJsConfig.config })
+    )
+    await fs.outputFile(path.join(cwd, 'package-b/test.js'), testJsFileUgly)
 
     await execGit(['add', '.'])
 
@@ -1073,6 +1073,39 @@ describe('lint-staged', () => {
     expect(await readFile('package-a/test.js')).toEqual(testJsFilePretty)
     // test.js in package-b should not be prettier
     expect(await readFile('package-b/test.js')).toEqual(testJsFileUgly)
+  })
+
+  it('should warn multiple config files without --sparse-config', async () => {
+    const logger = makeConsoleMock()
+
+    await fs.outputFile(path.join(cwd, 'package-a/test.js'), testJsFileUgly)
+    await fs.outputFile(
+      path.join(cwd, 'package-a/package.json'),
+      JSON.stringify({ 'lint-staged': fixJsConfig.config })
+    )
+    await fs.outputFile(
+      path.join(cwd, 'package.json'),
+      JSON.stringify({ 'lint-staged': fixJsConfig.config })
+    )
+
+    await execGit(['add', '.'])
+
+    await lintStaged(
+      {
+        cwd,
+        sparseConfig: false,
+      },
+      logger
+    )
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      WARN ⚠ Found multiple lint-staged config files but \`--sparse-config\` was not used.
+        Only the topmost config file will be used:
+          - package.json
+          - package-a/package.json
+      "
+    `)
   })
 })
 

@@ -8,12 +8,14 @@ jest.mock('../lib/resolveGitRepo')
 
 import lintStaged from '../lib/index'
 import { resolveGitRepo } from '../lib/resolveGitRepo'
+import { clearLoadConfigCache } from '../lib/loadConfig'
 
 resolveGitRepo.mockImplementation(async () => ({ gitDir: 'foo', gitConfigDir: 'bar' }))
 
 describe('lintStaged', () => {
   afterEach(() => {
     Listr.mockClear()
+    clearLoadConfigCache()
   })
 
   it('should pass quiet flag to Listr', async () => {
