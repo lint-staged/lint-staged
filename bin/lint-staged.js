@@ -44,10 +44,13 @@ cmdline
   )
   .parse(process.argv)
 
-const debugLog = debug('lint-staged:bin')
-if (cmdline.debug) {
+const cmdlineOptions = cmdline.opts()
+
+if (cmdlineOptions.debug) {
   debug.enable('lint-staged*')
 }
+
+const debugLog = debug('lint-staged:bin')
 debugLog('Running `lint-staged@%s`', version)
 
 /**
@@ -67,8 +70,6 @@ const getMaxArgLength = () => {
       return 131072
   }
 }
-
-const cmdlineOptions = cmdline.opts()
 
 const options = {
   allowEmpty: !!cmdlineOptions.allowEmpty,
