@@ -4,6 +4,17 @@ import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
 
 jest.mock('listr2')
+jest.mock('../lib/resolveConfig', () => ({
+  /** Unfortunately necessary due to non-ESM tests. */
+  resolveConfig: (configPath) => {
+    try {
+      return require.resolve(configPath)
+    } catch {
+      return configPath
+    }
+  },
+}))
+
 jest.mock('../lib/resolveGitRepo')
 
 import lintStaged from '../lib/index'

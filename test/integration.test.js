@@ -7,6 +7,16 @@ import normalize from 'normalize-path'
 
 jest.unmock('lilconfig')
 jest.unmock('execa')
+jest.mock('../lib/resolveConfig', () => ({
+  /** Unfortunately necessary due to non-ESM tests. */
+  resolveConfig: (configPath) => {
+    try {
+      return require.resolve(configPath)
+    } catch {
+      return configPath
+    }
+  },
+}))
 
 import { execGit as execGitBase } from '../lib/execGit'
 import lintStaged from '../lib/index'

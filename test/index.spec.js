@@ -28,6 +28,16 @@ jest.mock('url', () => ({
 
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
+jest.mock('../lib/resolveConfig', () => ({
+  /** Unfortunately necessary due to non-ESM tests. */
+  resolveConfig: (configPath) => {
+    try {
+      return require.resolve(configPath)
+    } catch {
+      return configPath
+    }
+  },
+}))
 jest.mock('../lib/validateOptions', () => ({
   validateOptions: jest.fn().mockImplementation(async () => {}),
 }))
