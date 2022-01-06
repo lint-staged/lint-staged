@@ -43,6 +43,7 @@ describe('makeCmdTasks', () => {
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('test', ['test.js'], {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: false,
@@ -52,6 +53,7 @@ describe('makeCmdTasks', () => {
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(2)
     expect(execa).lastCalledWith('test2', ['test.js'], {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: false,
