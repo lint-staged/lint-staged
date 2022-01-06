@@ -51,6 +51,8 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+      # Do not cancel other test suites when one fails
+      fail-fast: false
     name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
