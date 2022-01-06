@@ -21,6 +21,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: false,
@@ -38,6 +39,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: false,
@@ -56,6 +58,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: true,
@@ -73,6 +76,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: true,
@@ -90,6 +94,7 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+      cwd: process.cwd(),
       preferLocal: true,
       reject: false,
       shell: '/bin/bash',
@@ -121,23 +126,6 @@ describe('resolveTaskFn', () => {
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('jest', ['test.js'], {
-      preferLocal: true,
-      reject: false,
-      shell: false,
-    })
-  })
-
-  it('should always pass `process.cwd()` as `cwd` to `execa()` when relative = true', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      command: 'git diff',
-      relative: true,
-    })
-
-    await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
