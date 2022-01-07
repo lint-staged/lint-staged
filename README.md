@@ -2,6 +2,23 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
+```
+$ git commit
+
+✔ Preparing...
+❯ Running tasks...
+  ❯ packages/frontend/.lintstagedrc.json — 1 file
+    ↓ *.js — no files [SKIPPED]
+    ❯ *.{json,md} — 1 file
+      ⠹ prettier --write
+  ↓ packages/backend/.lintstagedrc.json — 2 files
+    ❯ *.js — 2 files
+      ⠼ eslint --fix
+    ↓ *.{json,md} — no files [SKIPPED]
+◼ Applying modifications...
+◼ Cleaning up...
+```
+
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
 
 ## Why
@@ -115,6 +132,8 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
 - Pass a configuration file using the `--config` or `-c` flag
 
 Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
+
+You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
 #### `package.json` example:
 
@@ -644,12 +663,32 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 <details>
   <summary>Click to expand</summary>
 
-Starting with v5.0, `lint-staged` automatically resolves the git root **without any** additional configuration. You configure `lint-staged` as you normally would if your project root and git root were the same directory.
+Install _lint-staged_ on the monorepo root level, and add separate configuration files in each package. When running, _lint-staged_ will always use the configuration closest to a staged file, so having separate configuration files makes sure linters do not "leak" into other packages.
 
-If you wish to use `lint-staged` in a multi package monorepo, it is recommended to install [`husky`](https://github.com/typicode/husky) in the root package.json.
-[`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
+For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `packages/backend/.lintstagedrc.json`, a staged file inside `packages/frontend/` will only match that configuration, and not the one in `packages/backend/`.
 
-Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+**Note**: _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
+
+```js
+// ./.lintstagedrc.json
+{ "*.md": "prettier --write" }
+```
+
+```js
+// ./packages/frontend/.lintstagedrc.json
+{ "*.js": "eslint --fix" }
+```
+
+When committing `./packages/frontend/README.md`, it **will not run** _prettier_, because the configuration in the `frontend/` directory is closer to the file and doesn't include it. You should treat all _lint-staged_ configuration files as isolated and separated from each other. You can always use JS files to "extend" configurations, for example:
+
+```js
+import baseConfig from '../.lintstagedrc.js'
+
+export default {
+  ...baseConfig,
+  '*.js': 'eslint --fix',
+}
+```
 
 </details>
 
