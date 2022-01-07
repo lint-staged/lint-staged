@@ -7,6 +7,16 @@ import normalize from 'normalize-path'
 
 jest.unmock('lilconfig')
 jest.unmock('execa')
+jest.mock('../lib/resolveConfig', () => ({
+  /** Unfortunately necessary due to non-ESM tests. */
+  resolveConfig: (configPath) => {
+    try {
+      return require.resolve(configPath)
+    } catch {
+      return configPath
+    }
+  },
+}))
 
 import { execGit as execGitBase } from '../lib/execGit'
 import lintStaged from '../lib/index'
@@ -88,6 +98,9 @@ describe('lint-staged', () => {
 
 const globalConsoleTemp = console
 
+// Tests should be resilient to `git config init.defaultBranch` that is _not_ "master"
+let defaultBranchName = 'UNSET'
+
 describe('lint-staged', () => {
   beforeAll(() => {
     console = makeConsoleMock()
@@ -104,6 +117,10 @@ describe('lint-staged', () => {
     await appendFile('README.md', '# Test\n')
     await execGit(['add', 'README.md'])
     await execGit(['commit', '-m initial commit'])
+
+    if (defaultBranchName === 'UNSET') {
+      defaultBranchName = await execGit(['rev-parse', '--abbrev-ref', 'HEAD'])
+    }
   })
 
   afterEach(async () => {
@@ -451,7 +468,7 @@ describe('lint-staged', () => {
     await gitCommit(fixJsConfig, ['-m commit a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
 
     // Create another branch
     await execGit(['checkout', '-b', 'branch-b'])
@@ -461,7 +478,7 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
     // Merge first branch
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
     await execGit(['merge', 'branch-a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -512,7 +529,7 @@ describe('lint-staged', () => {
     await gitCommit(fixJsConfig, ['-m commit a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
 
     // Create another branch
     await execGit(['checkout', '-b', 'branch-b'])
@@ -522,7 +539,7 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
     // Merge first branch
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
     await execGit(['merge', 'branch-a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -1073,7 +1090,7 @@ describe('lintStaged', () => {
     await execGit(['add', 'test.js'], { cwd })
 
     await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"fatal: your current branch 'master' does not have any commits yet"`
+      `"fatal: your current branch '${defaultBranchName}' does not have any commits yet"`
     )
 
     await gitCommit({
