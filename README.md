@@ -5,8 +5,8 @@ Run linters against staged git files and don't let :poop: slip into your code ba
 ```
 $ git commit
 
-✔ Preparing...
-❯ Running tasks...
+✔ Preparing lint-staged...
+❯ Running tasks for staged files...
   ❯ packages/frontend/.lintstagedrc.json — 1 file
     ↓ *.js — no files [SKIPPED]
     ❯ *.{json,md} — 1 file
@@ -15,11 +15,16 @@ $ git commit
     ❯ *.js — 2 files
       ⠼ eslint --fix
     ↓ *.{json,md} — no files [SKIPPED]
-◼ Applying modifications...
-◼ Cleaning up...
+◼ Applying modifications from tasks...
+◼ Cleaning up temporary files...
 ```
 
+<details>
+<summary>See asciinema video</summary>
+
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
+
+</details>
 
 ## Why
 
