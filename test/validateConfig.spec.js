@@ -2,6 +2,8 @@ import makeConsoleMock from 'consolemock'
 
 import { validateConfig } from '../lib/validateConfig'
 
+const configPath = '.lintstagedrc.json'
+
 describe('validateConfig', () => {
   let logger
 
@@ -12,7 +14,7 @@ describe('validateConfig', () => {
   it('should throw and should print validation errors for invalid config 1', () => {
     const invalidConfig = 'test'
 
-    expect(() => validateConfig(invalidConfig, logger)).toThrowErrorMatchingSnapshot()
+    expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
   })
 
   it('should throw and should print validation errors for invalid config', () => {
@@ -20,13 +22,17 @@ describe('validateConfig', () => {
       foo: false,
     }
 
-    expect(() => validateConfig(invalidConfig, logger)).toThrowErrorMatchingSnapshot()
+    expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
+  })
+
+  it('should throw for empty config', () => {
+    expect(() => validateConfig({}, configPath, logger)).toThrowErrorMatchingSnapshot()
   })
 
   it('should wrap function config into object', () => {
     const functionConfig = (stagedFiles) => [`eslint --fix ${stagedFiles}', 'git add`]
 
-    expect(validateConfig(functionConfig, logger)).toEqual({
+    expect(validateConfig(functionConfig, configPath, logger)).toEqual({
       '*': functionConfig,
     })
     expect(logger.printHistory()).toEqual('')
@@ -37,7 +43,7 @@ describe('validateConfig', () => {
       '*.js': ['eslint --fix', 'git add'],
     }
 
-    expect(() => validateConfig(validSimpleConfig, logger)).not.toThrow()
+    expect(() => validateConfig(validSimpleConfig, configPath, logger)).not.toThrow()
     expect(logger.printHistory()).toEqual('')
   })
 
@@ -50,7 +56,7 @@ describe('validateConfig', () => {
       '*.css': [(filenames) => filenames.map((filename) => `eslint --fix ${filename}`)],
     }
 
-    expect(() => validateConfig(functionTask, logger)).not.toThrow()
+    expect(() => validateConfig(functionTask, configPath, logger)).not.toThrow()
     expect(logger.printHistory()).toEqual('')
   })
 
@@ -68,7 +74,7 @@ describe('validateConfig', () => {
       subTaskConcurrency: 10,
     }
 
-    expect(() => validateConfig(advancedConfig, logger)).toThrowErrorMatchingSnapshot()
+    expect(() => validateConfig(advancedConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
     expect(logger.printHistory()).toMatchSnapshot()
   })
 
@@ -77,7 +83,7 @@ describe('validateConfig', () => {
       concurrent: 'my command',
     }
 
-    expect(() => validateConfig(stillValidConfig, logger)).not.toThrow()
+    expect(() => validateConfig(stillValidConfig, configPath, logger)).not.toThrow()
     expect(logger.printHistory()).toEqual('')
   })
 })
