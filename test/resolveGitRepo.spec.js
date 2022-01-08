@@ -1,11 +1,13 @@
-import path from 'path'
+/* eslint-disable @typescript-eslint/unbound-method */
+
+import { dirname, sep } from 'path'
 import { fileURLToPath } from 'url'
 
 import normalize from 'normalize-path'
 
 import { determineGitDir, resolveGitRepo } from '../lib/resolveGitRepo.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 describe('resolveGitRepo', () => {
   it('should resolve to current working dir when .git is in the same dir', async () => {
@@ -15,7 +17,7 @@ describe('resolveGitRepo', () => {
   })
 
   it('should resolve to the parent dir when .git is in the parent dir', async () => {
-    const expected = normalize(path.dirname(__dirname))
+    const expected = normalize(dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     const { gitDir } = await resolveGitRepo()
@@ -24,7 +26,7 @@ describe('resolveGitRepo', () => {
   })
 
   it('should resolve to the parent dir when .git is in the parent dir even when the GIT_DIR environment variable is set', async () => {
-    const expected = normalize(path.dirname(__dirname))
+    const expected = normalize(dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     process.env.GIT_DIR = 'wrong/path/.git' // refer to https://github.com/DonJayamanne/gitHistoryVSCode/issues/233#issuecomment-375769718
@@ -34,7 +36,7 @@ describe('resolveGitRepo', () => {
   })
 
   it('should resolve to the parent dir when .git is in the parent dir even when the GIT_WORK_TREE environment variable is set', async () => {
-    const expected = normalize(path.dirname(__dirname))
+    const expected = normalize(dirname(__dirname))
     const processCwdBkp = process.cwd
     process.cwd = () => __dirname
     process.env.GIT_WORK_TREE = './wrong/path/'
@@ -58,14 +60,14 @@ describe('resolveGitRepo', () => {
 
     it('should resolve to parent dir when relative dir is child', () => {
       const relativeDir = 'bar'
-      const cwd = process.cwd() + path.sep + 'bar'
+      const cwd = process.cwd() + sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
       expect(rootDir).toEqual(normalize(process.cwd()))
     })
 
     it('should resolve to parent dir when relative dir is child and child has trailing dir separator', () => {
-      const relativeDir = 'bar' + path.sep
-      const cwd = process.cwd() + path.sep + 'bar'
+      const relativeDir = 'bar' + sep
+      const cwd = process.cwd() + sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
       expect(rootDir).toEqual(normalize(process.cwd()))
     })

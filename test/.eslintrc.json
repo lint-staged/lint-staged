@@ -1,14 +1,11 @@
 {
-  "parserOptions": {
-    "sourceType": "module"
-  },
   "env": {
-    "node": true,
-    "jest": true
+    "jest/globals": true
   },
+  "plugins": ["jest"],
   "rules": {
-    "no-global-assign": ["error", { "exceptions": ["console"] }],
-    "node/no-unsupported-features": "off",
-    "node/no-unsupported-features/es-syntax": "off"
+    "@typescript-eslint/await-thenable": "off",
+    "@typescript-eslint/require-await": "off",
+    "no-global-assign": "off"
   }
 }

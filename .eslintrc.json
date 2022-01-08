@@ -2,10 +2,7 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true
-    },
-    "requireConfigFile": false,
+    "project": "tsconfig.json",
     "sourceType": "module"
   },
   "env": {
@@ -13,13 +10,20 @@
     "node": true
   },
   "extends": [
-    "plugin:@typescript-eslint/recommended",
     "eslint:recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
     "prettier"
   ],
   "plugins": ["@typescript-eslint/eslint-plugin", "import", "node", "prettier"],
   "rules": {
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "import/order": [
       "error",
       {

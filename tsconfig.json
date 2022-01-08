@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["ES6"],
+    "noEmit": true,
+    "types": ["jest"]
+  },
+  "include": ["**/*.js"]
+}
