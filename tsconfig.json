@@ -5,5 +5,5 @@
     "noEmit": true,
     "types": ["jest"]
   },
-  "include": ["**/*.js"]
+  "include": ["**/*.js", "**/*.mjs"]
 }

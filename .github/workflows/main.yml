@@ -79,9 +79,9 @@ jobs:
       # Print current Git version
       - run: git --version
       # Print lint-staged version
-      - run: node bin/lint-staged.js --version
+      - run: node bin/lint-staged.mjs --version
       # Print lint-staged help text
-      - run: node bin/lint-staged.js --help
+      - run: node bin/lint-staged.mjs --help
       # Run tests
       - run: npm test
       # Upload coverage artifact from Node.js LTS

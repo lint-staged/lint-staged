@@ -17,8 +17,8 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "type": "module",
-  "bin": "./bin/lint-staged.js",
-  "exports": "./lib/index.js",
+  "bin": "./bin/lint-staged.mjs",
+  "exports": "./lib/index.mjs",
   "files": [
     "bin",
     "lib"
