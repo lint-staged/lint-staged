@@ -8,7 +8,7 @@ import { InvalidOptionsError } from '../lib/symbols.js'
 
 describe('validateOptions', () => {
   const mockAccess = jest.spyOn(fs, 'access')
-  mockAccess.mockImplementation(async () => {})
+  mockAccess.mockImplementation(async () => void {})
 
   beforeEach(() => {
     mockAccess.mockClear()

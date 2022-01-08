@@ -1,5 +1,5 @@
 {
-  "parser": "@babel/eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
@@ -12,8 +12,13 @@
     "es6": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
-  "plugins": ["node", "import", "prettier"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint/eslint-plugin", "import", "node", "prettier"],
   "rules": {
     "import/order": [
       "error",

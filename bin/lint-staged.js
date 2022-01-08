@@ -17,7 +17,7 @@ if (supportsColor.stdout) {
 }
 
 // Do not terminate main Listr process on SIGINT
-process.on('SIGINT', () => {})
+process.on('SIGINT', () => void {})
 
 const packageJsonPath = path.join(fileURLToPath(import.meta.url), '../../package.json')
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))

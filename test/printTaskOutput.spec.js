@@ -3,8 +3,8 @@ import { jest } from '@jest/globals'
 import { printTaskOutput } from '../lib/printTaskOutput.js'
 
 const logger = {
-  error: jest.fn(() => {}),
-  log: jest.fn(() => {}),
+  error: jest.fn(() => void {}),
+  log: jest.fn(() => void {}),
 }
 
 describe('printTaskOutput', () => {
