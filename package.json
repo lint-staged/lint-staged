@@ -28,8 +28,8 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch"
   },
   "dependencies": {
     "cli-truncate": "^3.1.0",

@@ -118,17 +118,4 @@ describe('makeCmdTasks', () => {
               Function task should return a string or an array of strings"
           `)
   })
-
-  it('should truncate task title', async () => {
-    const longString = new Array(1000)
-      .fill()
-      .map((_, index) => index)
-      .join('')
-
-    const res = await makeCmdTasks({ commands: () => longString, gitDir, files: ['test.js'] })
-    expect(res.length).toBe(1)
-    expect(res[0].title).toMatchInlineSnapshot(
-      `"0123456789101112131415161718192021222324252627282930313233343536373839404142434…"`
-    )
-  })
 })
