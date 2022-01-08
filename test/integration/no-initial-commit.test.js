@@ -1,23 +1,12 @@
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { addConfigFileSerializer } from './utils/configFilepathSerializer'
-import { testWithGitIntegration } from './utils/gitIntegration'
-import { prettierListDifferent } from './fixtures/configs'
-import { prettyJS } from './fixtures/files'
+import { addConfigFileSerializer } from './utils/configFilepathSerializer.js'
+import { testWithGitIntegration } from './utils/gitIntegration.js'
+import { prettierListDifferent } from './fixtures/configs.js'
+import { prettyJS } from './fixtures/files.js'
 
-jest.unmock('execa')
 jest.setTimeout(20000)
-
-jest.mock('../../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
 
 addConfigFileSerializer()
 

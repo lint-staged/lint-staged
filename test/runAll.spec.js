@@ -1,30 +1,46 @@
 import path from 'path'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
-import execa from 'execa'
 import normalize from 'normalize-path'
 
-import { getStagedFiles } from '../lib/getStagedFiles'
-import { GitWorkflow } from '../lib/gitWorkflow'
-import { resolveGitRepo } from '../lib/resolveGitRepo'
-import { runAll } from '../lib/runAll'
-import { GitError } from '../lib/symbols'
+jest.unstable_mockModule('execa', () => {
+  const result = {
+    stdout: 'a-ok',
+    stderr: '',
+    code: 0,
+    cmd: 'mock cmd',
+    failed: false,
+    killed: false,
+    signal: null,
+  }
 
-jest.mock('../lib/file')
-jest.mock('../lib/getStagedFiles')
-jest.mock('../lib/gitWorkflow')
-jest.mock('../lib/resolveGitRepo')
+  return { execa: jest.fn(async () => result), execaCommand: jest.fn(async () => result) }
+})
 
-jest.mock('../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
+jest.unstable_mockModule('../lib/file.js', () => ({}))
+jest.unstable_mockModule('../lib/getStagedFiles.js', () => ({ getStagedFiles: jest.fn() }))
+
+const mockPrepare = jest.fn(() => Promise.resolve())
+
+jest.unstable_mockModule('../lib/gitWorkflow.js', () => ({
+  GitWorkflow: jest.fn(() => ({
+    prepare: mockPrepare,
+    hideUnstagedChanges: jest.fn(() => Promise.resolve()),
+    applyModifications: jest.fn(() => Promise.resolve()),
+    restoreUnstagedChanges: jest.fn(() => Promise.resolve()),
+    restoreOriginalState: jest.fn(() => Promise.resolve()),
+    cleanup: jest.fn(() => Promise.resolve()),
+  })),
 }))
+jest.unstable_mockModule('../lib/resolveGitRepo.js', () => ({ resolveGitRepo: jest.fn() }))
+
+const { execa } = await import('execa')
+const { getStagedFiles } = await import('../lib/getStagedFiles.js')
+const { GitWorkflow } = await import('../lib/gitWorkflow.js')
+const { resolveGitRepo } = await import('../lib/resolveGitRepo.js')
+const { runAll } = await import('../lib/runAll.js')
+const { GitError } = await import('../lib/symbols.js')
 
 getStagedFiles.mockImplementation(async () => [])
 
@@ -156,13 +172,11 @@ describe('runAll', () => {
   it('should skip tasks if previous git error', async () => {
     expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    GitWorkflow.mockImplementationOnce(() => ({
-      ...jest.requireActual('../lib/gitWorkflow'),
-      prepare: (ctx) => {
-        ctx.errors.add(GitError)
-        throw new Error('test')
-      },
-    }))
+
+    mockPrepare.mockImplementationOnce((ctx) => {
+      ctx.errors.add(GitError)
+      throw new Error('test')
+    })
 
     await expect(
       runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })

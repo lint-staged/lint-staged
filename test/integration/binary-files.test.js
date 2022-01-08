@@ -1,25 +1,14 @@
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { addConfigFileSerializer } from './utils/configFilepathSerializer'
-import { testWithGitIntegration } from './utils/gitIntegration'
-import * as fileFixtures from './fixtures/files'
-import * as configFixtures from './fixtures/configs'
+import { addConfigFileSerializer } from './utils/configFilepathSerializer.js'
+import { testWithGitIntegration } from './utils/gitIntegration.js'
+import * as fileFixtures from './fixtures/files.js'
+import * as configFixtures from './fixtures/configs.js'
 
-jest.unmock('execa')
 jest.setTimeout(20000)
 
 addConfigFileSerializer()
-
-jest.mock('../../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
 
 describe('integration', () => {
   const globalConsoleTemp = console

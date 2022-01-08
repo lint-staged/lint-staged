@@ -1,24 +1,33 @@
-import execa from 'execa'
+import { jest } from '@jest/globals'
 
-import { resolveTaskFn } from '../lib/resolveTaskFn'
-import { getInitialState } from '../lib/state'
-import { TaskError } from '../lib/symbols'
+jest.unstable_mockModule('execa', () => ({
+  execa: jest.fn(async () => ({})),
+  execaCommand: jest.fn(async () => ({})),
+}))
+
+const { execa, execaCommand } = await import('execa')
+
+const { resolveTaskFn } = await import('../lib/resolveTaskFn.js')
+const { getInitialState } = await import('../lib/state.js')
+const { TaskError } = await import('../lib/symbols.js')
 
 const defaultOpts = { files: ['test.js'] }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
     execa.mockClear()
+    execaCommand.mockClear()
   })
 
   it('should support non npm scripts', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       command: 'node --arg=true ./myscript.js',
     })
 
     await taskFn()
+
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
@@ -26,10 +35,11 @@ describe('resolveTaskFn', () => {
       reject: false,
       shell: false,
     })
+    expect(execaCommand).not.toHaveBeenCalled()
   })
 
   it('should not append pathsToLint when isFn', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       isFn: true,
@@ -37,6 +47,7 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
+
     expect(execa).toHaveBeenCalledTimes(1)
     expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
@@ -44,10 +55,11 @@ describe('resolveTaskFn', () => {
       reject: false,
       shell: false,
     })
+    expect(execaCommand).not.toHaveBeenCalled()
   })
 
   it('should not append pathsToLint when isFn and shell', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       isFn: true,
@@ -56,8 +68,10 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+
+    expect(execa).not.toHaveBeenCalled()
+    expect(execaCommand).toHaveBeenCalledTimes(1)
+    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -66,7 +80,7 @@ describe('resolveTaskFn', () => {
   })
 
   it('should work with shell', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       shell: true,
@@ -74,8 +88,10 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+
+    expect(execa).not.toHaveBeenCalled()
+    expect(execaCommand).toHaveBeenCalledTimes(1)
+    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -84,7 +100,7 @@ describe('resolveTaskFn', () => {
   })
 
   it('should work with path to custom shell', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       shell: '/bin/bash',
@@ -92,8 +108,10 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node --arg=true ./myscript.js test.js', {
+
+    expect(execa).not.toHaveBeenCalled()
+    expect(execaCommand).toHaveBeenCalledTimes(1)
+    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,

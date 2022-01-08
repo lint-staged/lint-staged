@@ -1,8 +1,21 @@
 import path from 'path'
 
-import execa from 'execa'
+import { jest } from '@jest/globals'
 
-import { execGit, GIT_GLOBAL_OPTIONS } from '../lib/execGit'
+jest.unstable_mockModule('execa', () => ({
+  execa: jest.fn(async () => ({
+    stdout: 'a-ok',
+    stderr: '',
+    code: 0,
+    cmd: 'mock cmd',
+    failed: false,
+    killed: false,
+    signal: null,
+  })),
+}))
+
+const { execa } = await import('execa')
+const { execGit, GIT_GLOBAL_OPTIONS } = await import('../lib/execGit')
 
 test('GIT_GLOBAL_OPTIONS', () => {
   expect(GIT_GLOBAL_OPTIONS).toMatchInlineSnapshot(`

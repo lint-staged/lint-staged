@@ -1,24 +1,13 @@
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 import fs from 'fs-extra'
 
-import lintStaged from '../../lib/index'
+import lintStaged from '../../lib/index.js'
 
-import { createTempDir } from './utils/tempDir'
-import { prettierWrite } from './fixtures/configs'
+import { createTempDir } from './utils/tempDir.js'
+import { prettierWrite } from './fixtures/configs.js'
 
-jest.unmock('execa')
 jest.setTimeout(20000)
-
-jest.mock('../../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
 
 describe('integration', () => {
   test('fails when not in a git directory', async () => {

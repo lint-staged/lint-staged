@@ -2,7 +2,7 @@ import path from 'path'
 
 import normalize from 'normalize-path'
 
-import { generateTasks } from '../lib/generateTasks'
+import { generateTasks } from '../lib/generateTasks.js'
 
 // Windows filepaths
 const normalizePath = (input) => normalize(path.resolve('/', input))

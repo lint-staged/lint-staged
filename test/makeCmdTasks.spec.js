@@ -1,6 +1,12 @@
-import execa from 'execa'
+import { jest } from '@jest/globals'
 
-import { makeCmdTasks } from '../lib/makeCmdTasks'
+jest.unstable_mockModule('execa', () => ({
+  execa: jest.fn(async () => ({})),
+  execaCommand: jest.fn(async () => ({})),
+}))
+
+const { execa } = await import('execa')
+const { makeCmdTasks } = await import('../lib/makeCmdTasks.js')
 
 describe('makeCmdTasks', () => {
   const gitDir = process.cwd()
@@ -127,8 +133,8 @@ describe('makeCmdTasks', () => {
 
     const res = await makeCmdTasks({ commands: () => longString, gitDir, files: ['test.js'] })
     expect(res.length).toBe(1)
-    expect(res[0].title).toMatchInlineSnapshot(
-      `"0123456789101112131415161718192021222324252627282930313233343536373839404142434…"`
+    expect(res[0].title).toMatch(
+      '0123456789101112131415161718192021222324252627282930313233343536373839404142434'
     )
   })
 })

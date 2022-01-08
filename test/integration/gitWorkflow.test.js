@@ -1,34 +1,25 @@
 import path from 'path'
 
-import { writeFile } from '../../lib/file'
-import { GitWorkflow } from '../../lib/gitWorkflow'
-import { getInitialState } from '../../lib/state'
+import { jest } from '@jest/globals'
 
-import { normalizeWindowsNewlines } from './utils/windowsNewLines'
-import { itWithGitIntegration } from './utils/gitIntegration'
-
-jest.mock('../../lib/file.js')
-jest.unmock('execa')
-
-jest.mock('../../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
+import { normalizeWindowsNewlines } from './utils/windowsNewLines.js'
+import { itWithGitIntegration } from './utils/gitIntegration.js'
 
 jest.setTimeout(20000)
+
+jest.unstable_mockModule('../../lib/file.js', () => ({
+  writeFile: jest.fn(),
+}))
+
+const { writeFile } = await import('../../lib/file.js')
+const { GitWorkflow } = await import('../../lib/gitWorkflow.js')
+const { getInitialState } = await import('../../lib/state.js')
 
 describe('gitWorkflow', () => {
   describe('prepare', () => {
     itWithGitIntegration('should handle errors', async ({ cwd }) => {
       const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
 
-      jest.doMock('execa', () => Promise.reject({}))
       const ctx = getInitialState()
       // mock a simple failure
       gitWorkflow.getPartiallyStagedFiles = () => ['foo']

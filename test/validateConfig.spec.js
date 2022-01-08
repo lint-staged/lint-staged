@@ -1,6 +1,6 @@
 import makeConsoleMock from 'consolemock'
 
-import { validateConfig } from '../lib/validateConfig'
+import { validateConfig } from '../lib/validateConfig.js'
 
 const configPath = '.lintstagedrc.json'
 

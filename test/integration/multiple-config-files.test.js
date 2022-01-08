@@ -1,30 +1,11 @@
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { testWithGitIntegration } from './utils/gitIntegration'
+import { testWithGitIntegration } from './utils/gitIntegration.js'
 
-jest.unmock('lilconfig')
 jest.unmock('execa')
 
-jest.mock('../../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
-
 jest.setTimeout(20000)
-
-// 'pathToFileURL' is not supported with Jest + Babel
-jest.mock('../../lib/dynamicImport', () => ({
-  dynamicImport: jest.fn().mockImplementation(async (input) => {
-    const { default: normalize } = await import('normalize-path')
-    return require(normalize(input))
-  }),
-}))
 
 const echoJSConfig = (echo) =>
   `module.exports = { '*.js': (files) => files.map((f) => \`echo "${echo}" > \${f}\`) }`

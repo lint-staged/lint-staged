@@ -1,9 +1,10 @@
 import { constants, promises as fs } from 'fs'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { validateOptions } from '../lib/validateOptions'
-import { InvalidOptionsError } from '../lib/symbols'
+import { validateOptions } from '../lib/validateOptions.js'
+import { InvalidOptionsError } from '../lib/symbols.js'
 
 describe('validateOptions', () => {
   const mockAccess = jest.spyOn(fs, 'access')

@@ -1,12 +1,13 @@
 import makeConsoleMock from 'consolemock'
+import { jest } from '@jest/globals'
 
-import { getConfigGroups } from '../lib/getConfigGroups'
-import { loadConfig } from '../lib/loadConfig'
-
-jest.mock('../lib/loadConfig', () => ({
+jest.unstable_mockModule('../lib/loadConfig.js', () => ({
   // config not found
   loadConfig: jest.fn(async () => ({})),
 }))
+
+const { getConfigGroups } = await import('../lib/getConfigGroups.js')
+const { loadConfig } = await import('../lib/loadConfig.js')
 
 const globalConsoleTemp = console
 
@@ -28,6 +29,17 @@ describe('getConfigGroups', () => {
     await expect(getConfigGroups({ configPath: '/' })).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Configuration could not be found"`
     )
+  })
+
+  it('should return validated config from path', async () => {
+    const filepath = '/.lintstagedrc.json'
+    const files = ['/test.js']
+
+    loadConfig.mockResolvedValueOnce({ config, filepath })
+
+    await expect(getConfigGroups({ configPath: filepath, files })).resolves.toEqual({
+      [filepath]: { config, files },
+    })
   })
 
   it('should throw when config not found', async () => {
