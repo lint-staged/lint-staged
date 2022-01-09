@@ -92,6 +92,7 @@ Options:
   -c, --config [path]                path to configuration file, or - to read from stdin
   --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
+  --max-arg-length                   maximum length of the command-line argument string
   --no-stash                         disable the backup stash, and do not revert in case of errors
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
@@ -111,6 +112,7 @@ Options:
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
+- **`--max-arg-length`**: Configures chunking of tasks into multiple parts that are run one after the other. This is to avoid issues on Windows platforms where the maximum length of the command line argument string is limited to 8192 characters. Lint-staged might generate a very long argument string when there are many staged files. By default automatic based on platform.
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
