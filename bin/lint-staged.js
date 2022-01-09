@@ -34,6 +34,7 @@ cmdline
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
   .option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
   .option('-d, --debug', 'print additional debug information', false)
+  .option('--max-arg-length', 'maximum length of the command-line argument string')
   .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
@@ -54,31 +55,13 @@ if (cmdlineOptions.debug) {
 const debugLog = debug('lint-staged:bin')
 debugLog('Running `lint-staged@%s`', version)
 
-/**
- * Get the maximum length of a command-line argument string based on current platform
- *
- * https://serverfault.com/questions/69430/what-is-the-maximum-length-of-a-command-line-in-mac-os-x
- * https://support.microsoft.com/en-us/help/830473/command-prompt-cmd-exe-command-line-string-limitation
- * https://unix.stackexchange.com/a/120652
- */
-const getMaxArgLength = () => {
-  switch (process.platform) {
-    case 'darwin':
-      return 262144
-    case 'win32':
-      return 8191
-    default:
-      return 131072
-  }
-}
-
 const options = {
   allowEmpty: !!cmdlineOptions.allowEmpty,
   concurrent: JSON.parse(cmdlineOptions.concurrent),
   configPath: cmdlineOptions.config,
   cwd: cmdlineOptions.cwd,
   debug: !!cmdlineOptions.debug,
-  maxArgLength: getMaxArgLength() / 2,
+  maxArgLength: JSON.parse(cmdlineOptions.maxArgLength || null),
   quiet: !!cmdlineOptions.quiet,
   relative: !!cmdlineOptions.relative,
   shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
