@@ -58,7 +58,8 @@
     "husky": "^7.0.4",
     "jest": "^27.4.5",
     "jest-snapshot-serializer-ansi": "^1.0.0",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "yup": "^0.32.11"
   },
   "keywords": [
     "lint",
