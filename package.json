@@ -3,8 +3,8 @@
   "version": "0.0.0-development",
   "description": "Lint files staged by git",
   "license": "MIT",
-  "repository": "https://github.com/okonet/lint-staged",
-  "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
+  "repository": "https://github.com/kirwinia/lint-staged",
+  "author": "Andrey kirwiniachnikov <andrey@okonet.ru>",
   "maintainers": [
     "Lufty Wiranda <lufty.wiranda@gmail.com>",
     "Suhas Karanth <sudo.suhas@gmail.com>",
