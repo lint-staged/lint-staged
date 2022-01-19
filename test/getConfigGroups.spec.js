@@ -53,4 +53,19 @@ describe('getConfigGroups', () => {
       '/deeper/.lintstagedrc.json': { config, files: ['/deeper/foo.js', '/even/deeper/foo.js'] },
     })
   })
+
+  it('should find config for one file, and not care about other', async () => {
+    // '/foo.js'
+    loadConfig.mockResolvedValueOnce({})
+    // '/deeper/foo.js'
+    loadConfig.mockResolvedValueOnce({ config, filepath: '/deeper/.lintstagedrc.json' })
+
+    const configGroups = await getConfigGroups({
+      files: ['/foo.js', '/deeper/foo.js'],
+    })
+
+    expect(configGroups).toEqual({
+      '/deeper/.lintstagedrc.json': { config, files: ['/deeper/foo.js'] },
+    })
+  })
 })
