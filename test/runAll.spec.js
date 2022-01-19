@@ -9,6 +9,7 @@ import { GitWorkflow } from '../lib/gitWorkflow'
 import { resolveGitRepo } from '../lib/resolveGitRepo'
 import { runAll } from '../lib/runAll'
 import { GitError } from '../lib/symbols'
+import * as getConfigGroupsNS from '../lib/getConfigGroups'
 
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
@@ -25,6 +26,8 @@ jest.mock('../lib/resolveConfig', () => ({
     }
   },
 }))
+
+const getConfigGroups = jest.spyOn(getConfigGroupsNS, 'getConfigGroups')
 
 getStagedFiles.mockImplementation(async () => [])
 
@@ -292,5 +295,77 @@ describe('runAll', () => {
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([[normalize(path.join(cwd, 'test/foo.js'))]])
+  })
+
+  it('should resolve matched files to config locations with multiple configs', async () => {
+    getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
+
+    const mockTask = jest.fn(() => ['echo "sample"'])
+
+    getConfigGroups.mockResolvedValueOnce({
+      '.lintstagedrc.json': {
+        config: { '*.js': mockTask },
+        files: ['foo.js'],
+      },
+      'test/.lintstagedrc.json': {
+        config: { '*.js': mockTask },
+        files: ['test/foo.js'],
+      },
+    })
+
+    // We are only interested in the `matchedFileChunks` generation
+    let expected
+    const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
+    GitWorkflow.mockImplementationOnce(mockConstructor)
+
+    try {
+      await runAll({
+        stash: false,
+        relative: true,
+      })
+    } catch {} // eslint-disable-line no-empty
+
+    // task received relative `foo.js` from both directories
+    expect(mockTask).toHaveBeenCalledTimes(2)
+    expect(mockTask).toHaveBeenNthCalledWith(1, ['foo.js'])
+    expect(mockTask).toHaveBeenNthCalledWith(2, ['foo.js'])
+    // GitWorkflow received absolute paths `foo.js` and `test/foo.js`
+    expect(mockConstructor).toHaveBeenCalledTimes(1)
+    expect(expected).toEqual([
+      [
+        normalize(path.join(process.cwd(), 'foo.js')),
+        normalize(path.join(process.cwd(), 'test/foo.js')),
+      ],
+    ])
+  })
+
+  it('should resolve matched files to explicit cwd with multiple configs', async () => {
+    getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
+
+    const mockTask = jest.fn(() => ['echo "sample"'])
+
+    getConfigGroups.mockResolvedValueOnce({
+      '.lintstagedrc.json': {
+        config: { '*.js': mockTask },
+        files: ['foo.js'],
+      },
+      'test/.lintstagedrc.json': {
+        config: { '*.js': mockTask },
+        files: ['test/foo.js'],
+      },
+    })
+
+    try {
+      await runAll({
+        cwd: '.',
+        stash: false,
+        relative: true,
+      })
+    } catch {} // eslint-disable-line no-empty
+
+    expect(mockTask).toHaveBeenCalledTimes(2)
+    expect(mockTask).toHaveBeenNthCalledWith(1, ['foo.js'])
+    // This is now relative to "." instead of "test/"
+    expect(mockTask).toHaveBeenNthCalledWith(2, ['test/foo.js'])
   })
 })
