@@ -32,6 +32,7 @@ import { createTempDir } from './utils/tempDir'
 import { isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'
 
 jest.setTimeout(20000)
+jest.retryTimes(2)
 
 // Replace path like `../../git/lint-staged` with `<path>/lint-staged`
 const replaceConfigPathSerializer = replaceSerializer(
