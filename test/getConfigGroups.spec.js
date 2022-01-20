@@ -37,6 +37,8 @@ describe('getConfigGroups', () => {
   })
 
   it('should find config files for all staged files', async () => {
+    // Base cwd
+    loadConfig.mockResolvedValueOnce({ config, filepath: '/.lintstagedrc.json' })
     // '/foo.js' and '/bar.js'
     loadConfig.mockResolvedValueOnce({ config, filepath: '/.lintstagedrc.json' })
     // '/deeper/foo.js'
@@ -55,6 +57,8 @@ describe('getConfigGroups', () => {
   })
 
   it('should find config for one file, and not care about other', async () => {
+    // Base cwd
+    loadConfig.mockResolvedValueOnce({})
     // '/foo.js'
     loadConfig.mockResolvedValueOnce({})
     // '/deeper/foo.js'
