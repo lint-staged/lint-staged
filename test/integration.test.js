@@ -1147,6 +1147,35 @@ describe('lint-staged', () => {
     // 'a/very/deep/file/path/file.js' matched '.lintstagedrc.json'
     expect(await readFile('a/very/deep/file/path/file.js')).toMatch('level-0')
   })
+
+  it('should not care about staged file outside current cwd with another staged file', async () => {
+    await writeFile('file.js', testJsFileUgly)
+    await writeFile('deeper/file.js', testJsFileUgly)
+    await writeFile('deeper/.lintstagedrc.json', JSON.stringify(fixJsConfig.config))
+    await execGit(['add', '.'])
+
+    // Run lint-staged in "deeper/""
+    expect(await gitCommit({ cwd: path.join(cwd, 'deeper') })).resolves
+
+    // File inside deeper/ was fixed
+    expect(await readFile('deeper/file.js')).toEqual(testJsFilePretty)
+    // ...but file outside was not
+    expect(await readFile('file.js')).toEqual(testJsFileUgly)
+  })
+
+  it('should not care about staged file outside current cwd without any other staged files', async () => {
+    await writeFile('file.js', testJsFileUgly)
+    await writeFile('deeper/.lintstagedrc.json', JSON.stringify(fixJsConfig.config))
+    await execGit(['add', '.'])
+
+    // Run lint-staged in "deeper/""
+    expect(await gitCommit({ cwd: path.join(cwd, 'deeper') })).resolves
+
+    expect(console.printHistory()).toMatch('No staged files match any configured task')
+
+    // File outside deeper/ was not fixed
+    expect(await readFile('file.js')).toEqual(testJsFileUgly)
+  })
 })
 
 describe('lintStaged', () => {
