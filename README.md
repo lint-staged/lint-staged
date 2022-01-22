@@ -81,38 +81,36 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ## Command line flags
 
-```bash
+```
 ❯ npx lint-staged --help
 Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
-  --allow-empty                      allow empty commits when tasks revert all staged changes
-                                     (default: false)
+  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+  -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
   -c, --config [path]                path to configuration file, or - to read from stdin
+  --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
-  --no-stash                         disable the backup stash, and do not revert in case of
-                                     errors
-  -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run
-                                     tasks serially (default: true)
+  --no-stash                         disable the backup stash, and do not revert in case of errors
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
-  -x, --shell [path]                 skip parsing of tasks for better shell support (default:
-                                     false)
-  -v, --verbose                      show task output even when tasks succeed; by default only
-                                     failed output is shown (default: false)
+  -x, --shell [path]                 skip parsing of tasks for better shell support (default: false)
+  -v, --verbose                      show task output even when tasks succeed; by default only failed output is shown
+                                     (default: false)
   -h, --help                         display help for command
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
-- **`--debug`**: Run in debug mode. When set, it does the following:
+- **`--concurrent [number|boolean]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
-- **`--concurrent [number | (true/false)]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
+- **`--cwd [path]`**: By default tasks run in the current working directory. Use the `--cwd some/directory` to override this. The path can be absolute or relative to the current working directory.
+- **`--debug`**: Run in debug mode. When set, it does the following:
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
