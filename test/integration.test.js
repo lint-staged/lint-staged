@@ -1149,6 +1149,44 @@ describe('lint-staged', () => {
     expect(await readFile('a/very/deep/file/path/file.js')).toMatch('level-0')
   })
 
+  it('should support multiple configuration files with --relative', async () => {
+    // Add some empty files
+    await writeFile('file.js', '')
+    await writeFile('deeper/file.js', '')
+    await writeFile('deeper/even/file.js', '')
+    await writeFile('deeper/even/deeper/file.js', '')
+    await writeFile('a/very/deep/file/path/file.js', '')
+
+    const echoJSConfig = `module.exports = { '*.js': (files) => files.map((f) => \`echo \${f} > \${f}\`) }`
+
+    await writeFile('.lintstagedrc.js', echoJSConfig)
+    await writeFile('deeper/.lintstagedrc.js', echoJSConfig)
+    await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig)
+
+    // Stage all files
+    await execGit(['add', '.'])
+
+    // Run lint-staged with `--shell` so that tasks do their thing
+    await gitCommit({ relative: true, shell: true })
+
+    // 'file.js' is relative to '.'
+    expect(await readFile('file.js')).toMatch('file.js')
+
+    // 'deeper/file.js' is relative to 'deeper/'
+    expect(await readFile('deeper/file.js')).toMatch('file.js')
+
+    // 'deeper/even/file.js' is relative to 'deeper/even/'
+    expect(await readFile('deeper/even/file.js')).toMatch('file.js')
+
+    // 'deeper/even/deeper/file.js' is relative to parent 'deeper/even/'
+    expect(await readFile('deeper/even/deeper/file.js')).toMatch(normalize('deeper/file.js'))
+
+    // 'a/very/deep/file/path/file.js' is relative to root '.'
+    expect(await readFile('a/very/deep/file/path/file.js')).toMatch(
+      normalize('a/very/deep/file/path/file.js')
+    )
+  })
+
   it('should not care about staged file outside current cwd with another staged file', async () => {
     await writeFile('file.js', testJsFileUgly)
     await writeFile('deeper/file.js', testJsFileUgly)
