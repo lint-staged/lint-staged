@@ -10,6 +10,8 @@ exports[`validateConfig should throw and should print validation errors for inva
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function"`;
 
+exports[`validateConfig should throw for empty config 1`] = `"Configuration should not be empty"`;
+
 exports[`validateConfig should throw when detecting deprecated advanced configuration 1`] = `
 "✖ Validation Error:
 

@@ -8,6 +8,22 @@ import normalize from 'normalize-path'
 jest.unmock('lilconfig')
 jest.unmock('execa')
 
+jest.mock('../lib/resolveConfig', () => ({
+  /** Unfortunately necessary due to non-ESM tests. */
+  resolveConfig: (configPath) => {
+    try {
+      return require.resolve(configPath)
+    } catch {
+      return configPath
+    }
+  },
+}))
+
+jest.mock('../lib/dynamicImport', () => ({
+  // 'pathToFileURL' is not supported with Jest + Babel
+  dynamicImport: jest.fn().mockImplementation(async (input) => require(input)),
+}))
+
 import { execGit as execGitBase } from '../lib/execGit'
 import lintStaged from '../lib/index'
 
@@ -16,6 +32,31 @@ import { createTempDir } from './utils/tempDir'
 import { isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'
 
 jest.setTimeout(20000)
+jest.retryTimes(2)
+
+// Replace path like `../../git/lint-staged` with `<path>/lint-staged`
+const replaceConfigPathSerializer = replaceSerializer(
+  /((?:\.\.\/)+).*\/lint-staged/gm,
+  `<path>/lint-staged`
+)
+
+// Hide filepath from test snapshot because it's not important and varies in CI
+const replaceFilepathSerializer = replaceSerializer(
+  /prettier --write (.*)?$/gm,
+  `prettier --write <path>`
+)
+
+// Awkwardly merge three serializers
+expect.addSnapshotSerializer({
+  test: (val) =>
+    ansiSerializer.test(val) ||
+    replaceConfigPathSerializer.test(val) ||
+    replaceFilepathSerializer.test(val),
+  print: (val, serialize) =>
+    replaceFilepathSerializer.print(
+      replaceConfigPathSerializer.print(ansiSerializer.print(val, serialize))
+    ),
+})
 
 const testJsFilePretty = `module.exports = {
   foo: "bar",
@@ -36,19 +77,28 @@ const fixJsConfig = { config: { '*.js': 'prettier --write' } }
 let tmpDir
 let cwd
 
+const ensureDir = async (inputPath) => fs.ensureDir(path.dirname(inputPath))
+
 // Get file content, coercing Windows `\r\n` newlines to `\n`
 const readFile = async (filename, dir = cwd) => {
-  const file = await fs.readFile(path.resolve(dir, filename), { encoding: 'utf-8' })
+  const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+  const file = await fs.readFile(filepath, { encoding: 'utf-8' })
   return normalizeWindowsNewlines(file)
 }
 
 // Append to file, creating if it doesn't exist
-const appendFile = async (filename, content, dir = cwd) =>
-  fs.appendFile(path.resolve(dir, filename), content)
+const appendFile = async (filename, content, dir = cwd) => {
+  const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+  await ensureDir(filepath)
+  await fs.appendFile(filepath, content)
+}
 
 // Write (over) file, creating if it doesn't exist
-const writeFile = async (filename, content, dir = cwd) =>
-  fs.writeFile(path.resolve(dir, filename), content)
+const writeFile = async (filename, content, dir = cwd) => {
+  const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+  await ensureDir(filepath)
+  fs.writeFile(filepath, content)
+}
 
 // Wrap execGit to always pass `gitOps`
 const execGit = async (args, options = {}) => execGitBase(args, { cwd, ...options })
@@ -88,6 +138,9 @@ describe('lint-staged', () => {
 
 const globalConsoleTemp = console
 
+// Tests should be resilient to `git config init.defaultBranch` that is _not_ "master"
+let defaultBranchName = 'UNSET'
+
 describe('lint-staged', () => {
   beforeAll(() => {
     console = makeConsoleMock()
@@ -104,6 +157,10 @@ describe('lint-staged', () => {
     await appendFile('README.md', '# Test\n')
     await execGit(['add', 'README.md'])
     await execGit(['commit', '-m initial commit'])
+
+    if (defaultBranchName === 'UNSET') {
+      defaultBranchName = await execGit(['rev-parse', '--abbrev-ref', 'HEAD'])
+    }
   })
 
   afterEach(async () => {
@@ -236,22 +293,24 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Hiding unstaged changes to partially staged files...
       LOG [SUCCESS] Hiding unstaged changes to partially staged files...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --list-different
       LOG [SUCCESS] prettier --list-different
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications...
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
+      LOG [SUCCESS] Applying modifications from tasks...
       LOG [STARTED] Restoring unstaged changes to partially staged files...
       LOG [SUCCESS] Restoring unstaged changes to partially staged files...
-      LOG [STARTED] Cleaning up...
-      LOG [SUCCESS] Cleaning up..."
+      LOG [STARTED] Cleaning up temporary files...
+      LOG [SUCCESS] Cleaning up temporary files..."
     `)
 
     // Nothing is wrong, so a new commit is created and file is pretty
@@ -451,7 +510,7 @@ describe('lint-staged', () => {
     await gitCommit(fixJsConfig, ['-m commit a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
 
     // Create another branch
     await execGit(['checkout', '-b', 'branch-b'])
@@ -461,7 +520,7 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
     // Merge first branch
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
     await execGit(['merge', 'branch-a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -512,7 +571,7 @@ describe('lint-staged', () => {
     await gitCommit(fixJsConfig, ['-m commit a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
 
     // Create another branch
     await execGit(['checkout', '-b', 'branch-b'])
@@ -522,7 +581,7 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
     // Merge first branch
-    await execGit(['checkout', 'master'])
+    await execGit(['checkout', defaultBranchName])
     await execGit(['merge', 'branch-a'])
     expect(await readFile('test.js')).toEqual(fileInBranchA)
     expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -729,17 +788,19 @@ describe('lint-staged', () => {
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
       LOG [STARTED] git stash drop
       LOG [SUCCESS] git stash drop
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications...
-      LOG [STARTED] Cleaning up...
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
+      LOG [SUCCESS] Applying modifications from tasks...
+      LOG [STARTED] Cleaning up temporary files...
       ERROR [FAILED] lint-staged automatic backup is missing!"
     `)
   })
@@ -767,22 +828,24 @@ describe('lint-staged', () => {
       "
       WARN ⚠ Some of your tasks use \`git add\` command. Please remove it from the config since all modifications made by tasks will be automatically added to the git commit index.
 
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --write
       LOG [SUCCESS] prettier --write
       LOG [STARTED] git add
       LOG [SUCCESS] git add
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
       ERROR [FAILED] Prevented an empty git commit!
       LOG [STARTED] Reverting to original state because of errors...
       LOG [SUCCESS] Reverting to original state because of errors...
-      LOG [STARTED] Cleaning up...
-      LOG [SUCCESS] Cleaning up...
+      LOG [STARTED] Cleaning up temporary files...
+      LOG [SUCCESS] Cleaning up temporary files...
       WARN 
         ⚠ lint-staged prevented an empty git commit.
         Use the --allow-empty option to continue, or check your task configuration
@@ -915,16 +978,18 @@ describe('lint-staged', () => {
       "
       WARN ⚠ Skipping backup because \`--no-stash\` was used.
 
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --write
       LOG [SUCCESS] prettier --write
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications..."
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
+      LOG [SUCCESS] Applying modifications from tasks..."
     `)
 
     // Nothing is wrong, so a new commit is created
@@ -952,35 +1017,24 @@ describe('lint-staged', () => {
       })
     ).rejects.toThrowError()
 
-    // Hide filepath from test snapshot because it's not important and varies in CI
-    const replaceFilepathSerializer = replaceSerializer(
-      /prettier --write (.*)?$/gm,
-      `prettier --write FILEPATH`
-    )
-
-    // Awkwardly merge two serializers
-    expect.addSnapshotSerializer({
-      test: (val) => ansiSerializer.test(val) || replaceFilepathSerializer.test(val),
-      print: (val, serialize) =>
-        replaceFilepathSerializer.print(ansiSerializer.print(val, serialize)),
-    })
-
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       WARN ⚠ Skipping backup because \`--no-stash\` was used.
 
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Hiding unstaged changes to partially staged files...
       LOG [SUCCESS] Hiding unstaged changes to partially staged files...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
-      LOG [STARTED] prettier --write FILEPATH
-      LOG [SUCCESS] prettier --write FILEPATH
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications...
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
+      LOG [STARTED] prettier --write <path>
+      LOG [SUCCESS] prettier --write <path>
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
+      LOG [SUCCESS] Applying modifications from tasks...
       LOG [STARTED] Restoring unstaged changes to partially staged files...
       ERROR [FAILED] Unstaged changes could not be restored due to a merge conflict!
       ERROR 
@@ -1057,6 +1111,110 @@ describe('lint-staged', () => {
     expect(await readFile('test.js')).toEqual(testJsFilePretty)
     expect(await readFile('test2.js')).toEqual(testJsFilePretty)
   })
+
+  it('should support multiple configuration files', async () => {
+    // Add some empty files
+    await writeFile('file.js', '')
+    await writeFile('deeper/file.js', '')
+    await writeFile('deeper/even/file.js', '')
+    await writeFile('deeper/even/deeper/file.js', '')
+    await writeFile('a/very/deep/file/path/file.js', '')
+
+    const echoJSConfig = (echo) =>
+      `module.exports = { '*.js': (files) => files.map((f) => \`echo ${echo} > \${f}\`) }`
+
+    await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
+    await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
+    await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig('level-2'))
+
+    // Stage all files
+    await execGit(['add', '.'])
+
+    // Run lint-staged with `--shell` so that tasks do their thing
+    await gitCommit({ shell: true })
+
+    // 'file.js' matched '.lintstagedrc.json'
+    expect(await readFile('file.js')).toMatch('level-0')
+
+    // 'deeper/file.js' matched 'deeper/.lintstagedrc.json'
+    expect(await readFile('deeper/file.js')).toMatch('level-1')
+
+    // 'deeper/even/file.js' matched 'deeper/even/.lintstagedrc.json'
+    expect(await readFile('deeper/even/file.js')).toMatch('level-2')
+
+    // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/.lintstagedrc.json'
+    expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
+
+    // 'a/very/deep/file/path/file.js' matched '.lintstagedrc.json'
+    expect(await readFile('a/very/deep/file/path/file.js')).toMatch('level-0')
+  })
+
+  it('should support multiple configuration files with --relative', async () => {
+    // Add some empty files
+    await writeFile('file.js', '')
+    await writeFile('deeper/file.js', '')
+    await writeFile('deeper/even/file.js', '')
+    await writeFile('deeper/even/deeper/file.js', '')
+    await writeFile('a/very/deep/file/path/file.js', '')
+
+    const echoJSConfig = `module.exports = { '*.js': (files) => files.map((f) => \`echo \${f} > \${f}\`) }`
+
+    await writeFile('.lintstagedrc.js', echoJSConfig)
+    await writeFile('deeper/.lintstagedrc.js', echoJSConfig)
+    await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig)
+
+    // Stage all files
+    await execGit(['add', '.'])
+
+    // Run lint-staged with `--shell` so that tasks do their thing
+    await gitCommit({ relative: true, shell: true })
+
+    // 'file.js' is relative to '.'
+    expect(await readFile('file.js')).toMatch('file.js')
+
+    // 'deeper/file.js' is relative to 'deeper/'
+    expect(await readFile('deeper/file.js')).toMatch('file.js')
+
+    // 'deeper/even/file.js' is relative to 'deeper/even/'
+    expect(await readFile('deeper/even/file.js')).toMatch('file.js')
+
+    // 'deeper/even/deeper/file.js' is relative to parent 'deeper/even/'
+    expect(await readFile('deeper/even/deeper/file.js')).toMatch(normalize('deeper/file.js'))
+
+    // 'a/very/deep/file/path/file.js' is relative to root '.'
+    expect(await readFile('a/very/deep/file/path/file.js')).toMatch(
+      normalize('a/very/deep/file/path/file.js')
+    )
+  })
+
+  it('should not care about staged file outside current cwd with another staged file', async () => {
+    await writeFile('file.js', testJsFileUgly)
+    await writeFile('deeper/file.js', testJsFileUgly)
+    await writeFile('deeper/.lintstagedrc.json', JSON.stringify(fixJsConfig.config))
+    await execGit(['add', '.'])
+
+    // Run lint-staged in "deeper/""
+    expect(await gitCommit({ cwd: path.join(cwd, 'deeper') })).resolves
+
+    // File inside deeper/ was fixed
+    expect(await readFile('deeper/file.js')).toEqual(testJsFilePretty)
+    // ...but file outside was not
+    expect(await readFile('file.js')).toEqual(testJsFileUgly)
+  })
+
+  it('should not care about staged file outside current cwd without any other staged files', async () => {
+    await writeFile('file.js', testJsFileUgly)
+    await writeFile('deeper/.lintstagedrc.json', JSON.stringify(fixJsConfig.config))
+    await execGit(['add', '.'])
+
+    // Run lint-staged in "deeper/""
+    expect(await gitCommit({ cwd: path.join(cwd, 'deeper') })).resolves
+
+    expect(console.printHistory()).toMatch('No staged files match any configured task')
+
+    // File outside deeper/ was not fixed
+    expect(await readFile('file.js')).toEqual(testJsFileUgly)
+  })
 })
 
 describe('lintStaged', () => {
@@ -1073,7 +1231,7 @@ describe('lintStaged', () => {
     await execGit(['add', 'test.js'], { cwd })
 
     await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"fatal: your current branch 'master' does not have any commits yet"`
+      `"fatal: your current branch '${defaultBranchName}' does not have any commits yet"`
     )
 
     await gitCommit({
@@ -1086,16 +1244,18 @@ describe('lintStaged', () => {
       "
       WARN ⚠ Skipping backup because there’s no initial commit yet.
 
-      LOG [STARTED] Preparing...
-      LOG [SUCCESS] Preparing...
-      LOG [STARTED] Running tasks...
-      LOG [STARTED] Running tasks for *.js
+      LOG [STARTED] Preparing lint-staged...
+      LOG [SUCCESS] Preparing lint-staged...
+      LOG [STARTED] Running tasks for staged files...
+      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --list-different
       LOG [SUCCESS] prettier --list-different
-      LOG [SUCCESS] Running tasks for *.js
-      LOG [SUCCESS] Running tasks...
-      LOG [STARTED] Applying modifications...
-      LOG [SUCCESS] Applying modifications..."
+      LOG [SUCCESS] *.js — 1 file
+      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Running tasks for staged files...
+      LOG [STARTED] Applying modifications from tasks...
+      LOG [SUCCESS] Applying modifications from tasks..."
     `)
 
     // Nothing is wrong, so the initial commit is created

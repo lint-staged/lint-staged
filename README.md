@@ -2,7 +2,29 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
+```
+$ git commit
+
+✔ Preparing lint-staged...
+❯ Running tasks for staged files...
+  ❯ packages/frontend/.lintstagedrc.json — 1 file
+    ↓ *.js — no files [SKIPPED]
+    ❯ *.{json,md} — 1 file
+      ⠹ prettier --write
+  ↓ packages/backend/.lintstagedrc.json — 2 files
+    ❯ *.js — 2 files
+      ⠼ eslint --fix
+    ↓ *.{json,md} — no files [SKIPPED]
+◼ Applying modifications from tasks...
+◼ Cleaning up temporary files...
+```
+
+<details>
+<summary>See asciinema video</summary>
+
 [![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
+
+</details>
 
 ## Why
 
@@ -59,38 +81,36 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ## Command line flags
 
-```bash
+```
 ❯ npx lint-staged --help
 Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
-  --allow-empty                      allow empty commits when tasks revert all staged changes
-                                     (default: false)
+  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+  -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
   -c, --config [path]                path to configuration file, or - to read from stdin
+  --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
-  --no-stash                         disable the backup stash, and do not revert in case of
-                                     errors
-  -p, --concurrent <parallel tasks>  the number of tasks to run concurrently, or false to run
-                                     tasks serially (default: true)
+  --no-stash                         disable the backup stash, and do not revert in case of errors
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
-  -x, --shell [path]                 skip parsing of tasks for better shell support (default:
-                                     false)
-  -v, --verbose                      show task output even when tasks succeed; by default only
-                                     failed output is shown (default: false)
+  -x, --shell [path]                 skip parsing of tasks for better shell support (default: false)
+  -v, --verbose                      show task output even when tasks succeed; by default only failed output is shown
+                                     (default: false)
   -h, --help                         display help for command
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
-- **`--debug`**: Run in debug mode. When set, it does the following:
-  - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
-- **`--concurrent [number | (true/false)]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
+- **`--concurrent [number|boolean]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
+- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
+- **`--cwd [path]`**: By default tasks run in the current working directory. Use the `--cwd some/directory` to override this. The path can be absolute or relative to the current working directory.
+- **`--debug`**: Run in debug mode. When set, it does the following:
+  - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+  - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
@@ -115,6 +135,8 @@ Starting with v3.1 you can now use different ways of configuring lint-staged:
 - Pass a configuration file using the `--config` or `-c` flag
 
 Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
+
+You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
 #### `package.json` example:
 
@@ -644,12 +666,32 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 <details>
   <summary>Click to expand</summary>
 
-Starting with v5.0, `lint-staged` automatically resolves the git root **without any** additional configuration. You configure `lint-staged` as you normally would if your project root and git root were the same directory.
+Install _lint-staged_ on the monorepo root level, and add separate configuration files in each package. When running, _lint-staged_ will always use the configuration closest to a staged file, so having separate configuration files makes sure linters do not "leak" into other packages.
 
-If you wish to use `lint-staged` in a multi package monorepo, it is recommended to install [`husky`](https://github.com/typicode/husky) in the root package.json.
-[`lerna`](https://github.com/lerna/lerna) can be used to execute the `precommit` script in all sub-packages.
+For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `packages/backend/.lintstagedrc.json`, a staged file inside `packages/frontend/` will only match that configuration, and not the one in `packages/backend/`.
 
-Example repo: [sudo-suhas/lint-staged-multi-pkg](https://github.com/sudo-suhas/lint-staged-multi-pkg).
+**Note**: _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
+
+```js
+// ./.lintstagedrc.json
+{ "*.md": "prettier --write" }
+```
+
+```js
+// ./packages/frontend/.lintstagedrc.json
+{ "*.js": "eslint --fix" }
+```
+
+When committing `./packages/frontend/README.md`, it **will not run** _prettier_, because the configuration in the `frontend/` directory is closer to the file and doesn't include it. You should treat all _lint-staged_ configuration files as isolated and separated from each other. You can always use JS files to "extend" configurations, for example:
+
+```js
+import baseConfig from '../.lintstagedrc.js'
+
+export default {
+  ...baseConfig,
+  '*.js': 'eslint --fix',
+}
+```
 
 </details>
 
