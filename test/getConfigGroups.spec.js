@@ -30,12 +30,6 @@ describe('getConfigGroups', () => {
     )
   })
 
-  it('should throw when config not found', async () => {
-    await expect(
-      getConfigGroups({ files: ['/foo.js'] })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Configuration could not be found"`)
-  })
-
   it('should find config files for all staged files', async () => {
     // Base cwd
     loadConfig.mockResolvedValueOnce({ config, filepath: '/.lintstagedrc.json' })
