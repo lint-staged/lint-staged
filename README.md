@@ -713,6 +713,17 @@ Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo
 
 </details>
 
+### Can I use `lint-staged` with `ng lint`
+
+<details>
+  <summary>Click to expand</summary>
+
+You should not use `ng lint` through _lint-staged_, because it's designed to lint an entire project. Instead, you can add `ng lint` to your git pre-commit hook the same way as you would run lint-staged.
+
+See issue [!951](https://github.com/okonet/lint-staged/issues/951) for more details and possible workarounds.
+
+</details>
+
 ### How can I ignore files from `.eslintignore`?
 
 <details>
