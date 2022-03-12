@@ -10,4 +10,9 @@ describe('parseGitZOutput', () => {
     const input = 'a\u0000'
     expect(parseGitZOutput(input)).toEqual(['a'])
   })
+
+  it('should handle empty input', () => {
+    const input = ''
+    expect(parseGitZOutput(input)).toEqual([])
+  })
 })
