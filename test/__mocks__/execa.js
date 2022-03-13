@@ -1,5 +1,7 @@
+import { createExecaReturnValue } from '../utils/createExecaReturnValue'
+
 const execa = jest.fn(() =>
-  Promise.resolve({
+  createExecaReturnValue({
     stdout: 'a-ok',
     stderr: '',
     code: 0,
