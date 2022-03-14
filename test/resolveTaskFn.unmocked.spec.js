@@ -19,7 +19,7 @@ describe('resolveTaskFn', () => {
     const context = getInitialState()
 
     const taskFn = resolveTaskFn({
-      command: 'node -e "while(true) {}"',
+      command: 'node',
       isFn: true,
     })
     const taskPromise = taskFn(context)
@@ -33,8 +33,6 @@ describe('resolveTaskFn', () => {
     await expect(task2Promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"node -e \\"process.exit(1)\\" [FAILED]"`
     )
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"node -e \\"while(true) {}\\" [KILLED]"`
-    )
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
   })
 })
