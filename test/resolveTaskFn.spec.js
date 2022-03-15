@@ -327,4 +327,29 @@ describe('resolveTaskFn', () => {
       }
     `)
   })
+
+  it('should kill a long running task when an error is added to the context', async () => {
+    execa.mockImplementationOnce(() =>
+      createExecaReturnValue(
+        {
+          stdout: 'a-ok',
+          stderr: '',
+          code: 0,
+          cmd: 'mock cmd',
+          failed: false,
+          killed: false,
+          signal: null,
+        },
+        1000
+      )
+    )
+
+    const context = getInitialState()
+    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskPromise = taskFn(context)
+
+    context.errors.add({})
+
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+  })
 })
