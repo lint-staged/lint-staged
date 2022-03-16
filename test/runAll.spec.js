@@ -12,6 +12,8 @@ import { ConfigNotFoundError, GitError } from '../lib/symbols'
 import * as searchConfigsNS from '../lib/searchConfigs'
 import * as getConfigGroupsNS from '../lib/getConfigGroups'
 
+import { createExecaReturnValue } from './utils/createExecaReturnValue'
+
 jest.mock('../lib/file')
 jest.mock('../lib/getStagedFiles')
 jest.mock('../lib/gitWorkflow')
@@ -192,7 +194,7 @@ describe('runAll', () => {
     expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
-      Promise.resolve({
+      createExecaReturnValue({
         stdout: '',
         stderr: 'Linter finished with error',
         code: 1,
@@ -229,7 +231,7 @@ describe('runAll', () => {
     expect.assertions(2)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     execa.mockImplementation(() =>
-      Promise.resolve({
+      createExecaReturnValue({
         stdout: '',
         stderr: '',
         code: 0,
@@ -252,8 +254,8 @@ describe('runAll', () => {
       LOG [STARTED]  — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] echo \\"sample\\"
-      ERROR [FAILED] echo \\"sample\\" [SIGINT]
-      ERROR [FAILED] echo \\"sample\\" [SIGINT]
+      ERROR [FAILED] echo \\"sample\\" [KILLED]
+      ERROR [FAILED] echo \\"sample\\" [KILLED]
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       INFO [SKIPPED] Skipped because of errors from tasks.
