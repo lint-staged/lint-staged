@@ -4,7 +4,13 @@ import { resolveTaskFn } from '../lib/resolveTaskFn'
 import { getInitialState } from '../lib/state'
 import { TaskError } from '../lib/symbols'
 
+import { createExecaReturnValue } from './utils/createExecaReturnValue'
+
 const defaultOpts = { files: ['test.js'] }
+
+function mockExecaImplementationOnce(value) {
+  execa.mockImplementationOnce(() => createExecaReturnValue(value))
+}
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
@@ -135,7 +141,7 @@ describe('resolveTaskFn', () => {
 
   it('should throw error for failed linters', async () => {
     expect.assertions(1)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: 'Mock error',
       stderr: '',
       code: 0,
@@ -149,7 +155,7 @@ describe('resolveTaskFn', () => {
 
   it('should throw error for interrupted processes', async () => {
     expect.assertions(1)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: 'Mock error',
       stderr: '',
       code: 0,
@@ -167,7 +173,7 @@ describe('resolveTaskFn', () => {
 
   it('should throw error for killed processes without signal', async () => {
     expect.assertions(1)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: 'Mock error',
       stderr: '',
       code: 0,
@@ -192,7 +198,7 @@ describe('resolveTaskFn', () => {
   })
 
   it('should add TaskError on error', async () => {
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: 'Mock error',
       stderr: '',
       code: 0,
@@ -210,7 +216,7 @@ describe('resolveTaskFn', () => {
 
   it('should not add output when there is none', async () => {
     expect.assertions(2)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: '',
       stderr: '',
       code: 0,
@@ -236,7 +242,7 @@ describe('resolveTaskFn', () => {
 
   it('should add output even when task succeeds if `verbose: true`', async () => {
     expect.assertions(2)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: 'Mock success',
       stderr: '',
       code: 0,
@@ -266,7 +272,7 @@ describe('resolveTaskFn', () => {
 
   it('should not add title to output when task errors while quiet', async () => {
     expect.assertions(2)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: '',
       stderr: 'stderr',
       code: 1,
@@ -296,7 +302,7 @@ describe('resolveTaskFn', () => {
 
   it('should not print anything when task errors without output while quiet', async () => {
     expect.assertions(2)
-    execa.mockResolvedValueOnce({
+    mockExecaImplementationOnce({
       stdout: '',
       stderr: '',
       code: 1,
@@ -320,5 +326,30 @@ describe('resolveTaskFn', () => {
         "shouldBackup": null,
       }
     `)
+  })
+
+  it('should kill a long running task when an error is added to the context', async () => {
+    execa.mockImplementationOnce(() =>
+      createExecaReturnValue(
+        {
+          stdout: 'a-ok',
+          stderr: '',
+          code: 0,
+          cmd: 'mock cmd',
+          failed: false,
+          killed: false,
+          signal: null,
+        },
+        1000
+      )
+    )
+
+    const context = getInitialState()
+    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskPromise = taskFn(context)
+
+    context.errors.add({})
+
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
   })
 })

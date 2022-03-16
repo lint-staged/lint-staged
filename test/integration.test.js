@@ -29,7 +29,7 @@ import lintStaged from '../lib/index'
 
 import { replaceSerializer } from './utils/replaceSerializer'
 import { createTempDir } from './utils/tempDir'
-import { isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'
+import { isWindows, isWindowsActions, normalizeWindowsNewlines } from './utils/crossPlatform'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -97,7 +97,7 @@ const appendFile = async (filename, content, dir = cwd) => {
 const writeFile = async (filename, content, dir = cwd) => {
   const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
   await ensureDir(filepath)
-  fs.writeFile(filepath, content)
+  await fs.writeFile(filepath, content)
 }
 
 // Wrap execGit to always pass `gitOps`
@@ -449,9 +449,10 @@ describe('lint-staged', () => {
     // The task creates a git lock file and runs `git add` to simulate failure
     await expect(
       gitCommit({
+        shell: isWindows,
         config: {
           '*.js': (files) => [
-            `touch ${cwd}/.git/index.lock`,
+            `${isWindows ? 'type nul >' : 'touch'} ${cwd}/.git/index.lock`,
             `prettier --write ${files.join(' ')}`,
             `git add ${files.join(' ')}`,
           ],
