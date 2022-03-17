@@ -43,7 +43,7 @@ describe('lintStaged', () => {
           "shouldBackup": true,
         },
         "exitOnError": false,
-        "nonTTYRenderer": "verbose",
+        "nonTTYRenderer": "silent",
         "registerSignalListeners": false,
         "renderer": "silent",
       }
