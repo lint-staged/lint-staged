@@ -1,4 +1,4 @@
-export function createExecaReturnValue(value, executionTime) {
+export const createExecaReturnValue = (value, executionTime) => {
   const returnValue = { ...value }
   let triggerResolve
   let resolveTimeout

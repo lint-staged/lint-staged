@@ -1,4 +1,4 @@
-import execa from 'execa'
+import { execa } from 'execa'
 
 import { resolveTaskFn } from '../lib/resolveTaskFn'
 import { getInitialState } from '../lib/state'
