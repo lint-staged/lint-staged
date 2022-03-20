@@ -11,8 +11,8 @@ const { Listr } = await mockListr()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const MOCK_CONFIG_FILE = path.join(__dirname, '__mocks__', 'my-config.json')
-const MOCK_STAGED_FILE = path.resolve(__dirname, '__mocks__', 'sample.js')
+const MOCK_CONFIG_FILE = path.join(__dirname, 'fixtures', 'my-config.json')
+const MOCK_STAGED_FILE = path.resolve(__dirname, 'fixtures', 'sample.js')
 
 jest.unstable_mockModule('../lib/getStagedFiles.js', () => ({
   getStagedFiles: jest.fn(async () => [MOCK_STAGED_FILE]),
@@ -32,7 +32,7 @@ describe.skip('lintStaged', () => {
   it('should pass quiet flag to Listr', async () => {
     expect.assertions(1)
     await lintStaged(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
+      { configPath: path.join(__dirname, 'fixtures', 'my-config.json'), quiet: true },
       makeConsoleMock()
     )
 

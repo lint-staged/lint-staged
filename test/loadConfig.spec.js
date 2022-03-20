@@ -20,7 +20,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.json') },
+      { configPath: path.join(__dirname, 'fixtures', 'my-config.json') },
       logger
     )
 
@@ -35,7 +35,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.yml') },
+      { configPath: path.join(__dirname, 'fixtures', 'my-config.yml') },
       logger
     )
 
@@ -50,7 +50,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.cjs') },
+      { configPath: path.join(__dirname, 'fixtures', 'my-config.cjs') },
       logger
     )
 
@@ -65,7 +65,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', '__mocks__', 'my-config.cjs') },
+      { configPath: path.join('test', 'fixtures', 'my-config.cjs') },
       logger
     )
 
@@ -81,7 +81,7 @@ describe('loadConfig', () => {
 
     const { config } = await loadConfig(
       {
-        configPath: path.join('test', '__mocks__', 'esm-config.mjs'),
+        configPath: path.join('test', 'fixtures', 'esm-config.mjs'),
         debug: true,
         quiet: true,
       },
@@ -100,7 +100,7 @@ describe('loadConfig', () => {
 
     const { config } = await loadConfig(
       {
-        configPath: path.join('test', '__mocks__', 'esm-config-in-js.js'),
+        configPath: path.join('test', 'fixtures', 'esm-config-in-js.js'),
         debug: true,
         quiet: true,
       },
