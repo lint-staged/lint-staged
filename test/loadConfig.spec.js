@@ -1,31 +1,13 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { loadConfig } from '../lib/loadConfig'
+import { loadConfig } from '../lib/loadConfig.js'
 
-jest.mock('../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
-
-jest.unmock('execa')
-
-/**
- * This converts paths into `file://` urls, but this doesn't
- * work with `import()` when using babel + jest.
- */
-jest.mock('url', () => ({
-  pathToFileURL: (path) => path,
-}))
-
-// TODO: Never run tests in the project's WC because this might change source files git status
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 describe('loadConfig', () => {
   const logger = makeConsoleMock()
@@ -64,39 +46,22 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load CommonJS config file from absolute path', async () => {
+  it('should load CommonJS config file from absolute .cjs file', async () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'advanced-config.js') },
+      { configPath: path.join(__dirname, '__mocks__', 'my-config.cjs') },
       logger
     )
 
     expect(config).toMatchInlineSnapshot(`
       Object {
-        "*.css": [Function],
-        "*.js": [Function],
+        "*": "mytask",
       }
     `)
   })
 
-  it('should load CommonJS config file from relative path', async () => {
-    expect.assertions(1)
-
-    const { config } = await loadConfig(
-      { configPath: path.join('test', '__mocks__', 'advanced-config.js') },
-      logger
-    )
-
-    expect(config).toMatchInlineSnapshot(`
-      Object {
-        "*.css": [Function],
-        "*.js": [Function],
-      }
-    `)
-  })
-
-  it('should load CommonJS config file from .cjs file', async () => {
+  it('should load CommonJS config file from relative .cjs file', async () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(

@@ -1,4 +1,6 @@
-import { createExecaReturnValue } from '../utils/createExecaReturnValue'
+import { jest } from '@jest/globals'
+
+import { createExecaReturnValue } from '../utils/createExecaReturnValue.js'
 
 const execa = jest.fn(() =>
   createExecaReturnValue({
@@ -14,4 +16,4 @@ const execa = jest.fn(() =>
 
 execa.command = execa
 
-module.exports = execa
+export default execa

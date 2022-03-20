@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals'
+
 const mockFn = jest.fn((path) => {
   if (path.includes('missing')) {
     throw new Error(`not found: ${path}`)
@@ -5,10 +7,12 @@ const mockFn = jest.fn((path) => {
   return path
 })
 
-module.exports = function npmWhich() {
+const npmWhich = () => {
   return {
     sync: mockFn,
   }
 }
 
-module.exports.mockFn = mockFn
+npmWhich.mockFn = mockFn
+
+export default npmWhich

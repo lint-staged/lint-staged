@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals'
+
 const stub = {
   prepare: jest.fn().mockImplementation(() => Promise.resolve()),
   hideUnstagedChanges: jest.fn().mockImplementation(() => Promise.resolve()),
@@ -7,4 +9,4 @@ const stub = {
   cleanup: jest.fn().mockImplementation(() => Promise.resolve()),
 }
 
-module.exports = () => stub
+export default () => stub

@@ -1,6 +1,8 @@
-import execa from 'execa'
+import { mockExeca } from './utils/mockExeca.js'
 
-import { makeCmdTasks } from '../lib/makeCmdTasks'
+const { execa } = await mockExeca()
+
+const { makeCmdTasks } = await import('../lib/makeCmdTasks')
 
 describe('makeCmdTasks', () => {
   const gitDir = process.cwd()

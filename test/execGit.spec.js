@@ -1,8 +1,9 @@
 import path from 'path'
 
-import execa from 'execa'
+import { mockExeca } from './utils/mockExeca.js'
 
-import { execGit, GIT_GLOBAL_OPTIONS } from '../lib/execGit'
+const { execa } = await mockExeca()
+const { execGit, GIT_GLOBAL_OPTIONS } = await import('../lib/execGit.js')
 
 test('GIT_GLOBAL_OPTIONS', () => {
   expect(GIT_GLOBAL_OPTIONS).toMatchInlineSnapshot(`

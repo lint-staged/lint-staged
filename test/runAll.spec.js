@@ -1,46 +1,49 @@
 import path from 'path'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
-import execa from 'execa'
 import normalize from 'normalize-path'
 
-import { getStagedFiles } from '../lib/getStagedFiles'
-import { GitWorkflow } from '../lib/gitWorkflow'
-import { resolveGitRepo } from '../lib/resolveGitRepo'
-import { runAll } from '../lib/runAll'
-import { ConfigNotFoundError, GitError } from '../lib/symbols'
-import * as searchConfigsNS from '../lib/searchConfigs'
+import { createExecaReturnValue } from './utils/createExecaReturnValue.js'
+import { mockExeca } from './utils/mockExeca.js'
 
-import { createExecaReturnValue } from './utils/createExecaReturnValue'
+const { execa } = await mockExeca()
 
-jest.mock('../lib/file')
-jest.mock('../lib/getStagedFiles')
-jest.mock('../lib/gitWorkflow')
-jest.mock('../lib/resolveGitRepo')
-
-jest.mock('../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
+jest.unstable_mockModule('../lib/getStagedFiles.js', () => ({
+  getStagedFiles: jest.fn(async () => []),
 }))
 
-const searchConfigs = jest.spyOn(searchConfigsNS, 'searchConfigs')
+jest.unstable_mockModule('../lib/gitWorkflow.js', () => ({
+  GitWorkflow: jest.fn(() => ({
+    prepare: jest.fn(() => Promise.resolve()),
+    hideUnstagedChanges: jest.fn(() => Promise.resolve()),
+    applyModifications: jest.fn(() => Promise.resolve()),
+    restoreUnstagedChanges: jest.fn(() => Promise.resolve()),
+    restoreOriginalState: jest.fn(() => Promise.resolve()),
+    cleanup: jest.fn(() => Promise.resolve()),
+  })),
+}))
 
-getStagedFiles.mockImplementation(async () => [])
+jest.unstable_mockModule('../lib/resolveGitRepo.js', () => ({
+  resolveGitRepo: jest.fn(async () => {
+    const cwd = process.cwd()
+    return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
+  }),
+}))
 
-resolveGitRepo.mockImplementation(async () => {
-  const cwd = process.cwd()
-  return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
-})
+jest.unstable_mockModule('../lib/searchConfigs.js', () => ({
+  searchConfigs: jest.fn(async () => ({})),
+}))
+
+const { getStagedFiles } = await import('../lib/getStagedFiles.js')
+const { GitWorkflow } = await import('../lib/gitWorkflow.js')
+const { runAll } = await import('../lib/runAll.js')
+const { searchConfigs } = await import('../lib/searchConfigs.js')
+const { ConfigNotFoundError, GitError } = await import('../lib/symbols.js')
 
 const configPath = '.lintstagedrc.json'
 
-describe('runAll', () => {
+describe.skip('runAll', () => {
   const globalConsoleTemp = console
 
   beforeAll(() => {

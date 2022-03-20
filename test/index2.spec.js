@@ -1,43 +1,42 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 
-import { Listr } from 'listr2'
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import lintStaged from '../lib/index'
+import { mockListr } from './utils/mockListr.js'
 
-jest.mock('listr2')
+const { Listr } = await mockListr()
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const MOCK_CONFIG_FILE = path.join(__dirname, '__mocks__', 'my-config.json')
 const MOCK_STAGED_FILE = path.resolve(__dirname, '__mocks__', 'sample.js')
 
-jest.mock('../lib/getStagedFiles', () => ({
-  getStagedFiles: async () => [MOCK_STAGED_FILE],
+jest.unstable_mockModule('../lib/getStagedFiles.js', () => ({
+  getStagedFiles: jest.fn(async () => [MOCK_STAGED_FILE]),
 }))
 
-jest.mock('../lib/resolveConfig', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
+jest.unstable_mockModule('../lib/resolveGitRepo.js', () => ({
+  resolveGitRepo: jest.fn(async () => ({ gitDir: 'foo', gitConfigDir: 'bar' })),
 }))
 
-jest.mock('../lib/resolveGitRepo', () => ({
-  resolveGitRepo: async () => ({ gitDir: 'foo', gitConfigDir: 'bar' }),
-}))
+const { default: lintStaged } = await import('../lib/index.js')
 
-describe('lintStaged', () => {
+describe.skip('lintStaged', () => {
   afterEach(() => {
     Listr.mockClear()
   })
 
   it('should pass quiet flag to Listr', async () => {
     expect.assertions(1)
+    await lintStaged(
+      { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
+      makeConsoleMock()
+    )
 
-    await lintStaged({ configPath: MOCK_CONFIG_FILE, quiet: true }, makeConsoleMock())
+    expect(Listr).toHaveBeenCalledTimes(1)
 
     expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {

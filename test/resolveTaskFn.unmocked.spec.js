@@ -1,7 +1,5 @@
-import { resolveTaskFn } from '../lib/resolveTaskFn'
-import { getInitialState } from '../lib/state'
-
-jest.unmock('execa')
+import { resolveTaskFn } from '../lib/resolveTaskFn.js'
+import { getInitialState } from '../lib/state.js'
 
 describe('resolveTaskFn', () => {
   it('should call execa with shell when configured so', async () => {
