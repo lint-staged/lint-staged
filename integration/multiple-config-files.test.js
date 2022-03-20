@@ -8,9 +8,6 @@ import { withGitIntegration } from './utils/gitIntegration.js'
 jest.setTimeout(20000)
 jest.retryTimes(2)
 
-const echoJSConfig = (echo) =>
-  `module.exports = { '*.js': (files) => files.map((f) => \`echo "${echo}" > \${f}\`) }`
-
 describe('integration', () => {
   test(
     'supports multiple configuration files',
@@ -22,9 +19,12 @@ describe('integration', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
+      const echoJSConfig = (echo) =>
+        `export default { '*.js': (files) => files.map((f) => \`echo "${echo}" > \${f}\`) }`
+
       await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
       await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
-      await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig('level-2'))
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig('level-2'))
 
       // Stage all files
       await execGit(['add', '.'])
@@ -59,11 +59,11 @@ describe('integration', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
-      const echoJSConfig = `module.exports = { '*.js': (files) => files.map((f) => \`echo \${f} > \${f}\`) }`
+      const echoJSConfig = `export default { '*.js': (files) => files.map((f) => \`echo \${f} > \${f}\`) }`
 
       await writeFile('.lintstagedrc.js', echoJSConfig)
       await writeFile('deeper/.lintstagedrc.js', echoJSConfig)
-      await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig)
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig)
 
       // Stage all files
       await execGit(['add', '.'])

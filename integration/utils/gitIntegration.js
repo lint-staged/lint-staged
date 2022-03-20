@@ -85,6 +85,13 @@ export const withGitIntegration =
     if (initialCommit) {
       await utils.appendFile('README.md', '# Test\n')
       await utils.execGit(['add', 'README.md'])
+
+      await utils.writeFile(
+        'package.json',
+        JSON.stringify({ name: 'lint-staged-integration-test', type: 'module' })
+      )
+      await utils.execGit(['add', 'package.json'])
+
       await utils.execGit(['commit', '-m initial commit'])
     }
 

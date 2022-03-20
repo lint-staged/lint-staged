@@ -34,7 +34,7 @@ describe('integration', () => {
     withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
       // Run lint-staged with action that does horrible things to the file, causing a merge conflict
       await writeFile(
-        '.lintstagedrc.js',
+        '.lintstagedrc.cjs',
         `
         const fs = require('fs')
         const path = require('path')
@@ -60,7 +60,7 @@ describe('integration', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
       expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`
         "UU test.js
-        ?? .lintstagedrc.js"
+        ?? .lintstagedrc.cjs"
       `)
 
       // Without revert, the merge conflict is left in-place

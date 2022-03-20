@@ -141,9 +141,13 @@ describe('integration', () => {
       await appendFile(
         '.lintstagedrc.js',
         `
-        const fs = require('fs')
-        const path = require('path')
-        module.exports = {
+        import fs from 'fs'
+        import path from 'path'
+        import { fileURLToPath } from 'url'
+        const __filename = fileURLToPath(import.meta.url)
+        const __dirname = path.dirname(__filename)
+
+        export default {
           '*.js': () => {
             const testFile = path.join(__dirname, 'test.js')
             fs.writeFileSync(testFile, Buffer.from(\`${fileFixtures.invalidJS}\`, 'binary'))
