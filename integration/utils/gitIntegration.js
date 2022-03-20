@@ -1,7 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import execa from 'execa'
+import { execa } from 'execa'
 import fs from 'fs-extra'
 
 import { execGit as execGitBase } from '../../lib/execGit'
