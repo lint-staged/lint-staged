@@ -298,12 +298,12 @@ describe('lint-staged', () => {
       LOG [STARTED] Hiding unstaged changes to partially staged files...
       LOG [SUCCESS] Hiding unstaged changes to partially staged files...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --list-different
       LOG [SUCCESS] prettier --list-different
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks...
@@ -792,12 +792,12 @@ describe('lint-staged', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] git stash drop
       LOG [SUCCESS] git stash drop
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks...
@@ -832,14 +832,14 @@ describe('lint-staged', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --write
       LOG [SUCCESS] prettier --write
       LOG [STARTED] git add
       LOG [SUCCESS] git add
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       ERROR [FAILED] Prevented an empty git commit!
@@ -982,12 +982,12 @@ describe('lint-staged', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --write
       LOG [SUCCESS] prettier --write
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks..."
@@ -1027,12 +1027,12 @@ describe('lint-staged', () => {
       LOG [STARTED] Hiding unstaged changes to partially staged files...
       LOG [SUCCESS] Hiding unstaged changes to partially staged files...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --write <path>
       LOG [SUCCESS] prettier --write <path>
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks...
@@ -1188,6 +1188,44 @@ describe('lint-staged', () => {
     )
   })
 
+  it('should ignore multiple configs files outside cwd', async () => {
+    // Add some empty files
+    await writeFile('file.js', '')
+    await writeFile('deeper/file.js', '')
+    await writeFile('deeper/even/file.js', '')
+    await writeFile('deeper/even/deeper/file.js', '')
+    await writeFile('a/very/deep/file/path/file.js', '')
+
+    const echoJSConfig = (echo) =>
+      `module.exports = { '*.js': (files) => files.map((f) => \`echo ${echo} > \${f}\`) }`
+
+    await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
+    await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
+    await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig('level-2'))
+
+    // Stage all files
+    await execGit(['add', '.'])
+
+    // Run lint-staged with `--shell` so that tasks do their thing
+    // Run in 'deeper/' so that root config is ignored
+    await gitCommit({ shell: true, cwd: path.join(cwd, 'deeper') })
+
+    // 'file.js' was ignored
+    expect(await readFile('file.js')).toMatch('')
+
+    // 'deeper/file.js' matched 'deeper/.lintstagedrc.json'
+    expect(await readFile('deeper/file.js')).toMatch('level-1')
+
+    // 'deeper/even/file.js' matched 'deeper/even/.lintstagedrc.json'
+    expect(await readFile('deeper/even/file.js')).toMatch('level-2')
+
+    // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/.lintstagedrc.json'
+    expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
+
+    // 'a/very/deep/file/path/file.js' was ignored
+    expect(await readFile('a/very/deep/file/path/file.js')).toMatch('')
+  })
+
   it('should not care about staged file outside current cwd with another staged file', async () => {
     await writeFile('file.js', testJsFileUgly)
     await writeFile('deeper/file.js', testJsFileUgly)
@@ -1231,8 +1269,8 @@ describe('lintStaged', () => {
     await appendFile('test.js', testJsFilePretty, cwd)
     await execGit(['add', 'test.js'], { cwd })
 
-    await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"fatal: your current branch '${defaultBranchName}' does not have any commits yet"`
+    await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowError(
+      'does not have any commits yet'
     )
 
     await gitCommit({
@@ -1248,12 +1286,12 @@ describe('lintStaged', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] <path>/lint-staged — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] prettier --list-different
       LOG [SUCCESS] prettier --list-different
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] <path>/lint-staged — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks..."

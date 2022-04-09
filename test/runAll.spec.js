@@ -10,7 +10,6 @@ import { resolveGitRepo } from '../lib/resolveGitRepo'
 import { runAll } from '../lib/runAll'
 import { ConfigNotFoundError, GitError } from '../lib/symbols'
 import * as searchConfigsNS from '../lib/searchConfigs'
-import * as getConfigGroupsNS from '../lib/getConfigGroups'
 
 import { createExecaReturnValue } from './utils/createExecaReturnValue'
 
@@ -31,7 +30,6 @@ jest.mock('../lib/resolveConfig', () => ({
 }))
 
 const searchConfigs = jest.spyOn(searchConfigsNS, 'searchConfigs')
-const getConfigGroups = jest.spyOn(getConfigGroupsNS, 'getConfigGroups')
 
 getStagedFiles.mockImplementation(async () => [])
 
@@ -146,12 +144,12 @@ describe('runAll', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED]  — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] echo \\"sample\\"
       LOG [SUCCESS] echo \\"sample\\"
       LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS]  — 1 file
+      LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
       LOG [STARTED] Applying modifications from tasks...
       LOG [SUCCESS] Applying modifications from tasks...
@@ -212,7 +210,7 @@ describe('runAll', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED]  — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] echo \\"sample\\"
       ERROR [FAILED] echo \\"sample\\" [1]
@@ -251,7 +249,7 @@ describe('runAll', () => {
       LOG [STARTED] Preparing lint-staged...
       LOG [SUCCESS] Preparing lint-staged...
       LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED]  — 1 file
+      LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
       LOG [STARTED] echo \\"sample\\"
       ERROR [FAILED] echo \\"sample\\" [KILLED]
@@ -307,20 +305,9 @@ describe('runAll', () => {
 
     const mockTask = jest.fn(() => ['echo "sample"'])
 
-    getConfigGroups.mockResolvedValueOnce({
-      '.lintstagedrc.json': {
-        config: { '*.js': mockTask },
-        files: ['foo.js'],
-      },
-      'test/.lintstagedrc.json': {
-        config: { '*.js': mockTask },
-        files: ['test/foo.js'],
-      },
-    })
-
     searchConfigs.mockResolvedValueOnce({
-      '.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
+      '.lintstagedrc.json': { '*.js': mockTask },
     })
 
     // We are only interested in the `matchedFileChunks` generation
@@ -328,12 +315,7 @@ describe('runAll', () => {
     const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
-    await expect(
-      runAll({
-        stash: false,
-        relative: true,
-      })
-    ).rejects.toThrowError()
+    await expect(runAll({ stash: false, relative: true })).rejects.toThrowError()
 
     // task received relative `foo.js` from both directories
     expect(mockTask).toHaveBeenCalledTimes(2)
@@ -343,8 +325,8 @@ describe('runAll', () => {
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([
       [
-        normalize(path.join(process.cwd(), 'foo.js')),
         normalize(path.join(process.cwd(), 'test/foo.js')),
+        normalize(path.join(process.cwd(), 'foo.js')),
       ],
     ])
   })
@@ -354,20 +336,9 @@ describe('runAll', () => {
 
     const mockTask = jest.fn(() => ['echo "sample"'])
 
-    getConfigGroups.mockResolvedValueOnce({
-      '.lintstagedrc.json': {
-        config: { '*.js': mockTask },
-        files: ['foo.js'],
-      },
-      'test/.lintstagedrc.json': {
-        config: { '*.js': mockTask },
-        files: ['test/foo.js'],
-      },
-    })
-
     searchConfigs.mockResolvedValueOnce({
-      '.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
+      '.lintstagedrc.json': { '*.js': mockTask },
     })
 
     await expect(
@@ -379,15 +350,13 @@ describe('runAll', () => {
     ).rejects.toThrowError()
 
     expect(mockTask).toHaveBeenCalledTimes(2)
-    expect(mockTask).toHaveBeenNthCalledWith(1, ['foo.js'])
     // This is now relative to "." instead of "test/"
-    expect(mockTask).toHaveBeenNthCalledWith(2, ['test/foo.js'])
+    expect(mockTask).toHaveBeenNthCalledWith(1, ['test/foo.js'])
+    expect(mockTask).toHaveBeenNthCalledWith(2, ['foo.js'])
   })
 
   it('should error when no configurations found', async () => {
     getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
-
-    getConfigGroups.mockResolvedValueOnce({})
 
     searchConfigs.mockResolvedValueOnce({})
 

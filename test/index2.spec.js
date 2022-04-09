@@ -3,7 +3,17 @@ import path from 'path'
 import { Listr } from 'listr2'
 import makeConsoleMock from 'consolemock'
 
+import lintStaged from '../lib/index'
+
 jest.mock('listr2')
+
+const MOCK_CONFIG_FILE = path.join(__dirname, '__mocks__', 'my-config.json')
+const MOCK_STAGED_FILE = path.resolve(__dirname, '__mocks__', 'sample.js')
+
+jest.mock('../lib/getStagedFiles', () => ({
+  getStagedFiles: async () => [MOCK_STAGED_FILE],
+}))
+
 jest.mock('../lib/resolveConfig', () => ({
   /** Unfortunately necessary due to non-ESM tests. */
   resolveConfig: (configPath) => {
@@ -15,12 +25,9 @@ jest.mock('../lib/resolveConfig', () => ({
   },
 }))
 
-jest.mock('../lib/resolveGitRepo')
-
-import lintStaged from '../lib/index'
-import { resolveGitRepo } from '../lib/resolveGitRepo'
-
-resolveGitRepo.mockImplementation(async () => ({ gitDir: 'foo', gitConfigDir: 'bar' }))
+jest.mock('../lib/resolveGitRepo', () => ({
+  resolveGitRepo: async () => ({ gitDir: 'foo', gitConfigDir: 'bar' }),
+}))
 
 describe('lintStaged', () => {
   afterEach(() => {
@@ -29,10 +36,9 @@ describe('lintStaged', () => {
 
   it('should pass quiet flag to Listr', async () => {
     expect.assertions(1)
-    await lintStaged(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.json'), quiet: true },
-      makeConsoleMock()
-    )
+
+    await lintStaged({ configPath: MOCK_CONFIG_FILE, quiet: true }, makeConsoleMock())
+
     expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "ctx": Object {
@@ -54,11 +60,12 @@ describe('lintStaged', () => {
     expect.assertions(1)
     await lintStaged(
       {
-        configPath: path.join(__dirname, '__mocks__', 'my-config.json'),
+        configPath: MOCK_CONFIG_FILE,
         debug: true,
       },
       makeConsoleMock()
     )
+
     expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
       Object {
         "ctx": Object {
