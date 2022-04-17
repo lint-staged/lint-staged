@@ -500,6 +500,8 @@ describe('lint-staged', () => {
   })
 
   it('should handle merge conflicts', async () => {
+    await execGit(['config', 'merge.conflictstyle', 'merge'])
+
     const fileInBranchA = `module.exports = "foo";\n`
     const fileInBranchB = `module.exports = 'bar'\n`
     const fileInBranchBFixed = `module.exports = "bar";\n`
@@ -561,6 +563,8 @@ describe('lint-staged', () => {
   })
 
   it('should handle merge conflict when task errors', async () => {
+    await execGit(['config', 'merge.conflictstyle', 'merge'])
+
     const fileInBranchA = `module.exports = "foo";\n`
     const fileInBranchB = `module.exports = 'bar'\n`
     const fileInBranchBFixed = `module.exports = "bar";\n`
@@ -1000,6 +1004,8 @@ describe('lint-staged', () => {
   })
 
   it('should abort commit without reverting with --no-stash 1', async () => {
+    await execGit(['config', 'merge.conflictstyle', 'merge'])
+
     // Stage file
     await appendFile('test.js', testJsFileUgly)
     await execGit(['add', 'test.js'])
