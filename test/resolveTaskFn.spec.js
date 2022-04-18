@@ -1,4 +1,5 @@
 import execa from 'execa'
+import pidTree from 'pidtree'
 
 import { resolveTaskFn } from '../lib/resolveTaskFn'
 import { getInitialState } from '../lib/state'
@@ -6,9 +7,13 @@ import { TaskError } from '../lib/symbols'
 
 import { createExecaReturnValue } from './utils/createExecaReturnValue'
 
+jest.useFakeTimers()
+
+jest.mock('pidtree', () => jest.fn(async () => []))
+
 const defaultOpts = { files: ['test.js'] }
 
-function mockExecaImplementationOnce(value) {
+const mockExecaImplementationOnce = (value) => {
   execa.mockImplementationOnce(() => createExecaReturnValue(value))
 }
 
@@ -350,6 +355,52 @@ describe('resolveTaskFn', () => {
 
     context.errors.add({})
 
+    jest.runAllTimers()
+
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+  })
+
+  it('should also kill child processes of killed execa processes', async () => {
+    expect.assertions(3)
+
+    execa.mockImplementationOnce(() =>
+      createExecaReturnValue(
+        {
+          stdout: 'a-ok',
+          stderr: '',
+          code: 0,
+          cmd: 'mock cmd',
+          failed: false,
+          killed: false,
+          signal: null,
+        },
+        1000
+      )
+    )
+
+    const realKill = process.kill
+    const mockKill = jest.fn()
+    Object.defineProperty(process, 'kill', {
+      value: mockKill,
+    })
+
+    pidTree.mockImplementationOnce(() => ['1234'])
+
+    const taskFn = resolveTaskFn({ command: 'node' })
+
+    const context = getInitialState()
+    const taskPromise = taskFn(context)
+
+    context.errors.add({})
+    jest.runAllTimers()
+
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+
+    expect(mockKill).toHaveBeenCalledTimes(1)
+    expect(mockKill).toHaveBeenCalledWith('1234')
+
+    Object.defineProperty(process, 'kill', {
+      value: realKill,
+    })
   })
 })
