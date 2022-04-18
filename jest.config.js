@@ -1,5 +1,4 @@
 const config = {
-  collectCoverage: true,
   collectCoverageFrom: [
     'lib/**/*.js',
     // Avoid ESM import.meta parse error.
