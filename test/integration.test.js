@@ -1217,7 +1217,7 @@ describe('lint-staged', () => {
     await gitCommit({ shell: true, cwd: path.join(cwd, 'deeper') })
 
     // 'file.js' was ignored
-    expect(await readFile('file.js')).toMatch('')
+    expect(await readFile('file.js')).toEqual('')
 
     // 'deeper/file.js' matched 'deeper/.lintstagedrc.json'
     expect(await readFile('deeper/file.js')).toMatch('level-1')
@@ -1229,7 +1229,40 @@ describe('lint-staged', () => {
     expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
 
     // 'a/very/deep/file/path/file.js' was ignored
-    expect(await readFile('a/very/deep/file/path/file.js')).toMatch('')
+    expect(await readFile('a/very/deep/file/path/file.js')).toEqual('')
+  })
+
+  it('should support parent globs', async () => {
+    // Add some empty files
+    await writeFile('file.js', '')
+    await writeFile('deeper/file.js', '')
+    await writeFile('deeper/even/file.js', '')
+    await writeFile('deeper/even/deeper/file.js', '')
+    await writeFile('a/very/deep/file/path/file.js', '')
+
+    // Include single-level parent glob in deeper config
+    await writeFile(
+      'deeper/even/.lintstagedrc.cjs',
+      `module.exports = { '../*.js': (files) => files.map((f) => \`echo level-2 > \${f}\`) }`
+    )
+
+    // Stage all files
+    await execGit(['add', '.'])
+
+    // Run lint-staged with `--shell` so that tasks do their thing
+    // Run in 'deeper/' so that root config is ignored
+    await gitCommit({ shell: true, cwd: path.join(cwd, 'deeper/even') })
+
+    // Two levels above, no match
+    expect(await readFile('file.js')).toEqual('')
+
+    // One level above, match
+    expect(await readFile('deeper/file.js')).toMatch('level-2')
+
+    // Not directly in the above-level, no match
+    expect(await readFile('deeper/even/file.js')).toEqual('')
+    expect(await readFile('deeper/even/deeper/file.js')).toEqual('')
+    expect(await readFile('a/very/deep/file/path/file.js')).toEqual('')
   })
 
   it('should not care about staged file outside current cwd with another staged file', async () => {
