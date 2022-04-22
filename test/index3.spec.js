@@ -1,17 +1,18 @@
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import lintStaged from '../lib/index'
-import { runAll } from '../lib/runAll'
-import { getInitialState } from '../lib/state'
-import { ApplyEmptyCommitError, ConfigNotFoundError, GitError } from '../lib/symbols'
-
-jest.mock('../lib/validateOptions.js', () => ({
+jest.unstable_mockModule('../lib/validateOptions.js', () => ({
   validateOptions: jest.fn(async () => {}),
 }))
 
-jest.mock('../lib/runAll.js', () => ({
+jest.unstable_mockModule('../lib/runAll.js', () => ({
   runAll: jest.fn(async () => {}),
 }))
+
+const { default: lintStaged } = await import('../lib/index.js')
+const { runAll } = await import('../lib/runAll.js')
+const { getInitialState } = await import('../lib/state.js')
+const { ApplyEmptyCommitError, ConfigNotFoundError, GitError } = await import('../lib/symbols.js')
 
 describe('lintStaged', () => {
   it('should log error when configuration not found', async () => {

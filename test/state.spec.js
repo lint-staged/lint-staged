@@ -3,8 +3,8 @@ import {
   cleanupSkipped,
   restoreOriginalStateSkipped,
   restoreUnstagedChangesSkipped,
-} from '../lib/state'
-import { GitError, RestoreOriginalStateError } from '../lib/symbols'
+} from '../lib/state.js'
+import { GitError, RestoreOriginalStateError } from '../lib/symbols.js'
 
 describe('applyModificationsSkipped', () => {
   it('should return false when backup is disabled', () => {

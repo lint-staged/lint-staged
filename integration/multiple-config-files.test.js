@@ -101,18 +101,18 @@ describe('integration', () => {
       await writeFile('a/very/deep/file/path/file.js', '')
 
       const echoJSConfig = (echo) =>
-        `module.exports = { '*.js': (files) => files.map((f) => \`echo ${echo} > \${f}\`) }`
+        `export default { '*.js': (files) => files.map((f) => \`echo ${echo} > \${f}\`) }`
 
       await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
       await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
-      await writeFile('deeper/even/.lintstagedrc.cjs', echoJSConfig('level-2'))
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig('level-2'))
 
       // Stage all files
       await execGit(['add', '.'])
 
       // Run lint-staged with `--shell` so that tasks do their thing
       // Run in 'deeper/' so that root config is ignored
-      await gitCommit({ shell: true, cwd: path.join(cwd, 'deeper') })
+      await gitCommit({ lintStaged: ['--shell', '--cwd', path.join(cwd, 'deeper')] })
 
       // 'file.js' was ignored
       expect(await readFile('file.js')).toEqual('')

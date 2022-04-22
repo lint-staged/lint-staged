@@ -12,7 +12,7 @@ jest.unstable_mockModule('pidtree', () => ({
   default: jest.fn(async () => []),
 }))
 
-const pidTree = await import('pidtree')
+const { default: pidTree } = await import('pidtree')
 
 const { resolveTaskFn } = await import('../lib/resolveTaskFn')
 

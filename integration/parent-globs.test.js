@@ -29,7 +29,7 @@ describe('integration', () => {
 
       // Run lint-staged with `--shell` so that tasks do their thing
       // Run in 'deeper/' so that root config is ignored
-      await gitCommit({ shell: true, cwd: path.join(cwd, 'deeper/even') })
+      await gitCommit({ lintStaged: ['--shell', '--cwd', path.join(cwd, 'deeper/even')] })
 
       // Two levels above, no match
       expect(await readFile('file.js')).toEqual('')

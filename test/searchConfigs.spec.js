@@ -1,12 +1,10 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 
+import { jest } from '@jest/globals'
 import normalize from 'normalize-path'
 
-import { execGit } from '../lib/execGit.js'
-import { loadConfig } from '../lib/loadConfig.js'
-import { ConfigObjectSymbol, searchConfigs } from '../lib/searchConfigs.js'
-
-jest.mock('../lib/resolveConfig', () => ({
+jest.unstable_mockModule('../lib/resolveConfig.js', () => ({
   /** Unfortunately necessary due to non-ESM tests. */
   resolveConfig: (configPath) => {
     try {
@@ -17,24 +15,27 @@ jest.mock('../lib/resolveConfig', () => ({
   },
 }))
 
-jest.mock('../lib/execGit.js', () => ({
+jest.unstable_mockModule('../lib/execGit.js', () => ({
   execGit: jest.fn(async () => {
     /** Mock fails by default */
     return ''
   }),
 }))
 
-jest.mock('../lib/loadConfig.js', () => {
-  const { searchPlaces } = jest.requireActual('../lib/loadConfig.js')
+jest.unstable_mockModule('../lib/loadConfig.js', () => ({
+  loadConfig: jest.fn(async () => {
+    /** Mock fails by default */
+    return {}
+  }),
+}))
 
-  return {
-    searchPlaces,
-    loadConfig: jest.fn(async () => {
-      /** Mock fails by default */
-      return {}
-    }),
-  }
-})
+const { execGit } = await import('../lib/execGit.js')
+const { loadConfig } = await import('../lib/loadConfig.js')
+const { searchConfigs } = await import('../lib/searchConfigs.js')
+const { ConfigObjectSymbol } = await import('../lib/symbols.js')
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 describe('searchConfigs', () => {
   afterEach(() => {
