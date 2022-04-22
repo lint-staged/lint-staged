@@ -24,13 +24,14 @@ jest.unstable_mockModule('../lib/resolveGitRepo.js', () => ({
 
 const { default: lintStaged } = await import('../lib/index.js')
 
-describe.skip('lintStaged', () => {
+describe('lintStaged', () => {
   afterEach(() => {
     Listr.mockClear()
   })
 
   it('should pass quiet flag to Listr', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
+
     await lintStaged(
       { configPath: path.join(__dirname, 'fixtures', 'my-config.json'), quiet: true },
       makeConsoleMock()
@@ -45,7 +46,7 @@ describe.skip('lintStaged', () => {
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": true,
-          "shouldBackup": true,
+          "shouldBackup": false,
         },
         "exitOnError": false,
         "nonTTYRenderer": "silent",
@@ -57,6 +58,7 @@ describe.skip('lintStaged', () => {
 
   it('should pass debug flag to Listr', async () => {
     expect.assertions(1)
+
     await lintStaged(
       {
         configPath: MOCK_CONFIG_FILE,
@@ -72,7 +74,7 @@ describe.skip('lintStaged', () => {
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": false,
-          "shouldBackup": true,
+          "shouldBackup": false,
         },
         "exitOnError": false,
         "nonTTYRenderer": "verbose",
@@ -83,18 +85,16 @@ describe.skip('lintStaged', () => {
   })
 
   it('should catch errors from js function config', async () => {
-    const logger = makeConsoleMock()
     const config = {
       '*': () => {
         throw new Error('failed config')
       },
     }
 
-    expect.assertions(2)
-    await expect(lintStaged({ config }, logger)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"failed config"`
-    )
+    expect.assertions(1)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+    await expect(
+      lintStaged({ config }, makeConsoleMock())
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"failed config"`)
   })
 })
