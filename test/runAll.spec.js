@@ -4,6 +4,8 @@ import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 import normalize from 'normalize-path'
 
+import { ConfigObjectSymbol } from '../lib/symbols.js'
+
 import { createExecaReturnValue } from './utils/createExecaReturnValue.js'
 import { mockExeca } from './utils/mockExeca.js'
 
@@ -13,15 +15,17 @@ jest.unstable_mockModule('../lib/getStagedFiles.js', () => ({
   getStagedFiles: jest.fn(async () => []),
 }))
 
+const mockGitWorkflow = {
+  prepare: jest.fn(() => Promise.resolve()),
+  hideUnstagedChanges: jest.fn(() => Promise.resolve()),
+  applyModifications: jest.fn(() => Promise.resolve()),
+  restoreUnstagedChanges: jest.fn(() => Promise.resolve()),
+  restoreOriginalState: jest.fn(() => Promise.resolve()),
+  cleanup: jest.fn(() => Promise.resolve()),
+}
+
 jest.unstable_mockModule('../lib/gitWorkflow.js', () => ({
-  GitWorkflow: jest.fn(() => ({
-    prepare: jest.fn(() => Promise.resolve()),
-    hideUnstagedChanges: jest.fn(() => Promise.resolve()),
-    applyModifications: jest.fn(() => Promise.resolve()),
-    restoreUnstagedChanges: jest.fn(() => Promise.resolve()),
-    restoreOriginalState: jest.fn(() => Promise.resolve()),
-    cleanup: jest.fn(() => Promise.resolve()),
-  })),
+  GitWorkflow: jest.fn(() => mockGitWorkflow),
 }))
 
 jest.unstable_mockModule('../lib/resolveGitRepo.js', () => ({
@@ -41,9 +45,7 @@ const { runAll } = await import('../lib/runAll.js')
 const { searchConfigs } = await import('../lib/searchConfigs.js')
 const { ConfigNotFoundError, GitError } = await import('../lib/symbols.js')
 
-const configPath = '.lintstagedrc.json'
-
-describe.skip('runAll', () => {
+describe('runAll', () => {
   const globalConsoleTemp = console
 
   beforeAll(() => {
@@ -60,7 +62,8 @@ describe.skip('runAll', () => {
 
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
-    await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
+
+    await expect(runAll({})).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
               "hasPartiallyStagedFiles": null,
@@ -75,39 +78,16 @@ describe.skip('runAll', () => {
 
   it('should throw when failed to find staged files', async () => {
     expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => null)
-    await expect(
-      runAll({ configObject: {}, configPath })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
-  })
 
-  it('should throw when failed to find staged files and quiet', async () => {
-    expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => null)
-    await expect(
-      runAll({ configObject: {}, configPath, quiet: true })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
-  })
 
-  it('should print output when no staged files', async () => {
-    expect.assertions(1)
-    await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
-            Object {
-              "errors": Set {},
-              "hasPartiallyStagedFiles": null,
-              "output": Array [
-                "→ No staged files found.",
-              ],
-              "quiet": false,
-              "shouldBackup": true,
-            }
-          `)
+    await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
   })
 
   it('should not print output when no staged files and quiet', async () => {
     expect.assertions(1)
-    await expect(runAll({ configObject: {}, configPath, quiet: true })).resolves
-      .toMatchInlineSnapshot(`
+
+    await expect(runAll({ quiet: true })).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
               "hasPartiallyStagedFiles": null,
@@ -118,30 +98,28 @@ describe.skip('runAll', () => {
           `)
   })
 
-  it('should resolve the promise with no files', async () => {
-    expect.assertions(1)
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
-    expect(console.printHistory()).toMatchInlineSnapshot(`""`)
-  })
-
-  it('should use an injected logger', async () => {
-    expect.assertions(1)
-    const logger = makeConsoleMock()
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath, debug: true }, logger)
-    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
-  })
-
   it('should exit without output when no staged files match configured tasks and quiet', async () => {
     expect.assertions(1)
+
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ configObject: { '*.css': ['echo "sample"'] }, configPath, quiet: true })
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.css': 'echo "sample"' },
+    }))
+
+    await runAll({}).catch(() => {})
+
     expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
+
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.js': 'echo "sample"' },
+    }))
+
+    await runAll({})
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
       LOG [STARTED] Preparing lint-staged...
@@ -163,18 +141,18 @@ describe.skip('runAll', () => {
 
   it('should skip tasks if previous git error', async () => {
     expect.assertions(2)
+
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    GitWorkflow.mockImplementationOnce(() => ({
-      ...jest.requireActual('../lib/gitWorkflow'),
-      prepare: (ctx) => {
-        ctx.errors.add(GitError)
-        throw new Error('test')
-      },
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.js': 'echo "sample"' },
     }))
 
-    await expect(
-      runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
+    mockGitWorkflow.prepare.mockImplementationOnce((ctx) => {
+      ctx.errors.add(GitError)
+      throw new Error('test')
+    })
+
+    await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
@@ -193,7 +171,12 @@ describe.skip('runAll', () => {
 
   it('should skip applying unstaged modifications if there are errors during linting', async () => {
     expect.assertions(2)
+
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.js': 'echo "sample"' },
+    }))
+
     execa.mockImplementation(() =>
       createExecaReturnValue({
         stdout: '',
@@ -204,9 +187,7 @@ describe.skip('runAll', () => {
       })
     )
 
-    await expect(
-      runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
+    await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
@@ -230,7 +211,12 @@ describe.skip('runAll', () => {
 
   it('should skip tasks and restore state if terminated', async () => {
     expect.assertions(2)
+
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.js': 'echo "sample"' },
+    }))
+
     execa.mockImplementation(() =>
       createExecaReturnValue({
         stdout: '',
@@ -243,9 +229,7 @@ describe.skip('runAll', () => {
       })
     )
 
-    await expect(
-      runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
+    await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
     expect(console.printHistory()).toMatchInlineSnapshot(`
       "
@@ -278,6 +262,10 @@ describe.skip('runAll', () => {
 
     const mockTask = jest.fn(() => ['echo "sample"'])
 
+    searchConfigs.mockImplementationOnce(async () => ({
+      [ConfigObjectSymbol]: { '*.js': mockTask },
+    }))
+
     // actual cwd
     const cwd = process.cwd()
     // For the test, set cwd in test/
@@ -287,8 +275,6 @@ describe.skip('runAll', () => {
     // This means the sample task will receive `foo.js`
     await expect(
       runAll({
-        configObject: { '*.js': mockTask },
-        configPath,
         stash: false,
         relative: true,
         cwd: innerCwd,
@@ -298,6 +284,7 @@ describe.skip('runAll', () => {
     // task received relative `foo.js`
     expect(mockTask).toHaveBeenCalledTimes(1)
     expect(mockTask).toHaveBeenCalledWith(['foo.js'])
+
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([[normalize(path.join(cwd, 'test/foo.js'))]])
