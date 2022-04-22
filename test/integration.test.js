@@ -1232,6 +1232,22 @@ describe('lint-staged', () => {
     expect(await readFile('a/very/deep/file/path/file.js')).toEqual('')
   })
 
+  it('should work with symlinked config file', async () => {
+    await appendFile('test.js', testJsFileUgly)
+
+    await writeFile('.config/.lintstagedrc.json', JSON.stringify(fixJsConfig.config))
+    await fs.ensureSymlink(
+      path.join(cwd, '.config/.lintstagedrc.json'),
+      path.join(cwd, '.lintstagedrc.json')
+    )
+
+    await execGit(['add', '.'])
+
+    await gitCommit()
+
+    expect(await readFile('test.js')).toEqual(testJsFilePretty) // file was fixed
+  })
+
   it('should support parent globs', async () => {
     // Add some empty files
     await writeFile('file.js', '')

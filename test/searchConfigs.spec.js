@@ -78,17 +78,18 @@ describe('searchConfigs', () => {
   })
 
   it('should return config found from git', async () => {
-    const configPath = '.lintstagedrc.json'
+    const configFile = '.lintstagedrc.json'
+    const configPath = normalize(path.join(process.cwd(), configFile))
     const config = { '*.js': 'eslint' }
 
-    execGit.mockResolvedValueOnce(`${configPath}\u0000`)
+    execGit.mockResolvedValueOnce(`${configFile}\u0000`)
     loadConfig.mockResolvedValueOnce({ config, filepath: configPath })
 
     await expect(searchConfigs({})).resolves.toEqual({ [configPath]: config })
   })
 
   it('should return auto-discovered config from cwd when not found from git', async () => {
-    const configPath = '.lintstagedrc.json'
+    const configPath = normalize(path.join(process.cwd(), '.lintstagedrc.json'))
     const config = { '*.js': 'eslint' }
 
     loadConfig.mockResolvedValueOnce({ config, filepath: configPath })
