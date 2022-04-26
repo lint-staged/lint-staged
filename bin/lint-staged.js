@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import cmdline from 'commander'
+import { Option, program } from 'commander'
 import debug from 'debug'
 import supportsColor from 'supports-color'
 
@@ -23,50 +23,75 @@ const packageJsonPath = path.join(fileURLToPath(import.meta.url), '../../package
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
 const version = packageJson.version
 
-cmdline
-  .version(version)
-  .option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
-  .option(
-    '-p, --concurrent <number|boolean>',
-    'the number of tasks to run concurrently, or false for serial',
-    true
-  )
-  .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
-  .option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
-  .option('-d, --debug', 'print additional debug information', false)
-  .option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
-  .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
-  .option('-q, --quiet', 'disable lint-staged’s own console output', false)
-  .option('-r, --relative', 'pass relative filepaths to tasks', false)
-  .option('-x, --shell [path]', 'skip parsing of tasks for better shell support', false)
-  .option(
-    '-v, --verbose',
-    'show task output even when tasks succeed; by default only failed output is shown',
-    false
-  )
-  .parse(process.argv)
-
-const cmdlineOptions = cmdline.opts()
-
-if (cmdlineOptions.debug) {
-  debug.enable('lint-staged*')
-}
-
 const debugLog = debug('lint-staged:bin')
 debugLog('Running `lint-staged@%s`', version)
 
+const cli = program.version(version)
+
+cli.option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
+
+cli.option(
+  '-p, --concurrent <number|boolean>',
+  'the number of tasks to run concurrently, or false for serial',
+  true
+)
+
+cli.option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
+
+cli.option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
+
+cli.option('-d, --debug', 'print additional debug information', false)
+
+cli.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
+
+/**
+ * We don't want to show the `--stash` flag because it's on by default, and only show the
+ * negatable flag `--no-stash` in stead. There seems to be a bug in Commander.js where
+ * configuring only the latter won't actually set the default value.
+ */
+cli
+  .addOption(
+    new Option('--stash', 'enable the backup stash, and revert in case of errors')
+      .default(true)
+      .hideHelp()
+  )
+  .addOption(
+    new Option(
+      '--no-stash',
+      'disable the backup stash, and do not revert in case of errors'
+    ).default(false)
+  )
+
+cli.option('-q, --quiet', 'disable lint-staged’s own console output', false)
+
+cli.option('-r, --relative', 'pass relative filepaths to tasks', false)
+
+cli.option('-x, --shell [path]', 'skip parsing of tasks for better shell support', false)
+
+cli.option(
+  '-v, --verbose',
+  'show task output even when tasks succeed; by default only failed output is shown',
+  false
+)
+
+const cliOptions = cli.parse(process.argv).opts()
+
+if (cliOptions.debug) {
+  debug.enable('lint-staged*')
+}
+
 const options = {
-  allowEmpty: !!cmdlineOptions.allowEmpty,
-  concurrent: JSON.parse(cmdlineOptions.concurrent),
-  configPath: cmdlineOptions.config,
-  cwd: cmdlineOptions.cwd,
-  debug: !!cmdlineOptions.debug,
-  maxArgLength: cmdlineOptions.maxArgLength || undefined,
-  quiet: !!cmdlineOptions.quiet,
-  relative: !!cmdlineOptions.relative,
-  shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
-  stash: !!cmdlineOptions.stash, // commander inverts `no-<x>` flags to `!x`
-  verbose: !!cmdlineOptions.verbose,
+  allowEmpty: !!cliOptions.allowEmpty,
+  concurrent: JSON.parse(cliOptions.concurrent),
+  configPath: cliOptions.config,
+  cwd: cliOptions.cwd,
+  debug: !!cliOptions.debug,
+  maxArgLength: cliOptions.maxArgLength || undefined,
+  quiet: !!cliOptions.quiet,
+  relative: !!cliOptions.relative,
+  shell: cliOptions.shell /* Either a boolean or a string pointing to the shell */,
+  stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
+  verbose: !!cliOptions.verbose,
 }
 
 debugLog('Options parsed from command-line:', options)
