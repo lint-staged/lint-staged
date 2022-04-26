@@ -34,7 +34,7 @@
   "dependencies": {
     "cli-truncate": "^3.1.0",
     "colorette": "^2.0.16",
-    "commander": "^8.3.0",
+    "commander": "^9.2.0",
     "debug": "^4.3.3",
     "execa": "^5.1.1",
     "lilconfig": "2.0.4",
