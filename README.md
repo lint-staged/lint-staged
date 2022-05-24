@@ -594,7 +594,7 @@ const success = await lintStaged({
   maxArgLength: null,
   quiet: false,
   relative: false,
-  shell: false
+  shell: false,
   stash: true,
   verbose: false
 })
