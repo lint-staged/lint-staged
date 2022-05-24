@@ -34,7 +34,7 @@ cmdline
   .option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
   .option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
   .option('-d, --debug', 'print additional debug information', false)
-  .option('--max-arg-length', 'maximum length of the command-line argument string')
+  .option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
   .option('--no-stash', 'disable the backup stash, and do not revert in case of errors', false)
   .option('-q, --quiet', 'disable lint-staged’s own console output', false)
   .option('-r, --relative', 'pass relative filepaths to tasks', false)
@@ -61,7 +61,7 @@ const options = {
   configPath: cmdlineOptions.config,
   cwd: cmdlineOptions.cwd,
   debug: !!cmdlineOptions.debug,
-  maxArgLength: JSON.parse(cmdlineOptions.maxArgLength || null),
+  maxArgLength: cmdlineOptions.maxArgLength || undefined,
   quiet: !!cmdlineOptions.quiet,
   relative: !!cmdlineOptions.relative,
   shell: cmdlineOptions.shell /* Either a boolean or a string pointing to the shell */,
