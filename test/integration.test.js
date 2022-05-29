@@ -1309,6 +1309,32 @@ describe('lint-staged', () => {
     // File outside deeper/ was not fixed
     expect(await readFile('file.js')).toEqual(testJsFileUgly)
   })
+
+  it('should support overriding file list using --diff', async () => {
+    // Commit ugly file
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+    await execGit(['commit', '-m', 'ugly'], { cwd })
+
+    const hashes = (await execGit(['log', '--format=format:%H'])).trim().split('\n')
+    expect(hashes).toHaveLength(2)
+
+    // Run lint-staged with `--diff` between the two commits.
+    // Nothing is staged at this point, so don't rung `gitCommit`
+    const passed = await lintStaged({
+      config: { '*.js': 'prettier --list-different' },
+      cwd,
+      debug: true,
+      diff: `${hashes[1]}...${hashes[0]}`,
+      stash: false,
+    })
+
+    // Lint-staged failed because commit diff contains ugly file
+    expect(passed).toEqual(false)
+
+    expect(console.printHistory()).toMatch('prettier --list-different:')
+    expect(console.printHistory()).toMatch('test.js')
+  })
 })
 
 describe('lintStaged', () => {

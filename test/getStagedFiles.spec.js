@@ -11,11 +11,20 @@ jest.mock('../lib/execGit')
 const normalizePath = (input) => normalize(path.resolve('/', input))
 
 describe('getStagedFiles', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should return array of file names', async () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles({ cwd: '/' })
     // Windows filepaths
     expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+
+    expect(execGit).toHaveBeenLastCalledWith(
+      ['diff', '--diff-filter=ACMR', '--name-only', '-z', '--staged'],
+      { cwd: '/' }
+    )
   })
 
   it('should return empty array when no staged files', async () => {
@@ -30,5 +39,29 @@ describe('getStagedFiles', () => {
     })
     const staged = await getStagedFiles({})
     expect(staged).toEqual(null)
+  })
+
+  it('should support overriding diff trees with ...', async () => {
+    execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
+    const staged = await getStagedFiles({ cwd: '/', diff: 'master...my-branch' })
+    // Windows filepaths
+    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+
+    expect(execGit).toHaveBeenLastCalledWith(
+      ['diff', '--diff-filter=ACMR', '--name-only', '-z', 'master...my-branch'],
+      { cwd: '/' }
+    )
+  })
+
+  it('should support overriding diff trees with multiple args', async () => {
+    execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
+    const staged = await getStagedFiles({ cwd: '/', diff: 'master my-branch' })
+    // Windows filepaths
+    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+
+    expect(execGit).toHaveBeenLastCalledWith(
+      ['diff', '--diff-filter=ACMR', '--name-only', '-z', 'master', 'my-branch'],
+      { cwd: '/' }
+    )
   })
 })
