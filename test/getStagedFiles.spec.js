@@ -22,7 +22,7 @@ describe('getStagedFiles', () => {
     expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
-      ['diff', '--diff-filter=ACMR', '--name-only', '-z', '--staged'],
+      ['diff', '--name-only', '-z', '--diff-filter=ACMR', '--staged'],
       { cwd: '/' }
     )
   })
@@ -48,7 +48,7 @@ describe('getStagedFiles', () => {
     expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
-      ['diff', '--diff-filter=ACMR', '--name-only', '-z', 'master...my-branch'],
+      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master...my-branch'],
       { cwd: '/' }
     )
   })
@@ -60,7 +60,19 @@ describe('getStagedFiles', () => {
     expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
-      ['diff', '--diff-filter=ACMR', '--name-only', '-z', 'master', 'my-branch'],
+      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master', 'my-branch'],
+      { cwd: '/' }
+    )
+  })
+
+  it('should support overriding diff-filter', async () => {
+    execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
+    const staged = await getStagedFiles({ cwd: '/', diffFilter: 'ACDMRTUXB' })
+    // Windows filepaths
+    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+
+    expect(execGit).toHaveBeenLastCalledWith(
+      ['diff', '--name-only', '-z', '--diff-filter=ACDMRTUXB', '--staged'],
       { cwd: '/' }
     )
   })

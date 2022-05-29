@@ -47,6 +47,11 @@ cli.option(
   'override the default "--staged" flag of "git diff" to get list of files'
 )
 
+cli.option(
+  '--diff-filter [string]',
+  'override the default "--diff-filter=ACMR" flag of "git diff" to get list of files'
+)
+
 cli.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
 
 /**
@@ -92,6 +97,7 @@ const options = {
   cwd: cliOptions.cwd,
   debug: !!cliOptions.debug,
   diff: cliOptions.diff,
+  diffFilter: cliOptions.diffFilter,
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
