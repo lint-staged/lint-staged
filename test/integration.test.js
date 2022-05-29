@@ -1335,6 +1335,25 @@ describe('lint-staged', () => {
     expect(console.printHistory()).toMatch('prettier --list-different:')
     expect(console.printHistory()).toMatch('test.js')
   })
+
+  it('should support overriding default --diff-filter', async () => {
+    // Stage ugly file
+    await appendFile('test.js', testJsFileUgly)
+    await execGit(['add', 'test.js'])
+
+    // Run lint-staged with `--diff-filter=D` to include only deleted files.
+    const passed = await lintStaged({
+      config: { '*.js': 'prettier --list-different' },
+      cwd,
+      diffFilter: 'D',
+      stash: false,
+    })
+
+    // Lint-staged passed because no matching (deleted) files
+    expect(passed).toEqual(true)
+
+    expect(console.printHistory()).toMatch('No staged files found')
+  })
 })
 
 describe('lintStaged', () => {
