@@ -42,6 +42,11 @@ cli.option('--cwd [path]', 'run all tasks in specific directory, instead of the 
 
 cli.option('-d, --debug', 'print additional debug information', false)
 
+cli.option(
+  '--diff [string]',
+  'override the default "--staged" flag of "git diff" to get list of files'
+)
+
 cli.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
 
 /**
@@ -86,6 +91,7 @@ const options = {
   configPath: cliOptions.config,
   cwd: cliOptions.cwd,
   debug: !!cliOptions.debug,
+  diff: cliOptions.diff,
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,

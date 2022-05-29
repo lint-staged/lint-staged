@@ -92,6 +92,8 @@ Options:
   -c, --config [path]                path to configuration file, or - to read from stdin
   --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
+  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files
+  --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
   --no-stash                         disable the backup stash, and do not revert in case of errors
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
@@ -111,6 +113,8 @@ Options:
 - **`--debug`**: Run in debug mode. When set, it does the following:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://github.com/SamVerschueren/listr-verbose-renderer) for `listr`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
+- **`--diff`**: By default linters are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [`git diff`](https://git-scm.com/docs/git-diff) and [`gitrevisions`](https://git-scm.com/docs/gitrevisions).
+- **`--max-arg-length`**: long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
@@ -596,7 +600,7 @@ const success = await lintStaged({
   relative: false,
   shell: false,
   stash: true,
-  verbose: false
+  verbose: false,
 })
 ```
 
@@ -710,6 +714,30 @@ In certain project setups, it might be desirable to bypass this restriction. See
 Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
 
 Example repo: [sudo-suhas/lint-staged-django-react-demo](https://github.com/sudo-suhas/lint-staged-django-react-demo).
+
+</details>
+
+### Can I run `lint-staged` in CI, or when there are no staged files?
+
+<details>
+  <summary>Click to expand</summary>
+
+Lint-staged will by default run against files staged in git, and should be run during the git pre-commit hook, for example. It's also possible to override this default behaviour and run against files in a specific diff, for example
+all changed files between two different branches. If you want to run _lint-staged_ in the CI, maybe you can set it up to compare the branch in a _Pull Request_/_Merge Request_ to the target branch.
+
+Try out the `git diff` command until you are satisfied with the result, for example:
+
+```
+git diff --diff-filter=ACMR --name-only master...my-branch
+```
+
+This will print a list of _added_, _changed_, _modified_, and _renamed_ files between `master` and `my-branch`.
+
+You can then run lint-staged against the same files with:
+
+```
+npx lint-staged --diff="master...my-branch"
+```
 
 </details>
 
