@@ -36,7 +36,7 @@
     "colorette": "^2.0.16",
     "commander": "^9.3.0",
     "debug": "^4.3.4",
-    "execa": "^5.1.1",
+    "execa": "^6.1.0",
     "lilconfig": "2.0.5",
     "listr2": "^4.0.5",
     "micromatch": "^4.0.5",
