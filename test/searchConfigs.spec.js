@@ -4,7 +4,7 @@ import normalize from 'normalize-path'
 
 import { execGit } from '../lib/execGit.js'
 import { loadConfig } from '../lib/loadConfig.js'
-import { ConfigObjectSymbol, searchConfigs } from '../lib/searchConfigs.js'
+import { searchConfigs } from '../lib/searchConfigs.js'
 
 jest.mock('../lib/resolveConfig', () => ({
   /** Unfortunately necessary due to non-ESM tests. */
@@ -47,7 +47,7 @@ describe('searchConfigs', () => {
 
   it('should return config for valid config object', async () => {
     await expect(searchConfigs({ configObject: { '*.js': 'eslint' } })).resolves.toEqual({
-      [ConfigObjectSymbol]: { '*.js': 'eslint' },
+      '': { '*.js': 'eslint' },
     })
   })
 
