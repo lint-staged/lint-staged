@@ -64,6 +64,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v13
+
+- Since `v13.0.0` _lint-staged_ no longer supports Node.js 12. Please upgrade your Node.js version to at least `14.13.1`, or `16.0.0` onward.
+
 #### v12
 
 - Since `v12.0.0` _lint-staged_ is a pure ESM module, so make sure your Node.js version is at least `12.20.0`, `14.13.1`, or `16.0.0`. Read more about ESM modules from the official [Node.js Documentation site here](https://nodejs.org/api/esm.html#introduction).
