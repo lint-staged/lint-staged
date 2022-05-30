@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { Option, program } from 'commander'
 import debug from 'debug'
