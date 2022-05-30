@@ -44,7 +44,7 @@ cli.option('-d, --debug', 'print additional debug information', false)
 
 cli.option(
   '--diff [string]',
-  'override the default "--staged" flag of "git diff" to get list of files'
+  'override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash".'
 )
 
 cli.option(
