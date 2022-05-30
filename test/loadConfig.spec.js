@@ -21,7 +21,7 @@ jest.unmock('execa')
  * This converts paths into `file://` urls, but this doesn't
  * work with `import()` when using babel + jest.
  */
-jest.mock('url', () => ({
+jest.mock('node:url', () => ({
   pathToFileURL: (path) => path,
 }))
 
