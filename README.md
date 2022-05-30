@@ -92,7 +92,8 @@ Options:
   -c, --config [path]                path to configuration file, or - to read from stdin
   --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
-  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files
+  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
+                                     "--no-stash".
   --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
   --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
   --no-stash                         disable the backup stash, and do not revert in case of errors

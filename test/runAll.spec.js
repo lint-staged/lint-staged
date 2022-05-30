@@ -45,6 +45,7 @@ describe('runAll', () => {
 
   beforeAll(() => {
     console = makeConsoleMock()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
@@ -371,5 +372,15 @@ describe('runAll', () => {
     } catch ({ ctx }) {
       expect(ctx.errors.has(ConfigNotFoundError)).toBe(true)
     }
+  })
+
+  it('should warn when --no-stash was used', async () => {
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false })
+    expect(console.printHistory()).toMatch('Skipping backup because `--no-stash` was used')
+  })
+
+  it('should warn when --diff was used', async () => {
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, diff: 'branch1...branch2' })
+    expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used')
   })
 })
