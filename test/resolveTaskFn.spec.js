@@ -1,4 +1,4 @@
-import execa from 'execa'
+import { execa } from 'execa'
 import pidTree from 'pidtree'
 
 import { resolveTaskFn } from '../lib/resolveTaskFn'

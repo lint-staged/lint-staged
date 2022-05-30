@@ -1,6 +1,6 @@
 import { createExecaReturnValue } from '../utils/createExecaReturnValue'
 
-const execa = jest.fn(() =>
+export const execa = jest.fn(() =>
   createExecaReturnValue({
     stdout: 'a-ok',
     stderr: '',
@@ -12,6 +12,4 @@ const execa = jest.fn(() =>
   })
 )
 
-execa.command = execa
-
-module.exports = execa
+export const execaCommand = execa

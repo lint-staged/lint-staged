@@ -1,7 +1,7 @@
 import path from 'path'
 
 import makeConsoleMock from 'consolemock'
-import execa from 'execa'
+import { execa } from 'execa'
 import normalize from 'normalize-path'
 
 import { getStagedFiles } from '../lib/getStagedFiles'
