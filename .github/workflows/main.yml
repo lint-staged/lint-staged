@@ -39,6 +39,8 @@ jobs:
 
   test:
     strategy:
+      # Do not cancel other test suites when one fails
+      fail-fast: false
       matrix:
         # Test with Node.js v14 (LTS), v16 (LTS), and 18 (Current)
         node:
