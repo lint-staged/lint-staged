@@ -53,7 +53,7 @@
     "babel-jest": "^28.1.0",
     "babel-plugin-transform-imports": "2.0.0",
     "consolemock": "^1.1.0",
-    "eslint": "^8.16.0",
+    "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
