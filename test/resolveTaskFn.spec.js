@@ -237,6 +237,12 @@ describe('resolveTaskFn', () => {
     expect(context).toMatchInlineSnapshot(`
       Object {
         "errors": Set {},
+        "events": EventEmitter {
+          "_events": Object {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
         "hasPartiallyStagedFiles": null,
         "output": Array [],
         "quiet": false,
@@ -263,6 +269,12 @@ describe('resolveTaskFn', () => {
     expect(context).toMatchInlineSnapshot(`
       Object {
         "errors": Set {},
+        "events": EventEmitter {
+          "_events": Object {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
         "hasPartiallyStagedFiles": null,
         "output": Array [
           "
@@ -295,6 +307,12 @@ describe('resolveTaskFn', () => {
         "errors": Set {
           Symbol(TaskError),
         },
+        "events": EventEmitter {
+          "_events": Object {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
         "hasPartiallyStagedFiles": null,
         "output": Array [
           "stderr",
@@ -324,6 +342,12 @@ describe('resolveTaskFn', () => {
       Object {
         "errors": Set {
           Symbol(TaskError),
+        },
+        "events": EventEmitter {
+          "_events": Object {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
         "output": Array [],
@@ -358,7 +382,38 @@ describe('resolveTaskFn', () => {
     await expect(taskPromise).resolves.toEqual()
   })
 
-  it('should kill a long running task when an error is added to the context', async () => {
+  it('should ignore pid-tree errors', async () => {
+    execa.mockImplementationOnce(() =>
+      createExecaReturnValue(
+        {
+          stdout: 'a-ok',
+          stderr: '',
+          code: 0,
+          cmd: 'mock cmd',
+          failed: false,
+          killed: false,
+          signal: null,
+        },
+        1000
+      )
+    )
+
+    pidTree.mockImplementationOnce(() => {
+      throw new Error('No matching pid found')
+    })
+
+    const context = getInitialState()
+    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskPromise = taskFn(context)
+
+    context.events.emit('lint-staged:taskError')
+
+    jest.runAllTimers()
+
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+  })
+
+  it('should kill a long running task when error event is emitted', async () => {
     execa.mockImplementationOnce(() =>
       createExecaReturnValue(
         {
@@ -378,7 +433,7 @@ describe('resolveTaskFn', () => {
     const taskFn = resolveTaskFn({ command: 'node' })
     const taskPromise = taskFn(context)
 
-    context.errors.add({})
+    context.events.emit('lint-staged:taskError')
 
     jest.runAllTimers()
 
@@ -416,7 +471,8 @@ describe('resolveTaskFn', () => {
     const context = getInitialState()
     const taskPromise = taskFn(context)
 
-    context.errors.add({})
+    context.events.emit('lint-staged:taskError')
+
     jest.runAllTimers()
 
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)

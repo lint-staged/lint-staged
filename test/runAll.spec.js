@@ -61,6 +61,12 @@ describe('runAll', () => {
     await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
+              "events": EventEmitter {
+                "_events": Object {},
+                "_eventsCount": 0,
+                "_maxListeners": undefined,
+                Symbol(kCapture): false,
+              },
               "hasPartiallyStagedFiles": null,
               "output": Array [
                 "→ No staged files found.",
@@ -92,6 +98,12 @@ describe('runAll', () => {
     await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
+              "events": EventEmitter {
+                "_events": Object {},
+                "_eventsCount": 0,
+                "_maxListeners": undefined,
+                Symbol(kCapture): false,
+              },
               "hasPartiallyStagedFiles": null,
               "output": Array [
                 "→ No staged files found.",
@@ -108,6 +120,12 @@ describe('runAll', () => {
       .toMatchInlineSnapshot(`
             Object {
               "errors": Set {},
+              "events": EventEmitter {
+                "_events": Object {},
+                "_eventsCount": 0,
+                "_maxListeners": undefined,
+                Symbol(kCapture): false,
+              },
               "hasPartiallyStagedFiles": null,
               "output": Array [],
               "quiet": true,

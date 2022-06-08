@@ -70,6 +70,12 @@ describe('gitWorkflow', () => {
           "errors": Set {
             Symbol(GitError),
           },
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
+          },
           "hasPartiallyStagedFiles": true,
           "output": Array [],
           "quiet": false,
@@ -94,6 +100,12 @@ describe('gitWorkflow', () => {
           "errors": Set {
             Symbol(GetBackupStashError),
             Symbol(GitError),
+          },
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
           },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
@@ -157,6 +169,12 @@ describe('gitWorkflow', () => {
             Symbol(GitError),
             Symbol(HideUnstagedChangesError),
           },
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
+          },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": false,
@@ -201,6 +219,12 @@ describe('gitWorkflow', () => {
           "errors": Set {
             Symbol(GitError),
             Symbol(RestoreMergeStatusError),
+          },
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
           },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
