@@ -43,6 +43,12 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
+          },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": true,
@@ -70,6 +76,12 @@ describe('lintStaged', () => {
       Object {
         "ctx": Object {
           "errors": Set {},
+          "events": EventEmitter {
+            "_events": Object {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(kCapture): false,
+          },
           "hasPartiallyStagedFiles": null,
           "output": Array [],
           "quiet": false,
