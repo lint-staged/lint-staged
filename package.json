@@ -42,7 +42,7 @@
     "micromatch": "^4.0.5",
     "normalize-path": "^3.0.0",
     "object-inspect": "^1.12.2",
-    "pidtree": "^0.5.0",
+    "pidtree": "^0.6.0",
     "string-argv": "^0.3.1",
     "yaml": "^2.1.1"
   },
