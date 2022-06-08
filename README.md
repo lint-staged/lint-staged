@@ -118,7 +118,7 @@ Options:
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--concurrent [number|boolean]`**: Controls the concurrency of tasks being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
+- **`--concurrent [number|boolean]`**: Controls the [concurrency of tasks](#task-concurrency) being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
   - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
@@ -180,6 +180,37 @@ This config will execute `your-cmd` with the list of currently staged files pass
 So, considering you did `git add file1.ext file2.ext`, lint-staged will run the following command:
 
 `your-cmd file1.ext file2.ext`
+
+### Task concurrency
+
+By default _lint-staged_ will run configured tasks concurrently. This means that for every glob, all the commands will be started at the same time. With the following config, both `eslint` and `prettier` will run at the same time:
+
+```json
+{
+  "*.ts": "eslint",
+  "*.md": "prettier --list-different"
+}
+```
+
+This is typically not a problem since the globs do not overlap, and the commands do not make changes to the files, but only report possible errors (aborting the git commit). If you want to run multiple commands for the same set of files, you can use the array syntax to make sure commands are run in order. In the following example, `prettier` will run for both globs, and in addition `eslint` will run for `*.ts` files _after_ it. Both sets of commands (for each glob) are still started at the same time (but do not overlap).
+
+```json
+{
+  "*.ts": ["prettier --list-different", "eslint"],
+  "*.md": "prettier --list-different"
+}
+```
+
+Pay extra attention when the configured globs overlap, and tasks make edits to files. For example, in this configuration `prettier` and `eslint` might try to make changes to the same `*.ts` file at the same time, causing a _race condition_:
+
+```json
+{
+  "*": "prettier --write",
+  "*.ts": "eslint --fix"
+}
+```
+
+If necessary, you can limit the concurrency using `--concurrent <number>` or disable it entirely with `--concurrent false`.
 
 ## Filtering files
 
