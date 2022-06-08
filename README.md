@@ -2,6 +2,10 @@
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
+```bash
+npm install --save-dev lint-staged # requires further setup
+```
+
 ```
 $ git commit
 
@@ -44,13 +48,17 @@ This project contains a script that will run arbitrary shell tasks with a list o
 
 ## Installation and setup
 
-The fastest way to start using lint-staged is to run the following command in your terminal:
+To install _lint-staged_ in the recommended way, you need to:
 
-```bash
-npx mrm@2 lint-staged
-```
-
-This command will install and configure [husky](https://github.com/typicode/husky) and lint-staged depending on the code quality tools from your project's `package.json` dependencies, so please make sure you install (`npm install --save-dev`) and configure all code quality tools like [Prettier](https://prettier.io) and [ESLint](https://eslint.org) prior to that.
+1. Install _lint-staged_ itself:
+   - `npm install --save-dev lint-staged`
+1. Set up the `pre-commit` git hook to run _lint-staged_
+   - [Husky](https://github.com/typicode/husky) is a popular choice for configuring git hooks
+   - Read more about git hooks [here](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
+1. Install some linters, like [ESLint](https://eslint.org) or [Prettier](https://prettier.io)
+1. Configure _lint-staged_ to run linters and other tasks:
+   - for example: `{ "*.js": "eslint" }` to run ESLint for all staged JS files
+   - See [Configuration](#Configuration) for more info
 
 Don't forget to commit changes to `package.json` and `.husky` to share this setup with your team!
 
@@ -130,7 +138,7 @@ Options:
 
 ## Configuration
 
-Starting with v3.1 you can now use different ways of configuring lint-staged:
+_Lint-staged_ can be configured in many ways:
 
 - `lint-staged` object in your `package.json`
 - `.lintstagedrc` file in JSON or YML format, or you can be explicit with the file extension:
