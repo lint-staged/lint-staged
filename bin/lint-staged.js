@@ -4,15 +4,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { isColorSupported } from 'colorette'
 import { Option, program } from 'commander'
 import debug from 'debug'
 
-import lintStaged from '../lib/index.js'
-import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
+import { forceTty } from '../lib/forceTty.js'
 
-// Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-if (isColorSupported) {
+// Force `process.stdout` to be a TTY to support spinners
+const ttyHandle = await forceTty()
+if (ttyHandle) {
   process.env.FORCE_COLOR = '1'
 }
 
@@ -113,6 +112,8 @@ if (options.configPath === '-') {
   try {
     options.config = fs.readFileSync(process.stdin.fd, 'utf8').toString().trim()
   } catch {
+    // Lazy import so that `colorette` is not loaded before `forceTty`
+    const { CONFIG_STDIN_ERROR } = await import('../lib/messages.js')
     console.error(CONFIG_STDIN_ERROR)
     process.exit(1)
   }
@@ -124,10 +125,12 @@ if (options.configPath === '-') {
   }
 }
 
-lintStaged(options)
-  .then((passed) => {
-    process.exitCode = passed ? 0 : 1
-  })
-  .catch(() => {
-    process.exitCode = 1
-  })
+try {
+  const { default: lintStaged } = await import('../lib/index.js')
+  const passed = await lintStaged(options)
+  process.exitCode = passed ? 0 : 1
+} catch {
+  process.exitCode = 1
+} finally {
+  await ttyHandle?.close()
+}
