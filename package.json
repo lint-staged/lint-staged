@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "cli-truncate": "^3.1.0",
-    "colorette": "^2.0.17",
+    "colorette": "^2.0.19",
     "commander": "^9.3.0",
     "debug": "^4.3.4",
     "execa": "^6.1.0",
