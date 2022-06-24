@@ -55,7 +55,6 @@ describe('gitWorkflow', () => {
       const ctx = getInitialState()
 
       process.env.MSYSTEM = 'MSYS'
-      delete process.env.LOGINSHELL
 
       execGit.mockResolvedValueOnce(
         [
