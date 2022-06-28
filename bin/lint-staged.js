@@ -132,5 +132,7 @@ try {
 } catch {
   process.exitCode = 1
 } finally {
-  await ttyHandle?.close()
+  if (ttyHandle) {
+    fs.closeSync(ttyHandle)
+  }
 }
