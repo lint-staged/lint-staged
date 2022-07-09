@@ -78,6 +78,8 @@ cli.option('-r, --relative', 'pass relative filepaths to tasks', false)
 
 cli.option('-x, --shell [path]', 'skip parsing of tasks for better shell support', false)
 
+cli.option('--files <path...>', 'list of manual files for checks')
+
 cli.option(
   '-v, --verbose',
   'show task output even when tasks succeed; by default only failed output is shown',
@@ -104,6 +106,7 @@ const options = {
   shell: cliOptions.shell /* Either a boolean or a string pointing to the shell */,
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,
+  files: cliOptions.files,
 }
 
 debugLog('Options parsed from command-line:', options)
