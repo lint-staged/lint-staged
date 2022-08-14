@@ -613,6 +613,24 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 ## Frequently Asked Questions
 
+### The output of commit hook looks weird (no colors, duplicate lines, …)
+
+<details>
+  <summary>Click to expand</summary>
+
+Git 2.36.0 introduced a change to hooks where they were no longer run in the original TTY.
+This was fixed in 2.37.0:
+
+https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/2.37.0.txt
+
+> - In Git 2.36 we revamped the way how hooks are invoked. One change
+>   that is end-user visible is that the output of a hook is no longer
+>   directly connected to the standard output of "git" that spawns the
+>   hook, which was noticed post release. This is getting corrected.
+>   (merge [a082345372](https://github.com/git/git/commit/a082345372) ab/hooks-regression-fix later to maint).
+
+</details>
+
 ### Can I use `lint-staged` via node?
 
 <details>
