@@ -47,7 +47,7 @@
     "yaml": "^2.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.2",
+    "@babel/core": "^7.18.13",
     "@babel/eslint-parser": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "babel-jest": "^28.1.1",
