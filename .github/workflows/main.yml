@@ -16,6 +16,9 @@ on:
     branches:
       - "*"
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: ESLint
@@ -104,6 +107,8 @@ jobs:
       - uses: codecov/codecov-action@v2
 
   release:
+    permissions:
+      contents: write # for publishing release
     name: Release
     runs-on: ubuntu-latest
     needs:
