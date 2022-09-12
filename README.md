@@ -720,8 +720,10 @@ Install _lint-staged_ on the monorepo root level, and add separate configuration
 
 For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `packages/backend/.lintstagedrc.json`, a staged file inside `packages/frontend/` will only match that configuration, and not the one in `packages/backend/`.
 
-**Note**: _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
-
+**Note**: 
+- _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
+- If you use only separated configuration files for each packages and no global configuration in the `./package.json`. You do not need to add this line `"lint-staged": {}` to `./package.json` 
+  
 ```js
 // ./.lintstagedrc.json
 { "*.md": "prettier --write" }
