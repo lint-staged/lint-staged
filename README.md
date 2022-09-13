@@ -181,6 +181,9 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 `your-cmd file1.ext file2.ext`
 
+**Note**: 
+- If you use only separated configuration files for each packages and no global configuration in the `./package.json`. You do not need to add this line `"lint-staged": {}` to `./package.json`
+
 ### Task concurrency
 
 By default _lint-staged_ will run configured tasks concurrently. This means that for every glob, all the commands will be started at the same time. With the following config, both `eslint` and `prettier` will run at the same time:
@@ -722,7 +725,6 @@ For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `pack
 
 **Note**: 
 - _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
-- If you use only separated configuration files for each packages and no global configuration in the `./package.json`. You do not need to add this line `"lint-staged": {}` to `./package.json` 
   
 ```js
 // ./.lintstagedrc.json
