@@ -124,4 +124,25 @@ describe('makeCmdTasks', () => {
               Function task should return a string or an array of strings"
           `)
   })
+
+  it('should prevent function from mutating original file list', async () => {
+    const files = ['test.js']
+
+    const res = await makeCmdTasks({
+      commands: (stagedFiles) => {
+        /** Array.splice() mutates the array */
+        stagedFiles.splice(0, 1)
+        expect(stagedFiles).toEqual([])
+        return stagedFiles.map((file) => `test ${file}`)
+      },
+      gitDir,
+      files,
+    })
+
+    /** Because function mutated file list, it was empty and no tasks were created... */
+    expect(res.length).toBe(0)
+
+    /** ...but the original file list was not mutated */
+    expect(files).toEqual(['test.js'])
+  })
 })
