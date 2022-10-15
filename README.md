@@ -338,6 +338,20 @@ export default {
 
 </details>
 
+### Example: Run `tsc` on changes to TypeScript files with staged filename arguments
+
+<details>
+  <summary>Click to expand</summary>
+
+```js
+// lint-staged.config.js
+export default {
+  '**/*.ts?(x)': (filenames) => `tsc --noEmit ${filenames.join(' ')}`,
+}
+```
+
+</details>
+
 ### Example: Run ESLint on entire repo if more than 10 staged files
 
 <details>
