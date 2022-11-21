@@ -62,6 +62,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+      # Node.js 14 ships with npm@6, which has trouble installing latest versions of itself
+      - if: matrix.node == 14
+        run: npm install -g npm@8
+      # Install latest npm for older Node.js versions
+      - run: npm install -g npm
       # Install node_modules
       - uses: actions/cache@v3
         id: cache-node_modules
