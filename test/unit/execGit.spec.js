@@ -12,7 +12,7 @@ jest.mock('execa', () => ({
 
 test('GIT_GLOBAL_OPTIONS', () => {
   expect(GIT_GLOBAL_OPTIONS).toMatchInlineSnapshot(`
-    Array [
+    [
       "-c",
       "submodule.recurse=false",
     ]

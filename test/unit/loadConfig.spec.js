@@ -39,7 +39,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -54,7 +54,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -69,7 +69,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*.css": [Function],
         "*.js": [Function],
       }
@@ -85,7 +85,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*.css": [Function],
         "*.js": [Function],
       }
@@ -101,7 +101,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -120,7 +120,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -139,7 +139,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -156,7 +156,7 @@ describe('loadConfig', () => {
     )
 
     expect(config).toMatchInlineSnapshot(`
-      Object {
+      {
         "*": "mytask",
       }
     `)
@@ -167,7 +167,7 @@ describe('loadConfig', () => {
 
     const result = await loadConfig({ cwd: '/' })
 
-    expect(result).toMatchInlineSnapshot(`Object {}`)
+    expect(result).toMatchInlineSnapshot(`{}`)
   })
 
   it('should return empty object when explicit config file is not found', async () => {
@@ -175,6 +175,6 @@ describe('loadConfig', () => {
 
     const result = await loadConfig({ configPath: 'fake-config-file.yml' }, logger)
 
-    expect(result).toMatchInlineSnapshot(`Object {}`)
+    expect(result).toMatchInlineSnapshot(`{}`)
   })
 })

@@ -63,22 +63,22 @@ describe('runAll', () => {
   it('should resolve the promise with no tasks', async () => {
     expect.assertions(1)
     await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
-            Object {
-              "errors": Set {},
-              "events": EventEmitter {
-                "_events": Object {},
-                "_eventsCount": 0,
-                "_maxListeners": undefined,
-                Symbol(kCapture): false,
-              },
-              "hasPartiallyStagedFiles": null,
-              "output": Array [
-                "→ No staged files found.",
-              ],
-              "quiet": false,
-              "shouldBackup": true,
-            }
-          `)
+      {
+        "errors": Set {},
+        "events": EventEmitter {
+          "_events": {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
+        "hasPartiallyStagedFiles": null,
+        "output": [
+          "→ No staged files found.",
+        ],
+        "quiet": false,
+        "shouldBackup": true,
+      }
+    `)
   })
 
   it('should throw when failed to find staged files', async () => {
@@ -100,42 +100,42 @@ describe('runAll', () => {
   it('should print output when no staged files', async () => {
     expect.assertions(1)
     await expect(runAll({ configObject: {}, configPath })).resolves.toMatchInlineSnapshot(`
-            Object {
-              "errors": Set {},
-              "events": EventEmitter {
-                "_events": Object {},
-                "_eventsCount": 0,
-                "_maxListeners": undefined,
-                Symbol(kCapture): false,
-              },
-              "hasPartiallyStagedFiles": null,
-              "output": Array [
-                "→ No staged files found.",
-              ],
-              "quiet": false,
-              "shouldBackup": true,
-            }
-          `)
+      {
+        "errors": Set {},
+        "events": EventEmitter {
+          "_events": {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
+        "hasPartiallyStagedFiles": null,
+        "output": [
+          "→ No staged files found.",
+        ],
+        "quiet": false,
+        "shouldBackup": true,
+      }
+    `)
   })
 
   it('should not print output when no staged files and quiet', async () => {
     expect.assertions(1)
     await expect(runAll({ configObject: {}, configPath, quiet: true })).resolves
       .toMatchInlineSnapshot(`
-            Object {
-              "errors": Set {},
-              "events": EventEmitter {
-                "_events": Object {},
-                "_eventsCount": 0,
-                "_maxListeners": undefined,
-                Symbol(kCapture): false,
-              },
-              "hasPartiallyStagedFiles": null,
-              "output": Array [],
-              "quiet": true,
-              "shouldBackup": true,
-            }
-          `)
+      {
+        "errors": Set {},
+        "events": EventEmitter {
+          "_events": {},
+          "_eventsCount": 0,
+          "_maxListeners": undefined,
+          Symbol(kCapture): false,
+        },
+        "hasPartiallyStagedFiles": null,
+        "output": [],
+        "quiet": true,
+        "shouldBackup": true,
+      }
+    `)
   })
 
   it('should resolve the promise with no files', async () => {
@@ -169,8 +169,8 @@ describe('runAll', () => {
       LOG [STARTED] Running tasks for staged files...
       LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo \\"sample\\"
-      LOG [SUCCESS] echo \\"sample\\"
+      LOG [STARTED] echo "sample"
+      LOG [SUCCESS] echo "sample"
       LOG [SUCCESS] *.js — 1 file
       LOG [SUCCESS] Config object — 1 file
       LOG [SUCCESS] Running tasks for staged files...
@@ -235,10 +235,10 @@ describe('runAll', () => {
       LOG [STARTED] Running tasks for staged files...
       LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo \\"sample\\"
-      ERROR [FAILED] echo \\"sample\\" [1]
-      ERROR [FAILED] echo \\"sample\\" [1]
-      ERROR [FAILED] echo \\"sample\\" [1]
+      LOG [STARTED] echo "sample"
+      ERROR [FAILED] echo "sample" [1]
+      ERROR [FAILED] echo "sample" [1]
+      ERROR [FAILED] echo "sample" [1]
       LOG [STARTED] Applying modifications from tasks...
       INFO [SKIPPED] Skipped because of errors from tasks.
       LOG [STARTED] Reverting to original state because of errors...
@@ -274,10 +274,10 @@ describe('runAll', () => {
       LOG [STARTED] Running tasks for staged files...
       LOG [STARTED] Config object — 1 file
       LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo \\"sample\\"
-      ERROR [FAILED] echo \\"sample\\" [KILLED]
-      ERROR [FAILED] echo \\"sample\\" [KILLED]
-      ERROR [FAILED] echo \\"sample\\" [KILLED]
+      LOG [STARTED] echo "sample"
+      ERROR [FAILED] echo "sample" [KILLED]
+      ERROR [FAILED] echo "sample" [KILLED]
+      ERROR [FAILED] echo "sample" [KILLED]
       LOG [STARTED] Applying modifications from tasks...
       INFO [SKIPPED] Skipped because of errors from tasks.
       LOG [STARTED] Reverting to original state because of errors...

@@ -46,17 +46,17 @@ describe('lintStaged', () => {
     await lintStaged({ configPath: MOCK_CONFIG_FILE, quiet: true }, makeConsoleMock())
 
     expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "ctx": Object {
+      {
+        "ctx": {
           "errors": Set {},
           "events": EventEmitter {
-            "_events": Object {},
+            "_events": {},
             "_eventsCount": 0,
             "_maxListeners": undefined,
             Symbol(kCapture): false,
           },
           "hasPartiallyStagedFiles": null,
-          "output": Array [],
+          "output": [],
           "quiet": true,
           "shouldBackup": true,
         },
@@ -79,17 +79,17 @@ describe('lintStaged', () => {
     )
 
     expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "ctx": Object {
+      {
+        "ctx": {
           "errors": Set {},
           "events": EventEmitter {
-            "_events": Object {},
+            "_events": {},
             "_eventsCount": 0,
             "_maxListeners": undefined,
             Symbol(kCapture): false,
           },
           "hasPartiallyStagedFiles": null,
-          "output": Array [],
+          "output": [],
           "quiet": false,
           "shouldBackup": true,
         },

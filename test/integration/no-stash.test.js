@@ -66,7 +66,7 @@ describe('lint-staged', () => {
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< ours
         module.exports = {
-          foo: \\"bar\\",
+          foo: "bar",
         };
         =======
         const obj = {
