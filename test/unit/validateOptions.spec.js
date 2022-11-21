@@ -74,10 +74,7 @@ describe('validateOptions', () => {
 
           Invalid value for option 'cwd': non_existent
 
-          ENOENT: no such file or directory, access '${path
-            .join(process.cwd(), 'non_existent')
-            // Windows test fix: D:\something -> D:\\something
-            .replace(/\\/g, '\\\\')}'
+          ENOENT: no such file or directory, access '${path.join(process.cwd(), 'non_existent')}'
 
         See https://github.com/okonet/lint-staged#command-line-flags"
       `)
