@@ -31,7 +31,7 @@ describe('resolveTaskFn', () => {
     const task2Promise = taskFn2(context)
 
     await expect(task2Promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"node -e \\"process.exit(1)\\" [FAILED]"`
+      `"node -e "process.exit(1)" [FAILED]"`
     )
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
   })

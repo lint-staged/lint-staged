@@ -47,17 +47,17 @@ describe('lint-staged', () => {
       // But local modifications are gone
       expect(await execGit(['diff'])).not.toEqual(diff)
       expect(await execGit(['diff'])).toMatchInlineSnapshot(`
-              "diff --git a/test.js b/test.js
-              index 1eff6a0..8baadc8 100644
-              --- a/test.js
-              +++ b/test.js
-              @@ -1,3 +1,3 @@
-               module.exports = {
-              -    'foo': 'bar'
-              -}
-              +  foo: \\"bar\\",
-              +};"
-          `)
+        "diff --git a/test.js b/test.js
+        index 1eff6a0..8baadc8 100644
+        --- a/test.js
+        +++ b/test.js
+        @@ -1,3 +1,3 @@
+         module.exports = {
+        -    'foo': 'bar'
+        -}
+        +  foo: "bar",
+        +};"
+      `)
 
       expect(await readFile('test.js')).not.toEqual(uglyJS + appended)
       expect(await readFile('test.js')).toEqual(prettyJS)

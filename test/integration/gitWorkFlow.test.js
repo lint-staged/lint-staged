@@ -39,18 +39,18 @@ describe('gitWorkflow', () => {
           `"test"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          Object {
+          {
             "errors": Set {
               Symbol(GitError),
             },
             "events": EventEmitter {
-              "_events": Object {},
+              "_events": {},
               "_eventsCount": 0,
               "_maxListeners": undefined,
               Symbol(kCapture): false,
             },
             "hasPartiallyStagedFiles": true,
-            "output": Array [],
+            "output": [],
             "quiet": false,
             "shouldBackup": null,
           }
@@ -70,19 +70,19 @@ describe('gitWorkflow', () => {
           `"lint-staged automatic backup is missing!"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          Object {
+          {
             "errors": Set {
               Symbol(GetBackupStashError),
               Symbol(GitError),
             },
             "events": EventEmitter {
-              "_events": Object {},
+              "_events": {},
               "_eventsCount": 0,
               "_maxListeners": undefined,
               Symbol(kCapture): false,
             },
             "hasPartiallyStagedFiles": null,
-            "output": Array [],
+            "output": [],
             "quiet": false,
             "shouldBackup": null,
           }
@@ -144,19 +144,19 @@ describe('gitWorkflow', () => {
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          Object {
+          {
             "errors": Set {
               Symbol(GitError),
               Symbol(HideUnstagedChangesError),
             },
             "events": EventEmitter {
-              "_events": Object {},
+              "_events": {},
               "_eventsCount": 0,
               "_maxListeners": undefined,
               Symbol(kCapture): false,
             },
             "hasPartiallyStagedFiles": null,
-            "output": Array [],
+            "output": [],
             "quiet": false,
             "shouldBackup": null,
           }
@@ -198,19 +198,19 @@ describe('gitWorkflow', () => {
           `"Merge state could not be restored due to an error!"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          Object {
+          {
             "errors": Set {
               Symbol(GitError),
               Symbol(RestoreMergeStatusError),
             },
             "events": EventEmitter {
-              "_events": Object {},
+              "_events": {},
               "_eventsCount": 0,
               "_maxListeners": undefined,
               Symbol(kCapture): false,
             },
             "hasPartiallyStagedFiles": null,
-            "output": Array [],
+            "output": [],
             "quiet": false,
             "shouldBackup": null,
           }

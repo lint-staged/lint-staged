@@ -242,16 +242,16 @@ describe('resolveTaskFn', () => {
     const context = getInitialState()
     await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
     expect(context).toMatchInlineSnapshot(`
-      Object {
+      {
         "errors": Set {},
         "events": EventEmitter {
-          "_events": Object {},
+          "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
-        "output": Array [],
+        "output": [],
         "quiet": false,
         "shouldBackup": null,
       }
@@ -274,16 +274,16 @@ describe('resolveTaskFn', () => {
     const context = getInitialState()
     await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
     expect(context).toMatchInlineSnapshot(`
-      Object {
+      {
         "errors": Set {},
         "events": EventEmitter {
-          "_events": Object {},
+          "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
-        "output": Array [
+        "output": [
           "
       → mock cmd:
       Mock success",
@@ -310,18 +310,18 @@ describe('resolveTaskFn', () => {
     const context = getInitialState({ quiet: true })
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
     expect(context).toMatchInlineSnapshot(`
-      Object {
+      {
         "errors": Set {
           Symbol(TaskError),
         },
         "events": EventEmitter {
-          "_events": Object {},
+          "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
-        "output": Array [
+        "output": [
           "stderr",
         ],
         "quiet": true,
@@ -346,18 +346,18 @@ describe('resolveTaskFn', () => {
     const context = getInitialState({ quiet: true })
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
     expect(context).toMatchInlineSnapshot(`
-      Object {
+      {
         "errors": Set {
           Symbol(TaskError),
         },
         "events": EventEmitter {
-          "_events": Object {},
+          "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
-        "output": Array [],
+        "output": [],
         "quiet": true,
         "shouldBackup": null,
       }

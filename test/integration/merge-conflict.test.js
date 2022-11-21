@@ -50,13 +50,13 @@ describe('lint-staged', () => {
       await expect(execGit(['merge', 'branch-b'])).rejects.toThrowError('Merge conflict in test.js')
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
-              "<<<<<<< HEAD
-              module.exports = \\"foo\\";
-              =======
-              module.exports = \\"bar\\";
-              >>>>>>> branch-b
-              "
-          `)
+        "<<<<<<< HEAD
+        module.exports = "foo";
+        =======
+        module.exports = "bar";
+        >>>>>>> branch-b
+        "
+      `)
 
       // Fix conflict and commit using lint-staged
       await writeFile('test.js', fileInBranchB)
@@ -115,9 +115,9 @@ describe('lint-staged', () => {
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
-        module.exports = \\"foo\\";
+        module.exports = "foo";
         =======
-        module.exports = \\"bar\\";
+        module.exports = "bar";
         >>>>>>> branch-b
         "
       `)
