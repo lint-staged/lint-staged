@@ -24,18 +24,18 @@ jobs:
     name: ESLint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       # Install node_modules
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-16-${{ hashFiles('**/package-lock.json') }}
+          key: ubuntu-latest-18-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ubuntu-latest-16-${{ hashFiles('**/package-lock.json') }}
+            ubuntu-latest-18-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
       - run: npm run lint
@@ -58,12 +58,12 @@ jobs:
     steps:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       # Install node_modules
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: cache-node_modules
         with:
           path: node_modules
@@ -85,7 +85,7 @@ jobs:
       # Run tests
       - run: npm test
       # Upload coverage artifact from Node.js LTS
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: matrix.os == 'ubuntu-latest' && matrix.node == '16'
         with:
           name: coverage
@@ -98,13 +98,13 @@ jobs:
       - lint
       - test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # Download coverage artifact
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: coverage
       # Run codecov.io
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
 
   release:
     permissions:
@@ -117,13 +117,13 @@ jobs:
     # Trigger release for only pushes to branches defined above
     if: github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16 # release using Node.js LTS
+          node-version: 18 # release using Node.js LTS
       # Release using semantic-release.
       # While this runs on all branches, it will only release latest from master
-      - uses: codfish/semantic-release-action@v1
+      - uses: codfish/semantic-release-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
