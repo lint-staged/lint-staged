@@ -29,8 +29,17 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m initial commit'], { cwd: submoduleDir })
 
       // Add the newly-created repo as a submodule in a new path.
-      // This simulates adding it from a remote
-      await execGit(['submodule', 'add', '--force', './submodule-temp', './submodule'])
+      // This simulates adding it from a remote. By default file protocol is not allowed,
+      // see https://git-scm.com/docs/git-config#Documentation/git-config.txt-protocolallow
+      await execGit([
+        '-c',
+        'protocol.file.allow=always',
+        'submodule',
+        'add',
+        '--force',
+        './submodule-temp',
+        './submodule',
+      ])
       submoduleDir = path.resolve(cwd, 'submodule')
       // Set these again for Windows git in CI
       await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
