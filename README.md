@@ -181,6 +181,18 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 `your-cmd file1.ext file2.ext`
 
+#### Advanced `.lintstagedrc` example
+
+You can also use regex to specify the type of files you want to affect by a chosen command.
+
+```json
+{
+  "*.(js|jsx)": "your-cmd",
+}
+```
+
+This config will execute `your-cmd` for all `*.js` and `*.jsx` files.
+
 ### Task concurrency
 
 By default _lint-staged_ will run configured tasks concurrently. This means that for every glob, all the commands will be started at the same time. With the following config, both `eslint` and `prettier` will run at the same time:
