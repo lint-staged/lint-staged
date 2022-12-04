@@ -20,6 +20,7 @@
   "bin": "./bin/lint-staged.js",
   "exports": {
     ".": "./lib/index.js",
+    "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
   "files": [
