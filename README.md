@@ -611,6 +611,29 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 
 </details>
 
+### Integrate with Next.js
+
+<details>
+  <summary>Click to expand</summary>
+
+```js
+// .lintstagedrc.js
+// See https://nextjs.org/docs/basic-features/eslint#lint-staged for details
+
+const path = require('path')
+
+const buildEslintCommand = (filenames) =>
+  `next lint --fix --file ${filenames
+    .map((f) => path.relative(process.cwd(), f))
+    .join(' --file ')}`
+
+module.exports = {
+  '*.{js,jsx,ts,tsx}': [buildEslintCommand],
+}
+```
+
+</details>
+
 ## Frequently Asked Questions
 
 ### The output of commit hook looks weird (no colors, duplicate lines, …)
