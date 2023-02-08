@@ -274,7 +274,7 @@ going to execute `eslint` and if it exits with `0` code, it will execute `pretti
 
 ## Using JS configuration files
 
-Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged/README.md#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
+Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
 
 If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files and return a command string or an array of command strings. These strings are considered complete and should include the filename arguments, if wanted.
 
@@ -358,7 +358,7 @@ export default {
 <details>
   <summary>Click to expand</summary>
 
-It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged/README.md#example-export-a-function-to-build-your-own-matchers), if your use case is this.
+It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
 // lint-staged.config.js
