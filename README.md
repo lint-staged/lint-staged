@@ -221,7 +221,7 @@ Linter commands work on a subset of all staged files, defined by a _glob pattern
   - **`"!(*test).js"`**. will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
 - If the glob pattern does contain a slash (`/`), it will match for paths as well:
   - **`"./*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
-  - **`"foo/**/\*.js"`** will match all JS files inside the`/foo`directory, so`/foo/bar/test.js`but not`/test.js`
+  - **`"foo/**/*.js"`** will match all JS files inside the `/foo` directory, so `/foo/bar/test.js` but not `/test.js`
 
 When matching, lint-staged will do the following
 
