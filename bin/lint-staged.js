@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { isColorSupported } from 'colorette'
+import { supportsColor } from 'chalk'
 import { Option, program } from 'commander'
 import debug from 'debug'
 
@@ -12,8 +12,8 @@ import lintStaged from '../lib/index.js'
 import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-if (isColorSupported) {
-  process.env.FORCE_COLOR = '1'
+if (supportsColor) {
+  process.env.FORCE_COLOR = supportsColor.level.toString()
 }
 
 // Do not terminate main Listr process on SIGINT
