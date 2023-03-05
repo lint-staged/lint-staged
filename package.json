@@ -45,6 +45,7 @@
     "object-inspect": "^1.12.3",
     "pidtree": "^0.6.0",
     "string-argv": "^0.3.1",
+    "supports-color": "9.3.1",
     "yaml": "^2.2.1"
   },
   "devDependencies": {
