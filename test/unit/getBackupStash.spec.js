@@ -47,47 +47,7 @@ describe('gitWorkflow', () => {
         ].join('\n')
       )
 
-      await expect(gitWorkflow.getBackupStash(ctx)).resolves.toEqual('refs/stash@{1}')
-    })
-
-    it('should return unescaped ref to the backup stash when using MSYS2 without login shell', async () => {
-      const gitWorkflow = new GitWorkflow(options)
-      const ctx = getInitialState()
-
-      process.env.MSYSTEM = 'MSYS'
-
-      execGit.mockResolvedValueOnce(
-        [
-          'stash@{0}: some random stuff',
-          `stash@{1}: ${STASH}`,
-          'stash@{2}: other random stuff',
-        ].join('\n')
-      )
-
-      await expect(gitWorkflow.getBackupStash(ctx)).resolves.toEqual('refs/stash@{1}')
-
-      delete process.env.MSYSTEM
-    })
-
-    it('should return escaped ref to the backup stash when using MSYS2 with login shell', async () => {
-      const gitWorkflow = new GitWorkflow(options)
-      const ctx = getInitialState()
-
-      process.env.MSYSTEM = 'MSYS'
-      process.env.LOGINSHELL = 'bash'
-
-      execGit.mockResolvedValueOnce(
-        [
-          'stash@{0}: some random stuff',
-          `stash@{1}: ${STASH}`,
-          'stash@{2}: other random stuff',
-        ].join('\n')
-      )
-
-      await expect(gitWorkflow.getBackupStash(ctx)).resolves.toEqual('refs/stash@\\{1\\}')
-
-      delete process.env.MSYSTEM
-      delete process.env.LOGINSHELL
+      await expect(gitWorkflow.getBackupStash(ctx)).resolves.toEqual('1')
     })
   })
 })
