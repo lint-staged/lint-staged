@@ -227,6 +227,25 @@ describe('loadConfig', () => {
     `)
   })
 
+  it('should return the base config when a shared config is not found', async () => {
+    expect.assertions(1)
+
+    const { config } = await loadConfig(
+      {
+        configPath: path.join('test', 'unit', '__mocks__', 'shared-config-not-found.js'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+      }
+    `)
+  })
+
   it('should return empty object when config file is not found', async () => {
     expect.assertions(1)
 
