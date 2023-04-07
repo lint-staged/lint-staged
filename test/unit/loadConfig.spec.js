@@ -163,6 +163,70 @@ describe('loadConfig', () => {
     `)
   })
 
+  it('should load a shared config when specified', async () => {
+    expect.assertions(1)
+
+    jest.mock('my-lint-staged-config')
+
+    const { config } = await loadConfig(
+      {
+        configPath: path.join('test', 'unit', '__mocks__', 'shared-config.js'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+      }
+    `)
+  })
+
+  it('should override a shared config when specified', async () => {
+    expect.assertions(1)
+
+    jest.mock('my-lint-staged-config')
+
+    const { config } = await loadConfig(
+      {
+        configPath: path.join('test', 'unit', '__mocks__', 'shared-config-override.js'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "myoverridetask",
+      }
+    `)
+  })
+
+  it('should merge a shared config when specified', async () => {
+    expect.assertions(1)
+
+    jest.mock('my-lint-staged-config')
+
+    const { config } = await loadConfig(
+      {
+        configPath: path.join('test', 'unit', '__mocks__', 'shared-config-merge.js'),
+        debug: true,
+        quiet: true,
+      },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+        "*.js": "mymergedtask",
+      }
+    `)
+  })
+
   it('should return empty object when config file is not found', async () => {
     expect.assertions(1)
 
