@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
@@ -176,5 +177,33 @@ describe('loadConfig', () => {
     const result = await loadConfig({ configPath: 'fake-config-file.yml' }, logger)
 
     expect(result).toMatchInlineSnapshot(`{}`)
+  })
+
+  it('should return empty object ".lintstagedrc.json" file is invalid', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', '.lintstagedrc.json')
+
+    await fs.writeFile(configFile, '{')
+
+    const result = await loadConfig({ configPath: configFile }, logger)
+
+    expect(result).toMatchInlineSnapshot(`{}`)
+
+    await fs.rm(configFile)
+  })
+
+  it('should return null config when package.json file is invalid', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'package.json')
+
+    await fs.writeFile(configFile, '{')
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toBeNull()
+
+    await fs.rm(configFile)
   })
 })
