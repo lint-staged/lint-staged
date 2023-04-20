@@ -42,9 +42,8 @@ jobs:
   test:
     strategy:
       matrix:
-        # Test with Node.js v14 (LTS), v16 (LTS), and 18 (Current)
+        # Test with Node.js v16 (LTS), v18 (LTS), and v20 (Current)
         node:
-          - 14
           - 16
           - 18
           - 20

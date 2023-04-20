@@ -14,7 +14,7 @@
     "url": "https://opencollective.com/lint-staged"
   },
   "engines": {
-    "node": "^14.13.1 || >=16.0.0"
+    "node": "^16.14.0 || >=18.0.0"
   },
   "type": "module",
   "bin": "./bin/lint-staged.js",

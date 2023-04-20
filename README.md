@@ -72,6 +72,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v14
+
+- Since `v14.0.0` _lint-staged_ no longer supports Node.js 14. Please upgrade your Node.js version to at least `16.14.0`.
+
 #### v13
 
 - Since `v13.0.0` _lint-staged_ no longer supports Node.js 12. Please upgrade your Node.js version to at least `14.13.1`, or `16.0.0` onward.
@@ -218,11 +222,11 @@ If necessary, you can limit the concurrency using `--concurrent <number>` or dis
 Linter commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
 
 - If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
-  - **`"*.js"`** will match all JS files, like `/test.js` and `/foo/bar/test.js`
-  - **`"!(*test).js"`**. will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
+  - `"*.js"` will match all JS files, like `/test.js` and `/foo/bar/test.js`
+  - `"!(*test).js"` will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
 - If the glob pattern does contain a slash (`/`), it will match for paths as well:
-  - **`"./*.js"`** will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
-  - **`"foo/**/*.js"`** will match all JS files inside the `/foo` directory, so `/foo/bar/test.js` but not `/test.js`
+  - `"./*.js"` will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
+  - `"foo/**/*.js"` will match all JS files inside the `/foo` directory, so `/foo/bar/test.js` but not `/test.js`
 
 When matching, lint-staged will do the following
 
@@ -624,9 +628,7 @@ See more on [this blog post](https://medium.com/@tomchentw/imagemin-lint-staged-
 const path = require('path')
 
 const buildEslintCommand = (filenames) =>
-  `next lint --fix --file ${filenames
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' --file ')}`
+  `next lint --fix --file ${filenames.map((f) => path.relative(process.cwd(), f)).join(' --file ')}`
 
 module.exports = {
   '*.{js,jsx,ts,tsx}': [buildEslintCommand],
