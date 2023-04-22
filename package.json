@@ -39,7 +39,7 @@
     "debug": "4.3.4",
     "execa": "7.1.1",
     "lilconfig": "2.1.0",
-    "listr2": "5.0.8",
+    "listr2": "6.6.0",
     "micromatch": "4.0.5",
     "normalize-path": "3.0.0",
     "object-inspect": "1.12.3",
