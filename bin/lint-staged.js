@@ -68,7 +68,7 @@ cli
   .addOption(
     new Option(
       '--no-stash',
-      'disable the backup stash, and do not revert in case of errors'
+      'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged".'
     ).default(false)
   )
 
