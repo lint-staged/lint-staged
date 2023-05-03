@@ -80,7 +80,7 @@ cli
 cli
   .addOption(
     new Option('--hide-partially-staged', 'hide unstaged changes from partially staged files')
-      .default(true)
+      .default(null)
       .hideHelp()
   )
   .addOption(
@@ -121,7 +121,8 @@ const options = {
   relative: !!cliOptions.relative,
   shell: cliOptions.shell /* Either a boolean or a string pointing to the shell */,
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
-  hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  hidePartiallyStaged:
+    cliOptions.hidePartiallyStaged == null ? !!cliOptions.stash : !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,
 }
 
