@@ -67,7 +67,25 @@ cli
   .addOption(
     new Option(
       '--no-stash',
-      'disable the backup stash, and do not revert in case of errors'
+      'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged".'
+    ).default(false)
+  )
+
+/**
+ * We don't want to show the `--hide-partially-staged` flag because it's on by default, and only show the
+ * negatable flag `--no-hide-partially-staged` in stead. There seems to be a bug in Commander.js where
+ * configuring only the latter won't actually set the default value.
+ */
+cli
+  .addOption(
+    new Option('--hide-partially-staged', 'hide unstaged changes from partially staged files')
+      .default(null)
+      .hideHelp()
+  )
+  .addOption(
+    new Option(
+      '--no-hide-partially-staged',
+      'disable hiding unstaged changes from partially staged files'
     ).default(false)
   )
 
@@ -104,6 +122,8 @@ const options = {
   relative: !!cliOptions.relative,
   shell: cliOptions.shell /* Either a boolean or a string pointing to the shell */,
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
+  hidePartiallyStaged:
+    cliOptions.hidePartiallyStaged == null ? !!cliOptions.stash : !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,
 }
 
