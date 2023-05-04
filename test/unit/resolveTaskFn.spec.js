@@ -254,6 +254,7 @@ describe('resolveTaskFn', () => {
         "output": [],
         "quiet": false,
         "shouldBackup": null,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })
@@ -290,6 +291,7 @@ describe('resolveTaskFn', () => {
         ],
         "quiet": false,
         "shouldBackup": null,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })
@@ -326,6 +328,7 @@ describe('resolveTaskFn', () => {
         ],
         "quiet": true,
         "shouldBackup": null,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })
@@ -360,6 +363,7 @@ describe('resolveTaskFn', () => {
         "output": [],
         "quiet": true,
         "shouldBackup": null,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })

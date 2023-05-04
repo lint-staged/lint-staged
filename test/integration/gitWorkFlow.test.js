@@ -53,6 +53,7 @@ describe('gitWorkflow', () => {
             "output": [],
             "quiet": false,
             "shouldBackup": null,
+            "shouldHidePartiallyStaged": true,
           }
         `)
       })
@@ -85,6 +86,7 @@ describe('gitWorkflow', () => {
             "output": [],
             "quiet": false,
             "shouldBackup": null,
+            "shouldHidePartiallyStaged": true,
           }
         `)
       })
@@ -159,6 +161,7 @@ describe('gitWorkflow', () => {
             "output": [],
             "quiet": false,
             "shouldBackup": null,
+            "shouldHidePartiallyStaged": true,
           }
         `)
       })
@@ -213,6 +216,7 @@ describe('gitWorkflow', () => {
             "output": [],
             "quiet": false,
             "shouldBackup": null,
+            "shouldHidePartiallyStaged": true,
           }
         `)
       })

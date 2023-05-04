@@ -77,6 +77,7 @@ describe('runAll', () => {
         ],
         "quiet": false,
         "shouldBackup": true,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })
@@ -114,6 +115,7 @@ describe('runAll', () => {
         ],
         "quiet": false,
         "shouldBackup": true,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })
@@ -134,6 +136,7 @@ describe('runAll', () => {
         "output": [],
         "quiet": true,
         "shouldBackup": true,
+        "shouldHidePartiallyStaged": true,
       }
     `)
   })

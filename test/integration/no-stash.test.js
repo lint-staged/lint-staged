@@ -46,6 +46,7 @@ describe('lint-staged', () => {
         gitCommit({
           lintStaged: {
             stash: false,
+            hidePartiallyStaged: true,
             config: {
               '*.js': async () => {
                 const testFile = path.join(cwd, 'test.js')
