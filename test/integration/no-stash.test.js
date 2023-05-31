@@ -26,6 +26,9 @@ describe('lint-staged', () => {
       const stdout = await gitCommit({ lintStaged: { stash: false } })
 
       expect(stdout).toMatch('Skipping backup because `--no-stash` was used')
+      expect(stdout).toMatch(
+        'Skipping hiding unstaged changes from partially staged files because `--no-stash` was used'
+      )
 
       // Nothing is wrong, so a new commit is created
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
