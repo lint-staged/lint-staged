@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 
 import { execaCommand } from 'execa'
 
-const lintStagedRelativePath = '../../../bin/lint-staged.js'
+let lintStagedBin = resolve(__dirname, '../../../bin/lint-staged.js')
 
 /**
  * @param {string} cwd
@@ -10,7 +10,5 @@ const lintStagedRelativePath = '../../../bin/lint-staged.js'
  */
 export const getLintStagedExecutor =
   (cwd) =>
-  async (params = '') => {
-    let command = resolve(__dirname, lintStagedRelativePath)
-    return await execaCommand(`${command} --cwd=${cwd} ${params}`)
-  }
+  async (params = '') =>
+    await execaCommand(`${lintStagedBin} --cwd=${cwd} ${params}`)
