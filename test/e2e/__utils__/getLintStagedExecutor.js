@@ -1,8 +1,8 @@
-import { promisify } from 'node:util'
 import { resolve } from 'node:path'
 
-const exec = promisify(require('child_process').exec)
-const lintStagedPath = '../../../bin/lint-staged.js'
+import { execaCommand } from 'execa'
+
+const lintStagedRelativePath = '../../../bin/lint-staged.js'
 
 /**
  * @param {string} cwd
@@ -10,5 +10,7 @@ const lintStagedPath = '../../../bin/lint-staged.js'
  */
 export const getLintStagedExecutor =
   (cwd) =>
-  async (params = '') =>
-    await exec(resolve(__dirname, `${lintStagedPath} --cwd=${cwd} ${params}`))
+  async (params = '') => {
+    let command = resolve(__dirname, lintStagedRelativePath)
+    return await execaCommand(`${command} --cwd=${cwd} ${params}`)
+  }
