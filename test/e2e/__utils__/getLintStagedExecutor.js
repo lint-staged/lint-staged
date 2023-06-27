@@ -11,4 +11,4 @@ let lintStagedBin = resolve(__dirname, '../../../bin/lint-staged.js')
 export const getLintStagedExecutor =
   (cwd) =>
   async (params = '') =>
-    await execaCommand(`${lintStagedBin} --debug --cwd=${cwd} ${params}`, { cwd })
+    await execaCommand(`${lintStagedBin} --cwd=${cwd} ${params}`)

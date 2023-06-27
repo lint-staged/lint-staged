@@ -25,32 +25,25 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m', 'test'])
 
       let res = await lintStaged()
-      console.info(res.stdout)
       expect(res.stdout).toMatch('No staged files found.')
 
       res = await lintStaged('--stash')
-      console.info(res.stdout)
       expect(res.stdout).toMatch('No staged files found.')
 
       res = await lintStaged('--no-stash')
-      console.info(res.stdout)
-      console.info(res.stderr)
       expect(res.stdout).toMatch('No staged files found.')
       expect(res.stderr).toMatch('Skipping backup because `--no-stash` was used.')
 
       res = await lintStaged('--diff=master...my-branch')
-      console.info(res.stderr)
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
 
       try {
         await lintStaged('--diff=master...my-branch --stash')
       } catch (err) {
-        console.info(err.stderr)
         expect(err.stderr).toMatch('lint-staged failed due to a git error.')
       }
 
       res = await lintStaged('--diff=master...my-branch --no-stash')
-      console.info(res.stderr)
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
     })
   )
