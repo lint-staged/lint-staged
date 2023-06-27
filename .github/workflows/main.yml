@@ -2,8 +2,11 @@ name: Test & Release
 
 on:
   push:
+    # Run on pushes to specific branches
     branches:
-      - "*"
+      - master
+      - beta
+      - alpha
     # Do not run on tags
     tags-ignore:
       - "*"
