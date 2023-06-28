@@ -79,7 +79,7 @@ export const withGitIntegration =
     const utils = getGitUtils(cwd)
 
     // Init repository with initial commit
-    await utils.execGit('init')
+    await utils.execGit(['init', '--initial-branch', 'master'])
 
     if (isWindowsActions()) {
       await utils.execGit(['config', 'core.autocrlf', 'input'])
