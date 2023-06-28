@@ -79,10 +79,7 @@ export const withGitIntegration =
     const utils = getGitUtils(cwd)
 
     // Init repository with initial commit
-    await utils.execGit('init')
-
-    // Rename default main branch to master for tests to pass on local environment
-    await utils.execGit(['branch', '-m', 'master'])
+    await utils.execGit(['init', '--initial-branch', 'master'])
 
     if (isWindowsActions()) {
       await utils.execGit(['config', 'core.autocrlf', 'input'])
