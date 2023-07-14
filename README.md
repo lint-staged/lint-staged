@@ -58,7 +58,7 @@ To install _lint-staged_ in the recommended way, you need to:
 1. Install some linters, like [ESLint](https://eslint.org) or [Prettier](https://prettier.io)
 1. Configure _lint-staged_ to run linters and other tasks:
    - for example: `{ "*.js": "eslint" }` to run ESLint for all staged JS files
-   - See [Configuration](#Configuration) for more info
+   - See [Configuration](#configuration) for more info
 
 Don't forget to commit changes to `package.json` and `.husky` to share this setup with your team!
 
