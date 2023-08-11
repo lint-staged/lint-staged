@@ -10,8 +10,12 @@ import normalize from 'normalize-path'
  * @returns {Promise<String>}
  */
 export const createTempDir = async () => {
-  const tempDir = await fs.realpath(os.tmpdir())
-  const dirname = path.join(tempDir, `lint-staged-${crypto.randomUUID()}`)
-  await fs.mkdir(dirname, { recursive: true })
-  return normalize(dirname)
+  const baseDir = await fs.realpath(
+    process.env.GITHUB_ACTIONS === 'true' ? process.env.RUNNER_TEMP : os.tmpdir()
+  )
+
+  const tempDir = path.join(baseDir, 'lint-staged', crypto.randomUUID())
+  await fs.mkdir(tempDir, { recursive: true })
+
+  return normalize(tempDir)
 }

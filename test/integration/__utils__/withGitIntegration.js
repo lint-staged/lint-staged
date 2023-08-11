@@ -22,28 +22,28 @@ const getGitUtils = (cwd) => {
 
   // Get file content, coercing Windows `\r\n` newlines to `\n`
   const readFile = async (filename, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
     const file = await fs.readFile(filepath, { encoding: 'utf-8' })
     return normalizeWindowsNewlines(file)
   }
 
   // Append to file, creating if it doesn't exist
   const appendFile = async (filename, content, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
     await ensureDir(filepath)
-    await fs.appendFile(filepath, content)
+    await fs.appendFile(filepath, content, { encoding: 'utf-8' })
   }
 
   // Write (over) file, creating if it doesn't exist
   const writeFile = async (filename, content, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
     await ensureDir(filepath)
-    await fs.writeFile(filepath, content)
+    await fs.writeFile(filepath, content, { encoding: 'utf-8' })
   }
 
   // Remove file
   const removeFile = async (filename, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
+    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
     await fs.rm(filepath, { recursive: true })
   }
 
