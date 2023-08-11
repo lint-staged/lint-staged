@@ -36,6 +36,9 @@ describe('getRenderer', () => {
     expect(getRenderer({}, console, {})).toEqual({
       renderer: 'update',
       fallbackRenderer: 'verbose',
+      rendererOptions: {
+        formatOutput: 'truncate',
+      },
     })
   })
 
@@ -43,6 +46,9 @@ describe('getRenderer', () => {
     expect(getRenderer({}, console, { FORCE_COLOR: '0' })).toEqual({
       renderer: 'update',
       fallbackRenderer: 'verbose',
+      rendererOptions: {
+        formatOutput: 'truncate',
+      },
     })
   })
 
@@ -50,6 +56,9 @@ describe('getRenderer', () => {
     expect(getRenderer({}, console, { FORCE_COLOR: '1' })).toEqual({
       renderer: 'update',
       fallbackRenderer: 'update',
+      rendererOptions: {
+        formatOutput: 'truncate',
+      },
     })
   })
 })
