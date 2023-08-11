@@ -2,14 +2,14 @@ import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
 import { execa } from 'execa'
-import normalize from 'normalize-path'
 
 import { getStagedFiles } from '../../lib/getStagedFiles.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 import { resolveGitRepo } from '../../lib/resolveGitRepo.js'
 import { runAll } from '../../lib/runAll.js'
-import { ConfigNotFoundError, GitError } from '../../lib/symbols.js'
 import * as searchConfigsNS from '../../lib/searchConfigs.js'
+import { ConfigNotFoundError, GitError } from '../../lib/symbols.js'
 
 import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
 
@@ -39,7 +39,7 @@ getStagedFiles.mockImplementation(async () => [])
 
 resolveGitRepo.mockImplementation(async () => {
   const cwd = process.cwd()
-  return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
+  return { gitConfigDir: normalizePath(path.resolve(cwd, '.git')), gitDir: normalizePath(cwd) }
 })
 
 const configPath = '.lintstagedrc.json'
@@ -260,7 +260,7 @@ describe('runAll', () => {
     expect(mockTask).toHaveBeenCalledWith(['foo.js'])
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
-    expect(expected).toEqual([[normalize(path.join(cwd, 'test/foo.js'))]])
+    expect(expected).toEqual([[normalizePath(path.join(cwd, 'test/foo.js'))]])
   })
 
   it('should resolve matched files to config locations with multiple configs', async () => {
@@ -288,8 +288,8 @@ describe('runAll', () => {
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([
       [
-        normalize(path.join(process.cwd(), 'test/foo.js')),
-        normalize(path.join(process.cwd(), 'foo.js')),
+        normalizePath(path.join(process.cwd(), 'test/foo.js')),
+        normalizePath(path.join(process.cwd(), 'foo.js')),
       ],
     ])
   })

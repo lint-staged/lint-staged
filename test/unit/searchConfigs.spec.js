@@ -1,9 +1,8 @@
 import path from 'node:path'
 
-import normalize from 'normalize-path'
-
 import { execGit } from '../../lib/execGit.js'
 import { loadConfig } from '../../lib/loadConfig.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 import { searchConfigs } from '../../lib/searchConfigs.js'
 
 jest.mock('../../lib/resolveConfig', () => ({
@@ -79,7 +78,7 @@ describe('searchConfigs', () => {
 
   it('should return config found from git', async () => {
     const configFile = '.lintstagedrc.json'
-    const configPath = normalize(path.join(process.cwd(), configFile))
+    const configPath = normalizePath(path.join(process.cwd(), configFile))
     const config = { '*.js': 'eslint' }
 
     execGit.mockResolvedValueOnce(`${configFile}\u0000`)
@@ -89,7 +88,7 @@ describe('searchConfigs', () => {
   })
 
   it('should return auto-discovered config from cwd when not found from git', async () => {
-    const configPath = normalize(path.join(process.cwd(), '.lintstagedrc.json'))
+    const configPath = normalizePath(path.join(process.cwd(), '.lintstagedrc.json'))
     const config = { '*.js': 'eslint' }
 
     loadConfig.mockResolvedValueOnce({ config, filepath: configPath })
@@ -104,9 +103,11 @@ describe('searchConfigs', () => {
       `.lintstagedrc.json\u0000even/deeper/.lintstagedrc.json\u0000deeper/.lintstagedrc.json\u0000`
     )
 
-    const topLevelConfig = normalize(path.join(process.cwd(), '.lintstagedrc.json'))
-    const deeperConfig = normalize(path.join(process.cwd(), 'deeper/.lintstagedrc.json'))
-    const evenDeeperConfig = normalize(path.join(process.cwd(), 'even/deeper/.lintstagedrc.json'))
+    const topLevelConfig = normalizePath(path.join(process.cwd(), '.lintstagedrc.json'))
+    const deeperConfig = normalizePath(path.join(process.cwd(), 'deeper/.lintstagedrc.json'))
+    const evenDeeperConfig = normalizePath(
+      path.join(process.cwd(), 'even/deeper/.lintstagedrc.json')
+    )
 
     loadConfig.mockResolvedValueOnce({ config, filepath: topLevelConfig })
     loadConfig.mockResolvedValueOnce({ config, filepath: deeperConfig })

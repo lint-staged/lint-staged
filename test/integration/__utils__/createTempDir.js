@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import normalize from 'normalize-path'
+import { normalizePath } from '../../../lib/normalizePath.js'
 
 /**
  * Create temporary random directory and return its path
@@ -17,5 +17,5 @@ export const createTempDir = async () => {
   const tempDir = path.join(baseDir, 'lint-staged', crypto.randomUUID())
   await fs.mkdir(tempDir, { recursive: true })
 
-  return normalize(tempDir)
+  return normalizePath(tempDir)
 }

@@ -1,7 +1,6 @@
 import path from 'node:path'
 
-import normalize from 'normalize-path'
-
+import { normalizePath } from '../../lib/normalizePath.js'
 import { determineGitDir, resolveGitRepo } from '../../lib/resolveGitRepo.js'
 
 /**
@@ -11,12 +10,12 @@ jest.unmock('execa')
 
 describe('resolveGitRepo', () => {
   it('should resolve to current working dir when .git is in the same dir', async () => {
-    const cwd = normalize(process.cwd())
+    const cwd = normalizePath(process.cwd())
     const { gitDir } = await resolveGitRepo()
     expect(gitDir).toEqual(cwd)
   })
 
-  const expected = normalize(path.join(path.dirname(__dirname), '../'))
+  const expected = normalizePath(path.join(path.dirname(__dirname), '../'))
 
   it('should resolve to the parent dir when .git is in the parent dir', async () => {
     const processCwdBkp = process.cwd
@@ -54,21 +53,21 @@ describe('resolveGitRepo', () => {
       const cwd = process.cwd()
       const relativeDir = undefined
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalize(cwd))
+      expect(rootDir).toEqual(normalizePath(cwd))
     })
 
     it('should resolve to parent dir when relative dir is child', () => {
       const relativeDir = 'bar'
       const cwd = process.cwd() + path.sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalize(process.cwd()))
+      expect(rootDir).toEqual(normalizePath(process.cwd()))
     })
 
     it('should resolve to parent dir when relative dir is child and child has trailing dir separator', () => {
       const relativeDir = 'bar' + path.sep
       const cwd = process.cwd() + path.sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalize(process.cwd()))
+      expect(rootDir).toEqual(normalizePath(process.cwd()))
     })
   })
 })

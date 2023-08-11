@@ -1,14 +1,13 @@
 import path from 'node:path'
 
-import normalize from 'normalize-path'
-
-import { getStagedFiles } from '../../lib/getStagedFiles.js'
 import { execGit } from '../../lib/execGit.js'
+import { getStagedFiles } from '../../lib/getStagedFiles.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 
 jest.mock('../../lib/execGit.js')
 
 // Windows filepaths
-const normalizePath = (input) => normalize(path.resolve('/', input))
+const normalizeWindowsPath = (input) => normalizePath(path.resolve('/', input))
 
 describe('getStagedFiles', () => {
   afterEach(() => {
@@ -19,7 +18,7 @@ describe('getStagedFiles', () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles({ cwd: '/' })
     // Windows filepaths
-    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', '--staged'],
@@ -45,7 +44,7 @@ describe('getStagedFiles', () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles({ cwd: '/', diff: 'master...my-branch' })
     // Windows filepaths
-    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master...my-branch'],
@@ -57,7 +56,7 @@ describe('getStagedFiles', () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles({ cwd: '/', diff: 'master my-branch' })
     // Windows filepaths
-    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master', 'my-branch'],
@@ -69,7 +68,7 @@ describe('getStagedFiles', () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
     const staged = await getStagedFiles({ cwd: '/', diffFilter: 'ACDMRTUXB' })
     // Windows filepaths
-    expect(staged).toEqual([normalizePath('/foo.js'), normalizePath('/bar.js')])
+    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenLastCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACDMRTUXB', '--staged'],
