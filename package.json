@@ -40,7 +40,6 @@
     "lilconfig": "2.1.0",
     "listr2": "6.6.1",
     "micromatch": "4.0.5",
-    "object-inspect": "1.12.3",
     "pidtree": "0.6.0",
     "string-argv": "0.3.2",
     "yaml": "2.3.1"
