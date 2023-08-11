@@ -59,7 +59,6 @@
     "eslint-plugin-import": "2.28.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "5.0.0",
-    "fs-extra": "11.1.1",
     "husky": "8.0.3",
     "jest": "29.6.2",
     "jest-snapshot-serializer-ansi": "2.1.0",

@@ -1,7 +1,7 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
-import fs from 'fs-extra'
 
 import { execGit as execGitBase } from '../../../lib/execGit.js'
 import lintStaged from '../../../lib/index.js'
@@ -10,7 +10,10 @@ import { createTempDir } from './createTempDir.js'
 import { isWindowsActions } from './isWindows'
 import { normalizeWindowsNewlines } from './normalizeWindowsNewlines.js'
 
-const ensureDir = async (inputPath) => fs.ensureDir(path.parse(inputPath).dir)
+const ensureDir = async (inputPath) => {
+  const parsed = path.parse(inputPath)
+  await fs.mkdir(parsed.dir, { recursive: true })
+}
 
 const getGitUtils = (cwd) => {
   if (!cwd || cwd === process.cwd()) {
@@ -41,7 +44,7 @@ const getGitUtils = (cwd) => {
   // Remove file
   const removeFile = async (filename, dir = cwd) => {
     const filepath = path.isAbsolute(filename) ? filename : path.join(dir, filename)
-    await fs.remove(filepath)
+    await fs.rm(filepath, { recursive: true })
   }
 
   // Wrap execGit to always pass `gitOps`
@@ -98,6 +101,6 @@ export const withGitIntegration =
     try {
       await testCase({ ...utils, cwd })
     } finally {
-      await fs.remove(cwd)
+      await fs.rm(cwd, { recursive: true })
     }
   }
