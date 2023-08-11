@@ -22,29 +22,53 @@ const getGitUtils = (cwd) => {
 
   // Get file content, coercing Windows `\r\n` newlines to `\n`
   const readFile = async (filename, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
-    const file = await fs.readFile(filepath, { encoding: 'utf-8' })
-    return normalizeWindowsNewlines(file)
+    const filepath = path.resolve(dir, filename)
+
+    try {
+      const file = await fs.readFile(filepath, { encoding: 'utf-8' })
+      return normalizeWindowsNewlines(file)
+    } catch (error) {
+      console.error(`Failed to read file "${filepath}" with error:`, error)
+      throw error
+    }
   }
 
   // Append to file, creating if it doesn't exist
   const appendFile = async (filename, content, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
-    await ensureDir(filepath)
-    await fs.appendFile(filepath, content, { encoding: 'utf-8' })
+    const filepath = path.resolve(dir, filename)
+
+    try {
+      await ensureDir(filepath)
+      await fs.appendFile(filepath, content, { encoding: 'utf-8' })
+    } catch (error) {
+      console.error(`Failed to append file "${filepath}" with error:`, error)
+      throw error
+    }
   }
 
   // Write (over) file, creating if it doesn't exist
   const writeFile = async (filename, content, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
-    await ensureDir(filepath)
-    await fs.writeFile(filepath, content, { encoding: 'utf-8' })
+    const filepath = path.resolve(dir, filename)
+
+    try {
+      await ensureDir(filepath)
+      await fs.writeFile(filepath, content, { encoding: 'utf-8' })
+    } catch (error) {
+      console.error(`Failed to write file "${filepath}" with error:`, error)
+      throw error
+    }
   }
 
   // Remove file
   const removeFile = async (filename, dir = cwd) => {
-    const filepath = path.isAbsolute(filename) ? path.normalize(filename) : path.join(dir, filename)
-    await fs.rm(filepath, { recursive: true })
+    const filepath = path.resolve(dir, filename)
+
+    try {
+      await fs.rm(filepath, { recursive: true })
+    } catch (error) {
+      console.error(`Failed to remove file "${filepath}" with error:`, error)
+      throw error
+    }
   }
 
   // Wrap execGit to always pass `gitOps`
