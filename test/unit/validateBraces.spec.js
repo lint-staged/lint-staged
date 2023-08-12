@@ -1,46 +1,64 @@
 import makeConsoleMock from 'consolemock'
 
-import { validateBraces, BRACES_REGEXP } from '../../lib/validateBraces.js'
+import {
+  validateBraces,
+  INCORRECT_BRACES_REGEXP,
+  DOUBLE_BRACES_REGEXP,
+} from '../../lib/validateBraces.js'
 
-describe('BRACES_REGEXP', () => {
+describe('INCORRECT_BRACES_REGEXP', () => {
   it(`should match '*.{js}'`, () => {
-    expect('*.{js}'.match(BRACES_REGEXP)).toBeTruthy()
+    expect('*.{js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should match 'file_{10}'`, () => {
-    expect('file_{test}'.match(BRACES_REGEXP)).toBeTruthy()
+    expect('file_{test}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should match '*.{spec\\.js}'`, () => {
-    expect('*.{spec\\.js}'.match(BRACES_REGEXP)).toBeTruthy()
+    expect('*.{spec\\.js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
   it(`should match '*.{js\\,ts}'`, () => {
-    expect('*.{js\\,ts}'.match(BRACES_REGEXP)).toBeTruthy()
+    expect('*.{js\\,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
   it("should not match '*.${js}'", () => {
-    expect('*.${js}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('*.${js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match '.{js,ts}'`, () => {
-    expect('.{js,ts}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('.{js,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match 'file_{1..10}'`, () => {
-    expect('file_{1..10}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('file_{1..10}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match '*.\\{js\\}'`, () => {
-    expect('*.\\{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('*.\\{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match '*.\\{js}'`, () => {
-    expect('*.\\{js}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('*.\\{js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match '*.{js\\}'`, () => {
-    expect('*.{js\\}'.match(BRACES_REGEXP)).not.toBeTruthy()
+    expect('*.{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+  })
+})
+
+describe('DOUBLE_BRACES_REGEXP', () => {
+  it(`should match '*.{{js,ts}}'`, () => {
+    expect('*.{{js,ts}}'.match(DOUBLE_BRACES_REGEXP)).toBeTruthy()
+  })
+
+  it(`should not match '*.{{js,ts},{css}}'`, () => {
+    expect('*.{{js,ts},{css}}'.match(DOUBLE_BRACES_REGEXP)).toBeFalsy()
+  })
+
+  it(`should not match '*.{{js,ts},{css}}'`, () => {
+    expect('*.{{js,ts},{css}}'.match(DOUBLE_BRACES_REGEXP)).toBeFalsy()
   })
 })
 
@@ -84,10 +102,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  /**
-   * @todo This isn't correctly detected even though the outer braces are invalid.
-   */
-  it.skip('should warn about `*.{{js,ts}}` and return fixed pattern', () => {
+  it('should warn about `*.{{js,ts}}` and return fixed pattern', () => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{{js,ts}}', logger)
@@ -95,7 +110,7 @@ describe('validateBraces', () => {
     expect(fixedBraces).toEqual('*.{js,ts}')
     expect(logger.printHistory()).toMatchInlineSnapshot(`
       "
-      WARN ‼ Detected incorrect braces with only single value: \`*.{{js,ts}}\`. Reformatted as: \`*.{js,ts}\`
+      WARN ⚠ Detected incorrect braces with only single value: \`*.{{js,ts}}\`. Reformatted as: \`*.{js,ts}\`
       "
     `)
   })
