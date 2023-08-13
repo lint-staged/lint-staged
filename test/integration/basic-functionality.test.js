@@ -1,9 +1,9 @@
 import './__mocks__/resolveConfig.js'
 
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { jest } from '@jest/globals'
-import fs from 'fs-extra'
 
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -114,7 +114,7 @@ describe('lint-staged', () => {
       await execGit(['add', 'test.js'])
 
       // Replace ugly file with pretty but do not stage changes
-      await fs.remove(path.join(cwd, 'test.js'))
+      await fs.rm(path.join(cwd, 'test.js'))
       await appendFile('test.js', fileFixtures.prettyJS)
 
       // Run lint-staged with `prettier --write` and commit pretty file

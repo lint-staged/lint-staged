@@ -4,7 +4,8 @@ import './__mocks__/dynamicImport.js'
 import path from 'node:path'
 
 import { jest as jestGlobals } from '@jest/globals'
-import normalize from 'normalize-path'
+
+import { normalizePath } from '../../lib/normalizePath.js'
 
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -84,11 +85,11 @@ describe('lint-staged', () => {
       expect(await readFile('deeper/even/file.js')).toMatch('file.js')
 
       // 'deeper/even/deeper/file.js' is relative to parent 'deeper/even/'
-      expect(await readFile('deeper/even/deeper/file.js')).toMatch(normalize('deeper/file.js'))
+      expect(await readFile('deeper/even/deeper/file.js')).toMatch(normalizePath('deeper/file.js'))
 
       // 'a/very/deep/file/path/file.js' is relative to root '.'
       expect(await readFile('a/very/deep/file/path/file.js')).toMatch(
-        normalize('a/very/deep/file/path/file.js')
+        normalizePath('a/very/deep/file/path/file.js')
       )
     })
   )

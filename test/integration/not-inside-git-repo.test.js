@@ -1,8 +1,9 @@
 import './__mocks__/resolveConfig.js'
 
+import fs from 'node:fs/promises'
+
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
-import fs from 'fs-extra'
 
 import lintStaged from '../../lib/index.js'
 
@@ -18,7 +19,7 @@ describe('lint-staged', () => {
     const logger = makeConsoleMock()
     await expect(lintStaged({ ...prettierWrite, cwd: nonGitDir }, logger)).resolves.toEqual(false)
     expect(logger.printHistory()).toMatch('Current directory is not a git directory')
-    await fs.remove(nonGitDir)
+    await fs.rm(nonGitDir, { recursive: true })
   })
 
   test('fails without output when not in a git directory and quiet', async () => {
@@ -28,6 +29,6 @@ describe('lint-staged', () => {
       lintStaged({ ...prettierWrite, cwd: nonGitDir, quiet: true }, logger)
     ).resolves.toEqual(false)
     expect(logger.printHistory()).toBeFalsy()
-    await fs.remove(nonGitDir)
+    await fs.rm(nonGitDir, { recursive: true })
   })
 })

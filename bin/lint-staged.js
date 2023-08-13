@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import fs from 'node:fs/promises'
 
 import { supportsColor } from 'chalk'
 import { Option, program } from 'commander'
@@ -19,8 +17,7 @@ if (supportsColor) {
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
 
-const packageJsonPath = path.join(fileURLToPath(import.meta.url), '../../package.json')
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
+const packageJson = JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url)))
 const version = packageJson.version
 
 const debugLog = debug('lint-staged:bin')
@@ -113,7 +110,7 @@ debugLog('Options parsed from command-line:', options)
 if (options.configPath === '-') {
   delete options.configPath
   try {
-    options.config = fs.readFileSync(process.stdin.fd, 'utf8').toString().trim()
+    options.config = await fs.readFile(process.stdin.fd, 'utf8').toString().trim()
   } catch {
     console.error(CONFIG_STDIN_ERROR)
     process.exit(1)
@@ -126,10 +123,9 @@ if (options.configPath === '-') {
   }
 }
 
-lintStaged(options)
-  .then((passed) => {
-    process.exitCode = passed ? 0 : 1
-  })
-  .catch(() => {
-    process.exitCode = 1
-  })
+try {
+  const passed = await lintStaged(options)
+  process.exitCode = passed ? 0 : 1
+} catch {
+  process.exitCode = 1
+}

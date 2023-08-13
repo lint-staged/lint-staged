@@ -1,18 +1,21 @@
-import { tmpdir } from 'node:os'
+import crypto from 'node:crypto'
+import fs from 'node:fs/promises'
+import os from 'node:os'
 import path from 'node:path'
-import { randomBytes } from 'node:crypto'
-import { promises as fs } from 'node:fs'
 
-import normalize from 'normalize-path'
-import { ensureDir } from 'fs-extra'
+import { normalizePath } from '../../../lib/normalizePath.js'
 
 /**
  * Create temporary random directory and return its path
  * @returns {Promise<String>}
  */
 export const createTempDir = async () => {
-  const tempDir = await fs.realpath(tmpdir())
-  const dirname = path.join(tempDir, `lint-staged-${randomBytes(16).toString('hex')}`)
-  await ensureDir(dirname)
-  return normalize(dirname)
+  const baseDir = await fs.realpath(
+    process.env.GITHUB_ACTIONS === 'true' ? process.env.RUNNER_TEMP : os.tmpdir()
+  )
+
+  const tempDir = path.join(baseDir, 'lint-staged', crypto.randomUUID())
+  await fs.mkdir(tempDir, { recursive: true })
+
+  return normalizePath(tempDir)
 }

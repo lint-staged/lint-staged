@@ -97,7 +97,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', 'unit', '__mocks__', 'my-config.cjs') },
+      { configPath: path.join('test', 'unit', '__mocks__', 'cjs', 'my-config.cjs') },
       logger
     )
 

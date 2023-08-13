@@ -1,9 +1,9 @@
 import './__mocks__/resolveConfig.js'
 
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { jest } from '@jest/globals'
-import fs from 'fs-extra'
 
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 import { prettierListDifferent } from './__fixtures__/configs.js'
@@ -20,7 +20,7 @@ describe('lint-staged', () => {
 
       // create a new repo for the git submodule to a temp path
       let submoduleDir = path.resolve(cwd, 'submodule-temp')
-      await fs.ensureDir(submoduleDir)
+      await fs.mkdir(submoduleDir, { recursive: true })
       await execGit('init', { cwd: submoduleDir })
       await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
       await execGit(['config', 'user.email', '"test@test.com"'], { cwd: submoduleDir })

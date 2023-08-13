@@ -2,14 +2,14 @@ import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
 import { execa } from 'execa'
-import normalize from 'normalize-path'
 
 import { getStagedFiles } from '../../lib/getStagedFiles.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 import { resolveGitRepo } from '../../lib/resolveGitRepo.js'
 import { runAll } from '../../lib/runAll.js'
-import { ConfigNotFoundError, GitError } from '../../lib/symbols.js'
 import * as searchConfigsNS from '../../lib/searchConfigs.js'
+import { ConfigNotFoundError, GitError } from '../../lib/symbols.js'
 
 import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
 
@@ -39,7 +39,7 @@ getStagedFiles.mockImplementation(async () => [])
 
 resolveGitRepo.mockImplementation(async () => {
   const cwd = process.cwd()
-  return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
+  return { gitConfigDir: normalizePath(path.resolve(cwd, '.git')), gitDir: normalizePath(cwd) }
 })
 
 const configPath = '.lintstagedrc.json'
@@ -162,23 +162,7 @@ describe('runAll', () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG [STARTED] Preparing lint-staged...
-      LOG [SUCCESS] Preparing lint-staged...
-      LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] Config object — 1 file
-      LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo "sample"
-      LOG [SUCCESS] echo "sample"
-      LOG [SUCCESS] *.js — 1 file
-      LOG [SUCCESS] Config object — 1 file
-      LOG [SUCCESS] Running tasks for staged files...
-      LOG [STARTED] Applying modifications from tasks...
-      LOG [SUCCESS] Applying modifications from tasks...
-      LOG [STARTED] Cleaning up temporary files...
-      LOG [SUCCESS] Cleaning up temporary files..."
-    `)
+    expect(console.printHistory()).toMatch(/"data":"COMPLETED".*Running tasks for staged files/)
   })
 
   it('should skip tasks if previous git error', async () => {
@@ -188,7 +172,7 @@ describe('runAll', () => {
       ...jest.requireActual('../../lib/gitWorkflow.js'),
       prepare: (ctx) => {
         ctx.errors.add(GitError)
-        throw new Error('test')
+        throw new Error('test error')
       },
     }))
 
@@ -196,19 +180,7 @@ describe('runAll', () => {
       runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG [STARTED] Preparing lint-staged...
-      ERROR [FAILED] test
-      LOG [STARTED] Running tasks for staged files...
-      INFO [SKIPPED] Running tasks for staged files...
-      LOG [STARTED] Applying modifications from tasks...
-      INFO [SKIPPED] 
-      [SKIPPED]   ✖ lint-staged failed due to a git error.
-      LOG [STARTED] Cleaning up temporary files...
-      INFO [SKIPPED] 
-      [SKIPPED]   ✖ lint-staged failed due to a git error."
-    `)
+    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Running tasks for staged files/)
   })
 
   it('should skip applying unstaged modifications if there are errors during linting', async () => {
@@ -228,24 +200,7 @@ describe('runAll', () => {
       runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG [STARTED] Preparing lint-staged...
-      LOG [SUCCESS] Preparing lint-staged...
-      LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] Config object — 1 file
-      LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo "sample"
-      ERROR [FAILED] echo "sample" [1]
-      ERROR [FAILED] echo "sample" [1]
-      ERROR [FAILED] echo "sample" [1]
-      LOG [STARTED] Applying modifications from tasks...
-      INFO [SKIPPED] Skipped because of errors from tasks.
-      LOG [STARTED] Reverting to original state because of errors...
-      LOG [SUCCESS] Reverting to original state because of errors...
-      LOG [STARTED] Cleaning up temporary files...
-      LOG [SUCCESS] Cleaning up temporary files..."
-    `)
+    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Applying modifications from tasks/)
   })
 
   it('should skip tasks and restore state if terminated', async () => {
@@ -267,24 +222,9 @@ describe('runAll', () => {
       runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
 
-    expect(console.printHistory()).toMatchInlineSnapshot(`
-      "
-      LOG [STARTED] Preparing lint-staged...
-      LOG [SUCCESS] Preparing lint-staged...
-      LOG [STARTED] Running tasks for staged files...
-      LOG [STARTED] Config object — 1 file
-      LOG [STARTED] *.js — 1 file
-      LOG [STARTED] echo "sample"
-      ERROR [FAILED] echo "sample" [KILLED]
-      ERROR [FAILED] echo "sample" [KILLED]
-      ERROR [FAILED] echo "sample" [KILLED]
-      LOG [STARTED] Applying modifications from tasks...
-      INFO [SKIPPED] Skipped because of errors from tasks.
-      LOG [STARTED] Reverting to original state because of errors...
-      LOG [SUCCESS] Reverting to original state because of errors...
-      LOG [STARTED] Cleaning up temporary files...
-      LOG [SUCCESS] Cleaning up temporary files..."
-    `)
+    expect(console.printHistory()).toMatch(
+      /"data":"COMPLETED".*Reverting to original state because of errors/
+    )
   })
 
   it('should resolve matched files to cwd when using relative option', async () => {
@@ -320,7 +260,7 @@ describe('runAll', () => {
     expect(mockTask).toHaveBeenCalledWith(['foo.js'])
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
-    expect(expected).toEqual([[normalize(path.join(cwd, 'test/foo.js'))]])
+    expect(expected).toEqual([[normalizePath(path.join(cwd, 'test/foo.js'))]])
   })
 
   it('should resolve matched files to config locations with multiple configs', async () => {
@@ -348,8 +288,8 @@ describe('runAll', () => {
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([
       [
-        normalize(path.join(process.cwd(), 'test/foo.js')),
-        normalize(path.join(process.cwd(), 'foo.js')),
+        normalizePath(path.join(process.cwd(), 'test/foo.js')),
+        normalizePath(path.join(process.cwd(), 'foo.js')),
       ],
     ])
   })

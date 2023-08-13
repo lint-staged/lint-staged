@@ -1,12 +1,11 @@
 import path from 'node:path'
 
-import normalize from 'normalize-path'
-
 import { chunkFiles } from '../../lib/chunkFiles.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 
 describe('chunkFiles', () => {
   const files = ['example.js', 'foo.js', 'bar.js', 'foo/bar.js']
-  const baseDir = normalize('/opt/git/example.git')
+  const baseDir = normalizePath('/opt/git/example.git')
 
   it('should default to sane value', () => {
     const chunkedFiles = chunkFiles({ baseDir, files: ['foo.js'], relative: true })
@@ -20,7 +19,7 @@ describe('chunkFiles', () => {
 
   it('should chunk too long argument string', () => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20, relative: false })
-    expect(chunkedFiles).toEqual(files.map((file) => [normalize(path.resolve(baseDir, file))]))
+    expect(chunkedFiles).toEqual(files.map((file) => [normalizePath(path.resolve(baseDir, file))]))
   })
 
   it('should take into account relative setting', () => {
@@ -33,11 +32,11 @@ describe('chunkFiles', () => {
 
   it('should resolve absolute paths by default', () => {
     const chunkedFiles = chunkFiles({ baseDir, files })
-    expect(chunkedFiles).toEqual([files.map((file) => normalize(path.resolve(baseDir, file)))])
+    expect(chunkedFiles).toEqual([files.map((file) => normalizePath(path.resolve(baseDir, file)))])
   })
 
   it('should resolve absolute paths by default even when maxArgLength is set', () => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 262144 })
-    expect(chunkedFiles).toEqual([files.map((file) => normalize(path.resolve(baseDir, file)))])
+    expect(chunkedFiles).toEqual([files.map((file) => normalizePath(path.resolve(baseDir, file)))])
   })
 })

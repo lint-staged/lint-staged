@@ -61,7 +61,7 @@ describe('lintStaged', () => {
           "shouldBackup": true,
         },
         "exitOnError": false,
-        "nonTTYRenderer": "silent",
+        "fallbackRenderer": "silent",
         "registerSignalListeners": false,
         "renderer": "silent",
       }
@@ -94,9 +94,26 @@ describe('lintStaged', () => {
           "shouldBackup": true,
         },
         "exitOnError": false,
-        "nonTTYRenderer": "verbose",
+        "fallbackRenderer": "test",
         "registerSignalListeners": false,
-        "renderer": "verbose",
+        "renderer": "test",
+        "rendererOptions": {
+          "logger": ListrLogger {
+            "applyFormat": [MockFunction],
+            "fields": [MockFunction],
+            "format": [MockFunction],
+            "icon": [MockFunction],
+            "log": [MockFunction],
+            "prefix": [MockFunction],
+            "spacing": [MockFunction],
+            "splat": [MockFunction],
+            "style": [MockFunction],
+            "suffix": [MockFunction],
+            "toStderr": [MockFunction],
+            "toStdout": [MockFunction],
+            "wrap": [MockFunction],
+          },
+        },
       }
     `)
   })
