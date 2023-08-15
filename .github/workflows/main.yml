@@ -11,16 +11,18 @@ on:
     tags-ignore:
       - '*'
   pull_request:
-    # Run on to branches with an open PR
-    branches:
-      - '*'
 
 permissions:
   contents: read
 
 jobs:
+  install:
+    uses: ./.github/workflows/install.yml
+
   lint:
     name: ESLint
+    needs:
+      - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -32,11 +34,9 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-18-${{ hashFiles('**/package-lock.json') }}
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ubuntu-latest-18-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - run: npm run lint
 
   commitlint:
@@ -62,6 +62,8 @@ jobs:
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   test:
+    needs:
+      - install
     strategy:
       matrix:
         # Test with Node.js v16 (LTS), v18 (LTS), and v20 (Current)
@@ -83,11 +85,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      # Node.js 14 ships with npm@6, which has trouble installing latest versions of itself
-      - if: matrix.node == 14
-        run: npm install -g npm@8
-      # Install latest npm for older Node.js versions
-      - run: npm install -g npm
       # Install node_modules
       - uses: actions/cache@v3
         id: cache-node_modules
@@ -96,6 +93,7 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+      # Only cached for ubuntu-latest
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
       # Print current Node.js version
