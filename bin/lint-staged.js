@@ -15,14 +15,13 @@ if (supportsColor) {
   process.env.FORCE_COLOR = supportsColor.level.toString()
 }
 
+const debugLog = debug('lint-staged:bin')
+
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
 
 const packageJson = JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url)))
 const version = packageJson.version
-
-const debugLog = debug('lint-staged:bin')
-debugLog('Running `lint-staged@%s`', version)
 
 const cli = program.version(version)
 
@@ -89,6 +88,8 @@ const cliOptions = cli.parse(process.argv).opts()
 if (cliOptions.debug) {
   debug.enable('lint-staged*')
 }
+
+debugLog('Running `lint-staged@%s` on Node.js %s (%s)', version, process.version, process.platform)
 
 const options = {
   allowEmpty: !!cliOptions.allowEmpty,
