@@ -39,6 +39,28 @@ jobs:
         run: npm ci
       - run: npm run lint
 
+  commitlint:
+    if: github.event_name == 'pull_request'
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
   test:
     strategy:
       matrix:

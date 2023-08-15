@@ -48,6 +48,8 @@
     "@babel/core": "7.22.10",
     "@babel/eslint-parser": "7.22.10",
     "@babel/preset-env": "7.22.10",
+    "@commitlint/cli": "17.7.1",
+    "@commitlint/config-conventional": "17.7.0",
     "babel-jest": "29.6.2",
     "babel-plugin-transform-imports": "2.0.0",
     "consolemock": "1.1.0",
