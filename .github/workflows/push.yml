@@ -2,11 +2,8 @@ name: Test & Release
 
 on:
   push:
-    # Run on pushes to specific branches
     branches:
       - master
-      - beta
-      - alpha
     # Do not run on tags
     tags-ignore:
       - '*'
@@ -19,13 +16,15 @@ jobs:
   install:
     uses: ./.github/workflows/install.yml
 
-  lint:
-    name: ESLint
+  changesets:
+    if: github.event_name == 'pull_request'
     needs:
       - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -37,7 +36,7 @@ jobs:
           key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - run: npm run lint
+      - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
 
   commitlint:
     if: github.event_name == 'pull_request'
@@ -60,6 +59,26 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  lint:
+    name: ESLint
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: npm run lint
 
   test:
     needs:
@@ -119,7 +138,6 @@ jobs:
     name: Codecov
     runs-on: ubuntu-latest
     needs:
-      - lint
       - test
     steps:
       - uses: actions/checkout@v3
@@ -138,16 +156,28 @@ jobs:
     needs:
       - lint
       - test
+      - codecov
     # Trigger release for only pushes to branches defined above
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      # Release using semantic-release.
-      # While this runs on all branches, it will only release latest from master
-      - uses: codfish/semantic-release-action@v2
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          commit: 'chore(release): bump version'
+          title: 'chore(release): bump version'
+          publish: npx changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
