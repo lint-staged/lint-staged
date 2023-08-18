@@ -17,7 +17,8 @@ jobs:
     uses: ./.github/workflows/install.yml
 
   changesets:
-    if: github.event_name == 'pull_request'
+    # Changesets no longer exist when releasing
+    if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
     needs:
       - install
     runs-on: ubuntu-latest
@@ -176,8 +177,8 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
-          commit: 'chore(release): bump version'
-          title: 'chore(release): bump version'
-          publish: npx changeset tag
+          title: '🦋 Changeset release'
+          version: npm run version
+          publish: npm run publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

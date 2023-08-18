@@ -30,7 +30,10 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "version": "npx changeset version",
+    "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
+    "publish": "npx changeset tag"
   },
   "dependencies": {
     "chalk": "5.3.0",
