@@ -8,6 +8,7 @@ import debug from 'debug'
 
 import lintStaged from '../lib/index.js'
 import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
+import { readStdin } from '../lib/readStdin.js'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
 if (supportsColor) {
@@ -110,16 +111,12 @@ debugLog('Options parsed from command-line:', options)
 if (options.configPath === '-') {
   delete options.configPath
   try {
-    options.config = await fs.readFile(process.stdin.fd, 'utf8').toString().trim()
-  } catch {
+    debugLog('Reading config from stdin')
+    options.config = JSON.parse(await readStdin())
+  } catch (error) {
+    debugLog(CONFIG_STDIN_ERROR, error)
     console.error(CONFIG_STDIN_ERROR)
     process.exit(1)
-  }
-
-  try {
-    options.config = JSON.parse(options.config)
-  } catch {
-    // Let config parsing complain if it's not JSON
   }
 }
 
