@@ -86,9 +86,8 @@ jobs:
       - install
     strategy:
       matrix:
-        # Test with Node.js v16 (LTS), v18 (LTS), and v20 (Current)
+        # Test with Node.js v18 (LTS) and v20 (Current)
         node:
-          - 16
           - 18
           - 20
         # Test with Ubuntu, macOS, and Windows
@@ -128,9 +127,8 @@ jobs:
       - run: node bin/lint-staged.js --help
       # Run tests
       - run: npm test
-      # Upload coverage artifact from Node.js LTS
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-latest' && matrix.node == '16'
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '20'
         with:
           name: coverage
           path: coverage
