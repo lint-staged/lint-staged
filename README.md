@@ -906,7 +906,7 @@ export default {
 
 </details>
 
-#### ESLint >= 8.51.0 &&  [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new)
+#### ESLint >= 8.51.0 && [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new)
 
 <details>
   <summary>Click to expand</summary>
