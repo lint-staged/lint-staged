@@ -906,4 +906,21 @@ export default {
 
 </details>
 
+#### ESLint >= 8.51.0 && [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new)
+
+<details>
+  <summary>Click to expand</summary>
+
+ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs/latest/use/command-line-interface#--no-warn-ignored). It suppresses the `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warning, so manually ignoring files via `eslint.isPathIgnored` is no longer necessary.
+
+```json
+{
+  "*.js": "eslint --max-warnings=0 --no-warn-ignored"
+}
+```
+
+**NOTE:** `--no-warn-ignored` flag is only available when [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new) is used.
+
+</details>
+
 </details>
