@@ -1,5 +1,16 @@
 # lint-staged
 
+## 15.0.0
+
+### Major Changes
+
+- [#1322](https://github.com/okonet/lint-staged/pull/1322) [`66b93aa`](https://github.com/okonet/lint-staged/commit/66b93aac870d155ca81302b2574617da99409ca7) Thanks [@iiroj](https://github.com/iiroj)! - **Require at least Node.js 18.12.0**
+
+  This release drops support for Node.js 16, which is EOL after 2023-09-11.
+  Please upgrade your Node.js to the latest version.
+
+  Additionally, all dependencies have been updated to their latest versions.
+
 ## [v14.0.1](https://github.com/okonet/lint-staged/releases/tag/v14.0.1) - 21 Aug 2023
 
 ### Bug Fixes
