@@ -164,6 +164,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v3
+        with:
+          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
+          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
       - uses: actions/setup-node@v3
         with:
           node-version: 20
