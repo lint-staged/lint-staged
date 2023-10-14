@@ -2,19 +2,13 @@ name: Security Analysis
 
 on:
   push:
-    # Run on pushes to specific branches
     branches:
-      - "*"
-    # Do not run on tags
-    tags-ignore:
-      - "*"
+      - master
   pull_request:
-    # Run on to branches with an open PR
     branches:
-      - "*"
+      - master
   schedule:
-    # At 00:00 on Monday.
-    - cron: '0 0 * * 1'
+    - cron: '0 0 * * 1' # 00:00 on Monday.
 
 jobs:
   CodeQL:

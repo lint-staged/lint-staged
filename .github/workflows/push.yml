@@ -1,0 +1,189 @@
+name: Test & Release
+
+on:
+  push:
+    branches:
+      - master
+    # Do not run on tags
+    tags-ignore:
+      - '*'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    uses: ./.github/workflows/install.yml
+
+  changesets:
+    # Changesets no longer exist when releasing
+    if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
+
+  commitlint:
+    if: github.event_name == 'pull_request'
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  lint:
+    name: ESLint
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: npm run lint
+
+  test:
+    needs:
+      - install
+    strategy:
+      matrix:
+        # Test with Node.js v18 (LTS) and v20 (Current)
+        node:
+          - 18
+          - 20
+        # Test with Ubuntu, macOS, and Windows
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - if: matrix.os == 'windows-latest'
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      # Install node_modules
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+      # Only cached for ubuntu-latest
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      # Print current Node.js version
+      - run: node --version
+      # Print current npm version
+      - run: npm --version
+      # Print current Git version
+      - run: git --version
+      # Print lint-staged version
+      - run: node bin/lint-staged.js --version
+      # Print lint-staged help text
+      - run: node bin/lint-staged.js --help
+      # Run tests
+      - run: npm test
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '20'
+        with:
+          name: coverage
+          path: coverage
+
+  codecov:
+    name: Codecov
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - uses: actions/checkout@v3
+      # Download coverage artifact
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage
+      # Run codecov.io
+      - uses: codecov/codecov-action@v3
+
+  release:
+    permissions:
+      contents: write
+      issues: read
+      packages: write
+      pull-requests: write
+      id-token: write
+    name: Release
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+      - codecov
+    # Trigger release for only pushes to branches defined above
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
+          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - uses: actions/cache@v3
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          title: '🦋 Changeset release'
+          version: npm run version
+          publish: npm run tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

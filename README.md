@@ -1,4 +1,4 @@
-# 🚫💩 lint-staged ![GitHub Actions](https://github.com/okonet/lint-staged/workflows/CI/badge.svg) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+# 🚫💩 lint-staged [![Test & Release](https://github.com/okonet/lint-staged/actions/workflows/push.yml/badge.svg)](https://github.com/okonet/lint-staged/actions/workflows/push.yml) [![Publish](https://github.com/okonet/lint-staged/actions/workflows/tag.yml/badge.svg)](https://github.com/okonet/lint-staged/actions/workflows/tag.yml) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -903,6 +903,23 @@ export default {
   },
 }
 ```
+
+</details>
+
+#### ESLint >= 8.51.0 && [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new)
+
+<details>
+  <summary>Click to expand</summary>
+
+ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs/latest/use/command-line-interface#--no-warn-ignored). It suppresses the `warning File ignored because of a matching ignore pattern. Use "--no-ignore" to override` warning, so manually ignoring files via `eslint.isPathIgnored` is no longer necessary.
+
+```json
+{
+  "*.js": "eslint --max-warnings=0 --no-warn-ignored"
+}
+```
+
+**NOTE:** `--no-warn-ignored` flag is only available when [Flat ESLint config](https://eslint.org/docs/latest/use/configure/configuration-files-new) is used.
 
 </details>
 
