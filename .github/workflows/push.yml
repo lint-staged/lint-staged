@@ -184,6 +184,6 @@ jobs:
         with:
           title: '🦋 Changeset release'
           version: npm run version
-          publish: npm run publish
+          publish: npm run tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
