@@ -1,0 +1,6 @@
+{
+  "name": "my-lint-staged-config",
+  "version": "0.0.0",
+  "type": "commonjs",
+  "main": "./index.cjs"
+}

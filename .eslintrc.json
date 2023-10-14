@@ -1,10 +1,43 @@
 {
-  "extends": ["okonet/node"],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "requireConfigFile": false,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
+  "plugins": ["node", "import", "prettier"],
   "rules": {
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "newlines-between": "always"
+      }
+    ],
     "no-console": "off",
-    "node/no-unsupported-features": ["error", "8.12.0"],
-    "node/no-unsupported-features/es-syntax": ["error", { "version": ">=8.12.0" }],
-    "prettier/prettier": "off",
-    "require-atomic-updates": "off"
+    "node/no-unsupported-features/es-builtins": "error",
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      { "ignores": ["dynamicImport", "modules"] }
+    ],
+    "node/no-unsupported-features/node-builtins": "error",
+    "prettier/prettier": "error"
   }
 }

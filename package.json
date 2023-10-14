@@ -1,6 +1,6 @@
 {
   "name": "lint-staged",
-  "version": "0.0.0-development",
+  "version": "15.0.0",
   "description": "Lint files staged by git",
   "license": "MIT",
   "repository": "https://github.com/okonet/lint-staged",
@@ -13,81 +13,61 @@
   "funding": {
     "url": "https://opencollective.com/lint-staged"
   },
-  "bin": "./bin/lint-staged",
-  "main": "./lib/index.js",
+  "engines": {
+    "node": ">=18.12.0"
+  },
+  "type": "module",
+  "bin": "./bin/lint-staged.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./bin": "./bin/lint-staged.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "bin",
     "lib"
   ],
   "scripts": {
-    "cz": "git-cz",
-    "lint:base": "eslint --rule \"prettier/prettier: 2\"",
-    "lint": "npm run lint:base -- .",
-    "lint:fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
+    "lint": "eslint .",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "./bin/lint-staged"
-    }
+    "test:watch": "jest --watch",
+    "version": "npx changeset version",
+    "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
+    "tag": "npx changeset tag"
   },
   "dependencies": {
-    "chalk": "^3.0.0",
-    "commander": "^4.0.1",
-    "cosmiconfig": "^6.0.0",
-    "debug": "^4.1.1",
-    "dedent": "^0.7.0",
-    "execa": "^3.4.0",
-    "listr": "^0.14.3",
-    "log-symbols": "^3.0.0",
-    "micromatch": "^4.0.2",
-    "normalize-path": "^3.0.0",
-    "please-upgrade-node": "^3.2.0",
-    "string-argv": "0.3.1",
-    "stringify-object": "^3.3.0"
+    "chalk": "5.3.0",
+    "commander": "11.1.0",
+    "debug": "4.3.4",
+    "execa": "8.0.1",
+    "lilconfig": "2.1.0",
+    "listr2": "7.0.1",
+    "micromatch": "4.0.5",
+    "pidtree": "0.6.0",
+    "string-argv": "0.3.2",
+    "yaml": "2.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.9.0",
-    "consolemock": "^1.1.0",
-    "eslint": "^6.7.2",
-    "eslint-config-okonet": "^7.0.2",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-flowtype": "^4.5.2",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-react": "^7.17.0",
-    "fs-extra": "^8.1.0",
-    "husky": "^3.1.0",
-    "jest": "^24.9.0",
-    "jest-snapshot-serializer-ansi": "^1.0.0",
-    "nanoid": "^2.1.7",
-    "prettier": "^1.19.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "lib/**/*.js"
-    ],
-    "setupFiles": [
-      "./testSetup.js"
-    ],
-    "snapshotSerializers": [
-      "jest-snapshot-serializer-ansi"
-    ],
-    "testEnvironment": "node"
+    "@babel/core": "7.23.2",
+    "@babel/eslint-parser": "7.22.15",
+    "@babel/preset-env": "7.23.2",
+    "@changesets/changelog-github": "0.4.8",
+    "@changesets/cli": "2.26.2",
+    "@commitlint/cli": "17.7.2",
+    "@commitlint/config-conventional": "17.7.0",
+    "babel-jest": "29.7.0",
+    "babel-plugin-transform-imports": "2.0.0",
+    "consolemock": "1.1.0",
+    "eslint": "8.51.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-import": "2.28.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "5.0.1",
+    "husky": "8.0.3",
+    "jest": "29.7.0",
+    "jest-snapshot-serializer-ansi": "2.1.0",
+    "mock-stdin": "1.0.0",
+    "prettier": "3.0.3"
   },
   "keywords": [
     "lint",
