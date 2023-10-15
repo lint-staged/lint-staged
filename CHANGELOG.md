@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.0.1
+
+### Patch Changes
+
+- [#1217](https://github.com/lint-staged/lint-staged/pull/1217) [`d2e6f8b`](https://github.com/lint-staged/lint-staged/commit/d2e6f8b1e1cd84ba6eb2f3f6a7f650c882987041) Thanks [@louneskmt](https://github.com/louneskmt)! - Previously it was possible for a function task to mutate the list of staged files passed to the function, and accidentally affect the generation of other tasks. This is now fixed by passing a copy of the original file list instead.
+
 ## 15.0.0
 
 ### Major Changes
