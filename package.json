@@ -41,11 +41,11 @@
     "debug": "4.3.4",
     "execa": "8.0.1",
     "lilconfig": "2.1.0",
-    "listr2": "7.0.1",
+    "listr2": "7.0.2",
     "micromatch": "4.0.5",
     "pidtree": "0.6.0",
     "string-argv": "0.3.2",
-    "yaml": "2.3.2"
+    "yaml": "2.3.3"
   },
   "devDependencies": {
     "@babel/core": "7.23.2",
@@ -53,8 +53,8 @@
     "@babel/preset-env": "7.23.2",
     "@changesets/changelog-github": "0.4.8",
     "@changesets/cli": "2.26.2",
-    "@commitlint/cli": "17.7.2",
-    "@commitlint/config-conventional": "17.7.0",
+    "@commitlint/cli": "17.8.0",
+    "@commitlint/config-conventional": "17.8.0",
     "babel-jest": "29.7.0",
     "babel-plugin-transform-imports": "2.0.0",
     "consolemock": "1.1.0",
