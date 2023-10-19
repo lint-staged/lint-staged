@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.0.2
+
+### Patch Changes
+
+- [#1339](https://github.com/lint-staged/lint-staged/pull/1339) [`8e82364`](https://github.com/lint-staged/lint-staged/commit/8e82364dd89155e96de574cfb38a94d28b8635af) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies, including listr2@7.0.2 to fix an upstream issue affecting lint-staged.
+
 ## 15.0.1
 
 ### Patch Changes
