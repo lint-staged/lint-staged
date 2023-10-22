@@ -23,7 +23,7 @@ jobs:
       - install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
@@ -45,7 +45,7 @@ jobs:
       - install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
@@ -67,7 +67,7 @@ jobs:
       - install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -101,7 +101,7 @@ jobs:
     steps:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -140,7 +140,7 @@ jobs:
     needs:
       - test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Download coverage artifact
       - uses: actions/download-artifact@v3
         with:
@@ -164,7 +164,7 @@ jobs:
     # Trigger release for only pushes to branches defined above
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
           token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
