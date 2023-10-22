@@ -86,10 +86,11 @@ jobs:
       - install
     strategy:
       matrix:
-        # Test with Node.js v18 (LTS) and v20 (Current)
+        # Test with Node.js active LTS versions, and the latest version
         node:
           - 18
           - 20
+          - 21
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
