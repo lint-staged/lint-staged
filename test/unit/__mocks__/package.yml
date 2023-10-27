@@ -1,0 +1,2 @@
+lint-staged:
+  "*": mytask

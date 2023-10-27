@@ -206,4 +206,50 @@ describe('loadConfig', () => {
 
     await fs.rm(configFile)
   })
+
+  it('should read "lint-staged" key from package.yaml', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'package.yaml')
+
+    await fs.writeFile(configFile, 'lint-staged:\n  "*": mytask')
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+      }
+    `)
+  })
+
+  it('should read "lint-staged" key from package.yml', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'package.yml')
+
+    await fs.writeFile(configFile, 'lint-staged:\n  "*": mytask')
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+      }
+    `)
+  })
+
+  it('should return null config when package.yaml file is invalid', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'package.yaml')
+
+    await fs.writeFile(configFile, '{')
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toBeUndefined()
+
+    await fs.rm(configFile)
+  })
 })

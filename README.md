@@ -145,7 +145,7 @@ Options:
 
 _Lint-staged_ can be configured in many ways:
 
-- `lint-staged` object in your `package.json`
+- `lint-staged` object in your `package.json`, or [`package.yaml`](https://github.com/pnpm/pnpm/pull/1799)
 - `.lintstagedrc` file in JSON or YML format, or you can be explicit with the file extension:
   - `.lintstagedrc.json`
   - `.lintstagedrc.yaml`
