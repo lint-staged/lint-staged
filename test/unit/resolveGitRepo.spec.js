@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs/promises'
 
 import { normalizePath } from '../../lib/normalizePath.js'
 import { determineGitDir, resolveGitRepo } from '../../lib/resolveGitRepo.js'
@@ -46,6 +47,21 @@ describe('resolveGitRepo', () => {
   it('should return null when not in a git directory', async () => {
     const { gitDir } = await resolveGitRepo({ cwd: '/' }) // assume root is not a git directory
     expect(gitDir).toEqual(null)
+  })
+
+  it('should resolve when git config dir is symbolic link', async () => {
+    const link = path.join(__dirname, '.git')
+    await fs.symlink(expected, link)
+
+    const processCwdBkp = process.cwd
+    process.cwd = () => __dirname
+
+    const { gitDir, gitConfigDir } = await resolveGitRepo()
+    expect(gitDir).toEqual(expected)
+    expect(gitConfigDir).toEqual(path.join(expected, '.git'));
+
+    await fs.unlink(link);
+    process.cwd = processCwdBkp
   })
 
   describe('determineGitDir', () => {
