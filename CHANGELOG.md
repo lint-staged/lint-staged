@@ -1,5 +1,15 @@
 # lint-staged
 
+## 15.1.0
+
+### Minor Changes
+
+- [#1344](https://github.com/lint-staged/lint-staged/pull/1344) [`0423311`](https://github.com/lint-staged/lint-staged/commit/04233115a5e25d6fa7d357cbe9d42173ae8a1acf) Thanks [@danielbayley](https://github.com/danielbayley)! - Add support for loading configuration from `package.yaml` and `package.yml` files, supported by `pnpm`.
+
+### Patch Changes
+
+- [#1355](https://github.com/lint-staged/lint-staged/pull/1355) [`105d901`](https://github.com/lint-staged/lint-staged/commit/105d9012fc92fca549987816406450075cf255f3) Thanks [@iiroj](https://github.com/iiroj)! - Suppress some warnings when using the "--quiet" flag
+
 ## 15.0.2
 
 ### Patch Changes
