@@ -338,13 +338,26 @@ describe('runAll', () => {
 
   it('should warn when "git add" was used in commands', async () => {
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await runAll({ configObject: { '*.js': ['git add'] } }).catch(() => {})
+    await expect(runAll({ configObject: { '*.js': ['git add'] } })).rejects.toThrowError()
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
+  })
+
+  it('should not warn about "git add" when --quiet was used', async () => {
+    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    await expect(
+      runAll({ configObject: { '*.js': ['git add'] }, quiet: true })
+    ).rejects.toThrowError()
+    expect(console.printHistory()).toEqual('')
   })
 
   it('should warn when --no-stash was used', async () => {
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false })
     expect(console.printHistory()).toMatch('Skipping backup because `--no-stash` was used')
+  })
+
+  it('should not warn when --no-stash was used together with --quiet', async () => {
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false, quiet: true })
+    expect(console.printHistory()).toEqual('')
   })
 
   it('should warn when --diff was used', async () => {
