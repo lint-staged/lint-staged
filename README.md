@@ -72,6 +72,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v15
+
+- Since `v15.0.0` _lint-staged_ no longer supports Node.js 16. Please upgrade your Node.js version to at least `18.12.0`.
+
 #### v14
 
 - Since `v14.0.0` _lint-staged_ no longer supports Node.js 14. Please upgrade your Node.js version to at least `16.14.0`.
@@ -79,6 +83,7 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 #### v13
 
 - Since `v13.0.0` _lint-staged_ no longer supports Node.js 12. Please upgrade your Node.js version to at least `14.13.1`, or `16.0.0` onward.
+- Version `v13.3.0` was incorrectly released including code of version `v14.0.0`. This means the breaking changes of `v14` are also included in `v13.3.0`, the last `v13` version released
 
 #### v12
 
