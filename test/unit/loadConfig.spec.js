@@ -61,6 +61,20 @@ describe('loadConfig', () => {
     `)
   })
 
+  it('should return null config when YAML config file is invalid', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'lint-staged.yml')
+
+    await fs.writeFile(configFile, '{')
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toBeUndefined()
+
+    await fs.rm(configFile)
+  })
+
   it('should load CommonJS config file from absolute path', async () => {
     expect.assertions(1)
 
@@ -190,6 +204,30 @@ describe('loadConfig', () => {
 
     expect(result).toMatchInlineSnapshot(`{}`)
 
+    await fs.rm(configFile)
+  })
+
+  it('should read config from package.json', async () => {
+    expect.assertions(1)
+
+    const configFile = path.join(__dirname, '__mocks__', 'package.json')
+
+    await fs.writeFile(
+      configFile,
+      JSON.stringify({
+        'lint-staged': {
+          '*': 'mytask',
+        },
+      })
+    )
+
+    const { config } = await loadConfig({ configPath: configFile }, logger)
+
+    expect(config).toMatchInlineSnapshot(`
+    {
+      "*": "mytask",
+    }
+  `)
     await fs.rm(configFile)
   })
 
