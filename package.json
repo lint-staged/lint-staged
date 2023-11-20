@@ -40,7 +40,7 @@
     "commander": "11.1.0",
     "debug": "4.3.4",
     "execa": "8.0.1",
-    "lilconfig": "2.1.0",
+    "lilconfig": "3.0.0",
     "listr2": "8.0.0",
     "micromatch": "4.0.5",
     "pidtree": "0.6.0",
