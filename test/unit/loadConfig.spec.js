@@ -286,7 +286,7 @@ describe('loadConfig', () => {
 
     const { config } = await loadConfig({ configPath: configFile }, logger)
 
-    expect(config).toBeUndefined()
+    expect(config).toBeNull()
 
     await fs.rm(configFile)
   })
