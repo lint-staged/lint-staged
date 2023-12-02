@@ -69,6 +69,7 @@ describe('runAll', () => {
           "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
+          Symbol(shapeMode): false,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
@@ -106,6 +107,7 @@ describe('runAll', () => {
           "_events": {},
           "_eventsCount": 0,
           "_maxListeners": undefined,
+          Symbol(shapeMode): false,
           Symbol(kCapture): false,
         },
         "hasPartiallyStagedFiles": null,
@@ -122,20 +124,21 @@ describe('runAll', () => {
     expect.assertions(1)
     await expect(runAll({ configObject: {}, configPath, quiet: true })).resolves
       .toMatchInlineSnapshot(`
-      {
-        "errors": Set {},
-        "events": EventEmitter {
-          "_events": {},
-          "_eventsCount": 0,
-          "_maxListeners": undefined,
-          Symbol(kCapture): false,
-        },
-        "hasPartiallyStagedFiles": null,
-        "output": [],
-        "quiet": true,
-        "shouldBackup": true,
-      }
-    `)
+        {
+          "errors": Set {},
+          "events": EventEmitter {
+            "_events": {},
+            "_eventsCount": 0,
+            "_maxListeners": undefined,
+            Symbol(shapeMode): false,
+            Symbol(kCapture): false,
+          },
+          "hasPartiallyStagedFiles": null,
+          "output": [],
+          "quiet": true,
+          "shouldBackup": true,
+        }
+      `)
   })
 
   it('should resolve the promise with no files', async () => {

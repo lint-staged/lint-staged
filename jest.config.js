@@ -6,6 +6,7 @@ const config = {
     '!lib/resolveConfig.js',
   ],
   moduleDirectories: ['node_modules'],
+  prettierPath: null,
   setupFiles: ['./testSetup.js'],
   snapshotSerializers: ['jest-snapshot-serializer-ansi'],
   testEnvironment: 'node',
