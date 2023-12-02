@@ -1,12 +1,11 @@
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { normalizePath } from '../../lib/normalizePath.js'
 import { determineGitDir, resolveGitRepo } from '../../lib/resolveGitRepo.js'
 
-/**
- * resolveGitRepo runs execa, so the mock needs to be disabled for these tests
- */
-jest.unmock('execa')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 describe('resolveGitRepo', () => {
   it('should resolve to current working dir when .git is in the same dir', async () => {

@@ -1,14 +1,9 @@
 import path from 'node:path'
 
-import { execa } from 'execa'
+import { getMockExeca } from './__utils__/getMockExeca.js'
 
-import { execGit, GIT_GLOBAL_OPTIONS } from '../../lib/execGit.js'
-
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
-
-jest.mock('execa', () => ({
-  execa: jest.fn(() => mockExecaReturnValue()),
-}))
+const { execa } = await getMockExeca()
+const { execGit, GIT_GLOBAL_OPTIONS } = await import('../../lib/execGit.js')
 
 test('GIT_GLOBAL_OPTIONS', () => {
   expect(GIT_GLOBAL_OPTIONS).toMatchInlineSnapshot(`

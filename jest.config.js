@@ -1,21 +1,18 @@
 const config = {
   collectCoverageFrom: [
     'lib/**/*.js',
-    // Avoid ESM import.meta parse error.
-    // (Can't measure coverage anyway, it's always mocked)
+    /**
+     * Instanbul uses babel to parse coverage data,
+     * so `import.meta` is not available
+     */
     '!lib/resolveConfig.js',
   ],
   moduleDirectories: ['node_modules'],
   prettierPath: null,
-  setupFiles: ['./testSetup.js'],
-  snapshotSerializers: ['jest-snapshot-serializer-ansi'],
+  setupFiles: ['./test/testSetup.js'],
+  snapshotSerializers: ['./test/serializer.cjs'],
   testEnvironment: 'node',
-  transform: {
-    '\\.[jt]sx?$': 'babel-jest',
-    '\\.mjs$': 'babel-jest',
-  },
-  /** Also transform ESM packages in `node_modules` */
-  transformIgnorePatterns: [],
+  transform: {},
 }
 
 export default config

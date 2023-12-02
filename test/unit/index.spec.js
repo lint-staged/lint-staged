@@ -1,47 +1,21 @@
-import { lilconfig } from 'lilconfig'
 import makeConsoleMock from 'consolemock'
+import { jest } from '@jest/globals'
 
-import { getStagedFiles } from '../../lib/getStagedFiles.js'
-import lintStaged from '../../lib/index.js'
-
-jest.unmock('execa')
-
-jest.mock('lilconfig', () => {
-  const actual = jest.requireActual('lilconfig')
-  return {
-    lilconfig: jest.fn((name, options) => actual.lilconfig(name, options)),
-  }
-})
-
-const mockLilConfig = (result) => {
-  lilconfig.mockImplementationOnce(() => ({
-    search: () => Promise.resolve(result),
-  }))
-}
-
-/**
- * This converts paths into `file://` urls, but this doesn't
- * work with `import()` when using babel + jest.
- */
-jest.mock('node:url', () => ({
-  pathToFileURL: (path) => path,
+jest.unstable_mockModule('lilconfig', () => ({
+  lilconfig: jest.fn(),
 }))
 
-jest.mock('../../lib/getStagedFiles.js')
-jest.mock('../../lib/gitWorkflow.js')
-jest.mock('../../lib/resolveConfig.js', () => ({
-  /** Unfortunately necessary due to non-ESM tests. */
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
+jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({ getStagedFiles: jest.fn() }))
+
+jest.unstable_mockModule('../../lib/gitWorkflow.js', () => ({ GitWorkflow: jest.fn() }))
+
+jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
+  validateOptions: jest.fn().mockImplementation(async () => void {}),
 }))
-jest.mock('../../lib/validateOptions.js', () => ({
-  validateOptions: jest.fn().mockImplementation(async () => {}),
-}))
+
+const { lilconfig } = await import('lilconfig')
+const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
+const { default: lintStaged } = await import('../../lib/index.js')
 
 // TODO: Never run tests in the project's WC because this might change source files git status
 
@@ -56,7 +30,7 @@ describe('lintStaged', () => {
     expect.assertions(1)
 
     const config = { '*': 'mytask' }
-    mockLilConfig({ config })
+    lilconfig({ config })
 
     await lintStaged(undefined, logger)
 
@@ -79,7 +53,7 @@ describe('lintStaged', () => {
   it('should use use the console if no logger is passed', async () => {
     expect.assertions(1)
 
-    mockLilConfig({ config: {} })
+    lilconfig({ config: {} })
 
     const previousConsole = console
     const mockedConsole = makeConsoleMock()

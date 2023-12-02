@@ -1,29 +1,14 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
 import { createTempDir } from '../__utils__/createTempDir.js'
 import { loadConfig } from '../../lib/loadConfig.js'
 
-/** Unfortunately necessary due to non-ESM tests. */
-jest.mock('../../lib/resolveConfig.js', () => ({
-  resolveConfig: (configPath) => {
-    try {
-      return require.resolve(configPath)
-    } catch {
-      return configPath
-    }
-  },
-}))
-
-/**
- * This converts paths into `file://` urls, but this doesn't
- * work with `import()` when using babel + jest.
- */
-jest.mock('node:url', () => ({
-  pathToFileURL: (path) => path,
-}))
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('loadConfig', () => {
   const logger = makeConsoleMock()
@@ -73,11 +58,43 @@ describe('loadConfig', () => {
     expect(config).toBeUndefined()
   })
 
-  it('should load CommonJS config file from absolute path', async () => {
+  it('should load advanced config from absolute .js filepath', async () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'advanced-config.js') },
+      { configPath: path.join(__dirname, '__mocks__', 'advanced-esm-config.js') },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*.css": [Function],
+        "*.js": [Function],
+      }
+    `)
+  })
+
+  it('should load advanced config file from relative .js filepath', async () => {
+    expect.assertions(1)
+
+    const { config } = await loadConfig(
+      { configPath: path.join('test', 'unit', '__mocks__', 'advanced-esm-config.js') },
+      logger
+    )
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "*.css": [Function],
+        "*.js": [Function],
+      }
+    `)
+  })
+
+  it('should load CommonJS config from absolute .cjs file', async () => {
+    expect.assertions(1)
+
+    const { config } = await loadConfig(
+      { configPath: path.join(__dirname, '__mocks__', 'advanced-cjs-config.cjs') },
       logger
     )
 
@@ -93,7 +110,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', 'unit', '__mocks__', 'advanced-config.js') },
+      { configPath: path.join('test', 'unit', '__mocks__', 'advanced-cjs-config.cjs') },
       logger
     )
 
@@ -105,7 +122,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load CommonJS config file from .cjs file', async () => {
+  it('should load CommonJS from relative .cjs file', async () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(

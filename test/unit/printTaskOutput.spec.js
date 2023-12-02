@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals'
+
 import { printTaskOutput } from '../../lib/printTaskOutput.js'
 
 const logger = {

@@ -2,6 +2,7 @@ import { constants } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
 import { validateOptions } from '../../lib/validateOptions.js'

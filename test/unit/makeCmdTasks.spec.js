@@ -1,12 +1,8 @@
-import { execa } from 'execa'
+import { getMockExeca } from './__utils__/getMockExeca.js'
 
-import { makeCmdTasks } from '../../lib/makeCmdTasks.js'
+const { execa } = await getMockExeca()
 
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
-
-jest.mock('execa', () => ({
-  execa: jest.fn(() => mockExecaReturnValue()),
-}))
+const { makeCmdTasks } = await import('../../lib/makeCmdTasks.js')
 
 describe('makeCmdTasks', () => {
   const gitDir = process.cwd()

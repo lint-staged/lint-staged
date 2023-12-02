@@ -1,5 +1,3 @@
-import './__mocks__/resolveConfig.js'
-
 import fs from 'node:fs/promises'
 
 import { jest } from '@jest/globals'
