@@ -35,14 +35,40 @@ describe('lint-staged', () => {
       res = await lintStaged('--diff=master...my-branch')
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
 
-      try {
-        await lintStaged('--diff=master...my-branch --stash')
-      } catch (err) {
-        expect(err.stderr).toMatch('lint-staged failed due to a git error.')
-      }
+      await expect(lintStaged('--diff=master...my-branch --stash')).rejects.toThrowError(
+        expect.objectContaining({
+          stderr: expect.stringContaining('lint-staged failed due to a git error.'),
+        })
+      )
 
       res = await lintStaged('--diff=master...my-branch --no-stash')
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+    })
+  )
+
+  test(
+    '--no-stash implies --no-hide-partially-staged',
+    withGitIntegration(async ({ execGit, readFile, writeFile, cwd }) => {
+      const lintStaged = getLintStagedExecutor(cwd)
+
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+
+      // Stage ugly file
+      await writeFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', 'test.js'])
+
+      // modify file with unstaged changes
+      await writeFile('test.js', fileFixtures.uglyJSWithChanges)
+
+      // lint-staged fails because file is ugly
+      await expect(lintStaged('--no-stash')).rejects.toMatchObject({
+        stderr: expect.stringContaining(
+          'Skipping hiding unstaged changes from partially staged files because `--no-stash` was used'
+        ),
+      })
+
+      // unstaged changes were not touched
+      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJSWithChanges)
     })
   )
 })
