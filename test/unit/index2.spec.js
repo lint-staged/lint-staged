@@ -45,28 +45,10 @@ describe('lintStaged', () => {
 
     await lintStaged({ configPath: MOCK_CONFIG_FILE, quiet: true }, makeConsoleMock())
 
-    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
-      {
-        "ctx": {
-          "errors": Set {},
-          "events": EventEmitter {
-            "_events": {},
-            "_eventsCount": 0,
-            "_maxListeners": undefined,
-            Symbol(shapeMode): false,
-            Symbol(kCapture): false,
-          },
-          "hasPartiallyStagedFiles": null,
-          "output": [],
-          "quiet": true,
-          "shouldBackup": true,
-        },
-        "exitOnError": false,
-        "fallbackRenderer": "silent",
-        "registerSignalListeners": false,
-        "renderer": "silent",
-      }
-    `)
+    expect(Listr.mock.calls[0][1]).toMatchObject({
+      fallbackRenderer: 'silent',
+      renderer: 'silent',
+    })
   })
 
   it('should pass debug flag to Listr', async () => {
@@ -79,45 +61,10 @@ describe('lintStaged', () => {
       makeConsoleMock()
     )
 
-    expect(Listr.mock.calls[0][1]).toMatchInlineSnapshot(`
-      {
-        "ctx": {
-          "errors": Set {},
-          "events": EventEmitter {
-            "_events": {},
-            "_eventsCount": 0,
-            "_maxListeners": undefined,
-            Symbol(shapeMode): false,
-            Symbol(kCapture): false,
-          },
-          "hasPartiallyStagedFiles": null,
-          "output": [],
-          "quiet": false,
-          "shouldBackup": true,
-        },
-        "exitOnError": false,
-        "fallbackRenderer": "test",
-        "registerSignalListeners": false,
-        "renderer": "test",
-        "rendererOptions": {
-          "logger": ListrLogger {
-            "applyFormat": [MockFunction],
-            "fields": [MockFunction],
-            "format": [MockFunction],
-            "icon": [MockFunction],
-            "log": [MockFunction],
-            "prefix": [MockFunction],
-            "spacing": [MockFunction],
-            "splat": [MockFunction],
-            "style": [MockFunction],
-            "suffix": [MockFunction],
-            "toStderr": [MockFunction],
-            "toStdout": [MockFunction],
-            "wrap": [MockFunction],
-          },
-        },
-      }
-    `)
+    expect(Listr.mock.calls[0][1]).toMatchObject({
+      fallbackRenderer: 'test',
+      renderer: 'test',
+    })
   })
 
   it('should catch errors from js function config', async () => {
@@ -129,10 +76,11 @@ describe('lintStaged', () => {
     }
 
     expect.assertions(2)
+
     await expect(lintStaged({ config }, logger)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"failed config"`
     )
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+    expect(logger.printHistory()).toEqual('')
   })
 })

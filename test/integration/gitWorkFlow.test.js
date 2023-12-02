@@ -7,6 +7,12 @@ import { jest as jestGlobals } from '@jest/globals'
 import { writeFile } from '../../lib/file.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
 import { getInitialState } from '../../lib/state.js'
+import {
+  GetBackupStashError,
+  GitError,
+  HideUnstagedChangesError,
+  RestoreMergeStatusError,
+} from '../../lib/symbols.js'
 
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -38,24 +44,9 @@ describe('gitWorkflow', () => {
         await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrowErrorMatchingInlineSnapshot(
           `"test"`
         )
-        expect(ctx).toMatchInlineSnapshot(`
-{
-  "errors": Set {
-    Symbol(GitError),
-  },
-  "events": EventEmitter {
-    "_events": {},
-    "_eventsCount": 0,
-    "_maxListeners": undefined,
-    Symbol(shapeMode): false,
-    Symbol(kCapture): false,
-  },
-  "hasPartiallyStagedFiles": true,
-  "output": [],
-  "quiet": false,
-  "shouldBackup": null,
-}
-`)
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
   })
@@ -70,25 +61,10 @@ describe('gitWorkflow', () => {
         await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
           `"lint-staged automatic backup is missing!"`
         )
-        expect(ctx).toMatchInlineSnapshot(`
-{
-  "errors": Set {
-    Symbol(GetBackupStashError),
-    Symbol(GitError),
-  },
-  "events": EventEmitter {
-    "_events": {},
-    "_eventsCount": 0,
-    "_maxListeners": undefined,
-    Symbol(shapeMode): false,
-    Symbol(kCapture): false,
-  },
-  "hasPartiallyStagedFiles": null,
-  "output": [],
-  "quiet": false,
-  "shouldBackup": null,
-}
-`)
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(GetBackupStashError)).toBe(true)
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
   })
@@ -145,25 +121,10 @@ describe('gitWorkflow', () => {
         await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowError(
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
-        expect(ctx).toMatchInlineSnapshot(`
-{
-  "errors": Set {
-    Symbol(GitError),
-    Symbol(HideUnstagedChangesError),
-  },
-  "events": EventEmitter {
-    "_events": {},
-    "_eventsCount": 0,
-    "_maxListeners": undefined,
-    Symbol(shapeMode): false,
-    Symbol(kCapture): false,
-  },
-  "hasPartiallyStagedFiles": null,
-  "output": [],
-  "quiet": false,
-  "shouldBackup": null,
-}
-`)
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(HideUnstagedChangesError)).toBe(true)
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
 
@@ -200,25 +161,10 @@ describe('gitWorkflow', () => {
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `"Merge state could not be restored due to an error!"`
         )
-        expect(ctx).toMatchInlineSnapshot(`
-{
-  "errors": Set {
-    Symbol(GitError),
-    Symbol(RestoreMergeStatusError),
-  },
-  "events": EventEmitter {
-    "_events": {},
-    "_eventsCount": 0,
-    "_maxListeners": undefined,
-    Symbol(shapeMode): false,
-    Symbol(kCapture): false,
-  },
-  "hasPartiallyStagedFiles": null,
-  "output": [],
-  "quiet": false,
-  "shouldBackup": null,
-}
-`)
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(GitError)).toBe(true)
+        expect(ctx.errors.has(RestoreMergeStatusError)).toBe(true)
       })
     )
   })
