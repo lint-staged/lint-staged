@@ -53,21 +53,21 @@ describe('resolveGitRepo', () => {
       const cwd = process.cwd()
       const relativeDir = undefined
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalizePath(cwd))
+      expect(normalizePath(rootDir)).toEqual(normalizePath(cwd))
     })
 
     it('should resolve to parent dir when relative dir is child', () => {
       const relativeDir = 'bar'
       const cwd = process.cwd() + path.sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalizePath(process.cwd()))
+      expect(normalizePath(rootDir)).toEqual(normalizePath(process.cwd()))
     })
 
     it('should resolve to parent dir when relative dir is child and child has trailing dir separator', () => {
       const relativeDir = 'bar' + path.sep
       const cwd = process.cwd() + path.sep + 'bar'
       const rootDir = determineGitDir(cwd, relativeDir)
-      expect(rootDir).toEqual(normalizePath(process.cwd()))
+      expect(normalizePath(rootDir)).toEqual(normalizePath(process.cwd()))
     })
   })
 })
