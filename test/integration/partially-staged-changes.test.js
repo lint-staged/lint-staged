@@ -1,5 +1,3 @@
-import './__mocks__/resolveConfig.js'
-
 import { jest } from '@jest/globals'
 
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'

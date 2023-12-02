@@ -1,11 +1,17 @@
-import { execGit } from '../../lib/execGit.js'
-import { GitWorkflow, STASH } from '../../lib/gitWorkflow.js'
+import { jest } from '@jest/globals'
+
 import { getInitialState } from '../../lib/state.js'
 import { GetBackupStashError } from '../../lib/symbols'
 
-jest.mock('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => ''),
+jest.unstable_mockModule('../../lib/execGit.js', () => ({
+  execGit: jest.fn(async () => {
+    /** Mock fails by default */
+    return ''
+  }),
 }))
+
+const { execGit } = await import('../../lib/execGit.js')
+const { GitWorkflow, STASH } = await import('../../lib/gitWorkflow.js')
 
 describe('gitWorkflow', () => {
   const options = { gitConfigDir: '.' }

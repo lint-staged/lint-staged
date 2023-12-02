@@ -29,8 +29,8 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
+    "test:watch": "npm run test -- --watch",
     "version": "npx changeset version",
     "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
     "tag": "npx changeset tag"
@@ -55,9 +55,8 @@
     "@changesets/cli": "2.27.1",
     "@commitlint/cli": "18.4.3",
     "@commitlint/config-conventional": "18.4.3",
-    "babel-jest": "29.7.0",
-    "babel-plugin-transform-imports": "2.0.0",
     "consolemock": "1.1.0",
+    "cross-env": "7.0.3",
     "eslint": "8.55.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-import": "2.29.0",

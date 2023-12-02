@@ -1,8 +1,11 @@
-import { resolve } from 'node:path'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { execaCommand } from 'execa'
 
-const lintStagedBin = resolve(__dirname, '../../../bin/lint-staged.js')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const lintStagedBin = path.resolve(__dirname, '../../../bin/lint-staged.js')
 
 /**
  * @param {string} cwd

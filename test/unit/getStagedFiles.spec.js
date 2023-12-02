@@ -1,10 +1,15 @@
 import path from 'node:path'
 
-import { execGit } from '../../lib/execGit.js'
-import { getStagedFiles } from '../../lib/getStagedFiles.js'
+import { jest } from '@jest/globals'
+
 import { normalizePath } from '../../lib/normalizePath.js'
 
-jest.mock('../../lib/execGit.js')
+jest.unstable_mockModule('../../lib/execGit.js', () => ({
+  execGit: jest.fn(async () => ''),
+}))
+
+const { execGit } = await import('../../lib/execGit.js')
+const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
 
 // Windows filepaths
 const normalizeWindowsPath = (input) => normalizePath(path.resolve('/', input))

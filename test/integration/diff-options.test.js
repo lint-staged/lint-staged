@@ -1,5 +1,3 @@
-import './__mocks__/resolveConfig.js'
-
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 

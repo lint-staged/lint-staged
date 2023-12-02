@@ -1,5 +1,3 @@
-import './__mocks__/resolveConfig.js'
-
 import { jest } from '@jest/globals'
 
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
