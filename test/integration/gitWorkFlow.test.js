@@ -39,22 +39,23 @@ describe('gitWorkflow', () => {
           `"test"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          {
-            "errors": Set {
-              Symbol(GitError),
-            },
-            "events": EventEmitter {
-              "_events": {},
-              "_eventsCount": 0,
-              "_maxListeners": undefined,
-              Symbol(kCapture): false,
-            },
-            "hasPartiallyStagedFiles": true,
-            "output": [],
-            "quiet": false,
-            "shouldBackup": null,
-          }
-        `)
+{
+  "errors": Set {
+    Symbol(GitError),
+  },
+  "events": EventEmitter {
+    "_events": {},
+    "_eventsCount": 0,
+    "_maxListeners": undefined,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false,
+  },
+  "hasPartiallyStagedFiles": true,
+  "output": [],
+  "quiet": false,
+  "shouldBackup": null,
+}
+`)
       })
     )
   })
@@ -70,23 +71,24 @@ describe('gitWorkflow', () => {
           `"lint-staged automatic backup is missing!"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          {
-            "errors": Set {
-              Symbol(GetBackupStashError),
-              Symbol(GitError),
-            },
-            "events": EventEmitter {
-              "_events": {},
-              "_eventsCount": 0,
-              "_maxListeners": undefined,
-              Symbol(kCapture): false,
-            },
-            "hasPartiallyStagedFiles": null,
-            "output": [],
-            "quiet": false,
-            "shouldBackup": null,
-          }
-        `)
+{
+  "errors": Set {
+    Symbol(GetBackupStashError),
+    Symbol(GitError),
+  },
+  "events": EventEmitter {
+    "_events": {},
+    "_eventsCount": 0,
+    "_maxListeners": undefined,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false,
+  },
+  "hasPartiallyStagedFiles": null,
+  "output": [],
+  "quiet": false,
+  "shouldBackup": null,
+}
+`)
       })
     )
   })
@@ -144,23 +146,24 @@ describe('gitWorkflow', () => {
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          {
-            "errors": Set {
-              Symbol(GitError),
-              Symbol(HideUnstagedChangesError),
-            },
-            "events": EventEmitter {
-              "_events": {},
-              "_eventsCount": 0,
-              "_maxListeners": undefined,
-              Symbol(kCapture): false,
-            },
-            "hasPartiallyStagedFiles": null,
-            "output": [],
-            "quiet": false,
-            "shouldBackup": null,
-          }
-        `)
+{
+  "errors": Set {
+    Symbol(GitError),
+    Symbol(HideUnstagedChangesError),
+  },
+  "events": EventEmitter {
+    "_events": {},
+    "_eventsCount": 0,
+    "_maxListeners": undefined,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false,
+  },
+  "hasPartiallyStagedFiles": null,
+  "output": [],
+  "quiet": false,
+  "shouldBackup": null,
+}
+`)
       })
     )
 
@@ -198,23 +201,24 @@ describe('gitWorkflow', () => {
           `"Merge state could not be restored due to an error!"`
         )
         expect(ctx).toMatchInlineSnapshot(`
-          {
-            "errors": Set {
-              Symbol(GitError),
-              Symbol(RestoreMergeStatusError),
-            },
-            "events": EventEmitter {
-              "_events": {},
-              "_eventsCount": 0,
-              "_maxListeners": undefined,
-              Symbol(kCapture): false,
-            },
-            "hasPartiallyStagedFiles": null,
-            "output": [],
-            "quiet": false,
-            "shouldBackup": null,
-          }
-        `)
+{
+  "errors": Set {
+    Symbol(GitError),
+    Symbol(RestoreMergeStatusError),
+  },
+  "events": EventEmitter {
+    "_events": {},
+    "_eventsCount": 0,
+    "_maxListeners": undefined,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false,
+  },
+  "hasPartiallyStagedFiles": null,
+  "output": [],
+  "quiet": false,
+  "shouldBackup": null,
+}
+`)
       })
     )
   })
