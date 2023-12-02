@@ -644,7 +644,7 @@ module.exports = {
 
 ## Frequently Asked Questions
 
-### The output of commit hook looks weird (no colors, duplicate lines, …)
+### The output of commit hook looks weird (no colors, duplicate lines, verbose output on Windows, …)
 
 <details>
   <summary>Click to expand</summary>
@@ -659,6 +659,21 @@ https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/2.37.0.t
 >   directly connected to the standard output of "git" that spawns the
 >   hook, which was noticed post release. This is getting corrected.
 >   (merge [a082345372](https://github.com/git/git/commit/a082345372) ab/hooks-regression-fix later to maint).
+
+If updating Git doesn't help, you can try to manually redirect the output in your Git hook; for example:
+
+```shell
+# .husky/pre-commit
+
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then exec >/dev/tty 2>&1; fi
+
+npx lint-staged
+```
+
+Source: https://github.com/typicode/husky/issues/968#issuecomment-1176848345
 
 </details>
 
