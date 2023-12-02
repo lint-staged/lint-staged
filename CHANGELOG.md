@@ -1,5 +1,21 @@
 # lint-staged
 
+## 15.2.0
+
+### Minor Changes
+
+- [#1371](https://github.com/lint-staged/lint-staged/pull/1371) [`f3378be`](https://github.com/lint-staged/lint-staged/commit/f3378be894fb84800341800b1e4f6f8bc8dfd904) Thanks [@iiroj](https://github.com/iiroj)! - Using the `--no-stash` flag no longer discards all unstaged changes to partially staged files, which resulted in inadvertent data loss. This fix is available with a new flag `--no-hide-partially-staged` that is automatically enabled when `--no-stash` is used.
+
+### Patch Changes
+
+- [#1362](https://github.com/lint-staged/lint-staged/pull/1362) [`17bc480`](https://github.com/lint-staged/lint-staged/commit/17bc480c0f8767407a87527931558de8d1d1551d) Thanks [@antonk52](https://github.com/antonk52)! - update lilconfig@3.0.0
+
+- [#1368](https://github.com/lint-staged/lint-staged/pull/1368) [`7c55ca9`](https://github.com/lint-staged/lint-staged/commit/7c55ca9f410043016e8b33b3b523b9b7e764acf4) Thanks [@iiroj](https://github.com/iiroj)! - Update most dependencies
+
+- [#1368](https://github.com/lint-staged/lint-staged/pull/1368) [`777d4e9`](https://github.com/lint-staged/lint-staged/commit/777d4e976852af4c181ffbe055f3531343349695) Thanks [@iiroj](https://github.com/iiroj)! - To improve performance, only use `lilconfig` when searching for config files outside the git repo. In the regular case, _lint-staged_ finds the config files from the Git index and loads them directly.
+
+- [#1373](https://github.com/lint-staged/lint-staged/pull/1373) [`85eb0dd`](https://github.com/lint-staged/lint-staged/commit/85eb0ddab1eba0c0bcc8cc109e17dc2bbb3d044e) Thanks [@iiroj](https://github.com/iiroj)! - When determining git directory, use `fs.realpath()` only for symlinks. It looks like `fs.realpath()` changes some Windows mapped network filepaths unexpectedly, causing issues.
+
 ## 15.1.0
 
 ### Minor Changes
