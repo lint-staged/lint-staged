@@ -1,16 +1,11 @@
 {
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true
-    },
-    "requireConfigFile": false,
-    "sourceType": "module"
-  },
   "env": {
-    "es6": true,
+    "es2022": true,
     "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
   },
   "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
   "plugins": ["node", "import", "prettier"],

@@ -1,9 +1,5 @@
 {
-  "parserOptions": {
-    "sourceType": "module"
-  },
   "env": {
-    "node": true,
     "jest": true
   },
   "rules": {
