@@ -62,7 +62,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should return null config when YAML config file is invalid', async () => {
+  it('should not return config when YAML config file is invalid', async () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -230,7 +230,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should return null config when package.json file is invalid', async () => {
+  it('should not return config when package.json file is invalid', async () => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.json')
 
@@ -299,7 +299,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should return null config when package.yaml file is invalid', async () => {
+  it('should not return config when package.yaml file is invalid', async () => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.yaml')
 
@@ -311,6 +311,44 @@ describe('loadConfig', () => {
       const { config } = await loadConfig({ configPath }, logger)
 
       expect(config).toBeNull()
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
+  })
+
+  it('should treat config file without extension as YAML', async () => {
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'lint-staged-config')
+
+    try {
+      expect.assertions(1)
+
+      await fs.writeFile(configPath, `"*": mytask`)
+
+      const { config } = await loadConfig({ configPath }, logger)
+
+      expect(config).toMatchInlineSnapshot(`
+        {
+          "*": "mytask",
+        }
+      `)
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
+  })
+
+  it('should not return config when invalid file without extension', async () => {
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'lint-staged-config')
+
+    try {
+      expect.assertions(1)
+
+      await fs.writeFile(configPath, `{`)
+
+      const { config } = await loadConfig({ configPath }, logger)
+
+      expect(config).toBeUndefined()
     } finally {
       await fs.rm(tempDir, { recursive: true })
     }
