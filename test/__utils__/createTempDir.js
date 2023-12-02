@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import { normalizePath } from '../../../lib/normalizePath.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 
 /**
  * Create temporary random directory and return its path

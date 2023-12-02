@@ -5,8 +5,8 @@ import makeConsoleMock from 'consolemock'
 
 import { execGit as execGitBase } from '../../../lib/execGit.js'
 import lintStaged from '../../../lib/index.js'
+import { createTempDir } from '../../__utils__/createTempDir.js'
 
-import { createTempDir } from './createTempDir.js'
 import { isWindowsActions } from './isWindows'
 import { normalizeWindowsNewlines } from './normalizeWindowsNewlines.js'
 

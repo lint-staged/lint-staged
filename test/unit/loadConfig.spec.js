@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
 
+import { createTempDir } from '../__utils__/createTempDir.js'
 import { loadConfig } from '../../lib/loadConfig.js'
 
 /** Unfortunately necessary due to non-ESM tests. */
@@ -64,15 +65,12 @@ describe('loadConfig', () => {
   it('should return null config when YAML config file is invalid', async () => {
     expect.assertions(1)
 
-    const configFile = path.join(__dirname, '__mocks__', 'lint-staged.yml')
-
-    await fs.writeFile(configFile, '{')
-
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+    const { config } = await loadConfig(
+      { configPath: path.join(__dirname, '__mocks__', 'invalid-config-file.yml') },
+      logger
+    )
 
     expect(config).toBeUndefined()
-
-    await fs.rm(configFile)
   })
 
   it('should load CommonJS config file from absolute path', async () => {
@@ -196,98 +194,125 @@ describe('loadConfig', () => {
   it('should return empty object ".lintstagedrc.json" file is invalid', async () => {
     expect.assertions(1)
 
-    const configFile = path.join(__dirname, '__mocks__', '.lintstagedrc.json')
-
-    await fs.writeFile(configFile, '{')
-
-    const result = await loadConfig({ configPath: configFile }, logger)
+    const result = await loadConfig(
+      { configPath: path.join(__dirname, '__mocks__', 'invalid-json-config.json') },
+      logger
+    )
 
     expect(result).toMatchInlineSnapshot(`{}`)
-
-    await fs.rm(configFile)
   })
 
   it('should read config from package.json', async () => {
-    expect.assertions(1)
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'package.json')
 
-    const configFile = path.join(__dirname, '__mocks__', 'package.json')
+    try {
+      expect.assertions(1)
 
-    await fs.writeFile(
-      configFile,
-      JSON.stringify({
-        'lint-staged': {
-          '*': 'mytask',
-        },
-      })
-    )
+      await fs.writeFile(
+        configPath,
+        JSON.stringify({
+          'lint-staged': {
+            '*': 'mytask',
+          },
+        })
+      )
 
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+      const { config } = await loadConfig({ configPath }, logger)
 
-    expect(config).toMatchInlineSnapshot(`
-    {
-      "*": "mytask",
-    }
+      expect(config).toMatchInlineSnapshot(`
+      {
+        "*": "mytask",
+      }
   `)
-    await fs.rm(configFile)
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
   })
 
   it('should return null config when package.json file is invalid', async () => {
-    expect.assertions(1)
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'package.json')
 
-    const configFile = path.join(__dirname, '__mocks__', 'package.json')
+    try {
+      expect.assertions(1)
 
-    await fs.writeFile(configFile, '{')
+      await fs.writeFile(configPath, '{')
 
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+      const { config } = await loadConfig({ configPath }, logger)
 
-    expect(config).toBeNull()
-
-    await fs.rm(configFile)
+      expect(config).toBeNull()
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
   })
 
   it('should read "lint-staged" key from package.yaml', async () => {
-    expect.assertions(1)
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'package.yaml')
 
-    const configFile = path.join(__dirname, '__mocks__', 'package.yaml')
+    try {
+      expect.assertions(1)
 
-    await fs.writeFile(configFile, 'lint-staged:\n  "*": mytask')
+      await fs.writeFile(
+        configPath,
+        `lint-staged:
+            "*": mytask
+        `
+      )
 
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+      const { config } = await loadConfig({ configPath }, logger)
 
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "*": "mytask",
-      }
-    `)
+      expect(config).toMatchInlineSnapshot(`
+        {
+          "*": "mytask",
+        }
+      `)
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
   })
 
   it('should read "lint-staged" key from package.yml', async () => {
-    expect.assertions(1)
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'package.yml')
 
-    const configFile = path.join(__dirname, '__mocks__', 'package.yml')
+    try {
+      expect.assertions(1)
 
-    await fs.writeFile(configFile, 'lint-staged:\n  "*": mytask')
+      await fs.writeFile(
+        configPath,
+        `lint-staged:
+            "*": mytask
+        `
+      )
 
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+      const { config } = await loadConfig({ configPath }, logger)
 
-    expect(config).toMatchInlineSnapshot(`
-      {
-        "*": "mytask",
-      }
-    `)
+      expect(config).toMatchInlineSnapshot(`
+        {
+          "*": "mytask",
+        }
+      `)
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
   })
 
   it('should return null config when package.yaml file is invalid', async () => {
-    expect.assertions(1)
+    const tempDir = await createTempDir()
+    const configPath = path.join(tempDir, 'package.yaml')
 
-    const configFile = path.join(__dirname, '__mocks__', 'package.yaml')
+    try {
+      expect.assertions(1)
 
-    await fs.writeFile(configFile, '{')
+      await fs.writeFile(configPath, '{')
 
-    const { config } = await loadConfig({ configPath: configFile }, logger)
+      const { config } = await loadConfig({ configPath }, logger)
 
-    expect(config).toBeNull()
-
-    await fs.rm(configFile)
+      expect(config).toBeNull()
+    } finally {
+      await fs.rm(tempDir, { recursive: true })
+    }
   })
 })
