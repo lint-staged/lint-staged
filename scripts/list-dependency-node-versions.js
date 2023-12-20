@@ -3,7 +3,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import chalk from 'chalk'
-import { execa } from 'execa'
+
+import { exec } from '../lib/exec.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -15,10 +16,9 @@ console.log(chalk.dim('Listing required Node.js versions for dependencies:'))
 console.log(chalk.dim('---------------------------------------------------'))
 
 for (const dependency of Object.keys(dependencies)) {
-  const { all } = await execa('npm', ['info', dependency, 'engines.node'], {
-    all: true,
+  const output = await exec('npm', ['info', dependency, 'engines.node'], {
     cwd: __dirname,
   })
 
-  console.log(`${chalk.greenBright(dependency)}:`, all || chalk.dim('-'))
+  console.log(`${chalk.greenBright(dependency)}:`, output || chalk.dim('-'))
 }
