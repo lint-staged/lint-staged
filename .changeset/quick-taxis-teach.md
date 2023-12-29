@@ -2,4 +2,4 @@
 'lint-staged': patch
 ---
 
-restore yaml for pre-commit
+Restore config file for `pre-commit`
