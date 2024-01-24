@@ -17,7 +17,7 @@ describe('resolveTaskFn', () => {
     const context = getInitialState()
 
     const taskFn = resolveTaskFn({
-      command: 'node',
+      command: 'node -e "setTimeout(() => void 0, 10000)"',
       isFn: true,
     })
     const taskPromise = taskFn(context)
@@ -31,6 +31,8 @@ describe('resolveTaskFn', () => {
     await expect(task2Promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"node -e "process.exit(1)" [FAILED]"`
     )
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"node -e "setTimeout(() => void 0, 10000)" [KILLED]"`
+    )
   })
 })

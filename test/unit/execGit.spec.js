@@ -21,6 +21,7 @@ describe('execGit', () => {
     expect(execa).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
       all: true,
       cwd,
+      stdin: 'ignore',
     })
   })
 
@@ -30,6 +31,7 @@ describe('execGit', () => {
     expect(execa).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
       all: true,
       cwd,
+      stdin: 'ignore',
     })
   })
 })
