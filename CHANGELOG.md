@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.1
+
+### Patch Changes
+
+- [#1387](https://github.com/lint-staged/lint-staged/pull/1387) [`e4023f6`](https://github.com/lint-staged/lint-staged/commit/e4023f687616dcf4816545b8eefbcce50e255c9c) Thanks [@iiroj](https://github.com/iiroj)! - Ignore stdin of spawned commands so that they don't get stuck waiting. Until now, _lint-staged_ has used the default settings to spawn linter commands. This means the `stdin` of the spawned commands has accepted input, and essentially gotten stuck waiting. Now the `stdin` is ignored and commands will no longer get stuck. If you relied on this behavior, please open a new issue and describe how; the behavior has not been intended.
+
 ## 15.2.0
 
 ### Minor Changes
@@ -378,7 +384,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from 'lint-staged'
+import lintStaged from "lint-staged";
 ```
 
 ## [v11.3.0-beta.2](https://github.com/okonet/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021
