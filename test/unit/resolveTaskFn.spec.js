@@ -40,6 +40,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
   })
 
@@ -58,6 +59,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
   })
 
@@ -77,6 +79,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: true,
+      stdin: 'ignore',
     })
   })
 
@@ -95,6 +98,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: true,
+      stdin: 'ignore',
     })
   })
 
@@ -113,6 +117,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: '/bin/bash',
+      stdin: 'ignore',
     })
   })
 
@@ -131,6 +136,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
   })
 
@@ -145,6 +151,7 @@ describe('resolveTaskFn', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
   })
 

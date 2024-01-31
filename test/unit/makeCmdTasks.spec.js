@@ -49,6 +49,7 @@ describe('makeCmdTasks', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
@@ -59,6 +60,7 @@ describe('makeCmdTasks', () => {
       preferLocal: true,
       reject: false,
       shell: false,
+      stdin: 'ignore',
     })
   })
 
