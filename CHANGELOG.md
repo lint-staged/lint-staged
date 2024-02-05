@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.2
+
+### Patch Changes
+
+- [#1391](https://github.com/lint-staged/lint-staged/pull/1391) [`fdcdad4`](https://github.com/lint-staged/lint-staged/commit/fdcdad42ff96fea3c05598e378d3c44ad4a51bde) Thanks [@iiroj](https://github.com/iiroj)! - _Lint-staged_ no longer tries to load configuration from files that are not checked out. This might happen when using sparse-checkout.
+
 ## 15.2.1
 
 ### Patch Changes
