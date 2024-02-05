@@ -101,7 +101,7 @@ describe('searchConfigs', () => {
     const config = { '*.js': 'eslint' }
 
     execGit.mockResolvedValueOnce(
-      `.lintstagedrc.json\u0000even/deeper/.lintstagedrc.json\u0000deeper/.lintstagedrc.json\u0000`
+      `H .lintstagedrc.json\u0000H even/deeper/.lintstagedrc.json\u0000H deeper/.lintstagedrc.json\u0000`
     )
 
     const topLevelConfig = normalizePath(path.join(process.cwd(), '.lintstagedrc.json'))
@@ -117,5 +117,23 @@ describe('searchConfigs', () => {
     const configs = await searchConfigs({})
 
     expect(Object.keys(configs)).toEqual([evenDeeperConfig, deeperConfig, topLevelConfig])
+  })
+
+  it('should ignore config files skipped from the worktree (sparse checkout)', async () => {
+    const config = { '*.js': 'eslint' }
+
+    execGit.mockResolvedValueOnce(`H .lintstagedrc.json\u0000S skipped/.lintstagedrc.json\u0000`)
+
+    const topLevelConfig = normalizePath(path.join(process.cwd(), '.lintstagedrc.json'))
+    const skippedConfig = normalizePath(path.join(process.cwd(), 'skipped/.lintstagedrc.json'))
+
+    loadConfig.mockResolvedValueOnce({ config, filepath: topLevelConfig })
+
+    // Mock will return config for skipped file, but it should not be read
+    loadConfig.mockResolvedValueOnce({ config, filepath: skippedConfig })
+
+    const configs = await searchConfigs({})
+
+    expect(Object.keys(configs)).toEqual([topLevelConfig])
   })
 })
