@@ -112,14 +112,14 @@ describe('makeCmdTasks', () => {
     expect(res[0].title).toEqual('test')
   })
 
-  it("should throw when function task doesn't return string | string[]", async () => {
+  it("should throw when function task doesn't return string | string[] | object", async () => {
     await expect(makeCmdTasks({ commands: () => null, gitDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
             "✖ Validation Error:
 
               Invalid value for '[Function]': null
 
-              Function task should return a string or an array of strings"
+              Function task should return a string or an array of strings or an object"
           `)
   })
 
