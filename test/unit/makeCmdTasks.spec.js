@@ -143,4 +143,46 @@ describe('makeCmdTasks', () => {
     /** ...but the original file list was not mutated */
     expect(files).toEqual(['test.js'])
   })
+
+  it('should work with function task returning an object with title and task', async () => {
+    const res = await makeCmdTasks({
+      commands: () => ({ title: 'test', task: () => {} }),
+      gitDir,
+      files: ['test.js'],
+    })
+    expect(res.length).toBe(1)
+    expect(res[0].title).toEqual('test')
+    expect(typeof res[0].task).toBe('function')
+  })
+
+  it('should throw error when function task returns object without proper title and task', async () => {
+    await expect(
+      makeCmdTasks({
+        commands: () => ({ title: 'test' }), // Missing task function
+        gitDir,
+        files: ['test.js'],
+      })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+            "✖ Validation Error:
+
+              Invalid value for '[Function]': { title: 'test' }
+
+              Function task should return object with title and task where title should be string and task should be function"
+          `)
+  })
+
+  it('should throw error when function task fails', async () => {
+    const failingTask = () => {
+      throw new Error('Task failed')
+    }
+
+    const res = await makeCmdTasks({
+      commands: () => ({ title: 'test', task: failingTask }),
+      gitDir,
+      files: ['test.js'],
+    })
+
+    const [linter] = res
+    await expect(linter.task()).rejects.toThrow()
+  })
 })
