@@ -223,7 +223,34 @@ Pay extra attention when the configured globs overlap, and tasks make edits to f
 }
 ```
 
-If necessary, you can limit the concurrency using `--concurrent <number>` or disable it entirely with `--concurrent false`.
+You can solve it using the negation pattern and the array syntax:
+
+```json
+{
+  "!(*.ts)": "prettier --write",
+  "*.ts": ["eslint --fix", "prettier --write"]
+}
+```
+
+Another example in which tasks make edits to files and globs match multiple files but don't overlap:
+
+```json
+{
+  "*.css": [
+    "stylelint --fix",
+    "prettier --write"
+  ],
+  "*.{js,jsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "!(*.css|*.js|*.jsx)": [
+    "prettier --write"
+  ]
+}
+```
+
+Or, if necessary, you can limit the concurrency using `--concurrent <number>` or disable it entirely with `--concurrent false`.
 
 ## Filtering files
 
@@ -232,6 +259,7 @@ Linter commands work on a subset of all staged files, defined by a _glob pattern
 - If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
   - `"*.js"` will match all JS files, like `/test.js` and `/foo/bar/test.js`
   - `"!(*test).js"` will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
+  - `"!(*.css|*.js)"` will match all files except CSS and JS files
 - If the glob pattern does contain a slash (`/`), it will match for paths as well:
   - `"./*.js"` will match all JS files in the git repo root, so `/test.js` but not `/foo/bar/test.js`
   - `"foo/**/*.js"` will match all JS files inside the `/foo` directory, so `/foo/bar/test.js` but not `/test.js`
@@ -879,7 +907,7 @@ ESLint throws out `warning File ignored because of a matching ignore pattern. Us
 <details>
   <summary>Click to expand</summary>
 
-Based on the discussion from [this issue](https://github.com/eslint/eslint/issues/9977), it was decided that using [the outlined script ](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
+Based on the discussion from [this issue](https://github.com/eslint/eslint/issues/9977), it was decided that using [the outlined script](https://github.com/eslint/eslint/issues/9977#issuecomment-406420893)is the best route to fix this.
 
 So you can setup a `.lintstagedrc.js` config file to do this:
 
