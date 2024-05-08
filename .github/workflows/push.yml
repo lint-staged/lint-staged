@@ -91,6 +91,7 @@ jobs:
           - 18
           - 20
           - 21
+          - 22
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
