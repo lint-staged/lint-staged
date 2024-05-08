@@ -189,3 +189,4 @@ jobs:
           publish: npm run tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0' # disabled because pre-push hook checks for changesets which have now been removed
