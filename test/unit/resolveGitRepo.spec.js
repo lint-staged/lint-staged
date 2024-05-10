@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { determineGitDir, resolveGitRepo } from '../../lib/resolveGitRepo.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('resolveGitRepo', () => {
   it('should resolve to current working dir when .git is in the same dir', async () => {

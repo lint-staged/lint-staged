@@ -1,17 +1,16 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+
+import { getRepoRootPath } from '../__utils__/getRepoRootPath.js'
 
 import { getMockListr2 } from './__utils__/getMockListr2.js'
 
 const { Listr } = await getMockListr2()
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const MOCK_CONFIG_FILE = path.join(__dirname, '__mocks__', 'my-config.json')
-const MOCK_STAGED_FILE = path.resolve(__dirname, '__mocks__', 'sample.js')
+const MOCK_CONFIG_FILE = path.join(getRepoRootPath(), 'test/__mocks__/my-config.json')
+const MOCK_STAGED_FILE = path.join(getRepoRootPath(), 'test/__mocks__/sample.js')
 
 jest.unstable_mockModule('../../lib/execGit.js', () => ({
   execGit: jest.fn(async () => {

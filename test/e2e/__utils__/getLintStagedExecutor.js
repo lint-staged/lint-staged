@@ -1,11 +1,10 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { execaCommand } from 'execa'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+import { getRepoRootPath } from '../../__utils__/getRepoRootPath.js'
 
-const lintStagedBin = path.resolve(__dirname, '../../../bin/lint-staged.js')
+const lintStagedBin = path.resolve(getRepoRootPath(), 'bin/lint-staged.js')
 
 /**
  * @param {string} cwd
