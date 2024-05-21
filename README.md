@@ -256,7 +256,7 @@ Or, if necessary, you can limit the concurrency using `--concurrent <number>` or
 
 Linter commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
 
-- If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will enabled, so globs match a file's basename regardless of directory:
+- If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will be enabled, so globs match a file's basename regardless of directory:
   - `"*.js"` will match all JS files, like `/test.js` and `/foo/bar/test.js`
   - `"!(*test).js"` will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
   - `"!(*.css|*.js)"` will match all files except CSS and JS files
