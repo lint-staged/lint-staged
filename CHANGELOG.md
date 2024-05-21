@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.3
+
+### Patch Changes
+
+- [#1407](https://github.com/lint-staged/lint-staged/pull/1407) [`d698162`](https://github.com/lint-staged/lint-staged/commit/d6981627472315adb01a46f797c8581393e8a637) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies
+
 ## 15.2.2
 
 ### Patch Changes
@@ -390,7 +396,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from "lint-staged";
+import lintStaged from 'lint-staged'
 ```
 
 ## [v11.3.0-beta.2](https://github.com/okonet/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021
