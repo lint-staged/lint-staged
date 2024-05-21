@@ -28,7 +28,6 @@
     "lib"
   ],
   "scripts": {
-    "prepare": "husky",
     "lint": "eslint .",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "test:watch": "npm run test -- --watch",
