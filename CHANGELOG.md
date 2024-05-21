@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.4
+
+### Patch Changes
+
+- [`4f4537a`](https://github.com/lint-staged/lint-staged/commit/4f4537a75ebfba816826f6f67a325dbc7f25908a) Thanks [@iiroj](https://github.com/iiroj)! - Fix release issue with previous version; update dependencies
+
 ## 15.2.3
 
 ### Patch Changes
