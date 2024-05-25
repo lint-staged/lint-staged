@@ -82,6 +82,7 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 #### v16
 
 - The lowest supported Node.js version is `18.19.0` or `20.5.0`, following requirements of `execa@9`. Please upgrade your Node.js version.
+- Advanced configuration options (removed in v9) are no longer validated separately, and might be treated as valid globs for tasks. Please do not try to use advanced config options anymore, they haven't been supported since v8.
 
 #### v15
 
