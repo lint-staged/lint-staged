@@ -1,5 +1,15 @@
 # lint-staged
 
+## 15.2.5
+
+### Patch Changes
+
+- [#1424](https://github.com/lint-staged/lint-staged/pull/1424) [`31a1f95`](https://github.com/lint-staged/lint-staged/commit/31a1f9548ea8202bc5bd718076711f747396e3ca) Thanks [@iiroj](https://github.com/iiroj)! - Allow approximately equivalent versions of direct dependencies by using the "~" character in the version ranges. This means a more recent patch version of a dependency is allowed if available.
+
+- [#1423](https://github.com/lint-staged/lint-staged/pull/1423) [`91abea0`](https://github.com/lint-staged/lint-staged/commit/91abea0d298154d92113ba34bae4020704e22918) Thanks [@iiroj](https://github.com/iiroj)! - Improve error logging when failing to read or parse a configuration file
+
+- [#1424](https://github.com/lint-staged/lint-staged/pull/1424) [`ee43f15`](https://github.com/lint-staged/lint-staged/commit/ee43f154097753dd5448766f792387e60e0ea453) Thanks [@iiroj](https://github.com/iiroj)! - Upgrade micromatch@4.0.7
+
 ## 15.2.4
 
 ### Patch Changes
