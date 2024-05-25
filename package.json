@@ -42,7 +42,7 @@
     "execa": "8.0.1",
     "lilconfig": "3.1.1",
     "listr2": "8.2.1",
-    "micromatch": "4.0.6",
+    "micromatch": "4.0.7",
     "pidtree": "0.6.0",
     "string-argv": "0.3.2",
     "yaml": "2.4.2"
