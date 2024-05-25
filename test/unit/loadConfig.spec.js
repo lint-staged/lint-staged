@@ -48,12 +48,14 @@ describe('loadConfig', () => {
   })
 
   it('should not return config when YAML config file is invalid', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
 
     const { config } = await loadConfig(
       { configPath: path.join(__dirname, '__mocks__', 'invalid-config-file.yml') },
       logger
     )
+
+    expect(logger.printHistory()).toMatch('Failed to read config from file')
 
     expect(config).toBeUndefined()
   })
