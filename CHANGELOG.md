@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.6
+
+### Patch Changes
+
+- [#1433](https://github.com/lint-staged/lint-staged/pull/1433) [`119adb2`](https://github.com/lint-staged/lint-staged/commit/119adb29854cabddbfcf0469d7c8a0126184a5d4) Thanks [@iiroj](https://github.com/iiroj)! - Use native "git rev-parse" commands to determine git repo root directory and the .git config directory, instead of using custom logic. This hopefully makes path resolution more robust on non-POSIX systems.
+
 ## 15.2.5
 
 ### Patch Changes
