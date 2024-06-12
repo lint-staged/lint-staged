@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.7
+
+### Patch Changes
+
+- [#1440](https://github.com/lint-staged/lint-staged/pull/1440) [`a51be80`](https://github.com/lint-staged/lint-staged/commit/a51be804b63307ac7af3c82f4cb2d43dbe92daac) Thanks [@iiroj](https://github.com/iiroj)! - In the previous version the native `git rev-parse --show-toplevel` command was taken into use for resolving the current git repo root. This version drops the `--path-format=absolute` option to support earlier git versions since it's also the default behavior. If you are still having trouble, please try upgrading `git` to the latest version.
+
 ## 15.2.6
 
 ### Patch Changes
