@@ -122,7 +122,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      # Install node_modules
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -151,6 +150,41 @@ jobs:
           name: coverage
           path: coverage
 
+  test-msys2:
+    needs:
+      - install
+    name: Node.js v20 on windows-latest (MSYS2)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          path-type: inherit
+      - run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/cache@v4
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: windows-latest-20-msys2-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            windows-latest-20-msys2-${{ hashFiles('**/package-lock.json') }}
+      # Only cached for ubuntu-latest
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - run: node --version
+      - run: npm --version
+      - run: git --version
+      - run: node bin/lint-staged.js --version
+      - run: node bin/lint-staged.js --help
+      - run: npm test
+
   codecov:
     name: Codecov
     runs-on: ubuntu-latest
@@ -178,6 +212,10 @@ jobs:
       - lint
       - test
       - codecov
+      - test-msys2
+      - test-node-range
+      - changesets
+      - commitlint
     # Trigger release for only pushes to branches defined above
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
