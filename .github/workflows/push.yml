@@ -29,7 +29,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Install node_modules
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -51,7 +50,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Install node_modules
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -71,7 +69,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Install node_modules
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -80,6 +77,25 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - run: npm run lint
+
+  test-node-range:
+    name: Test Node.js version range
+    needs:
+      - install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/cache@v4
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - run: node ./scripts/test-node-range.js
 
   test:
     needs:
