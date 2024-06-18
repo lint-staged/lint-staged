@@ -176,9 +176,9 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Create Release Pull Request
