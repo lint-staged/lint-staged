@@ -6,11 +6,10 @@ on:
       # Semver-like tags "v1.0.0", or "v.0.0.1-beta.1"
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
-permissions:
-  contents: read
-
 jobs:
-  publish:
+  Publish:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

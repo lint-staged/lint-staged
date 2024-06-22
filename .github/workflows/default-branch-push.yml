@@ -1,0 +1,45 @@
+name: Default Branch Push
+
+on:
+  push:
+    branches:
+      - master
+    # Do not run on tags
+    tags-ignore:
+      - '*'
+
+jobs:
+  Release:
+    permissions:
+      contents: write
+      issues: read
+      packages: write
+      pull-requests: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
+          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/cache@v4
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          title: '🦋 Changeset release'
+          version: npm run version
+          publish: npm run tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0' # disabled because pre-push hook checks for changesets which have now been removed
