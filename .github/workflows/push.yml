@@ -13,14 +13,9 @@ permissions:
   contents: read
 
 jobs:
-  install:
-    uses: ./.github/workflows/install.yml
-
   changesets:
     # Changesets no longer exist when releasing
     if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
-    needs:
-      - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,12 +31,12 @@ jobs:
           key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
       - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
 
   commitlint:
     if: github.event_name == 'pull_request'
-    needs:
-      - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,12 +52,12 @@ jobs:
           key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   lint:
     name: ESLint
-    needs:
-      - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,12 +71,12 @@ jobs:
           key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
       - run: npm run lint
 
   test-node-range:
     name: Test Node.js version range
-    needs:
-      - install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,11 +90,11 @@ jobs:
           key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
       - run: node ./scripts/test-node-range.js
 
   test-matrix:
-    needs:
-      - install
     strategy:
       matrix:
         # Test with Node.js active LTS versions, and the latest version
@@ -129,7 +124,6 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-      # Only cached for ubuntu-latest
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci
       # Print current Node.js version
@@ -151,8 +145,6 @@ jobs:
           path: coverage
 
   test-msys2:
-    needs:
-      - install
     strategy:
       matrix:
         node:
@@ -192,8 +184,6 @@ jobs:
       - run: npm test
 
   test-cygwin:
-    needs:
-      - install
     strategy:
       matrix:
         node:
