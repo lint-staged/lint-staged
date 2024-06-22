@@ -228,6 +228,27 @@ jobs:
           name: coverage
       - uses: codecov/codecov-action@v4
 
+  CodeQL:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    needs:
+      - changesets
+      - codecov
+      - commitlint
+      - lint
+      - test-cygwin
+      - test-matrix
+      - test-msys2
+      - test-node-range
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+      - uses: github/codeql-action/analyze@v3
+
   release:
     permissions:
       contents: write
