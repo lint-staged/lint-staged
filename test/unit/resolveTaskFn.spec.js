@@ -121,12 +121,12 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should pass `gitDir` as `cwd` to `execa()` gitDir !== process.cwd for git commands', async () => {
+  it('should pass `topLevelDir` as `cwd` to `execa()` topLevelDir !== process.cwd for git commands', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
       command: 'git diff',
-      gitDir: '../',
+      topLevelDir: '../',
     })
 
     await taskFn()
@@ -140,9 +140,9 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should not pass `gitDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
+  it('should not pass `topLevelDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
@@ -214,7 +214,7 @@ describe('resolveTaskFn', () => {
   it('should not add TaskError if no error occur', async () => {
     expect.assertions(1)
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', gitDir: '../' })
+    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
     await taskFn(context)
     expect(context.errors.has(TaskError)).toEqual(false)
   })

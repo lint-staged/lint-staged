@@ -8,7 +8,7 @@ describe('resolveGitRepo', () => {
   it('should resolve to repo root', async () => {
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
     const repoRoot = normalizePath(path.join(__dirname, '../../'))
-    const { gitDir } = await resolveGitRepo(__dirname)
-    expect(gitDir).toEqual(normalizePath(repoRoot))
+    const { topLevelDir } = await resolveGitRepo(__dirname)
+    expect(topLevelDir).toEqual(normalizePath(repoRoot))
   })
 })

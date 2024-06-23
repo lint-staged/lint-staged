@@ -28,7 +28,10 @@ describe('gitWorkflow', () => {
     it(
       'should handle errors',
       withGitIntegration(async ({ cwd }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         jest.doMock('execa', () => Promise.reject({}))
         const ctx = getInitialState()
@@ -51,7 +54,10 @@ describe('gitWorkflow', () => {
     it(
       'should handle errors',
       withGitIntegration(async ({ cwd }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         const ctx = getInitialState()
         await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -70,7 +76,7 @@ describe('gitWorkflow', () => {
       'should return unquoted files',
       withGitIntegration(async ({ appendFile, cwd, execGit }) => {
         const gitWorkflow = new GitWorkflow({
-          gitDir: cwd,
+          topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
         await appendFile('file with spaces.txt', 'staged content')
@@ -90,7 +96,10 @@ describe('gitWorkflow', () => {
     it(
       'should include to and from for renamed files',
       withGitIntegration(async ({ appendFile, cwd, execGit }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         await appendFile('original.txt', 'test content')
         await execGit(['add', 'original.txt'])
@@ -109,7 +118,10 @@ describe('gitWorkflow', () => {
     it(
       'should handle errors',
       withGitIntegration(async ({ cwd }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         const totallyRandom = `totally_random_file-${Date.now().toString()}`
         gitWorkflow.partiallyStagedFiles = [totallyRandom]
@@ -127,7 +139,10 @@ describe('gitWorkflow', () => {
     it(
       'should checkout renamed file when hiding changes',
       withGitIntegration(async ({ appendFile, cwd, execGit, readFile }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         const origContent = await readFile('README.md')
         await execGit(['mv', 'README.md', 'TEST.md'])
@@ -147,7 +162,10 @@ describe('gitWorkflow', () => {
     it(
       'should handle error when restoring merge state fails',
       withGitIntegration(async ({ cwd }) => {
-        const gitWorkflow = new GitWorkflow({ gitDir: cwd, gitConfigDir: path.join(cwd, './.git') })
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
 
         gitWorkflow.mergeHeadBuffer = true
         writeFile.mockImplementation(() => Promise.reject('test'))
