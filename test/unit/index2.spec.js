@@ -24,7 +24,7 @@ jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({
 }))
 
 jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({
-  resolveGitRepo: jest.fn(async () => ({ gitDir: 'foo', gitConfigDir: 'bar' })),
+  resolveGitRepo: jest.fn(async () => ({ topLevelDir: 'foo', gitConfigDir: 'bar' })),
 }))
 
 const { default: lintStaged } = await import('../../lib/index.js')

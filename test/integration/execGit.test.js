@@ -9,12 +9,12 @@ describe('execGit', () => {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const repoRoot = normalizePath(path.join(__dirname, '../../'))
 
-  it('should be able to run commands in the git repo root', async () => {
-    const { gitDir } = await resolveGitRepo()
-    expect(gitDir).toBeDefined()
-    expect(typeof gitDir).toEqual('string')
+  it('should be able to run commands in the git repo top-level directory', async () => {
+    const { topLevelDir } = await resolveGitRepo()
+    expect(topLevelDir).toBeDefined()
+    expect(typeof topLevelDir).toEqual('string')
 
-    const topLevel = await execGit(['rev-parse', '--show-toplevel'], { cwd: gitDir })
+    const topLevel = await execGit(['rev-parse', '--show-toplevel'], { cwd: topLevelDir })
 
     expect(normalizePath(topLevel)).toEqual(repoRoot)
   })
