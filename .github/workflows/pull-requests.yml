@@ -156,6 +156,8 @@ jobs:
         with:
           msystem: UCRT64
           path-type: inherit
+          install: >-
+            git
       - run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
