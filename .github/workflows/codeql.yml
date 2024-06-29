@@ -6,6 +6,10 @@ on:
       - master
   schedule:
     - cron: '0 0 * * 1' # 00:00 on Monday.
+  workflow_call:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   CodeQL:
