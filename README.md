@@ -1,4 +1,8 @@
-# 🚫💩 lint-staged [![Test & Release](https://github.com/okonet/lint-staged/actions/workflows/push.yml/badge.svg)](https://github.com/okonet/lint-staged/actions/workflows/push.yml) [![Publish](https://github.com/okonet/lint-staged/actions/workflows/tag.yml/badge.svg)](https://github.com/okonet/lint-staged/actions/workflows/tag.yml) [![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged) [![Codecov](https://codecov.io/gh/okonet/lint-staged/branch/master/graph/badge.svg)](https://codecov.io/gh/okonet/lint-staged)
+# 🚫💩 lint-staged
+
+[![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged)
+
+---
 
 Run linters against staged git files and don't let :poop: slip into your code base!
 
@@ -236,17 +240,9 @@ Another example in which tasks make edits to files and globs match multiple file
 
 ```json
 {
-  "*.css": [
-    "stylelint --fix",
-    "prettier --write"
-  ],
-  "*.{js,jsx}": [
-    "eslint --fix",
-    "prettier --write"
-  ],
-  "!(*.css|*.js|*.jsx)": [
-    "prettier --write"
-  ]
+  "*.css": ["stylelint --fix", "prettier --write"],
+  "*.{js,jsx}": ["eslint --fix", "prettier --write"],
+  "!(*.css|*.js|*.jsx)": ["prettier --write"]
 }
 ```
 
