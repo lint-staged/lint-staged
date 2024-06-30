@@ -7,6 +7,7 @@ const config = {
      */
     '!lib/resolveConfig.js',
   ],
+  coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
   moduleDirectories: ['node_modules'],
   prettierPath: null,
   setupFiles: ['./test/testSetup.js'],
