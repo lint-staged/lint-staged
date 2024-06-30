@@ -2,6 +2,8 @@ name: Pull Requests
 
 on:
   pull_request:
+    branches:
+      - master
 
 permissions:
   contents: read
@@ -30,7 +32,6 @@ jobs:
       - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
 
   Commitlint:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -220,23 +221,3 @@ jobs:
         with:
           name: coverage
       - uses: codecov/codecov-action@v4
-
-  CodeQL:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-    needs:
-      - Changesets
-      - Commitlint
-      - ESLint
-      - test-cygwin
-      - test-matrix
-      - test-msys2
-      - test-node-range
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-      - uses: github/codeql-action/analyze@v3
