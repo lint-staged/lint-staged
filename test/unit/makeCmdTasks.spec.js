@@ -5,20 +5,20 @@ const { execa } = await getMockExeca()
 const { makeCmdTasks } = await import('../../lib/makeCmdTasks.js')
 
 describe('makeCmdTasks', () => {
-  const gitDir = process.cwd()
+  const topLevelDir = process.cwd()
 
   beforeEach(() => {
     execa.mockClear()
   })
 
   it('should return an array', async () => {
-    const array = await makeCmdTasks({ commands: 'test', gitDir, files: ['test.js'] })
+    const array = await makeCmdTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
     expect(array).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = await makeCmdTasks({ commands: 'test', gitDir, files: ['test.js'] })
+    const res = await makeCmdTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -32,7 +32,7 @@ describe('makeCmdTasks', () => {
     expect.assertions(9)
     const res = await makeCmdTasks({
       commands: ['test', 'test2'],
-      gitDir,
+      topLevelDir,
       files: ['test.js'],
     })
     expect(res.length).toBe(2)
@@ -65,7 +65,7 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with function task returning a string', async () => {
-    const res = await makeCmdTasks({ commands: () => 'test', gitDir, files: ['test.js'] })
+    const res = await makeCmdTasks({ commands: () => 'test', topLevelDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
@@ -73,7 +73,7 @@ describe('makeCmdTasks', () => {
   it('should work with function task returning array of string', async () => {
     const res = await makeCmdTasks({
       commands: () => ['test', 'test2'],
-      gitDir,
+      topLevelDir,
       files: ['test.js'],
     })
     expect(res.length).toBe(2)
@@ -84,7 +84,7 @@ describe('makeCmdTasks', () => {
   it('should work with function task accepting arguments', async () => {
     const res = await makeCmdTasks({
       commands: (filenames) => filenames.map((file) => `test ${file}`),
-      gitDir,
+      topLevelDir,
       files: ['test.js', 'test2.js'],
     })
     expect(res.length).toBe(2)
@@ -95,7 +95,7 @@ describe('makeCmdTasks', () => {
   it('should work with array of mixed string and function tasks', async () => {
     const res = await makeCmdTasks({
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
-      gitDir,
+      topLevelDir,
       files: ['test.js', 'test2.js', 'test3.js'],
     })
     expect(res.length).toBe(5)
@@ -107,13 +107,17 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with async function tasks', async () => {
-    const res = await makeCmdTasks({ commands: async () => 'test', gitDir, files: ['test.js'] })
+    const res = await makeCmdTasks({
+      commands: async () => 'test',
+      topLevelDir,
+      files: ['test.js'],
+    })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
 
   it("should throw when function task doesn't return string | string[]", async () => {
-    await expect(makeCmdTasks({ commands: () => null, gitDir, files: ['test.js'] })).rejects
+    await expect(makeCmdTasks({ commands: () => null, topLevelDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
             "✖ Validation Error:
 
@@ -133,7 +137,7 @@ describe('makeCmdTasks', () => {
         expect(stagedFiles).toEqual([])
         return stagedFiles.map((file) => `test ${file}`)
       },
-      gitDir,
+      topLevelDir,
       files,
     })
 
