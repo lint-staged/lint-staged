@@ -1,5 +1,39 @@
 # lint-staged
 
+## 15.2.7
+
+### Patch Changes
+
+- [#1440](https://github.com/lint-staged/lint-staged/pull/1440) [`a51be80`](https://github.com/lint-staged/lint-staged/commit/a51be804b63307ac7af3c82f4cb2d43dbe92daac) Thanks [@iiroj](https://github.com/iiroj)! - In the previous version the native `git rev-parse --show-toplevel` command was taken into use for resolving the current git repo root. This version drops the `--path-format=absolute` option to support earlier git versions since it's also the default behavior. If you are still having trouble, please try upgrading `git` to the latest version.
+
+## 15.2.6
+
+### Patch Changes
+
+- [#1433](https://github.com/lint-staged/lint-staged/pull/1433) [`119adb2`](https://github.com/lint-staged/lint-staged/commit/119adb29854cabddbfcf0469d7c8a0126184a5d4) Thanks [@iiroj](https://github.com/iiroj)! - Use native "git rev-parse" commands to determine git repo root directory and the .git config directory, instead of using custom logic. This hopefully makes path resolution more robust on non-POSIX systems.
+
+## 15.2.5
+
+### Patch Changes
+
+- [#1424](https://github.com/lint-staged/lint-staged/pull/1424) [`31a1f95`](https://github.com/lint-staged/lint-staged/commit/31a1f9548ea8202bc5bd718076711f747396e3ca) Thanks [@iiroj](https://github.com/iiroj)! - Allow approximately equivalent versions of direct dependencies by using the "~" character in the version ranges. This means a more recent patch version of a dependency is allowed if available.
+
+- [#1423](https://github.com/lint-staged/lint-staged/pull/1423) [`91abea0`](https://github.com/lint-staged/lint-staged/commit/91abea0d298154d92113ba34bae4020704e22918) Thanks [@iiroj](https://github.com/iiroj)! - Improve error logging when failing to read or parse a configuration file
+
+- [#1424](https://github.com/lint-staged/lint-staged/pull/1424) [`ee43f15`](https://github.com/lint-staged/lint-staged/commit/ee43f154097753dd5448766f792387e60e0ea453) Thanks [@iiroj](https://github.com/iiroj)! - Upgrade micromatch@4.0.7
+
+## 15.2.4
+
+### Patch Changes
+
+- [`4f4537a`](https://github.com/lint-staged/lint-staged/commit/4f4537a75ebfba816826f6f67a325dbc7f25908a) Thanks [@iiroj](https://github.com/iiroj)! - Fix release issue with previous version; update dependencies
+
+## 15.2.3
+
+### Patch Changes
+
+- [#1407](https://github.com/lint-staged/lint-staged/pull/1407) [`d698162`](https://github.com/lint-staged/lint-staged/commit/d6981627472315adb01a46f797c8581393e8a637) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies
+
 ## 15.2.2
 
 ### Patch Changes
@@ -390,7 +424,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from "lint-staged";
+import lintStaged from 'lint-staged'
 ```
 
 ## [v11.3.0-beta.2](https://github.com/okonet/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021

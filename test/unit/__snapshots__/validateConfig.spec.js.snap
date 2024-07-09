@@ -64,9 +64,152 @@ exports[`validateConfig should throw when detecting deprecated advanced configur
 
 exports[`validateConfig should throw when detecting deprecated advanced configuration 2`] = `
 "
-ERROR Could not parse lint-staged config.
+ERROR ✖ Validation Error:
+
+  Invalid value for 'chunkSize': 10
+
+  Advanced configuration has been deprecated.
 
 ✖ Validation Error:
+
+  Invalid value for 'concurrent': false
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'globOptions': { matchBase: false }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'ignore': [ 'test.js' ]
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'linters': { '*.js': [ 'eslint' ] }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'relative': true
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'renderer': 'silent'
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'subTaskConcurrency': 10
+
+  Advanced configuration has been deprecated. Failed to parse config from file ".lintstagedrc.json".
+
+✖ Validation Error:
+
+  Invalid value for 'chunkSize': 10
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'concurrent': false
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'globOptions': { matchBase: false }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'ignore': [ 'test.js' ]
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'linters': { '*.js': [ 'eslint' ] }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'relative': true
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'renderer': 'silent'
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'subTaskConcurrency': 10
+
+  Advanced configuration has been deprecated.
+
+See https://github.com/okonet/lint-staged#configuration.
+ERROR Error: ✖ Validation Error:
+
+  Invalid value for 'chunkSize': 10
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'concurrent': false
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'globOptions': { matchBase: false }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'ignore': [ 'test.js' ]
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'linters': { '*.js': [ 'eslint' ] }
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'relative': true
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'renderer': 'silent'
+
+  Advanced configuration has been deprecated.
+
+✖ Validation Error:
+
+  Invalid value for 'subTaskConcurrency': 10
+
+  Advanced configuration has been deprecated. Failed to parse config from file ".lintstagedrc.json".
+
+Error: ✖ Validation Error:
 
   Invalid value for 'chunkSize': 10
 

@@ -128,7 +128,7 @@ const options = {
   verbose: !!cliOptions.verbose,
 }
 
-debugLog('Options parsed from command-line:', options)
+debugLog('Options parsed from command-line: %o', options)
 
 if (options.configPath === '-') {
   delete options.configPath
