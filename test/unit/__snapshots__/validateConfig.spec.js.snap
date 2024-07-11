@@ -5,10 +5,18 @@ exports[`validateConfig should throw and should print validation errors for inva
 
   Invalid value for 'foo': false
 
-  Should be a string, a function, or an array of strings and functions."
+  Should be a string, a function, an object or an array of strings and functions."
 `;
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function"`;
+
+exports[`validateConfig should throw and should print validation errors for invalid object config 1`] = `
+"✖ Validation Error:
+
+  Invalid value for '*.js': { title: 'Running a custom task' }
+
+  If the task is an object, it should contain \`title\` and \`task\` fields, where \`title\` should be a string and \`task\` should be a function."
+`;
 
 exports[`validateConfig should throw for empty config 1`] = `"Configuration should not be empty"`;
 
