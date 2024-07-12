@@ -112,14 +112,14 @@ describe('makeCmdTasks', () => {
     expect(res[0].title).toEqual('test')
   })
 
-  it("should throw when function task doesn't return string | string[] | object", async () => {
+  it("should throw when function task doesn't return string | string[]", async () => {
     await expect(makeCmdTasks({ commands: () => null, gitDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
             "✖ Validation Error:
 
               Invalid value for '[Function]': null
 
-              Function task should return a string or an array of strings or an object"
+              Function task should return a string or an array of strings"
           `)
   })
 
@@ -146,7 +146,7 @@ describe('makeCmdTasks', () => {
 
   it('should work with function task returning an object with title and task', async () => {
     const res = await makeCmdTasks({
-      commands: () => ({ title: 'test', task: () => {} }),
+      commands: { title: 'test', task: () => {} },
       gitDir,
       files: ['test.js'],
     })
@@ -155,29 +155,13 @@ describe('makeCmdTasks', () => {
     expect(typeof res[0].task).toBe('function')
   })
 
-  it('should throw error when function task returns object without proper title and task', async () => {
-    await expect(
-      makeCmdTasks({
-        commands: () => ({ title: 'test' }), // Missing task function
-        gitDir,
-        files: ['test.js'],
-      })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`
-            "✖ Validation Error:
-
-              Invalid value for '[Function]': { title: 'test' }
-
-              Function task should return object with title and task where title should be string and task should be function"
-          `)
-  })
-
   it('should throw error when function task fails', async () => {
     const failingTask = () => {
       throw new Error('Task failed')
     }
 
     const res = await makeCmdTasks({
-      commands: () => ({ title: 'test', task: failingTask }),
+      commands: { title: 'test', task: failingTask },
       gitDir,
       files: ['test.js'],
     })
