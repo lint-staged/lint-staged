@@ -15,7 +15,7 @@ exports[`validateConfig should throw and should print validation errors for inva
 
   Invalid value for '*.js': { title: 'Running a custom task' }
 
-  If the task is an object, it should contain \`title\` and \`task\` fields, where \`title\` should be a string and \`task\` should be a function."
+  Custom task should contain \`title\` and \`task\` fields, where \`title\` should be a string and \`task\` should be a function."
 `;
 
 exports[`validateConfig should throw for empty config 1`] = `"Configuration should not be empty"`;
