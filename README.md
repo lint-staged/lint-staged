@@ -485,8 +485,7 @@ All examples assume you've already set up lint-staged in the `package.json` file
 In `.husky/pre-commit`
 
 ```shell
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
+# .husky/pre-commit
 
 npx lint-staged
 ```
@@ -691,9 +690,6 @@ If updating Git doesn't help, you can try to manually redirect the output in you
 
 ```shell
 # .husky/pre-commit
-
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then exec >/dev/tty 2>&1; fi
 
