@@ -1,3 +1,1 @@
-#!/usr/bin/env sh
-
 npx --no changeset status
