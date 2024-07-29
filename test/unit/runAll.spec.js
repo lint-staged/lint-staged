@@ -31,7 +31,7 @@ jest.unstable_mockModule('../../lib/gitWorkflow.js', () => ({
 jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({
   resolveGitRepo: jest.fn(async () => {
     const cwd = process.cwd()
-    return { gitConfigDir: normalize(path.resolve(cwd, '.git')), gitDir: normalize(cwd) }
+    return { gitConfigDir: normalize(path.resolve(cwd, '.git')), topLevelDir: normalize(cwd) }
   }),
 }))
 
