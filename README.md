@@ -76,6 +76,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v16
+
+- Advanced configuration options (removed in v9) are no longer validated separately, and might be treated as valid globs for tasks. Please do not try to use advanced config options anymore, they haven't been supported since v8.
+
 #### v15
 
 - Since `v15.0.0` _lint-staged_ no longer supports Node.js 16. Please upgrade your Node.js version to at least `18.12.0`.
