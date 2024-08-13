@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.9
+
+### Patch Changes
+
+- [#1463](https://github.com/lint-staged/lint-staged/pull/1463) [`b69ce2d`](https://github.com/lint-staged/lint-staged/commit/b69ce2ddfd5a7ae576f4fef4afc60b8a81f3c945) Thanks [@iiroj](https://github.com/iiroj)! - Set the maximum number of event listeners to the number of tasks. This should silence the console warning `MaxListenersExceededWarning: Possible EventEmitter memory leak detected`.
+
 ## 15.2.8
 
 ### Patch Changes
