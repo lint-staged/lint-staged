@@ -1,5 +1,5 @@
-import makeConsoleMock from 'consolemock'
 import { jest } from '@jest/globals'
+import makeConsoleMock from 'consolemock'
 
 jest.unstable_mockModule('lilconfig', () => ({
   lilconfig: jest.fn(),

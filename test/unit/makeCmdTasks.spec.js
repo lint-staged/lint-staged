@@ -44,7 +44,7 @@ describe('makeCmdTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('test', ['test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('test', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -55,7 +55,7 @@ describe('makeCmdTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).lastCalledWith('test2', ['test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('test2', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,

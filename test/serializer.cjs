@@ -34,6 +34,7 @@ const stripAnsi = (string) => {
 }
 
 /** @see https://github.com/ikatyang/jest-snapshot-serializer-ansi/blob/3ca79ba5a2201124b4b616f728b4a92b7388fc68/src/index.ts */
+// eslint-disable-next-line no-undef
 module.exports = {
   test: (value) => typeof value === 'string' && hasAnsi(value),
   print: (value, serialize) => serialize(stripAnsi(value)),

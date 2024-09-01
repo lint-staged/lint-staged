@@ -1,7 +1,6 @@
+import { jest } from '@jest/globals'
 import path from 'path'
 import { fileURLToPath } from 'url'
-
-import { jest } from '@jest/globals'
 
 import { normalizePath } from '../../lib/normalizePath.js'
 
@@ -9,6 +8,7 @@ jest.unstable_mockModule('../../lib/resolveConfig.js', () => ({
   /** Unfortunately necessary due to non-ESM tests. */
   resolveConfig: (configPath) => {
     try {
+      // eslint-disable-next-line no-undef
       return require.resolve(configPath)
     } catch {
       return configPath
@@ -42,7 +42,7 @@ describe('searchConfigs', () => {
   })
 
   it('should throw for invalid config object', async () => {
-    await expect(searchConfigs({ configObject: {} })).rejects.toThrowError()
+    await expect(searchConfigs({ configObject: {} })).rejects.toThrow()
   })
 
   it('should return config for valid config object', async () => {

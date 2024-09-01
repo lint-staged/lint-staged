@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { isWindows } from './__utils__/isWindows.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -36,7 +36,7 @@ describe('lint-staged', () => {
             },
           },
         })
-      ).rejects.toThrowError(".git/index.lock': File exists")
+      ).rejects.toThrow(".git/index.lock': File exists")
 
       // Something was wrong so new commit wasn't created
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

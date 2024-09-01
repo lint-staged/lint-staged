@@ -10,7 +10,6 @@ import {
   HideUnstagedChangesError,
   RestoreMergeStatusError,
 } from '../../lib/symbols.js'
-
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -126,7 +125,7 @@ describe('gitWorkflow', () => {
         const totallyRandom = `totally_random_file-${Date.now().toString()}`
         gitWorkflow.partiallyStagedFiles = [totallyRandom]
         const ctx = getInitialState()
-        await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrowError(
+        await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrow(
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
 

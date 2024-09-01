@@ -2,7 +2,6 @@ import { jest } from '@jest/globals'
 
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
-
 import { getMockExeca } from './__utils__/getMockExeca.js'
 import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
 
@@ -35,7 +34,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -54,7 +53,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -74,7 +73,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -93,7 +92,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -112,7 +111,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).lastCalledWith('node --arg=true ./myscript.js test.js', {
+    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
@@ -131,7 +130,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('git', ['diff', 'test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
       cwd: '../',
       preferLocal: true,
       reject: false,
@@ -146,7 +145,7 @@ describe('resolveTaskFn', () => {
 
     await taskFn()
     expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).lastCalledWith('jest', ['test.js'], {
+    expect(execa).toHaveBeenLastCalledWith('jest', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,

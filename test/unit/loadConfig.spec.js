@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url'
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-import { createTempDir } from '../__utils__/createTempDir.js'
 import { loadConfig } from '../../lib/loadConfig.js'
+import { createTempDir } from '../__utils__/createTempDir.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

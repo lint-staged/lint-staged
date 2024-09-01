@@ -3,9 +3,9 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
-import * as fileFixtures from './__fixtures__/files.js'
 import { prettierListDifferent, prettierWrite } from './__fixtures__/configs.js'
+import * as fileFixtures from './__fixtures__/files.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -45,7 +45,7 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
       // Merge second branch, causing merge conflict
-      await expect(execGit(['merge', 'branch-b'])).rejects.toThrowError('Merge conflict in test.js')
+      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow('Merge conflict in test.js')
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
@@ -109,7 +109,7 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
       // Merge second branch, causing merge conflict
-      await expect(execGit(['merge', 'branch-b'])).rejects.toThrowError('Merge conflict in test.js')
+      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow('Merge conflict in test.js')
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
@@ -127,9 +127,7 @@ describe('lint-staged', () => {
 
       await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
-      await expect(gitCommit()).rejects.toThrowError(
-        'Reverting to original state because of errors'
-      )
+      await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
       // Something went wrong, so lintStaged failed and merge is still going
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -158,7 +156,7 @@ describe('lint-staged', () => {
             },
           },
         })
-      ).rejects.toThrowError('Unstaged changes could not be restored due to a merge conflict!')
+      ).rejects.toThrow('Unstaged changes could not be restored due to a merge conflict!')
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

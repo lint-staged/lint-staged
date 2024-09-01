@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
-import * as fileFixtures from './__fixtures__/files.js'
 import { prettierListDifferent } from './__fixtures__/configs.js'
+import * as fileFixtures from './__fixtures__/files.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -49,7 +49,7 @@ describe('lint-staged', () => {
       await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
 
       // Run lint-staged with `prettier --list-different` and commit pretty file
-      await expect(gitCommit()).rejects.toThrowError()
+      await expect(gitCommit()).rejects.toThrow()
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

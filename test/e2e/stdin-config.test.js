@@ -1,9 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
-import * as fileFixtures from '../integration/__fixtures__/files.js'
 import * as configFixtures from '../integration/__fixtures__/configs.js'
-
+import * as fileFixtures from '../integration/__fixtures__/files.js'
+import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
 import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
 
 jest.setTimeout(20000)
@@ -42,7 +41,7 @@ describe('lint-staged', () => {
       const brokenJSONConfig = JSON.stringify(configFixtures.prettierWrite).replace('"}', '"')
 
       // Run lint-staged with broken config from stdin
-      await expect(lintStaged('-c -', { input: brokenJSONConfig })).rejects.toThrowError(
+      await expect(lintStaged('-c -', { input: brokenJSONConfig })).rejects.toThrow(
         'Failed to read config from stdin'
       )
 

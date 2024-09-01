@@ -5,7 +5,6 @@ import makeConsoleMock from 'consolemock'
 
 import lintStaged from '../../lib/index.js'
 import { createTempDir } from '../__utils__/createTempDir.js'
-
 import { prettierWrite } from './__fixtures__/configs.js'
 
 jest.setTimeout(20000)

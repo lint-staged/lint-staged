@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
-import * as fileFixtures from './__fixtures__/files.js'
 import * as configFixtures from './__fixtures__/configs.js'
+import * as fileFixtures from './__fixtures__/files.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -44,8 +44,10 @@ describe('lint-staged', () => {
       // expect(await readFile('👋.js')).toEqual(fileFixtures.prettyJS)
     })
 
+  // eslint-disable-next-line jest/expect-expect
   test('handles files with non-ascii characters when core.quotepath is on', getQuotePathTest('on'))
 
+  // eslint-disable-next-line jest/expect-expect
   test(
     'handles files with non-ascii characters when core.quotepath is off',
     getQuotePathTest('off')
