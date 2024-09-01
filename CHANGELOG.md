@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.2.10
+
+### Patch Changes
+
+- [#1471](https://github.com/lint-staged/lint-staged/pull/1471) [`e3f283b`](https://github.com/lint-staged/lint-staged/commit/e3f283b250868b7c15ceb54d2a51b2e5fb3a18a9) Thanks [@iiroj](https://github.com/iiroj)! - Update minor dependencies, including `micromatch@~4.0.8`.
+
 ## 15.2.9
 
 ### Patch Changes
