@@ -293,6 +293,8 @@ Supported are any executables installed locally or globally via `npm` as well as
 }
 ```
 
+This will result in _lint-staged_ running `eslint --fix file-1.js file-2.js`, when you have staged files `file-1.js`, `file-2.js` and `README.md`.
+
 Pass arguments to your commands separated by space as you would do in the shell. See [examples](#examples) below.
 
 ## Running multiple commands in a sequence
@@ -309,6 +311,8 @@ For example:
 
 going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
+This will result in _lint-staged_ running `eslint file-1.js file-2.js`, when you have staged files `file-1.js`, `file-2.js` and `README.md`, and if it passes, `prettier --write file-1.js file-2.js`.
+
 ## Using JS configuration files
 
 Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
@@ -316,6 +320,16 @@ Writing the configuration file in JavaScript is the most powerful way to configu
 If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files and return a command string or an array of command strings. These strings are considered complete and should include the filename arguments, if wanted.
 
 If the `exports` value is an object, its keys should be glob matches (like in the normal non-js config format). The values can either be like in the normal config or individual functions like described above. Instead of receiving all matched files, the functions in the exported object will only receive the staged files matching the corresponding glob key.
+
+To summarize, by default _lint-staged_ automatically adds the list of matched staged files to your command, but when building the command using JS functions it is expected to do this manually. For example:
+
+```js
+export default {
+  '*.js': (stagedFiles) => [`eslint .`, `prettier --write ${stagedFiles.join(' ')}`],
+}
+```
+
+This will result in _lint-staged_ first running `eslint .` (matching _all_ files), and if it passes, `prettier --write file-1.js file-2.js`, when you have staged files `file-1.js`, `file-2.js` and `README.md`.
 
 ### Function signature
 
