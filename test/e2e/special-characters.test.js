@@ -1,9 +1,8 @@
 import path from 'node:path'
 
-import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
-import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { getRepoRootPath } from '../__utils__/getRepoRootPath.js'
-
+import * as fileFixtures from '../integration/__fixtures__/files.js'
+import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
 import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
 
 describe('lint-staged', () => {

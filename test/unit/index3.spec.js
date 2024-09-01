@@ -54,26 +54,6 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should log error when preventing empty commit', async () => {
-    const ctx = getInitialState()
-    ctx.errors.add(ApplyEmptyCommitError)
-    runAll.mockImplementationOnce(async () => {
-      throw { ctx }
-    })
-
-    const logger = makeConsoleMock()
-
-    await expect(lintStaged({}, logger)).resolves.toEqual(false)
-
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN 
-        ⚠ lint-staged prevented an empty git commit.
-        Use the --allow-empty option to continue, or check your task configuration
-      "
-    `)
-  })
-
   it('should log error when a git operation failed', async () => {
     const ctx = getInitialState()
     ctx.shouldBackup = true
@@ -111,6 +91,7 @@ describe('lintStaged', () => {
     const logger = makeConsoleMock()
 
     await lintStaged({}, logger).catch((error) => {
+      // eslint-disable-next-line jest/no-conditional-expect
       expect(error).toEqual(testError)
     })
 

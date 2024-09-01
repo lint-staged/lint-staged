@@ -3,10 +3,10 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 
+import * as configFixtures from './__fixtures__/configs.js'
+import * as fileFixtures from './__fixtures__/files.js'
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-import * as fileFixtures from './__fixtures__/files.js'
-import * as configFixtures from './__fixtures__/configs.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -67,9 +67,7 @@ describe('lint-staged', () => {
       const status = await execGit(['status'])
 
       // Run lint-staged with `prettier --list-different` to break the linter
-      await expect(gitCommit()).rejects.toThrowError(
-        'Reverting to original state because of errors'
-      )
+      await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -90,9 +88,7 @@ describe('lint-staged', () => {
       const status = await execGit(['status'])
 
       // Run lint-staged with `prettier --write` to break the linter
-      await expect(gitCommit()).rejects.toThrowError(
-        'Reverting to original state because of errors'
-      )
+      await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -170,7 +166,7 @@ describe('lint-staged', () => {
             config: { '*.js': () => 'git stash drop' },
           },
         })
-      ).rejects.toThrowError('lint-staged automatic backup is missing')
+      ).rejects.toThrow('lint-staged automatic backup is missing')
     })
   )
 

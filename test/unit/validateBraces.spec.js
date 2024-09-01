@@ -1,9 +1,9 @@
 import makeConsoleMock from 'consolemock'
 
 import {
-  validateBraces,
-  INCORRECT_BRACES_REGEXP,
   DOUBLE_BRACES_REGEXP,
+  INCORRECT_BRACES_REGEXP,
+  validateBraces,
 } from '../../lib/validateBraces.js'
 
 describe('INCORRECT_BRACES_REGEXP', () => {
@@ -51,10 +51,6 @@ describe('INCORRECT_BRACES_REGEXP', () => {
 describe('DOUBLE_BRACES_REGEXP', () => {
   it(`should match '*.{{js,ts}}'`, () => {
     expect('*.{{js,ts}}'.match(DOUBLE_BRACES_REGEXP)).toBeTruthy()
-  })
-
-  it(`should not match '*.{{js,ts},{css}}'`, () => {
-    expect('*.{{js,ts},{css}}'.match(DOUBLE_BRACES_REGEXP)).toBeFalsy()
   })
 
   it(`should not match '*.{{js,ts},{css}}'`, () => {

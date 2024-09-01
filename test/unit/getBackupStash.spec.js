@@ -21,7 +21,7 @@ describe('gitWorkflow', () => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
 
-      await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrowError(
+      await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrow(
         'lint-staged automatic backup is missing!'
       )
 
@@ -34,7 +34,7 @@ describe('gitWorkflow', () => {
 
       execGit.mockResolvedValueOnce('stash@{0}: some random stuff')
 
-      await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrowError(
+      await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrow(
         'lint-staged automatic backup is missing!'
       )
 

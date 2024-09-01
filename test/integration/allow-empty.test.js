@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
-import * as fileFixtures from './__fixtures__/files.js'
 import * as configFixtures from './__fixtures__/configs.js'
+import * as fileFixtures from './__fixtures__/files.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
@@ -26,7 +26,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged with prettier --write to automatically fix the file
       // Since prettier reverts all changes, the commit should fail
-      await expect(gitCommit()).rejects.toThrowError('lint-staged prevented an empty git commit.')
+      await expect(gitCommit()).rejects.toThrow('lint-staged prevented an empty git commit.')
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')

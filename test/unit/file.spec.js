@@ -1,4 +1,4 @@
-import { unlink, readFile } from '../../lib/file.js'
+import { readFile, unlink } from '../../lib/file.js'
 
 describe('unlink', () => {
   it('should throw when second argument is false and file is not found', async () => {

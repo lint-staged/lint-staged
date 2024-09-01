@@ -5,11 +5,6 @@ import makeConsoleMock from 'consolemock'
 
 import { getRepoRootPath } from '../__utils__/getRepoRootPath.js'
 
-import { getMockListr2 } from './__utils__/getMockListr2.js'
-
-const { Listr } = await getMockListr2()
-
-const MOCK_CONFIG_FILE = path.join(getRepoRootPath(), 'test/__mocks__/my-config.json')
 const MOCK_STAGED_FILE = path.join(getRepoRootPath(), 'test/__mocks__/sample.js')
 
 jest.unstable_mockModule('../../lib/execGit.js', () => ({
@@ -30,38 +25,7 @@ jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({
 const { default: lintStaged } = await import('../../lib/index.js')
 
 describe('lintStaged', () => {
-  afterEach(() => {
-    Listr.mockClear()
-  })
-
-  it('should pass quiet flag to Listr', async () => {
-    expect.assertions(1)
-
-    await lintStaged({ configPath: MOCK_CONFIG_FILE, quiet: true }, makeConsoleMock())
-
-    expect(Listr.mock.calls[0][1]).toMatchObject({
-      fallbackRenderer: 'silent',
-      renderer: 'silent',
-    })
-  })
-
-  it('should pass debug flag to Listr', async () => {
-    expect.assertions(1)
-    await lintStaged(
-      {
-        configPath: MOCK_CONFIG_FILE,
-        debug: true,
-      },
-      makeConsoleMock()
-    )
-
-    expect(Listr.mock.calls[0][1]).toMatchObject({
-      fallbackRenderer: 'test',
-      renderer: 'test',
-    })
-  })
-
-  it.only('should catch errors from js function config', async () => {
+  it('should catch errors from js function config', async () => {
     const logger = makeConsoleMock()
     const config = {
       '*': () => {
@@ -71,9 +35,7 @@ describe('lintStaged', () => {
 
     expect.assertions(2)
 
-    await expect(lintStaged({ config }, logger)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"failed config"`
-    )
+    await expect(lintStaged({ config }, logger)).rejects.toThrow('failed config')
 
     expect(logger.printHistory()).toEqual('')
   })

@@ -3,7 +3,6 @@ import path from 'node:path'
 import { jest as jestGlobals } from '@jest/globals'
 
 import { normalizePath } from '../../lib/normalizePath.js'
-
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jestGlobals.setTimeout(20000)

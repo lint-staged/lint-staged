@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from './__utils__/withGitIntegration.js'
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
+import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)

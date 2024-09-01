@@ -2,12 +2,10 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
-import normalize from 'normalize-path'
 
 import { normalizePath } from '../../lib/normalizePath.js'
-
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
 import { getMockExeca } from './__utils__/getMockExeca.js'
+import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
 
 const { execa } = await getMockExeca()
 
@@ -31,7 +29,10 @@ jest.unstable_mockModule('../../lib/gitWorkflow.js', () => ({
 jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({
   resolveGitRepo: jest.fn(async () => {
     const cwd = process.cwd()
-    return { gitConfigDir: normalize(path.resolve(cwd, '.git')), topLevelDir: normalize(cwd) }
+    return {
+      gitConfigDir: normalizePath(path.resolve(cwd, '.git')),
+      topLevelDir: normalizePath(cwd),
+    }
   }),
 }))
 
@@ -234,7 +235,7 @@ describe('runAll', () => {
         relative: true,
         cwd: innerCwd,
       })
-    ).rejects.toThrowError()
+    ).rejects.toThrow()
 
     // task received relative `foo.js`
     expect(mockTask).toHaveBeenCalledTimes(1)
@@ -259,7 +260,7 @@ describe('runAll', () => {
     const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
-    await expect(runAll({ stash: false, relative: true })).rejects.toThrowError()
+    await expect(runAll({ stash: false, relative: true })).rejects.toThrow()
 
     // task received relative `foo.js` from both directories
     expect(mockTask).toHaveBeenCalledTimes(2)
@@ -291,7 +292,7 @@ describe('runAll', () => {
         stash: false,
         relative: true,
       })
-    ).rejects.toThrowError()
+    ).rejects.toThrow()
 
     expect(mockTask).toHaveBeenCalledTimes(2)
     // This is now relative to "." instead of "test/"
@@ -313,6 +314,7 @@ describe('runAll', () => {
         relative: true,
       })
     } catch ({ ctx }) {
+      // eslint-disable-next-line jest/no-conditional-expect
       expect(ctx.errors.has(ConfigNotFoundError)).toBe(true)
     }
   })
@@ -323,15 +325,13 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
 
-    await expect(runAll({})).rejects.toThrowError()
+    await expect(runAll({})).rejects.toThrow()
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
 
   it('should not warn about "git add" when --quiet was used', async () => {
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
-    await expect(
-      runAll({ configObject: { '*.js': ['git add'] }, quiet: true })
-    ).rejects.toThrowError()
+    await expect(runAll({ configObject: { '*.js': ['git add'] }, quiet: true })).rejects.toThrow()
     expect(console.printHistory()).toEqual('')
   })
 

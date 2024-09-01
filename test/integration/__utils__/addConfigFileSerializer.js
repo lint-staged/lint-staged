@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import ansiSerializer from 'jest-snapshot-serializer-ansi'
 
 import { replaceSerializer } from './replaceSerializer'

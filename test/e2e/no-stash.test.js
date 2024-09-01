@@ -1,9 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
-import * as fileFixtures from '../integration/__fixtures__/files.js'
 import * as configFixtures from '../integration/__fixtures__/configs.js'
-
+import * as fileFixtures from '../integration/__fixtures__/files.js'
+import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
 import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
 
 jest.setTimeout(20000)
@@ -35,7 +34,7 @@ describe('lint-staged', () => {
       res = await lintStaged('--diff=master...my-branch')
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
 
-      await expect(lintStaged('--diff=master...my-branch --stash')).rejects.toThrowError(
+      await expect(lintStaged('--diff=master...my-branch --stash')).rejects.toThrow(
         expect.objectContaining({
           stderr: expect.stringContaining('lint-staged failed due to a git error.'),
         })

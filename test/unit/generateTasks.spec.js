@@ -67,8 +67,10 @@ describe('generateTasks', () => {
 
     result.forEach((task) => {
       if (task.commands === 'unknown-js' || task.commands === 'parent-dir-css-or-js') {
+        // eslint-disable-next-line jest/no-conditional-expect
         expect(task.fileList.length).toEqual(0)
       } else {
+        // eslint-disable-next-line jest/no-conditional-expect
         expect(task.fileList.length).not.toEqual(0)
       }
     })
