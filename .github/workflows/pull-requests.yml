@@ -97,6 +97,7 @@ jobs:
           - 20
           - 21
           - 22
+          - 23
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
@@ -146,6 +147,7 @@ jobs:
           - 20
           - 21
           - 22
+          - 23
     name: Node.js ${{ matrix.node }} on windows-latest (MSYS2)
     runs-on: windows-latest
     defaults:
@@ -187,6 +189,7 @@ jobs:
           - 20
           - 21
           - 22
+          - 23
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
