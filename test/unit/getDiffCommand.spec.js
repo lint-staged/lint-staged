@@ -1,6 +1,6 @@
 import { getDiffCommand } from '../../lib/getDiffCommand.js'
 
-describe('chunkFiles', () => {
+describe('getDiffCommand', () => {
   const customDiffString = 'origin/main..custom-branch'
   const customDiffSpaceSeparatedString = 'origin/main custom-branch'
   const customDiffFilter = 'a'
