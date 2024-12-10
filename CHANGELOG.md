@@ -1,5 +1,13 @@
 # lint-staged
 
+## 15.2.11
+
+### Patch Changes
+
+- [#1484](https://github.com/lint-staged/lint-staged/pull/1484) [`bcfe309`](https://github.com/lint-staged/lint-staged/commit/bcfe309fca88aedf42b6a321383de49eb361c5a0) Thanks [@wormsik](https://github.com/wormsik)! - Escape paths containing spaces when using the "shell" option.
+
+- [#1487](https://github.com/lint-staged/lint-staged/pull/1487) [`7dd8caa`](https://github.com/lint-staged/lint-staged/commit/7dd8caa8f80fe1a6ce40939c1224b6774000775a) Thanks [@iiroj](https://github.com/iiroj)! - Do not treat submodule root paths as "staged files". This caused _lint-staged_ to fail to a Git error when only updating the revision of a submodule.
+
 ## 15.2.10
 
 ### Patch Changes
