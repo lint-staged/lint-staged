@@ -3,7 +3,6 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -13,8 +12,10 @@ jest.retryTimes(2)
 describe('lint-staged', () => {
   test(
     'handles git submodules',
-    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile, removeFile }) => {
+      await appendFile('.lintstagedrc.json', JSON.stringify({ '*': 'prettier --list-different' }))
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m initial commit'])
 
       // create a new repo for the git submodule to a temp path
       let submoduleDir = path.resolve(cwd, 'submodule-temp')
@@ -23,7 +24,7 @@ describe('lint-staged', () => {
       await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
       await execGit(['config', 'user.email', '"test@test.com"'], { cwd: submoduleDir })
       await appendFile('README.md', '# Test\n', submoduleDir)
-      await execGit(['add', 'README.md'], { cwd: submoduleDir })
+      await execGit(['add', '.'], { cwd: submoduleDir })
       await execGit(['commit', '-m initial commit'], { cwd: submoduleDir })
 
       // Add the newly-created repo as a submodule in a new path.
@@ -38,10 +39,19 @@ describe('lint-staged', () => {
         './submodule-temp',
         './submodule',
       ])
+
+      // remove temp path after adding submodule
+      await removeFile(submoduleDir)
+
       submoduleDir = path.resolve(cwd, 'submodule')
+
       // Set these again for Windows git in CI
       await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
       await execGit(['config', 'user.email', '"test@test.com"'], { cwd: submoduleDir })
+
+      // commit .gitmodules
+      await execGit(['add', '.gitmodules'])
+      await gitCommit()
 
       // Stage pretty file
       await appendFile('test.js', prettyJS, submoduleDir)
@@ -54,6 +64,16 @@ describe('lint-staged', () => {
       expect(await execGit(['rev-list', '--count', 'HEAD'], { cwd: submoduleDir })).toEqual('2')
       expect(await execGit(['log', '-1', '--pretty=%B'], { cwd: submoduleDir })).toMatch('test')
       expect(await readFile('test.js', submoduleDir)).toEqual(prettyJS)
+
+      expect(await execGit(['status'])).toMatch('modified:   submodule (new commits)')
+      await execGit(['add', '-u'])
+
+      // there are no other unstaged or untracked changes
+      expect(await execGit(['diff', '--name-only'])).toEqual('')
+      expect(await execGit(['ls-files', '--others'])).toEqual('')
+
+      // commit changes to submodule
+      await gitCommit()
     })
   )
 })
