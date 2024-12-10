@@ -25,14 +25,13 @@ describe('getStagedFiles', () => {
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
-    expect(execGit).toHaveBeenLastCalledWith(
+    expect(execGit).toHaveBeenCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', '--staged'],
       { cwd: '/' }
     )
   })
 
   it('should return empty array when no staged files', async () => {
-    execGit.mockImplementationOnce(async () => '')
     const staged = await getStagedFiles()
     expect(staged).toEqual([])
   })
@@ -51,7 +50,7 @@ describe('getStagedFiles', () => {
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
-    expect(execGit).toHaveBeenLastCalledWith(
+    expect(execGit).toHaveBeenCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master...my-branch'],
       { cwd: '/' }
     )
@@ -63,7 +62,7 @@ describe('getStagedFiles', () => {
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
-    expect(execGit).toHaveBeenLastCalledWith(
+    expect(execGit).toHaveBeenCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master', 'my-branch'],
       { cwd: '/' }
     )
@@ -75,7 +74,7 @@ describe('getStagedFiles', () => {
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
-    expect(execGit).toHaveBeenLastCalledWith(
+    expect(execGit).toHaveBeenCalledWith(
       ['diff', '--name-only', '-z', '--diff-filter=ACDMRTUXB', '--staged'],
       { cwd: '/' }
     )
