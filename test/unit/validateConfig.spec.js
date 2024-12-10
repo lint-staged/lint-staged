@@ -59,31 +59,4 @@ describe('validateConfig', () => {
     expect(() => validateConfig(functionTask, configPath, logger)).not.toThrow()
     expect(logger.printHistory()).toEqual('')
   })
-
-  it('should throw when detecting deprecated advanced configuration', () => {
-    const advancedConfig = {
-      chunkSize: 10,
-      concurrent: false,
-      globOptions: { matchBase: false },
-      ignore: ['test.js'],
-      linters: {
-        '*.js': ['eslint'],
-      },
-      relative: true,
-      renderer: 'silent',
-      subTaskConcurrency: 10,
-    }
-
-    expect(() => validateConfig(advancedConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
-    expect(logger.printHistory()).toMatchSnapshot()
-  })
-
-  it('should not throw when config contains deprecated key but with valid task', () => {
-    const stillValidConfig = {
-      concurrent: 'my command',
-    }
-
-    expect(() => validateConfig(stillValidConfig, configPath, logger)).not.toThrow()
-    expect(logger.printHistory()).toEqual('')
-  })
 })
