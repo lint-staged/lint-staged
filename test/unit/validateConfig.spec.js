@@ -25,6 +25,30 @@ describe('validateConfig', () => {
     expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
   })
 
+  it('should throw and should print validation errors for invalid object config', () => {
+    const invalidConfig = {
+      '*.js': {
+        title: 'Running a custom task',
+      },
+    }
+
+    expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
+  })
+
+  it('should not throw and should print nothing for valid object config', () => {
+    const validObjectConfig = {
+      '*.js': {
+        title: 'Running a custom task',
+        task: async (files) => {
+          console.log(files)
+        },
+      },
+    }
+
+    expect(() => validateConfig(validObjectConfig, configPath, logger)).not.toThrow()
+    expect(logger.printHistory()).toEqual('')
+  })
+
   it('should throw for empty config', () => {
     expect(() => validateConfig({}, configPath, logger)).toThrowErrorMatchingSnapshot()
   })
