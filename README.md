@@ -40,6 +40,22 @@ Linting makes more sense when run before committing your code. By doing so you c
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
+## Tradeoffs
+
+lint-staged is one tool and approach of many to ensure quality in your code with its own tradeoffs. When possible, the fastest way to get linting feedback is usually from your IDE.  Separately, lint-staged funcions excellently as final wall of protection when things are missed.
+
+It's important o understand having a long running pre-commit may cause detrimental side effects such as:
+
+- Encouraging developers not to save their changes; increasing the chances of data loss
+- Encouraging developers to totally skip the checks using `--no-verify` (particularly when in crunch time or approaching deadlines)
+- Creating a general velocy drop for those who follow the rules
+
+If you want to minimally effect development while having a hard lock on quality, adding the lint-staging checks to your CI is the most powerful option to block non-conformant PRs from merging.
+
+A separate middle of the road solution is to move the linting checks to the pre-push hook instead of the pre-commit hook.  Functionally, this will mean only your code you're making public will be linted.
+
+Consider the approach most approprate for your team and project.
+
 ## Related blog posts and talks
 
 - [Introductory Medium post - Andrey Okonetchnikov, 2016](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
