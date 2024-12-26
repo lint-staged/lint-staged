@@ -13,7 +13,7 @@ npm install --save-dev lint-staged # requires further setup
 ```
 $ git commit
 
-✔ Preparing lint-staged...
+✔ Backed up original state in git stash
 ❯ Running tasks for staged files...
   ❯ packages/frontend/.lintstagedrc.json — 1 file
     ↓ *.js — no files [SKIPPED]
