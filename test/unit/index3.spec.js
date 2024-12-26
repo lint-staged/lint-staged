@@ -54,7 +54,7 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should log error when a git operation failed', async () => {
+  it('should log error and git stash message when a git operation failed', async () => {
     const ctx = getInitialState()
     ctx.shouldBackup = true
     ctx.errors.add(GitError)
@@ -77,6 +77,29 @@ describe('lintStaged', () => {
         > git stash apply --index stash@{0}
       "
     `)
+  })
+
+  it('should log error without git stash message when a git operation failed and backup disabled', async () => {
+    const ctx = getInitialState()
+    ctx.shouldBackup = false
+    ctx.errors.add(GitError)
+    runAll.mockImplementationOnce(async () => {
+      throw { ctx }
+    })
+
+    const logger = makeConsoleMock()
+
+    await expect(lintStaged({}, logger)).resolves.toEqual(false)
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      ERROR 
+        ✖ lint-staged failed due to a git error."
+    `)
+
+    expect(logger.printHistory()).not.toMatch(
+      'Any lost modifications can be restored from a git stash'
+    )
   })
 
   it('should throw when context is malformed', async () => {
