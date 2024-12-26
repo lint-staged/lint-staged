@@ -7,7 +7,7 @@ import { Option, program } from 'commander'
 import debug from 'debug'
 
 import lintStaged from '../lib/index.js'
-import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
+import { CONFIG_STDIN_ERROR, RESTORE_STASH_EXAMPLE } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
 
 // Force colors for packages that depend on https://www.npmjs.com/package/supports-color
@@ -102,6 +102,8 @@ cli.option(
   'show task output even when tasks succeed; by default only failed output is shown',
   false
 )
+
+cli.addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
 
 const cliOptions = cli.parse(process.argv).opts()
 

@@ -70,11 +70,11 @@ describe('lintStaged', () => {
       "
       ERROR 
         ✖ lint-staged failed due to a git error.
-      ERROR   Any lost modifications can be restored from a git stash:
+      ERROR Any lost modifications can be restored from a git stash:
 
-          > git stash list
-          stash@{0}: automatic lint-staged backup
-          > git stash apply --index stash@{0}
+        > git stash list
+        stash@{0}: automatic lint-staged backup
+        > git stash apply --index stash@{0}
       "
     `)
   })
