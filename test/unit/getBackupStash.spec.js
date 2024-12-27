@@ -31,8 +31,9 @@ describe('gitWorkflow', () => {
     it('should throw when stash not found even when other stashes are', async () => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
+      ctx.backupHash = 'not-found'
 
-      execGit.mockResolvedValueOnce('stash@{0}: some random stuff')
+      execGit.mockResolvedValueOnce(`stash@{1}: ${STASH} (abc123)`)
 
       await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrow(
         'lint-staged automatic backup is missing!'
@@ -44,11 +45,12 @@ describe('gitWorkflow', () => {
     it('should return ref to the backup stash', async () => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
+      ctx.backupHash = 'abc123'
 
       execGit.mockResolvedValueOnce(
         [
           'stash@{0}: some random stuff',
-          `stash@{1}: ${STASH}`,
+          `stash@{1}: ${STASH} (${ctx.backupHash})`,
           'stash@{2}: other random stuff',
         ].join('\n')
       )

@@ -13,7 +13,7 @@ npm install --save-dev lint-staged # requires further setup
 ```
 $ git commit
 
-✔ Preparing lint-staged...
+✔ Backed up original state in git stash (5bda95f)
 ❯ Running tasks for staged files...
   ❯ packages/frontend/.lintstagedrc.json — 1 file
     ↓ *.js — no files [SKIPPED]
@@ -70,6 +70,9 @@ Now change a few files, `git add` or `git add --patch` some of them to your comm
 
 See [examples](#examples) and [configuration](#configuration) for more information.
 
+> [!CAUTION]  
+> _Lint-staged_ runs `git` operations affecting the files in your repository. By default _lint-staged_ creates a `git stash` as a backup of the original state before running any configured tasks to help prevent data loss.
+
 ## Changelog
 
 See [Releases](https://github.com/okonet/lint-staged/releases).
@@ -117,9 +120,10 @@ Options:
   -c, --config [path]                path to configuration file, or - to read from stdin
   --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
-  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
-                                     "--no-stash".
-  --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
+  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files.
+                                     Implies "--no-stash".
+  --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of
+                                     files
   --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
   --no-stash                         disable the backup stash, and do not revert in case of errors. Implies
                                      "--no-hide-partially-staged".
@@ -127,9 +131,15 @@ Options:
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -x, --shell [path]                 skip parsing of tasks for better shell support (default: false)
-  -v, --verbose                      show task output even when tasks succeed; by default only failed output is shown
-                                     (default: false)
+  -v, --verbose                      show task output even when tasks succeed; by default only failed output is
+                                     shown (default: false)
   -h, --help                         display help for command
+
+Any lost modifications can be restored from a git stash:
+
+  > git stash list
+  stash@{0}: automatic lint-staged backup
+  > git stash apply --index stash@{0}
 ```
 
 - **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
