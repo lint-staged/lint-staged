@@ -64,9 +64,7 @@ describe('lint-staged', () => {
       await removeFile(`.git/index.lock`)
 
       // Luckily there is a stash
-      expect(await execGit(['stash', 'list'])).toMatchInlineSnapshot(
-        `"stash@{0}: lint-staged automatic backup"`
-      )
+      expect(await execGit(['stash', 'list'])).toMatch('stash@{0}: lint-staged automatic backup')
       await execGit(['reset', '--hard'])
       await execGit(['stash', 'pop', '--index'])
 
