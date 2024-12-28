@@ -20,35 +20,39 @@ jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
   validateOptions: jest.fn().mockImplementation(async () => void {}),
 }))
 
-const { default: debugLib } = await import('debug')
 const { lilconfig } = await import('lilconfig')
 const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
-const { default: lintStaged } = await import('../../lib/index.js')
 
 // TODO: Never run tests in the project's WC because this might change source files git status
 
 describe('lintStaged', () => {
   const logger = makeConsoleMock()
 
-  beforeEach(() => {
-    jest.resetAllMocks()
+  // re-import to clear module cache
+  let lintStaged
+
+  beforeEach(async () => {
+    lintStaged = (await import('../../lib/index.js')).default
+    jest.clearAllMocks()
     logger.clearHistory()
   })
 
   it('should use lilconfig if no params are passed', async () => {
     expect.assertions(2)
 
-    const config = { '*': 'mytask' }
-    lilconfig({ config })
+    await lintStaged({ config: { '*': 'mytask' } }, logger)
 
-    await lintStaged(undefined, logger)
+    expect(logger.printHistory()).toMatch('Failed to get staged files!')
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR ✖ Failed to get staged files!"
-    `)
+    expect(logger.printHistory()).toMatch('See debug logs for more info')
+  })
 
-    expect(debugLib.enable).not.toHaveBeenCalled()
+  it("shouldn't output debug log path quiet", async () => {
+    expect.assertions(1)
+
+    await lintStaged({ config: { '*': 'mytask' }, quiet: true }, logger)
+
+    expect(logger.printHistory()).not.toMatch('See debug logs for more info')
   })
 
   it('should return true when passed', async () => {
@@ -61,7 +65,7 @@ describe('lintStaged', () => {
     await expect(lintStaged({ config, quiet: true }, logger)).resolves.toEqual(true)
   })
 
-  it('should use use the console if no logger is passed', async () => {
+  it('should use the console if no logger is passed', async () => {
     expect.assertions(1)
 
     lilconfig({ config: {} })
@@ -72,21 +76,21 @@ describe('lintStaged', () => {
 
     await lintStaged()
 
-    expect(mockedConsole.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR ✖ Failed to get staged files!"
-    `)
+    expect(mockedConsole.printHistory()).toMatch('Failed to get staged files!')
 
     console = previousConsole
   })
 
   it('should enable debugger', async () => {
+    // re-import to clear module cache
+    const { default: lintStaged } = await import('../../lib/index.js')
+
     expect.assertions(1)
 
-    lilconfig({ config: {} })
+    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
 
-    await lintStaged({ debug: true }, logger)
+    const config = { '*': 'node -e "process.exit(0)"' }
 
-    expect(debugLib.enable).toHaveBeenCalled()
+    await expect(lintStaged({ config, debug: true }, logger)).resolves.toEqual(true)
   })
 })

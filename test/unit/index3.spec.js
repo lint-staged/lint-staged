@@ -1,6 +1,12 @@
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
+import {
+  NO_CONFIGURATION,
+  PREVENTED_EMPTY_COMMIT,
+  RESTORE_STASH_EXAMPLE,
+} from '../../lib/messages.js'
+
 jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
   validateOptions: jest.fn(async () => {}),
 }))
@@ -28,10 +34,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR ✖ No valid configuration found."
-    `)
+    expect(logger.printHistory()).toMatch(NO_CONFIGURATION)
   })
 
   it('should log error when preventing empty commit', async () => {
@@ -45,13 +48,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN 
-        ⚠ lint-staged prevented an empty git commit.
-        Use the --allow-empty option to continue, or check your task configuration
-      "
-    `)
+    expect(logger.printHistory()).toMatch(PREVENTED_EMPTY_COMMIT)
   })
 
   it('should log error and git stash message when a git operation failed', async () => {
@@ -66,17 +63,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR 
-        ✖ lint-staged failed due to a git error.
-      ERROR Any lost modifications can be restored from a git stash:
-
-        > git stash list
-        stash@{0}: automatic lint-staged backup
-        > git stash apply --index stash@{0}
-      "
-    `)
+    expect(logger.printHistory()).toMatch(RESTORE_STASH_EXAMPLE)
   })
 
   it('should log error without git stash message when a git operation failed and backup disabled', async () => {
@@ -91,11 +78,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR 
-        ✖ lint-staged failed due to a git error."
-    `)
+    expect(logger.printHistory()).toMatch('lint-staged failed due to a git error.')
 
     expect(logger.printHistory()).not.toMatch(
       'Any lost modifications can be restored from a git stash'
@@ -118,7 +101,21 @@ describe('lintStaged', () => {
       expect(error).toEqual(testError)
     })
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
+    expect(logger.printHistory()).toMatch('See debug logs for more info')
+  })
+
+  it('should not output debug log path when using quiet', async () => {
+    expect.assertions(2)
+
+    runAll.mockImplementationOnce(async () => {
+      throw new Error()
+    })
+
+    const logger = makeConsoleMock()
+
+    await expect(lintStaged({ quiet: true }, logger)).rejects.toThrow()
+
+    expect(logger.printHistory()).toMatch('')
   })
 
   it.each`

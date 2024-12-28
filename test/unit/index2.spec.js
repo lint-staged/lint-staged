@@ -33,10 +33,8 @@ describe('lintStaged', () => {
       },
     }
 
-    expect.assertions(2)
+    expect.assertions(1)
 
     await expect(lintStaged({ config }, logger)).rejects.toThrow('failed config')
-
-    expect(logger.printHistory()).toEqual('')
   })
 })

@@ -6,6 +6,7 @@ import { supportsColor } from 'chalk'
 import { Option, program } from 'commander'
 import debug from 'debug'
 
+import { setupDebugLogStream } from '../lib/debug.js'
 import lintStaged from '../lib/index.js'
 import { CONFIG_STDIN_ERROR, RESTORE_STASH_EXAMPLE } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
@@ -105,9 +106,8 @@ program.addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
 
 const cliOptions = program.parse(process.argv).opts()
 
-if (cliOptions.debug) {
-  debug.enable('lint-staged*')
-}
+// Seemingly setup debug twice (also done in "lib/index.js"), so that it also works when using the Node.js API
+setupDebugLogStream(cliOptions.debug)
 
 const options = {
   allowEmpty: !!cliOptions.allowEmpty,
