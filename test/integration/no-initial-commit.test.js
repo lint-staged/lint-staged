@@ -21,9 +21,7 @@ describe('lint-staged', () => {
           `"fatal: your current branch 'master' does not have any commits yet"`
         )
 
-        expect(await gitCommit({ lintStaged: { debug: true } })).toMatch(
-          'Skipping backup because there’s no initial commit yet'
-        )
+        expect(await gitCommit({})).toMatch('Skipping backup because there’s no initial commit yet')
 
         // Nothing is wrong, so the initial commit is created
         expect(await execGit(['rev-list', '--count', 'HEAD'], { cwd })).toEqual('1')

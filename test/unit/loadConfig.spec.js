@@ -145,7 +145,6 @@ describe('loadConfig', () => {
     const { config } = await loadConfig(
       {
         configPath: path.join('test', 'unit', '__mocks__', 'esm-config.mjs'),
-        debug: true,
         quiet: true,
       },
       logger
@@ -164,7 +163,6 @@ describe('loadConfig', () => {
     const { config } = await loadConfig(
       {
         configPath: path.join('test', 'unit', '__mocks__', 'esm-config-in-js.js'),
-        debug: true,
         quiet: true,
       },
       logger
@@ -183,7 +181,7 @@ describe('loadConfig', () => {
     jest.mock('my-lint-staged-config')
 
     const { config } = await loadConfig(
-      { configPath: 'my-lint-staged-config', quiet: true, debug: true },
+      { configPath: 'my-lint-staged-config', quiet: true },
       logger
     )
 

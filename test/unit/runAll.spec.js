@@ -69,6 +69,11 @@ describe('runAll', () => {
     await expect(runAll({})).resolves.toBeTruthy()
   })
 
+  it('should enable debug logs', async () => {
+    expect.assertions(1)
+    await expect(runAll({ debug: true })).resolves.toBeTruthy()
+  })
+
   it('should throw when failed to find staged files', async () => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => null)
@@ -110,7 +115,7 @@ describe('runAll', () => {
   it('should use an injected logger', async () => {
     expect.assertions(1)
     const logger = makeConsoleMock()
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath, debug: true }, logger)
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath }, logger)
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
