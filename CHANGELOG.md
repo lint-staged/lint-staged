@@ -1,5 +1,30 @@
 # lint-staged
 
+## 15.3.0
+
+### Minor Changes
+
+- [#1495](https://github.com/lint-staged/lint-staged/pull/1495) [`e69da9e`](https://github.com/lint-staged/lint-staged/commit/e69da9e614db2d45f56e113d45d5ec0157813423) Thanks [@iiroj](https://github.com/iiroj)! - Added more info to the debug logs so that "environment" info doesn't need to be added separately to GitHub issues.
+
+- [#1493](https://github.com/lint-staged/lint-staged/pull/1493) [`fa0fe98`](https://github.com/lint-staged/lint-staged/commit/fa0fe98104f8885f673b98b8b49ae586de699c5e) Thanks [@iiroj](https://github.com/iiroj)! - Added more help messages around the automatic `git stash` that _lint-staged_ creates as a backup (by default). The console output also displays the short git _hash_ of the stash so that it's easier to recover lost files in case some fatal errors are encountered, or the process is killed before completing.
+
+  For example:
+
+  ```
+  % npx lint-staged
+  ✔ Backed up original state in git stash (20addf8)
+  ✔ Running tasks for staged files...
+  ✔ Applying modifications from tasks...
+  ✔ Cleaning up temporary files...
+  ```
+
+  where the backup can be seen with `git show 20addf8`, or `git stash list`:
+
+  ```
+  % git stash list
+  stash@{0}: lint-staged automatic backup (20addf8)
+  ```
+
 ## 15.2.11
 
 ### Patch Changes
