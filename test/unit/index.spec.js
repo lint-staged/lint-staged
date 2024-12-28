@@ -1,6 +1,13 @@
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
+jest.unstable_mockModule('debug', () => {
+  const debug = jest.fn().mockReturnValue(jest.fn())
+  debug.enable = jest.fn()
+
+  return { default: debug }
+})
+
 jest.unstable_mockModule('lilconfig', () => ({
   lilconfig: jest.fn(),
 }))
@@ -13,6 +20,7 @@ jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
   validateOptions: jest.fn().mockImplementation(async () => void {}),
 }))
 
+const { default: debugLib } = await import('debug')
 const { lilconfig } = await import('lilconfig')
 const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
 const { default: lintStaged } = await import('../../lib/index.js')
@@ -23,11 +31,12 @@ describe('lintStaged', () => {
   const logger = makeConsoleMock()
 
   beforeEach(() => {
+    jest.resetAllMocks()
     logger.clearHistory()
   })
 
   it('should use lilconfig if no params are passed', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
 
     const config = { '*': 'mytask' }
     lilconfig({ config })
@@ -38,6 +47,8 @@ describe('lintStaged', () => {
       "
       ERROR ✖ Failed to get staged files!"
     `)
+
+    expect(debugLib.enable).not.toHaveBeenCalled()
   })
 
   it('should return true when passed', async () => {
@@ -67,5 +78,15 @@ describe('lintStaged', () => {
     `)
 
     console = previousConsole
+  })
+
+  it('should enable debugger', async () => {
+    expect.assertions(1)
+
+    lilconfig({ config: {} })
+
+    await lintStaged({ debug: true }, logger)
+
+    expect(debugLib.enable).toHaveBeenCalled()
   })
 })

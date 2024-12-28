@@ -28,7 +28,6 @@ describe('lint-staged', () => {
       const passed = await lintStaged({
         config: { '*.js': 'prettier --list-different' },
         cwd,
-        debug: true,
         diff: `${hashes[1]}...${hashes[0]}`,
         stash: false,
       })

@@ -21,8 +21,6 @@ either modify your pre-commit script/command to include the flag or invoke
 `lint-staged` manually(`./node_modules/.bin/lint-staged --debug`). Read more
 about debug mode here -
 https://github.com/okonet/lint-staged#command-line-flags.
-
-NOTE: This requires `lint-staged` version >= `6.0.0`.
 -->
 <details>
 
@@ -33,10 +31,3 @@ COPY THE DEBUG LOGS HERE
 ```
 
 </details>
-
-### Environment
-
-<!-- Tell us about your development environment -->
-- **OS:** <!-- ex: Windows 10, Ubuntu 16.04, macOS High Sierra -->
-- **Node.js:** <!-- ex: v8.9.1 -->
-- **`lint-staged`:** <!-- ex: v6.0.0 -->
