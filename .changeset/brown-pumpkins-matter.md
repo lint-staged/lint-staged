@@ -13,3 +13,5 @@ export default {
   '*': 'prettier --write',
 }
 ```
+
+It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-type` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.
