@@ -126,7 +126,13 @@ const options = {
   verbose: !!cliOptions.verbose,
 }
 
-debugLog('Using shell: %s', userInfo().shell)
+try {
+  const { shell } = userInfo()
+  debugLog('Using shell: %s', shell)
+} catch {
+  debugLog('Could not determine current shell')
+}
+
 debugLog('Options parsed from command-line: %o', options)
 
 if (options.configPath === '-') {
