@@ -184,6 +184,20 @@ Configuration should be an object where each value is a command to run and its k
 
 You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
+### TypeScript
+
+_Lint-staged_ provides TypeScript types for the main configuration format, usable in JS-based config files. Lint-staged doesn't currently support loading configuration from actual TS files, but it's possible to [use the JSDoc syntax together with TypeScript](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import-types):
+
+```js
+/**
+ * @filename: lint-staged.config.js
+ * @type {import('lint-staged').Configuration}
+ */
+export default {
+  '*': 'prettier --write',
+}
+```
+
 #### `package.json` example:
 
 ```json

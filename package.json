@@ -23,6 +23,7 @@
     "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
+  "types": "lib/types.d.ts",
   "files": [
     "bin",
     "lib"
@@ -31,6 +32,7 @@
     "lint": "eslint .",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "test:watch": "npm run test -- --watch",
+    "typecheck": "tsc --noEmit --strict test/unit/types.ts",
     "version": "npx changeset version",
     "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
     "tag": "npx changeset tag"
@@ -66,7 +68,8 @@
     "jest-snapshot-serializer-ansi": "2.1.0",
     "mock-stdin": "1.0.0",
     "prettier": "3.4.2",
-    "semver": "7.6.3"
+    "semver": "7.6.3",
+    "typescript": "5.7.3"
   },
   "keywords": [
     "lint",
