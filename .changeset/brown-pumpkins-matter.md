@@ -2,7 +2,7 @@
 'lint-staged': minor
 ---
 
-_Lint-staged_ now ships with TypeScript types for the configuration and main Node.js API. You can use the JSDoc syntax in your JS configuration files:
+_Lint-staged_ now provides TypeScript types for the configuration and main Node.js API. You can use the JSDoc syntax in your JS configuration files:
 
 ```js
 /**

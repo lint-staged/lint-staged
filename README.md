@@ -210,7 +210,7 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ### TypeScript
 
-_Lint-staged_ provides TypeScript types for the main configuration format, usable in JS-based config files. Lint-staged doesn't currently support loading configuration from actual TS files, but it's possible to [use the JSDoc syntax together with TypeScript](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import-types):
+_Lint-staged_ provides TypeScript types for the configuration and main Node.js API. You can use the JSDoc syntax in your JS configuration files:
 
 ```js
 /**
