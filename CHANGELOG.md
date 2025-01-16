@@ -1,5 +1,33 @@
 # lint-staged
 
+## 15.4.0
+
+### Minor Changes
+
+- [#1500](https://github.com/lint-staged/lint-staged/pull/1500) [`a8ec1dd`](https://github.com/lint-staged/lint-staged/commit/a8ec1ddb587d2c1c2420dbb4baff8160f0ac46c9) Thanks [@iiroj](https://github.com/iiroj)! - _Lint-staged_ now provides TypeScript types for the configuration and main Node.js API. You can use the JSDoc syntax in your JS configuration files:
+
+  ```js
+  /**
+   * @filename: lint-staged.config.js
+   * @type {import('lint-staged').Configuration}
+   */
+  export default {
+    '*': 'prettier --write',
+  }
+  ```
+
+  It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-types` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.
+
+  ```shell
+  export NODE_OPTIONS="--experimental-strip-types"
+
+  npx lint-staged --config lint-staged.config.ts
+  ```
+
+### Patch Changes
+
+- [#1501](https://github.com/lint-staged/lint-staged/pull/1501) [`9b79364`](https://github.com/lint-staged/lint-staged/commit/9b793640e1f87b46e4f40fcfc1ecf9d6f6013ac9) Thanks [@iiroj](https://github.com/iiroj)! - Handle possible failures when logging user shell for debug info.
+
 ## 15.3.0
 
 ### Minor Changes
