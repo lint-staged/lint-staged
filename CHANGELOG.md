@@ -1,5 +1,13 @@
 # lint-staged
 
+## 15.4.1
+
+### Patch Changes
+
+- [#1504](https://github.com/lint-staged/lint-staged/pull/1504) [`1c7a45e`](https://github.com/lint-staged/lint-staged/commit/1c7a45ed2c7fee9d5f55337be16a51e4c9b240e1) Thanks [@iiroj](https://github.com/iiroj)! - Default TypeScript config filenames match JS equivalents.
+
+- [#1504](https://github.com/lint-staged/lint-staged/pull/1504) [`9cc18c9`](https://github.com/lint-staged/lint-staged/commit/9cc18c9debb185490f9ae4f9c1d21ec8c2587393) Thanks [@iiroj](https://github.com/iiroj)! - Add missing conditional exports syntax for TypeScript types.
+
 ## 15.4.0
 
 ### Minor Changes
