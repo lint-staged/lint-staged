@@ -51,6 +51,26 @@ jobs:
         run: npm ci
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
+  TypeScript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/cache@v4
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci
+      - run: npm run typecheck
+
   ESLint:
     runs-on: ubuntu-latest
     steps:
