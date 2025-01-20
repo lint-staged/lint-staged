@@ -4,7 +4,7 @@
 
 ---
 
-Run linters against staged git files and don't let :poop: slip into your code base!
+Run tasks like formatters and linters against staged git files and don't let :poop: slip into your code base!
 
 ```bash
 npm install --save-dev lint-staged # requires further setup
@@ -36,7 +36,7 @@ $ git commit
 
 ## Why
 
-Linting makes more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a lint process on a whole project is slow, and linting results can be irrelevant. Ultimately you only want to lint files that will be committed.
+Code quality tasks like formatters and linters make more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a task on a whole project can be slow, and opinionated tasks such as linting can sometimes produce irrelevant results. Ultimately you only want to check files that will be committed.
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
@@ -59,8 +59,8 @@ To install _lint-staged_ in the recommended way, you need to:
 1. Set up the `pre-commit` git hook to run _lint-staged_
    - [Husky](https://github.com/typicode/husky) is a popular choice for configuring git hooks
    - Read more about git hooks [here](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
-1. Install some linters, like [ESLint](https://eslint.org) or [Prettier](https://prettier.io)
-1. Configure _lint-staged_ to run linters and other tasks:
+1. Install some tools like [ESLint](https://eslint.org) or [Prettier](https://prettier.io)
+1. Configure _lint-staged_ to run code checkers and other tasks:
    - for example: `{ "*.js": "eslint" }` to run ESLint for all staged JS files
    - See [Configuration](#configuration) for more info
 
@@ -142,7 +142,7 @@ Any lost modifications can be restored from a git stash:
   > git stash apply --index stash@{0}
 ```
 
-- **`--allow-empty`**: By default, when linter tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+- **`--allow-empty`**: By default, when tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
 - **`--concurrent [number|boolean]`**: Controls the [concurrency of tasks](#task-concurrency) being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
   - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
@@ -153,14 +153,14 @@ Any lost modifications can be restored from a git stash:
   - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
   - uses [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) for `listr2`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
     (the [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) can also be activated by setting the `TERM=dumb` or `NODE_ENV=test` environment variables)
-- **`--diff`**: By default linters are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [git diff](https://git-scm.com/docs/git-diff) and [gitrevisions](https://git-scm.com/docs/gitrevisions). This option also implies `--no-stash`.
+- **`--diff`**: By default tasks are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [git diff](https://git-scm.com/docs/git-diff) and [gitrevisions](https://git-scm.com/docs/gitrevisions). This option also implies `--no-stash`.
 - **`--diff-filter`**: By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
 - **`--max-arg-length`**: long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit. Can be re-enabled with `--stash`. This option also implies `--no-hide-partially-staged`.
 - **`--no-hide-partially-staged`**: By default, unstaged changes from partially staged files will be hidden. This option will disable this behavior and include all unstaged changes in partially staged files. Can be re-enabled with `--hide-partially-staged`
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
-- **`--shell`**: By default linter commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
+- **`--shell`**: By default task commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
@@ -282,7 +282,7 @@ Or, if necessary, you can limit the concurrency using `--concurrent <number>` or
 
 ## Filtering files
 
-Linter commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
+Task commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
 
 - If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will be enabled, so globs match a file's basename regardless of directory:
   - `"*.js"` will match all JS files, like `/test.js` and `/foo/bar/test.js`
@@ -297,9 +297,9 @@ When matching, lint-staged will do the following
 - Resolve the git root automatically, no configuration needed.
 - Pick the staged files which are present inside the project directory.
 - Filter them using the specified glob patterns.
-- Pass absolute paths to the linters as arguments.
+- Pass absolute paths to the tasks as arguments.
 
-**NOTE:** `lint-staged` will pass _absolute_ paths to the linters to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
+**NOTE:** `lint-staged` will pass _absolute_ paths to the tasks to avoid any confusion in case they're executed in a different working directory (i.e. when your `.git` directory isn't the same as your `package.json` directory).
 
 Also see [How to use `lint-staged` in a multi-package monorepo?](#how-to-use-lint-staged-in-a-multi-package-monorepo)
 
@@ -589,12 +589,12 @@ The following is equivalent:
 
 </details>
 
-### Use environment variables with linting commands
+### Use environment variables with task commands
 
 <details>
   <summary>Click to expand</summary>
 
-Linting commands _do not_ support the shell convention of expanding environment variables. To enable the convention yourself, use a tool like [`cross-env`](https://github.com/kentcdodds/cross-env).
+Task commands _do not_ support the shell convention of expanding environment variables. To enable the convention yourself, use a tool like [`cross-env`](https://github.com/kentcdodds/cross-env).
 
 For example, here is `jest` running on all `.js` files with the `NODE_ENV` variable being set to `"test"`:
 
@@ -849,7 +849,7 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 <details>
   <summary>Click to expand</summary>
 
-Install _lint-staged_ on the monorepo root level, and add separate configuration files in each package. When running, _lint-staged_ will always use the configuration closest to a staged file, so having separate configuration files makes sure linters do not "leak" into other packages.
+Install _lint-staged_ on the monorepo root level, and add separate configuration files in each package. When running, _lint-staged_ will always use the configuration closest to a staged file, so having separate configuration files makes sure tasks do not "leak" into other packages.
 
 For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `packages/backend/.lintstagedrc.json`, a staged file inside `packages/frontend/` will only match that configuration, and not the one in `packages/backend/`.
 
@@ -887,7 +887,7 @@ To support backwards-compatibility, monorepo features require multiple _lint-sta
 
 tl;dr: Yes, but the pattern should start with `../`.
 
-By default, `lint-staged` executes linters only on the files present inside the project folder(where `lint-staged` is installed and run from).
+By default, `lint-staged` executes tasks only on the files present inside the project folder(where `lint-staged` is installed and run from).
 So this question is relevant _only_ when the project folder is a child folder inside the git repo.
 In certain project setups, it might be desirable to bypass this restriction. See [#425](https://github.com/okonet/lint-staged/issues/425), [#487](https://github.com/okonet/lint-staged/issues/487) for more context.
 

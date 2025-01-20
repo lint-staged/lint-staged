@@ -62,7 +62,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should return an empty file list for linters with no matches.', async () => {
+  it('should return an empty file list for tasks with no matches.', async () => {
     const result = await generateTasks({ config, cwd, files })
 
     result.forEach((task) => {

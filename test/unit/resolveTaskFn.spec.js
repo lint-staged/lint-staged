@@ -176,7 +176,7 @@ describe('resolveTaskFn', () => {
     })
   })
 
-  it('should throw error for failed linters', async () => {
+  it('should throw error for failed tasks', async () => {
     expect.assertions(1)
     execa.mockReturnValueOnce(
       mockExecaReturnValue({

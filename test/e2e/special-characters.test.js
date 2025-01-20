@@ -13,7 +13,7 @@ describe('lint-staged', () => {
   }
 
   test.each([['$test.js'], ['[test].js'], ['(test).js']])(
-    'supports linting "%s" with ESLint + Prettier',
+    'supports running "%s" with ESLint + Prettier',
     async (filename) =>
       withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
         const lintStaged = getLintStagedExecutor(cwd)

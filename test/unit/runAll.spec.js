@@ -162,7 +162,7 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Running tasks for staged files/)
   })
 
-  it('should skip applying unstaged modifications if there are errors during linting', async () => {
+  it('should skip applying unstaged modifications if there are errors during a task', async () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
