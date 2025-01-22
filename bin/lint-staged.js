@@ -23,6 +23,15 @@ process.on('SIGINT', () => {})
 
 program.version(await getVersion())
 
+/**
+ * This shouldn't be necessary for lint-staged, but add migration step just in case
+ * to preserve old behavior of "commander".
+ *
+ * @todo remove this in the major version
+ * @see https://github.com/tj/commander.js/releases/tag/v13.0.0
+ * */
+program.allowExcessArguments()
+
 program.option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
 
 program.option(
