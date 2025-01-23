@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.4.2
+
+### Patch Changes
+
+- [#1509](https://github.com/lint-staged/lint-staged/pull/1509) [`8827ebf`](https://github.com/lint-staged/lint-staged/commit/8827ebf29dc8f25149a36450b4a0023425202e18) Thanks [@iiroj](https://github.com/iiroj)! - Change _lint-staged_'s dependencies to use [caret (`^`) ranges](https://docs.npmjs.com/cli/v6/using-npm/semver#caret-ranges-123-025-004) instead of [tilde (`~`)](https://docs.npmjs.com/cli/v6/using-npm/semver#tilde-ranges-123-12-1). This makes it easier for package managers to perform dependency management when minor-level updates are also permitted instead of just patch-level.
+
 ## 15.4.1
 
 ### Patch Changes
