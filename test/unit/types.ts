@@ -1,4 +1,4 @@
-import { Configuration } from '../../lib/types'
+import lintStaged, { Configuration } from '../../lib/types'
 
 export const fullConfig: Configuration = {
   '*.ext1': 'eslint',
@@ -37,3 +37,11 @@ export const functionConfig3: Configuration = (async (fileNames: string[]) => {
 export const functionConfig4: Configuration = (async (fileNames: string[]) => {
   return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
 }) satisfies Configuration
+
+lintStaged({}).then((value) => {
+  console.log(value)
+})
+
+lintStaged({}, console).catch((error) => {
+  console.error(error)
+})
