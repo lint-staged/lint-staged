@@ -1,4 +1,5 @@
-const config = {
+/** @type {import('jest').Config} */
+export default {
   collectCoverageFrom: [
     'lib/**/*.js',
     /**
@@ -8,6 +9,14 @@ const config = {
     '!lib/resolveConfig.js',
   ],
   coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
+  coverageThreshold: {
+    global: {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+  },
   moduleDirectories: ['node_modules'],
   prettierPath: null,
   setupFiles: ['./test/testSetup.js'],
@@ -15,5 +24,3 @@ const config = {
   testEnvironment: 'node',
   transform: {},
 }
-
-export default config
