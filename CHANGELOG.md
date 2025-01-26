@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.4.3
+
+### Patch Changes
+
+- [#1512](https://github.com/lint-staged/lint-staged/pull/1512) [`cbfed1d`](https://github.com/lint-staged/lint-staged/commit/cbfed1dfd2465c4198c692955281f0836600bea1) Thanks [@tarik02](https://github.com/tarik02)! - Adjust TypeScript types for the default export so that it can be used as a value without error TS2693.
+
 ## 15.4.2
 
 ### Patch Changes
