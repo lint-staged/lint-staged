@@ -96,6 +96,4 @@ type Logger = {
  * @returns {boolean} `true` when all tasks were successful, `false` when some tasks failed with errors
  * @throws {Error} when failed to some other errors
  */
-type lintStaged = (options: Options, logger?: Logger) => Promise<boolean>
-
-export default lintStaged
+export default function lintStaged(options: Options, logger?: Logger): Promise<boolean>
