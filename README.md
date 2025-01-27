@@ -876,7 +876,7 @@ export default {
 }
 ```
 
-To support backwards-compatibility, monorepo features require multiple _lint-staged_ configuration files present in the git repo. If you still want to run _lint-staged_ in only one of the packages in a monorepo, you can either add an "empty" _lint-staged_ configuration to the root of the repo (so that there's two configs in total), or alternatively run _lint-staged_ with the `--cwd` option pointing to your package directory (for example, `lint-staged --cwd packages/frontend`).
+To support backwards-compatibility, monorepo features require multiple _lint-staged_ configuration files present in the git repo. If you still want to run _lint-staged_ in only one of the packages in a monorepo, you can use the `--cwd` option (for example, `lint-staged --cwd packages/frontend`).
 
 </details>
 
