@@ -19,14 +19,10 @@
   "type": "module",
   "bin": "./bin/lint-staged.js",
   "exports": {
-    ".": {
-      "default": "./lib/index.js",
-      "types": "./lib/types.d.ts"
-    },
+    ".": "./lib/index.js",
     "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
-  "types": "lib/types.d.ts",
   "files": [
     "bin",
     "lib"
@@ -35,7 +31,7 @@
     "lint": "eslint .",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "test:watch": "npm run test -- --watch",
-    "typecheck": "tsc --noEmit --strict test/unit/types.ts",
+    "typecheck": "tsc --noEmit --strict test/types/index.ts",
     "version": "npx changeset version",
     "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
     "tag": "npx changeset tag"

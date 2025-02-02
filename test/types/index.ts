@@ -1,4 +1,4 @@
-import lintStaged, { Configuration } from '../../lib/types'
+import lintStaged, { type Configuration } from '../../lib/'
 
 export const fullConfig: Configuration = {
   '*.ext1': 'eslint',
