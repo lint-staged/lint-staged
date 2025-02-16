@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { expect, jest } from '@jest/globals'
 
 import { prettierListDifferent, prettierWrite } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
@@ -163,6 +163,111 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
 
       expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`"AM test.js"`)
+    })
+  )
+
+  /**
+   * @todo Lint-staged wouldn't have to operate on all files marked as staged during a
+   * merge conflict resolution; we can optimize it by using a more accurate diff
+   * what has really changed in the upstream branch.
+   */
+  test(
+    'operates on too many files during merge conflict',
+    withGitIntegration(async ({ appendFile, gitCommit, readFile, writeFile, execGit }) => {
+      const commonContent = `export function     common()  {    };\n\n\n\n`
+
+      const upstreamContent = `export function      upstream() {    };\n\n\n\n`
+      const prettyUpstreamContent = `export function upstream() {}\n`
+
+      const localContent = `export function      local() {    };\n\n\n\n`
+      const prettyLocalContent = `export function local() {}\n`
+
+      const mergedContent = `${upstreamContent}${localContent}`
+      const prettyMergedContent = `export function upstream() {}\n\nexport function local() {}\n`
+
+      // Add common files before branching off
+      await writeFile('modifiedFileNoConflict.js', commonContent)
+      await writeFile('modifiedFileConflictDiscardLocal.js', commonContent)
+      await writeFile('modifiedFileConflictMergeLocal.js', commonContent)
+      await writeFile('modifiedFileIndexOnly.js', commonContent)
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m', 'Add common files'])
+
+      // Create local branch then modify upstream branch
+      await execGit(['branch', 'local'])
+
+      await writeFile('newFileNoConflict.js', upstreamContent)
+      await writeFile('newFileConflictDiscardLocal.js', upstreamContent)
+      await writeFile('newFileConflictMergeLocal.js', upstreamContent)
+      await writeFile('modifiedFileNoConflict.js', upstreamContent)
+      await writeFile('modifiedFileConflictDiscardLocal.js', upstreamContent)
+      await writeFile('modifiedFileConflictMergeLocal.js', upstreamContent)
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m', 'Upstream changes'])
+
+      // Modify local branch
+      await execGit(['checkout', 'local'])
+      await appendFile('newFileConflictDiscardLocal.js', localContent)
+      await appendFile('newFileConflictMergeLocal.js', localContent)
+      await writeFile('modifiedFileConflictDiscardLocal.js', localContent)
+      await writeFile('modifiedFileConflictMergeLocal.js', localContent)
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m', 'Local changes'])
+
+      // Enable prettier in local branch
+      await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite)) // enable prettier in local branch only
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m', 'Local changes'])
+
+      // Initiate merge with conflict
+      await expect(execGit(['merge', 'master'])).rejects.toThrow('Merge conflict')
+
+      expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`
+        "UU modifiedFileConflictDiscardLocal.js
+        UU modifiedFileConflictMergeLocal.js
+        M  modifiedFileNoConflict.js
+        AA newFileConflictDiscardLocal.js
+        AA newFileConflictMergeLocal.js
+        A  newFileNoConflict.js"
+      `)
+
+      // Resolve merge conflicts and touch more files
+      await writeFile('newFileConflictDiscardLocal.js', upstreamContent)
+      await writeFile('newFileConflictMergeLocal.js', mergedContent)
+      await writeFile('modifiedFileConflictDiscardLocal.js', upstreamContent)
+      await writeFile('modifiedFileConflictMergeLocal.js', mergedContent)
+      await writeFile('newFileIndexOnly.js', localContent)
+      await writeFile('modifiedFileIndexOnly.js', localContent)
+
+      await execGit(['add', '.'])
+
+      expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
+
+      // Regular git status shows too many files
+      expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`
+        "M  modifiedFileConflictDiscardLocal.js
+        M  modifiedFileConflictMergeLocal.js
+        M  modifiedFileIndexOnly.js
+        M  modifiedFileNoConflict.js
+        M  newFileConflictDiscardLocal.js
+        M  newFileConflictMergeLocal.js
+        A  newFileIndexOnly.js
+        A  newFileNoConflict.js"
+      `)
+
+      await gitCommit(['-m', 'Merge upstream'])
+
+      // Verify only files different from upstream had prettier run
+      expect(await readFile('newFileConflictMergeLocal.js')).toEqual(prettyMergedContent)
+      expect(await readFile('modifiedFileConflictMergeLocal.js')).toEqual(prettyMergedContent)
+      expect(await readFile('newFileIndexOnly.js')).toEqual(prettyLocalContent)
+      expect(await readFile('modifiedFileIndexOnly.js')).toEqual(prettyLocalContent)
+
+      // These files wouldn't have to be linted as there were no conflicts
+      expect(await readFile('newFileNoConflict.js')).toEqual(prettyUpstreamContent)
+      expect(await readFile('newFileConflictDiscardLocal.js')).toEqual(prettyUpstreamContent)
+      expect(await readFile('modifiedFileNoConflict.js')).toEqual(prettyUpstreamContent)
+      expect(await readFile('modifiedFileConflictDiscardLocal.js')).toEqual(prettyUpstreamContent)
     })
   )
 })
