@@ -7,7 +7,7 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
 export default [
   {
-    ignores: ['coverage', 'node_mdoules', 'test/unit/__mocks__'],
+    ignores: ['coverage', 'node_modules', 'test/unit/__mocks__'],
   },
   js.configs.recommended,
   eslintPluginJest.configs['flat/recommended'],
