@@ -18,7 +18,7 @@ describe('lint-staged', () => {
         await execGit(['add', 'test.js'], { cwd })
 
         await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"fatal: your current branch 'master' does not have any commits yet"`
+          `"fatal: your current branch 'main' does not have any commits yet"`
         )
 
         expect(await gitCommit({})).toMatch('Skipping backup because there’s no initial commit yet')

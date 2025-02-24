@@ -909,15 +909,15 @@ all changed files between two different branches. If you want to run _lint-stage
 Try out the `git diff` command until you are satisfied with the result, for example:
 
 ```
-git diff --diff-filter=ACMR --name-only master...my-branch
+git diff --diff-filter=ACMR --name-only main...my-branch
 ```
 
-This will print a list of _added_, _changed_, _modified_, and _renamed_ files between `master` and `my-branch`.
+This will print a list of _added_, _changed_, _modified_, and _renamed_ files between `main` and `my-branch`.
 
 You can then run lint-staged against the same files with:
 
 ```
-npx lint-staged --diff="master...my-branch"
+npx lint-staged --diff="main...my-branch"
 ```
 
 </details>
