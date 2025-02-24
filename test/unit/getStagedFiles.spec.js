@@ -46,24 +46,24 @@ describe('getStagedFiles', () => {
 
   it('should support overriding diff trees with ...', async () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
-    const staged = await getStagedFiles({ cwd: '/', diff: 'master...my-branch' })
+    const staged = await getStagedFiles({ cwd: '/', diff: 'main...my-branch' })
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenCalledWith(
-      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master...my-branch'],
+      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'main...my-branch'],
       { cwd: '/' }
     )
   })
 
   it('should support overriding diff trees with multiple args', async () => {
     execGit.mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
-    const staged = await getStagedFiles({ cwd: '/', diff: 'master my-branch' })
+    const staged = await getStagedFiles({ cwd: '/', diff: 'main my-branch' })
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
 
     expect(execGit).toHaveBeenCalledWith(
-      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'master', 'my-branch'],
+      ['diff', '--name-only', '-z', '--diff-filter=ACMR', 'main', 'my-branch'],
       { cwd: '/' }
     )
   })

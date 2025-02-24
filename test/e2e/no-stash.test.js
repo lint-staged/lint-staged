@@ -31,16 +31,16 @@ describe('lint-staged', () => {
       expect(res.stdout).toMatch('No staged files found.')
       expect(res.stderr).toMatch('Skipping backup because `--no-stash` was used.')
 
-      res = await lintStaged('--diff=master...my-branch')
+      res = await lintStaged('--diff=main...my-branch')
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
 
-      await expect(lintStaged('--diff=master...my-branch --stash')).rejects.toThrow(
+      await expect(lintStaged('--diff=main...my-branch --stash')).rejects.toThrow(
         expect.objectContaining({
           stderr: expect.stringContaining('lint-staged failed due to a git error.'),
         })
       )
 
-      res = await lintStaged('--diff=master...my-branch --no-stash')
+      res = await lintStaged('--diff=main...my-branch --no-stash')
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
     })
   )

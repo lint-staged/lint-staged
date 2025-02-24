@@ -28,7 +28,7 @@ describe('lint-staged', () => {
 
       expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-      await execGit(['checkout', 'master'])
+      await execGit(['checkout', 'main'])
 
       // Create another branch
       await execGit(['checkout', '-b', 'branch-b'])
@@ -39,7 +39,7 @@ describe('lint-staged', () => {
       expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
       // Merge first branch
-      await execGit(['checkout', 'master'])
+      await execGit(['checkout', 'main'])
       await execGit(['merge', 'branch-a'])
       expect(await readFile('test.js')).toEqual(fileInBranchA)
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -90,7 +90,7 @@ describe('lint-staged', () => {
 
       expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-      await execGit(['checkout', 'master'])
+      await execGit(['checkout', 'main'])
 
       // Create another branch
       await execGit(['checkout', '-b', 'branch-b'])
@@ -103,7 +103,7 @@ describe('lint-staged', () => {
       expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
       // Merge first branch
-      await execGit(['checkout', 'master'])
+      await execGit(['checkout', 'main'])
       await execGit(['merge', 'branch-a'])
       expect(await readFile('test.js')).toEqual(fileInBranchA)
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
@@ -220,7 +220,7 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m', 'Local changes'])
 
       // Initiate merge with conflict
-      await expect(execGit(['merge', 'master'])).rejects.toThrow('Merge conflict')
+      await expect(execGit(['merge', 'main'])).rejects.toThrow('Merge conflict')
 
       expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`
         "UU modifiedFileConflictDiscardLocal.js

@@ -3,7 +3,7 @@ name: Default Branch Push
 on:
   push:
     branches:
-      - master
+      - main
     # Do not run on tags
     tags-ignore:
       - '*'
