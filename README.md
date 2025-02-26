@@ -1013,3 +1013,98 @@ ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs
 </details>
 
 </details>
+
+### How can I resolve TypeScript (`tsc`) ignoring `tsconfig.json` when `lint-staged` runs via Husky hooks?
+
+<details>
+  <summary>Click to expand</summary>
+
+When running `lint-staged` via Husky hooks, TypeScript may ignore `tsconfig.json`, leading to errors like:
+
+> **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.  
+> **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.  
+
+See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.  
+
+#### Root Cause  
+
+<details>
+  <summary>Click to expand</summary>
+
+1. `lint-staged` automatically passes matched staged files as arguments to commands.  
+2. Certain input files can cause TypeScript to ignore `tsconfig.json`. For more details, see this TypeScript issue: [Allow tsconfig.json when input files are specified](https://github.com/microsoft/TypeScript/issues/27379).  
+
+</details>  
+
+#### Workaround 1: Use a [function signature](https://github.com/lint-staged/lint-staged?tab=readme-ov-file#example-run-tsc-on-changes-to-typescript-files-but-do-not-pass-any-filename-arguments) for the `tsc` command
+
+<details>
+  <summary>Click to expand</summary>
+
+As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-620018284), using a function prevents `lint-staged` from appending file arguments:  
+
+**Before:**
+
+```js
+// package.json
+
+"lint-staged": {
+    "*.{ts,tsx}":[
+      "tsc --noEmit",
+      "prettier --write"
+    ]
+  }
+```
+
+**After:**
+
+```js
+// lint-staged.config.js
+module.exports = {
+  "*.{ts,tsx}": [
+    () => "tsc --noEmit", 
+    "prettier --write"
+  ],
+}
+```
+
+</details>
+
+#### Workaround 2: Take the `sh` or `bash` to wrap the `tsc` command
+
+<details>
+  <summary>Click to expand</summary>
+
+As suggested by @sombreroEnPuntas in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-674575655), wrapping `tsc` in a shell command prevents `lint-staged` from modifying its arguments:
+
+**Before:**
+
+```js
+// package.json
+
+"lint-staged": {
+  "*.{ts,tsx}":[
+    "tsc --noEmit",
+    "prettier --write"
+  ]
+}
+```
+
+**After:**
+
+```js
+// package.json
+
+"lint-staged": {
+  "*.{ts,tsx}":[
+    "bash -c 'tsc --noEmit'"
+    "prettier --write"
+  ]
+}
+```
+
+**Note:** This approach may have cross-platform compatibility issues.
+
+</details>
+
+</details>
