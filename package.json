@@ -18,6 +18,8 @@
   },
   "type": "module",
   "bin": "./bin/lint-staged.js",
+  "types": "./lib/index.d.ts",
+  "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
     "./bin": "./bin/lint-staged.js",
@@ -27,6 +29,13 @@
     "bin",
     "lib"
   ],
+  "typesVersions": {
+    "*": {
+      "bin*": [
+        "./bin/lint-staged.d.ts"
+      ]
+    }
+  },
   "scripts": {
     "lint": "eslint .",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
