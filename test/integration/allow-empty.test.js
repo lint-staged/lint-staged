@@ -9,7 +9,7 @@ jest.retryTimes(2)
 
 describe('lint-staged', () => {
   test(
-    'fails when task reverts staged changes without `--allow-empty`, to prevent an empty git commit',
+    "fails when task reverts staged changes without `--allow-empty`, to prevent an empty git commit, but doesn't reset state",
     withGitIntegration(async ({ execGit, gitCommit, readFile, removeFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -24,14 +24,21 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
+      expect(await execGit(['status', '-z'])).toMatch('M  test.js')
+
       // Run lint-staged with prettier --write to automatically fix the file
       // Since prettier reverts all changes, the commit should fail
       await expect(gitCommit()).rejects.toThrow('lint-staged prevented an empty git commit.')
 
-      // Something was wrong so the repo is returned to original state
+      // Something was wrong so commit was canceled
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('committed pretty file')
-      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
+
+      // Tthere are no staged changes because state wasn't restored
+      expect(await execGit(['status', '-z'])).toMatch('')
+
+      // File is now pretty, because lint-staged ran Prettier which removed the modifications
+      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
     })
   )
 
