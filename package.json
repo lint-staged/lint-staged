@@ -3,7 +3,14 @@
   "version": "15.5.0",
   "description": "Lint files staged by git",
   "license": "MIT",
-  "repository": "https://github.com/lint-staged/lint-staged",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lint-staged/lint-staged.git"
+  },
+  "homepage": "https://github.com/lint-staged/lint-staged#readme",
+  "bugs": {
+    "url": "https://github.com/lint-staged/lint-staged/issues"
+  },
   "author": "Andrey Okonetchnikov <andrey@okonet.ru>",
   "maintainers": [
     "Lufty Wiranda <lufty.wiranda@gmail.com>",
@@ -17,7 +24,9 @@
     "node": ">=18.12.0"
   },
   "type": "module",
-  "bin": "./bin/lint-staged.js",
+  "bin": {
+    "lint-staged": "bin/lint-staged.js"
+  },
   "exports": {
     ".": "./lib/index.js",
     "./bin": "./bin/lint-staged.js",
