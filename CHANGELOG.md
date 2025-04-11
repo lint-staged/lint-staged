@@ -1,5 +1,15 @@
 # lint-staged
 
+## 15.5.1
+
+### Patch Changes
+
+- [#1533](https://github.com/lint-staged/lint-staged/pull/1533) [`5d53534`](https://github.com/lint-staged/lint-staged/commit/5d535349958a939cd17d87180196bb2b9dfc452b) Thanks [@iiroj](https://github.com/iiroj)! - Improve listing of staged files so that _lint-staged_ doesn't crash when encountering an uninitialized submodule. This should result in less errors like:
+
+  ```
+  ✖ Failed to get staged files!
+  ```
+
 ## 15.5.0
 
 ### Minor Changes
