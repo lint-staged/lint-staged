@@ -213,7 +213,7 @@ jobs:
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
-      - uses: cygwin/cygwin-install-action@v4
+      - uses: cygwin/cygwin-install-action@v5
       - run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
