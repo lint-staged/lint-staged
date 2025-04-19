@@ -32,6 +32,12 @@ program.version(await getVersion())
  * */
 program.allowExcessArguments()
 
+program.option(
+  '-a, --add-all',
+  'add all modified files to index, instead of only originally staged',
+  false
+)
+
 program.option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
 
 program.option(
@@ -119,6 +125,7 @@ if (cliOptions.debug) {
 }
 
 const options = {
+  addAll: !!cliOptions.addAll,
   allowEmpty: !!cliOptions.allowEmpty,
   concurrent: JSON.parse(cliOptions.concurrent),
   configPath: cliOptions.config,

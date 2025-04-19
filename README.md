@@ -120,6 +120,7 @@ Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
+  -a, --add-all                      add all modified files to index, instead of only originally staged (default: false)
   --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
   -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
   -c, --config [path]                path to configuration file, or - to read from stdin
@@ -147,6 +148,7 @@ Any lost modifications can be restored from a git stash:
   > git stash apply --index stash@{0}
 ```
 
+- **`--add-all`**: By default when tasks modify staged files, _lint-staged_ only includes files which were originally staged when starting the commit. With this flags, all modifications are staged, including new modifications and those that were originally unstaged. This is equivalent to running `git add .` after all tasks.
 - **`--allow-empty`**: By default, when tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
 - **`--concurrent [number|boolean]`**: Controls the [concurrency of tasks](#task-concurrency) being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
   - `false`: Run all tasks serially
@@ -1027,26 +1029,26 @@ ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs
 When running `lint-staged` via Husky hooks, TypeScript may ignore `tsconfig.json`, leading to errors like:
 
 > **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.  
-> **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.  
+> **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.
 
-See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.  
+See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.
 
-#### Root Cause  
+#### Root Cause
 
 <details>
   <summary>Click to expand</summary>
 
-1. `lint-staged` automatically passes matched staged files as arguments to commands.  
-2. Certain input files can cause TypeScript to ignore `tsconfig.json`. For more details, see this TypeScript issue: [Allow tsconfig.json when input files are specified](https://github.com/microsoft/TypeScript/issues/27379).  
+1. `lint-staged` automatically passes matched staged files as arguments to commands.
+2. Certain input files can cause TypeScript to ignore `tsconfig.json`. For more details, see this TypeScript issue: [Allow tsconfig.json when input files are specified](https://github.com/microsoft/TypeScript/issues/27379).
 
-</details>  
+</details>
 
 #### Workaround 1: Use a [function signature](https://github.com/lint-staged/lint-staged?tab=readme-ov-file#example-run-tsc-on-changes-to-typescript-files-but-do-not-pass-any-filename-arguments) for the `tsc` command
 
 <details>
   <summary>Click to expand</summary>
 
-As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-620018284), using a function prevents `lint-staged` from appending file arguments:  
+As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-620018284), using a function prevents `lint-staged` from appending file arguments:
 
 **Before:**
 
@@ -1066,10 +1068,7 @@ As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-sta
 ```js
 // lint-staged.config.js
 module.exports = {
-  "*.{ts,tsx}": [
-    () => "tsc --noEmit", 
-    "prettier --write"
-  ],
+  '*.{ts,tsx}': [() => 'tsc --noEmit', 'prettier --write'],
 }
 ```
 
