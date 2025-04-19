@@ -1,5 +1,13 @@
 # lint-staged
 
+## 16.0.0
+
+### Major Changes
+
+- [#1426](https://github.com/lint-staged/lint-staged/pull/1426) [`87d3214`](https://github.com/lint-staged/lint-staged/commit/87d3214323cce411eae8b3d2951c5b50dc29f961) Thanks [@iiroj](https://github.com/iiroj)! - Validation for deprecated advanced configuration has been removed. The advanced configuration was removed in _lint-staged_ version 9 and until now validation has failed if advanced configuration options were detected. Going forward the entire configuration will be treated with the same logic and if these advanced options are still present, they might be treated as valid globs for staged files instead.
+
+- [#1414](https://github.com/lint-staged/lint-staged/pull/1414) [`242e1f8`](https://github.com/lint-staged/lint-staged/commit/242e1f8d6fee18c91b4246098c13506c562fcfef) Thanks [@iiroj](https://github.com/iiroj)! - The lowest supported Node.js version is `18.19.0` or `20.5.0`, following requirements of `execa@9`. Please upgrade your Node.js version.
+
 ## 15.5.1
 
 ### Patch Changes
