@@ -4,7 +4,7 @@ const MOCK_DEFAULT_VALUE = {
   code: 0,
   cmd: 'mock cmd',
   failed: false,
-  killed: false,
+  isTerminated: false,
   signal: null,
 }
 
@@ -21,7 +21,7 @@ export const mockExecaReturnValue = (value = MOCK_DEFAULT_VALUE, executionTime) 
     : Promise.resolve(returnValue)
 
   returnedPromise.kill = () => {
-    returnValue.killed = true
+    returnValue.isTerminated = true
     clearTimeout(resolveTimeout)
     triggerResolve()
   }
