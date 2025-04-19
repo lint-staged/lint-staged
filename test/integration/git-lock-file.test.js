@@ -26,7 +26,6 @@ describe('lint-staged', () => {
       await expect(
         gitCommit({
           lintStaged: {
-            shell: isWindows,
             config: {
               '*.js': (files) => [
                 `${isWindows ? 'type nul >' : 'touch'} ${cwd}/.git/index.lock`,
