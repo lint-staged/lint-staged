@@ -220,7 +220,7 @@ describe('resolveTaskFn', () => {
         stderr: '',
         code: 0,
         failed: false,
-        killed: true,
+        isTerminated: true,
         signal: undefined,
         cmd: 'mock cmd',
       })

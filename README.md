@@ -79,6 +79,10 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
+#### v16
+
+- The lowest supported Node.js version is `18.19.0` or `20.5.0`, following requirements of `execa@9`. Please upgrade your Node.js version.
+
 #### v15
 
 - Since `v15.0.0` _lint-staged_ no longer supports Node.js 16. Please upgrade your Node.js version to at least `18.12.0`.
