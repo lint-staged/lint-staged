@@ -61,30 +61,26 @@ program.option(
 program.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
 
 /**
- * We don't want to show the `--stash` flag because it's on by default, and only show the
- * negatable flag `--no-stash` in stead. There seems to be a bug in Commander.js where
+ * We don't want to show the `--revert` flag because it's on by default, and only show the
+ * negatable flag `--no-rever` instead. There seems to be a bug in Commander.js where
  * configuring only the latter won't actually set the default value.
  */
 program
   .addOption(
-    new Option('--stash', 'enable the backup stash, and revert in case of errors')
-      .default(true)
-      .hideHelp()
+    new Option('--revert', 'revert to original state in case of errors').default(true).hideHelp()
   )
   .addOption(
-    new Option(
-      '--no-stash',
-      'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged".'
-    )
-      .default(false)
-      .implies({ hidePartiallyStaged: false })
+    new Option('--no-revert', 'do not revert to original state in case of errors.').default(false)
   )
 
-/**
- * We don't want to show the `--hide-partially-staged` flag because it's on by default, and only show the
- * negatable flag `--no-hide-partially-staged` in stead. There seems to be a bug in Commander.js where
- * configuring only the latter won't actually set the default value.
- */
+program
+  .addOption(new Option('--stash', 'enable the backup stash').default(true).hideHelp())
+  .addOption(
+    new Option('--no-stash', 'disable the backup stash. Implies "--no-revert".')
+      .default(false)
+      .implies({ revert: false, hidePartiallyStaged: false })
+  )
+
 program
   .addOption(
     new Option('--hide-partially-staged', 'hide unstaged changes from partially staged files')
@@ -127,6 +123,7 @@ const options = {
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
+  revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,

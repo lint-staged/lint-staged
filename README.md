@@ -109,13 +109,12 @@ Options:
   -c, --config [path]                path to configuration file, or - to read from stdin
   --cwd [path]                       run all tasks in specific directory, instead of the current
   -d, --debug                        print additional debug information (default: false)
-  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files.
-                                     Implies "--no-stash".
-  --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of
-                                     files
+  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
+                                     "--no-stash".
+  --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
   --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
-  --no-stash                         disable the backup stash, and do not revert in case of errors. Implies
-                                     "--no-hide-partially-staged".
+  --no-revert                        do not revert to original state in case of errors.
+  --no-stash                         disable the backup stash. Implies "--no-revert".
   --no-hide-partially-staged         disable hiding unstaged changes from partially staged files
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
@@ -144,10 +143,11 @@ Any lost modifications can be restored from a git stash:
 - **`--diff`**: By default tasks are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [git diff](https://git-scm.com/docs/git-diff) and [gitrevisions](https://git-scm.com/docs/gitrevisions). This option also implies `--no-stash`.
 - **`--diff-filter`**: By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
 - **`--max-arg-length`**: long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
-- **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit. Can be re-enabled with `--stash`. This option also implies `--no-hide-partially-staged`.
+- **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit. This option also implies `--no-hide-partially-staged`.
 - **`--no-hide-partially-staged`**: By default, unstaged changes from partially staged files will be hidden. This option will disable this behavior and include all unstaged changes in partially staged files. Can be re-enabled with `--hide-partially-staged`
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
+- **`--no-revert`**: By default all task modifications will be reverted in case of an error. This option will disable the behavior, and apply task modifications to the index before aborting the commit.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
