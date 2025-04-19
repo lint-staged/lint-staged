@@ -67,6 +67,11 @@ export type Options = {
    */
   relative?: boolean
   /**
+   * Revert to original state in case of errors
+   * @default true
+   */
+  revert?: boolean
+  /**
    * Enable the backup stash, and revert in case of errors.
    * @warn Disabling this also implies `hidePartiallyStaged: false`.
    * @default true
