@@ -27,9 +27,8 @@ describe('lint-staged', () => {
       // Stage all files
       await execGit(['add', '.'])
 
-      // Run lint-staged with `--shell` so that tasks do their thing
       // Run in 'deeper/' so that root config is ignored
-      await gitCommit({ lintStaged: { shell: true } }, path.join(cwd, 'deeper/even'))
+      await gitCommit(undefined, path.join(cwd, 'deeper/even'))
 
       // Two levels above, no match
       expect(await readFile('file.js')).toEqual('')

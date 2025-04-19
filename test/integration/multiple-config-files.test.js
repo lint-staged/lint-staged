@@ -29,8 +29,7 @@ describe('lint-staged', () => {
       // Stage all files
       await execGit(['add', '.'])
 
-      // Run lint-staged with `--shell` so that tasks do their thing
-      await gitCommit({ lintStaged: { shell: true } })
+      await gitCommit()
 
       // 'file.js' matched '.lintstagedrc.json'
       expect(await readFile('file.js')).toMatch('level-0')
@@ -68,8 +67,7 @@ describe('lint-staged', () => {
       // Stage all files
       await execGit(['add', '.'])
 
-      // Run lint-staged with `--shell` so that tasks do their thing
-      await gitCommit({ lintStaged: { relative: true, shell: true } })
+      await gitCommit({ lintStaged: { relative: true } })
 
       // 'file.js' is relative to '.'
       expect(await readFile('file.js')).toMatch('file.js')
@@ -110,9 +108,8 @@ describe('lint-staged', () => {
       // Stage all files
       await execGit(['add', '.'])
 
-      // Run lint-staged with `--shell` so that tasks do their thing
       // Run in 'deeper/' so that root config is ignored
-      await gitCommit({ lintStaged: { shell: true } }, path.join(cwd, 'deeper'))
+      await gitCommit(undefined, path.join(cwd, 'deeper'))
 
       // 'file.js' was ignored
       expect(await readFile('file.js')).toEqual('')

@@ -38,7 +38,6 @@ describe('resolveTaskFn', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
@@ -57,89 +56,8 @@ describe('resolveTaskFn', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
-      shell: false,
       stdin: 'ignore',
     })
-  })
-
-  it('should not append pathsToLint when isFn and shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      isFn: true,
-      shell: true,
-      command: 'node --arg=true ./myscript.js test.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: true,
-      stdin: 'ignore',
-    })
-  })
-
-  it('should work with shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      shell: true,
-      command: 'node --arg=true ./myscript.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: true,
-      stdin: 'ignore',
-    })
-  })
-
-  it('should work with path to custom shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      shell: '/bin/bash',
-      command: 'node --arg=true ./myscript.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: '/bin/bash',
-      stdin: 'ignore',
-    })
-  })
-
-  it('shell should work with spaces in file paths', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      shell: true,
-      command: 'node --arg=true ./myscript.js',
-      files: ['test file.js', 'file with/multiple spaces.js'],
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith(
-      'node --arg=true ./myscript.js test\\ file.js file\\ with/multiple\\ spaces.js',
-      {
-        cwd: process.cwd(),
-        preferLocal: true,
-        reject: false,
-        shell: true,
-        stdin: 'ignore',
-      }
-    )
   })
 
   it('should pass `topLevelDir` as `cwd` to `execa()` topLevelDir !== process.cwd for git commands', async () => {
@@ -156,7 +74,6 @@ describe('resolveTaskFn', () => {
       cwd: '../',
       preferLocal: true,
       reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
@@ -171,7 +88,6 @@ describe('resolveTaskFn', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
