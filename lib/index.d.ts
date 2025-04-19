@@ -62,6 +62,11 @@ export type Options = {
    */
   relative?: boolean
   /**
+   * Revert to original state in case of errors
+   * @default true
+   */
+  revert?: boolean
+  /**
    * Skip parsing of tasks for better shell support
    * @default false
    */
