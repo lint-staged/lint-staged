@@ -33,8 +33,9 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "bin",
-    "lib"
+    "bin/",
+    "lib/",
+    "MIGRATION.md"
   ],
   "scripts": {
     "lint": "eslint .",
