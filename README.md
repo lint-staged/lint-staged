@@ -79,38 +79,7 @@ See [Releases](https://github.com/okonet/lint-staged/releases).
 
 ### Migration
 
-#### v16
-
-- The lowest supported Node.js version is `18.19.0` or `20.5.0`, following requirements of `execa@9`. Please upgrade your Node.js version.
-- Advanced configuration options (removed in v9) are no longer validated separately, and might be treated as valid globs for tasks. Please do not try to use advanced config options anymore, they haven't been supported since v8.
-
-#### v15
-
-- Since `v15.0.0` _lint-staged_ no longer supports Node.js 16. Please upgrade your Node.js version to at least `18.12.0`.
-
-#### v14
-
-- Since `v14.0.0` _lint-staged_ no longer supports Node.js 14. Please upgrade your Node.js version to at least `16.14.0`.
-
-#### v13
-
-- Since `v13.0.0` _lint-staged_ no longer supports Node.js 12. Please upgrade your Node.js version to at least `14.13.1`, or `16.0.0` onward.
-- Version `v13.3.0` was incorrectly released including code of version `v14.0.0`. This means the breaking changes of `v14` are also included in `v13.3.0`, the last `v13` version released
-
-#### v12
-
-- Since `v12.0.0` _lint-staged_ is a pure ESM module, so make sure your Node.js version is at least `12.20.0`, `14.13.1`, or `16.0.0`. Read more about ESM modules from the official [Node.js Documentation site here](https://nodejs.org/api/esm.html#introduction).
-
-#### v10
-
-- From `v10.0.0` onwards any new modifications to originally staged files will be automatically added to the commit.
-  If your task previously contained a `git add` step, please remove this.
-  The automatic behaviour ensures there are less race-conditions,
-  since trying to run multiple git operations at the same time usually results in an error.
-- From `v10.0.0` onwards, lint-staged uses git stashes to improve speed and provide backups while running.
-  Since git stashes require at least an initial commit, you shouldn't run lint-staged in an empty repo.
-- From `v10.0.0` onwards, lint-staged requires Node.js version 10.13.0 or later.
-- From `v10.0.0` onwards, lint-staged will abort the commit if linter tasks undo all staged changes. To allow creating an empty commit, please use the `--allow-empty` option.
+For breaking changes, see [MIGRATION.md](./MIGRATION.md).
 
 ## Command line flags
 
@@ -135,7 +104,6 @@ Options:
   --no-hide-partially-staged         disable hiding unstaged changes from partially staged files
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
-  -x, --shell [path]                 skip parsing of tasks for better shell support (default: false)
   -v, --verbose                      show task output even when tasks succeed; by default only failed output is
                                      shown (default: false)
   -h, --help                         display help for command
@@ -165,7 +133,6 @@ Any lost modifications can be restored from a git stash:
 - **`--no-hide-partially-staged`**: By default, unstaged changes from partially staged files will be hidden. This option will disable this behavior and include all unstaged changes in partially staged files. Can be re-enabled with `--hide-partially-staged`
 - **`--quiet`**: Supress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
-- **`--shell`**: By default task commands will be parsed for speed and security. This has the side-effect that regular shell scripts might not work as expected. You can skip parsing of commands with this option. To use a specific shell, use a path like `--shell "/bin/bash"`.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
@@ -782,7 +749,6 @@ const success = await lintStaged({
   maxArgLength: null,
   quiet: false,
   relative: false,
-  shell: false,
   stash: true,
   verbose: false,
 })
@@ -800,7 +766,6 @@ const success = await lintStaged({
   maxArgLength: null,
   quiet: false,
   relative: false,
-  shell: false,
   stash: true,
   verbose: false,
 })
@@ -1027,26 +992,18 @@ ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs
 When running `lint-staged` via Husky hooks, TypeScript may ignore `tsconfig.json`, leading to errors like:
 
 > **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.  
-> **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.  
+> **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.
 
-See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.  
+See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.
 
-#### Root Cause  
+#### Root Cause
 
-<details>
-  <summary>Click to expand</summary>
+1. `lint-staged` automatically passes matched staged files as arguments to commands.
+2. Certain input files can cause TypeScript to ignore `tsconfig.json`. For more details, see this TypeScript issue: [Allow tsconfig.json when input files are specified](https://github.com/microsoft/TypeScript/issues/27379).
 
-1. `lint-staged` automatically passes matched staged files as arguments to commands.  
-2. Certain input files can cause TypeScript to ignore `tsconfig.json`. For more details, see this TypeScript issue: [Allow tsconfig.json when input files are specified](https://github.com/microsoft/TypeScript/issues/27379).  
+#### Workaround: Use a [function signature](https://github.com/lint-staged/lint-staged?tab=readme-ov-file#example-run-tsc-on-changes-to-typescript-files-but-do-not-pass-any-filename-arguments) for the `tsc` command
 
-</details>  
-
-#### Workaround 1: Use a [function signature](https://github.com/lint-staged/lint-staged?tab=readme-ov-file#example-run-tsc-on-changes-to-typescript-files-but-do-not-pass-any-filename-arguments) for the `tsc` command
-
-<details>
-  <summary>Click to expand</summary>
-
-As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-620018284), using a function prevents `lint-staged` from appending file arguments:  
+As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-620018284), using a function prevents `lint-staged` from appending file arguments:
 
 **Before:**
 
@@ -1066,50 +1023,8 @@ As suggested by @antoinerousseau in [#825 (comment)](https://github.com/lint-sta
 ```js
 // lint-staged.config.js
 module.exports = {
-  "*.{ts,tsx}": [
-    () => "tsc --noEmit", 
-    "prettier --write"
-  ],
+  '*.{ts,tsx}': [() => 'tsc --noEmit', 'prettier --write'],
 }
 ```
-
-</details>
-
-#### Workaround 2: Take the `sh` or `bash` to wrap the `tsc` command
-
-<details>
-  <summary>Click to expand</summary>
-
-As suggested by @sombreroEnPuntas in [#825 (comment)](https://github.com/lint-staged/lint-staged/issues/825#issuecomment-674575655), wrapping `tsc` in a shell command prevents `lint-staged` from modifying its arguments:
-
-**Before:**
-
-```js
-// package.json
-
-"lint-staged": {
-  "*.{ts,tsx}":[
-    "tsc --noEmit",
-    "prettier --write"
-  ]
-}
-```
-
-**After:**
-
-```js
-// package.json
-
-"lint-staged": {
-  "*.{ts,tsx}":[
-    "bash -c 'tsc --noEmit'"
-    "prettier --write"
-  ]
-}
-```
-
-**Note:** This approach may have cross-platform compatibility issues.
-
-</details>
 
 </details>

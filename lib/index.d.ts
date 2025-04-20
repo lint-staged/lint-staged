@@ -62,11 +62,6 @@ export type Options = {
    */
   relative?: boolean
   /**
-   * Skip parsing of tasks for better shell support
-   * @default false
-   */
-  shell?: boolean
-  /**
    * Enable the backup stash, and revert in case of errors.
    * @warn Disabling this also implies `hidePartiallyStaged: false`.
    * @default true
