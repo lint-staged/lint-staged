@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals'
+import { expect, jest } from '@jest/globals'
 
 import * as configFixtures from '../integration/__fixtures__/configs.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
@@ -19,7 +19,7 @@ describe('lint-staged', () => {
       await execGit(['add', 'test file.js'])
 
       // Run lint-staged with config from stdin
-      await lintStaged('-c -', {
+      await lintStaged(['-c', '-'], {
         input: JSON.stringify(configFixtures.prettierWrite),
       })
 
@@ -41,9 +41,9 @@ describe('lint-staged', () => {
       const brokenJSONConfig = JSON.stringify(configFixtures.prettierWrite).replace('"}', '"')
 
       // Run lint-staged with broken config from stdin
-      await expect(lintStaged('-c -', { input: brokenJSONConfig })).rejects.toThrow(
-        'Failed to read config from stdin'
-      )
+      await expect(lintStaged(['-c', '-'], { input: brokenJSONConfig })).rejects.toMatchObject({
+        output: expect.stringContaining('Failed to read config from stdin'),
+      })
 
       // File was not edited
       expect(await readFile('test file.js')).toEqual(fileFixtures.uglyJS)

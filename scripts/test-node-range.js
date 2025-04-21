@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 import chalk from 'chalk'
-import { execaCommand } from 'execa'
 import { subset } from 'semver'
+
+import { exec } from '../lib/exec.js'
 
 const packageJson = JSON.parse(
   await readFile(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -26,8 +27,8 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
    * @example <caption>when matching multiple versions</caption>
    * [">=6.0", ">=6.0"]
    */
-  const { stdout } = await execaCommand(`npm info ${dependency}@${version} engines.node --json`)
-  const json = JSON.parse(stdout)
+  const result = await exec('npm', ['info', `${dependency}@${version}`, 'engines.node', '--json'])
+  const json = JSON.parse(result.output)
 
   const requiredVersion = Array.isArray(json) ? json[json.length - 1] : json
 

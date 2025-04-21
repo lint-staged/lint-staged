@@ -1,13 +1,13 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { expect, jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
 import { normalizePath } from '../../lib/normalizePath.js'
-import { getMockExeca } from './__utils__/getMockExeca.js'
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
+import { getMockExec } from './__utils__/getMockExec.js'
+import { mockExecReturnValue } from './__utils__/mockExecReturnValue.js'
 
-const { execa } = await getMockExeca()
+const { exec } = await getMockExec()
 
 jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: jest.fn(async () => []),
@@ -170,13 +170,23 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    execa.mockImplementation(() =>
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: 'Linter finished with error',
-        code: 1,
-        failed: true,
-        cmd: 'mock cmd',
+    exec.mockImplementationOnce(() =>
+      mockExecReturnValue({
+        output: 'Has staged files',
+        process: {
+          cmd: 'mock cmd',
+          exitCode: 0,
+        },
+      })
+    )
+
+    exec.mockImplementationOnce(() =>
+      mockExecReturnValue({
+        output: 'Linter finished with error',
+        process: {
+          cmd: 'mock cmd',
+          exitCode: 1,
+        },
       })
     )
 
@@ -193,15 +203,25 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    execa.mockImplementation(() =>
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: true,
-        signal: 'SIGINT',
-        cmd: 'mock cmd',
+    exec.mockImplementationOnce(() =>
+      mockExecReturnValue({
+        output: 'Has staged files',
+        process: {
+          cmd: 'mock cmd',
+          exitCode: 0,
+        },
+      })
+    )
+
+    exec.mockImplementationOnce(() =>
+      mockExecReturnValue({
+        output: '',
+        process: {
+          cmd: 'mock cmd',
+          exitCode: 0,
+          killed: true,
+          signalCode: 'SIGINT',
+        },
       })
     )
 
@@ -234,13 +254,11 @@ describe('runAll', () => {
 
     // Run lint-staged in `innerCwd` with relative option
     // This means the sample task will receive `foo.js`
-    await expect(
-      runAll({
-        stash: false,
-        relative: true,
-        cwd: innerCwd,
-      })
-    ).rejects.toThrow()
+    await runAll({
+      stash: false,
+      relative: true,
+      cwd: innerCwd,
+    })
 
     // task received relative `foo.js`
     expect(mockTask).toHaveBeenCalledTimes(1)
@@ -265,7 +283,7 @@ describe('runAll', () => {
     const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
-    await expect(runAll({ stash: false, relative: true })).rejects.toThrow()
+    await runAll({ stash: false, relative: true })
 
     // task received relative `foo.js` from both directories
     expect(mockTask).toHaveBeenCalledTimes(2)
@@ -291,13 +309,11 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': mockTask },
     })
 
-    await expect(
-      runAll({
-        cwd: '.',
-        stash: false,
-        relative: true,
-      })
-    ).rejects.toThrow()
+    await runAll({
+      cwd: '.',
+      stash: false,
+      relative: true,
+    })
 
     expect(mockTask).toHaveBeenCalledTimes(2)
     // This is now relative to "." instead of "test/"
@@ -330,7 +346,17 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
 
-    await expect(runAll({})).rejects.toThrow()
+    exec.mockImplementationOnce(() =>
+      mockExecReturnValue({
+        output: 'Has staged files',
+        process: {
+          cmd: 'mock cmd',
+          exitCode: 0,
+        },
+      })
+    )
+
+    await runAll({})
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
 

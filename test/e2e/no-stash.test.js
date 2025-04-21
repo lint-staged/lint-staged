@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals'
+import { expect, jest } from '@jest/globals'
 
 import * as configFixtures from '../integration/__fixtures__/configs.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
@@ -21,27 +21,27 @@ describe('lint-staged', () => {
       await execGit(['add', 'test.js'])
       await execGit(['commit', '-m', 'test'])
 
-      let res = await lintStaged()
-      expect(res.stdout).toMatch('No staged files found.')
+      let res = await lintStaged(['--debug'])
+      expect(res.output).toMatch('No staged files found.')
 
-      res = await lintStaged('--stash')
-      expect(res.stdout).toMatch('No staged files found.')
+      res = await lintStaged(['--stash'])
+      expect(res.output).toMatch('No staged files found.')
 
-      res = await lintStaged('--no-stash')
-      expect(res.stdout).toMatch('No staged files found.')
-      expect(res.stderr).toMatch('Skipping backup because `--no-stash` was used.')
+      res = await lintStaged(['--no-stash'])
+      expect(res.output).toMatch('No staged files found.')
+      expect(res.output).toMatch('Skipping backup because `--no-stash` was used.')
 
-      res = await lintStaged('--diff=main...my-branch')
-      expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+      res = await lintStaged(['--diff', 'main...my-branch'])
+      expect(res.output).toMatch('Skipping backup because `--diff` was used.')
 
-      await expect(lintStaged('--diff=main...my-branch --stash')).rejects.toThrow(
+      await expect(lintStaged(['--diff', 'main...my-branch', '--stash'])).rejects.toThrow(
         expect.objectContaining({
-          stderr: expect.stringContaining('lint-staged failed due to a git error.'),
+          output: expect.stringContaining('lint-staged failed due to a git error.'),
         })
       )
 
-      res = await lintStaged('--diff=main...my-branch --no-stash')
-      expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+      res = await lintStaged(['--diff', 'main...my-branch', '--no-stash'])
+      expect(res.output).toMatch('Skipping backup because `--diff` was used.')
     })
   )
 
@@ -60,8 +60,8 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJSWithChanges)
 
       // lint-staged fails because file is ugly
-      await expect(lintStaged('--no-stash')).rejects.toMatchObject({
-        stderr: expect.stringContaining(
+      await expect(lintStaged(['--no-stash'])).rejects.toMatchObject({
+        output: expect.stringContaining(
           'Skipping hiding unstaged changes from partially staged files because `--no-stash` was used'
         ),
       })

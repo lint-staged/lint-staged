@@ -1,8 +1,12 @@
 import path from 'node:path'
 
-import { getMockExeca } from './__utils__/getMockExeca.js'
+import { jest } from '@jest/globals'
 
-const { execa } = await getMockExeca()
+jest.unstable_mockModule('../../lib/exec.js', () => ({
+  exec: jest.fn().mockResolvedValue(''),
+}))
+
+const { exec } = await import('../../lib/exec.js')
 const { execGit, GIT_GLOBAL_OPTIONS } = await import('../../lib/execGit.js')
 
 test('GIT_GLOBAL_OPTIONS', () => {
@@ -16,22 +20,17 @@ test('GIT_GLOBAL_OPTIONS', () => {
 
 describe('execGit', () => {
   it('should execute git in process.cwd if working copy is not specified', async () => {
-    const cwd = process.cwd()
     await execGit(['init', 'param'])
-    expect(execa).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
-      all: true,
-      cwd,
-      stdin: 'ignore',
+    expect(exec).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
+      cwd: undefined,
     })
   })
 
   it('should execute git in a given working copy', async () => {
     const cwd = path.join(process.cwd(), 'test', '__fixtures__')
     await execGit(['init', 'param'], { cwd })
-    expect(execa).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
-      all: true,
+    expect(exec).toHaveBeenCalledWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
       cwd,
-      stdin: 'ignore',
     })
   })
 })
