@@ -14,20 +14,20 @@ jest.unstable_mockModule('pidtree', () => ({
 
 const { default: pidTree } = await import('pidtree')
 
-const { resolveTaskFn } = await import('../../lib/resolveTaskFn.js')
+const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
 
 jest.useFakeTimers()
 
 const defaultOpts = { files: ['test.js'] }
 
-describe('resolveTaskFn', () => {
+describe('getSpawnedTask', () => {
   beforeEach(() => {
     spawn.mockClear()
   })
 
   it('should support non npm scripts', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({
+    const taskFn = getSpawnedTask({
       ...defaultOpts,
       command: 'node --arg=true ./myscript.js',
     })
@@ -43,7 +43,7 @@ describe('resolveTaskFn', () => {
 
   it('should not append pathsToLint when isFn', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({
+    const taskFn = getSpawnedTask({
       ...defaultOpts,
       isFn: true,
       command: 'node --arg=true ./myscript.js test.js',
@@ -60,7 +60,7 @@ describe('resolveTaskFn', () => {
 
   it('should pass `topLevelDir` as `cwd` to `spawn()` topLevelDir !== process.cwd for git commands', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({
+    const taskFn = getSpawnedTask({
       ...defaultOpts,
       command: 'git diff',
       topLevelDir: '../',
@@ -77,7 +77,7 @@ describe('resolveTaskFn', () => {
 
   it('should not pass `topLevelDir` as `cwd` to `spawn()` if a non-git binary is called', async () => {
     expect.assertions(2)
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
 
     await taskFn()
     expect(spawn).toHaveBeenCalledTimes(1)
@@ -100,7 +100,7 @@ describe('resolveTaskFn', () => {
       )
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-fail-linter' })
     await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(`"mock-fail-linter [FAILED]"`)
   })
 
@@ -117,7 +117,7 @@ describe('resolveTaskFn', () => {
       )
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-killed-linter' })
     await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"mock-killed-linter [SIGINT]"`
     )
@@ -135,7 +135,7 @@ describe('resolveTaskFn', () => {
       )
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-killed-linter' })
     await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"mock-killed-linter [FAILED]"`
     )
@@ -144,7 +144,7 @@ describe('resolveTaskFn', () => {
   it('should not add TaskError if no error occur', async () => {
     expect.assertions(1)
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
     await taskFn(context)
     expect(context.errors.has(TaskError)).toEqual(false)
   })
@@ -162,7 +162,7 @@ describe('resolveTaskFn', () => {
     )
 
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-fail-linter' })
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"mock-fail-linter [FAILED]"`
     )
@@ -179,7 +179,7 @@ describe('resolveTaskFn', () => {
       })
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd', verbose: true })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd', verbose: true })
     const context = getInitialState()
     await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
 
@@ -196,7 +196,7 @@ describe('resolveTaskFn', () => {
       })
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd', verbose: true })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd', verbose: true })
     const context = getInitialState()
     await expect(taskFn(context)).resolves.toMatchInlineSnapshot(`undefined`)
 
@@ -221,7 +221,7 @@ describe('resolveTaskFn', () => {
       )
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
 
@@ -244,7 +244,7 @@ describe('resolveTaskFn', () => {
       )
     )
 
-    const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
 
@@ -255,7 +255,7 @@ describe('resolveTaskFn', () => {
     spawn.mockImplementationOnce(() => mockNanoSpawnReturnValue(undefined, 1000))
 
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskFn = getSpawnedTask({ command: 'node' })
     const taskPromise = taskFn(context)
 
     jest.runOnlyPendingTimers()
@@ -280,7 +280,7 @@ describe('resolveTaskFn', () => {
     })
 
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskFn = getSpawnedTask({ command: 'node' })
     const taskPromise = taskFn(context)
 
     context.events.emit('lint-staged:taskError')
@@ -303,7 +303,7 @@ describe('resolveTaskFn', () => {
     )
 
     const context = getInitialState()
-    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskFn = getSpawnedTask({ command: 'node' })
     const taskPromise = taskFn(context)
 
     context.events.emit('lint-staged:taskError')
@@ -335,7 +335,7 @@ describe('resolveTaskFn', () => {
 
     pidTree.mockImplementationOnce(() => ['1234'])
 
-    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskFn = getSpawnedTask({ command: 'node' })
 
     const context = getInitialState()
     const taskPromise = taskFn(context)
@@ -378,7 +378,7 @@ describe('resolveTaskFn', () => {
 
     pidTree.mockImplementationOnce(() => ['1234'])
 
-    const taskFn = resolveTaskFn({ command: 'node' })
+    const taskFn = getSpawnedTask({ command: 'node' })
 
     const context = getInitialState()
     const taskPromise = taskFn(context)
