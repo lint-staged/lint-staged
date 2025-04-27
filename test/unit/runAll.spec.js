@@ -365,4 +365,24 @@ describe('runAll', () => {
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, diff: 'branch1...branch2' })
     expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used')
   })
+
+  it('should support function tasks', async () => {
+    const staged = ['foo.js']
+    getStagedFiles.mockImplementationOnce(async () => staged)
+
+    const task = jest.fn()
+    const configObject = { '*.js': { title: 'My task', task } }
+
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': configObject,
+    }))
+
+    await runAll({
+      configObject: { '*.js': { title: 'My task', task } },
+      relative: true, // make sure filenames are relative for easier assertion below
+    })
+
+    expect(task).toHaveBeenCalledTimes(1)
+    expect(task).toHaveBeenCalledWith(staged)
+  })
 })
