@@ -2,12 +2,13 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { SubprocessError } from 'nano-spawn'
 
 import { normalizePath } from '../../lib/normalizePath.js'
-import { getMockExeca } from './__utils__/getMockExeca.js'
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
+import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
+import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.js'
 
-const { execa } = await getMockExeca()
+const { default: spawn } = await getMockNanoSpawn()
 
 jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: jest.fn(async () => []),
@@ -170,14 +171,20 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    execa.mockImplementation(() =>
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: 'Linter finished with error',
-        code: 1,
-        failed: true,
-        cmd: 'mock cmd',
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue({
+        output: 'Has staged files',
+        nodeChildProcess: { pid: 0 },
       })
+    )
+
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Has staged files',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
@@ -193,16 +200,21 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    execa.mockImplementation(() =>
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: true,
-        signal: 'SIGINT',
-        cmd: 'mock cmd',
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue({
+        output: 'Has staged files',
+        nodeChildProcess: { pid: 0 },
       })
+    )
+
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGINT',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     await expect(runAll({})).rejects.toThrowErrorMatchingInlineSnapshot(`"lint-staged failed"`)
@@ -234,13 +246,11 @@ describe('runAll', () => {
 
     // Run lint-staged in `innerCwd` with relative option
     // This means the sample task will receive `foo.js`
-    await expect(
-      runAll({
-        stash: false,
-        relative: true,
-        cwd: innerCwd,
-      })
-    ).rejects.toThrow()
+    await runAll({
+      stash: false,
+      relative: true,
+      cwd: innerCwd,
+    })
 
     // task received relative `foo.js`
     expect(mockTask).toHaveBeenCalledTimes(1)
@@ -265,7 +275,10 @@ describe('runAll', () => {
     const mockConstructor = jest.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
-    await expect(runAll({ stash: false, relative: true })).rejects.toThrow()
+    await runAll({
+      stash: false,
+      relative: true,
+    })
 
     // task received relative `foo.js` from both directories
     expect(mockTask).toHaveBeenCalledTimes(2)
@@ -291,13 +304,11 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': mockTask },
     })
 
-    await expect(
-      runAll({
-        cwd: '.',
-        stash: false,
-        relative: true,
-      })
-    ).rejects.toThrow()
+    await runAll({
+      cwd: '.',
+      stash: false,
+      relative: true,
+    })
 
     expect(mockTask).toHaveBeenCalledTimes(2)
     // This is now relative to "." instead of "test/"
@@ -330,7 +341,7 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
 
-    await expect(runAll({})).rejects.toThrow()
+    await runAll({})
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
 

@@ -1,6 +1,6 @@
-import { getMockExeca } from './__utils__/getMockExeca.js'
+import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 
-const { execa } = await getMockExeca()
+const { default: spawn } = await getMockNanoSpawn()
 
 const { makeCmdTasks } = await import('../../lib/makeCmdTasks.js')
 
@@ -8,7 +8,7 @@ describe('makeCmdTasks', () => {
   const topLevelDir = process.cwd()
 
   beforeEach(() => {
-    execa.mockClear()
+    spawn.mockClear()
   })
 
   it('should return an array', async () => {
@@ -43,21 +43,19 @@ describe('makeCmdTasks', () => {
     let taskPromise = linter1.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).toHaveBeenLastCalledWith('test', ['test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('test', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
-      reject: false,
       stdin: 'ignore',
     })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
-    expect(execa).toHaveBeenCalledTimes(2)
-    expect(execa).toHaveBeenLastCalledWith('test2', ['test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(2)
+    expect(spawn).toHaveBeenLastCalledWith('test2', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
-      reject: false,
       stdin: 'ignore',
     })
   })

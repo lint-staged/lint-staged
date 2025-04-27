@@ -24,23 +24,23 @@ describe('lint-staged', () => {
       let res = await lintStaged()
       expect(res.stdout).toMatch('No staged files found.')
 
-      res = await lintStaged('--stash')
+      res = await lintStaged(['--stash'])
       expect(res.stdout).toMatch('No staged files found.')
 
-      res = await lintStaged('--no-stash')
+      res = await lintStaged(['--no-stash'])
       expect(res.stdout).toMatch('No staged files found.')
       expect(res.stderr).toMatch('Skipping backup because `--no-stash` was used.')
 
-      res = await lintStaged('--diff=main...my-branch')
+      res = await lintStaged(['--diff=main...my-branch'])
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
 
-      await expect(lintStaged('--diff=main...my-branch --stash')).rejects.toThrow(
+      await expect(lintStaged(['--diff=main...my-branch', '--stash'])).rejects.toThrow(
         expect.objectContaining({
           stderr: expect.stringContaining('lint-staged failed due to a git error.'),
         })
       )
 
-      res = await lintStaged('--diff=main...my-branch --no-stash')
+      res = await lintStaged(['--diff=main...my-branch', '--no-stash'])
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
     })
   )
@@ -60,7 +60,7 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJSWithChanges)
 
       // lint-staged fails because file is ugly
-      await expect(lintStaged('--no-stash')).rejects.toMatchObject({
+      await expect(lintStaged(['--no-stash'])).rejects.toMatchObject({
         stderr: expect.stringContaining(
           'Skipping hiding unstaged changes from partially staged files because `--no-stash` was used'
         ),
