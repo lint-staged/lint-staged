@@ -20,6 +20,20 @@ export const fullConfig: Configuration = {
   '*.ext6': async (fileNames: string[]) => {
     return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
   },
+
+  '*.ext7': {
+    title: 'Sync Function Task',
+    task: (fileNames: string[]) => {
+      console.log(fileNames)
+    }
+  },
+
+  '*.ext8': {
+    title: 'Async Function Task',
+    task: async (fileNames: string[]) => {
+      console.log(fileNames)
+    }
+  }
 } satisfies Configuration
 
 export const functionConfig1: Configuration = ((fileNames: string[]) => {

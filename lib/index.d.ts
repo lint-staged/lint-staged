@@ -1,12 +1,17 @@
-type SyncFunctionTask = (stagedFileNames: string[]) => string | string[]
+type SyncGenerateTask = (stagedFileNames: string[]) => string | string[]
 
-type AsyncFunctionTask = (stagedFileNames: string[]) => Promise<string | string[]>
+type AsyncGenerateTask = (stagedFileNames: string[]) => Promise<string | string[]>
 
-type FunctionTask = SyncFunctionTask | AsyncFunctionTask
+type GenerateTask = SyncGenerateTask | AsyncGenerateTask
+
+type TaskFunction = {
+  title: string
+   task: (stagedFileNames: string[] ) => void | Promise<void>
+}
 
 export type Configuration =
-  | Record<string, string | FunctionTask | (string | FunctionTask)[]>
-  | FunctionTask
+  | Record<string, string | TaskFunction | GenerateTask | (string | GenerateTask)[]>
+  | GenerateTask
 
 export type Options = {
   /**
