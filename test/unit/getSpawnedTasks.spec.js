@@ -2,9 +2,9 @@ import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 
 const { default: spawn } = await getMockNanoSpawn()
 
-const { makeCmdTasks } = await import('../../lib/makeCmdTasks.js')
+const { getSpawnedTasks } = await import('../../lib/getSpawnedTasks.js')
 
-describe('makeCmdTasks', () => {
+describe('getSpawnedTasks', () => {
   const topLevelDir = process.cwd()
 
   beforeEach(() => {
@@ -12,13 +12,13 @@ describe('makeCmdTasks', () => {
   })
 
   it('should return an array', async () => {
-    const array = await makeCmdTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
+    const array = await getSpawnedTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
     expect(array).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = await makeCmdTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
+    const res = await getSpawnedTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -30,7 +30,7 @@ describe('makeCmdTasks', () => {
 
   it('should work with multiple commands', async () => {
     expect.assertions(9)
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: ['test', 'test2'],
       topLevelDir,
       files: ['test.js'],
@@ -61,13 +61,13 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with function task returning a string', async () => {
-    const res = await makeCmdTasks({ commands: () => 'test', topLevelDir, files: ['test.js'] })
+    const res = await getSpawnedTasks({ commands: () => 'test', topLevelDir, files: ['test.js'] })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
 
   it('should work with function task returning array of string', async () => {
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: () => ['test', 'test2'],
       topLevelDir,
       files: ['test.js'],
@@ -78,7 +78,7 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with function task accepting arguments', async () => {
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: (filenames) => filenames.map((file) => `test ${file}`),
       topLevelDir,
       files: ['test.js', 'test2.js'],
@@ -89,7 +89,7 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with array of mixed string and function tasks', async () => {
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       topLevelDir,
       files: ['test.js', 'test2.js', 'test3.js'],
@@ -103,7 +103,7 @@ describe('makeCmdTasks', () => {
   })
 
   it('should work with async function tasks', async () => {
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: async () => 'test',
       topLevelDir,
       files: ['test.js'],
@@ -113,7 +113,7 @@ describe('makeCmdTasks', () => {
   })
 
   it("should throw when function task doesn't return string | string[]", async () => {
-    await expect(makeCmdTasks({ commands: () => null, topLevelDir, files: ['test.js'] })).rejects
+    await expect(getSpawnedTasks({ commands: () => null, topLevelDir, files: ['test.js'] })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
             "✖ Validation Error:
 
@@ -126,7 +126,7 @@ describe('makeCmdTasks', () => {
   it('should prevent function from mutating original file list', async () => {
     const files = ['test.js']
 
-    const res = await makeCmdTasks({
+    const res = await getSpawnedTasks({
       commands: (stagedFiles) => {
         /** Array.splice() mutates the array */
         stagedFiles.splice(0, 1)
