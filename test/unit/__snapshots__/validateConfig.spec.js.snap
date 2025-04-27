@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `
+exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `"Configuration should be an object or a function"`;
+
+exports[`validateConfig should throw and should print validation errors for invalid config 2 1`] = `
 "✖ Validation Error:
 
   Invalid value for 'foo': false
@@ -8,7 +10,13 @@ exports[`validateConfig should throw and should print validation errors for inva
   Should be a string, a function, an object or an array of strings and functions."
 `;
 
-exports[`validateConfig should throw and should print validation errors for invalid config 1 1`] = `"Configuration should be an object or a function"`;
+exports[`validateConfig should throw and should print validation errors for invalid config 3 1`] = `
+"✖ Validation Error:
+
+  Invalid value for '*.js': [ false ]
+
+  Should be an array of strings or functions."
+`;
 
 exports[`validateConfig should throw and should print validation errors for invalid object config 1`] = `
 "✖ Validation Error:

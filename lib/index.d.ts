@@ -6,7 +6,7 @@ type GenerateTask = SyncGenerateTask | AsyncGenerateTask
 
 type TaskFunction = {
   title: string
-   task: (stagedFileNames: string[] ) => void | Promise<void>
+  task: (stagedFileNames: string[]) => void | Promise<void>
 }
 
 export type Configuration =

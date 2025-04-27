@@ -11,15 +11,23 @@ describe('validateConfig', () => {
     logger = makeConsoleMock()
   })
 
-  it('should throw and should print validation errors for invalid config 1', () => {
+  it('should throw and should print validation errors for invalid config', () => {
     const invalidConfig = 'test'
 
     expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
   })
 
-  it('should throw and should print validation errors for invalid config', () => {
+  it('should throw and should print validation errors for invalid config 2', () => {
     const invalidConfig = {
       foo: false,
+    }
+
+    expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
+  })
+
+  it('should throw and should print validation errors for invalid config 3', () => {
+    const invalidConfig = {
+      '*.js': [false],
     }
 
     expect(() => validateConfig(invalidConfig, configPath, logger)).toThrowErrorMatchingSnapshot()
