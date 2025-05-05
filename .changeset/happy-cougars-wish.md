@@ -2,4 +2,4 @@
 'lint-staged': patch
 ---
 
-Handles colon characters in staged filenames.
+Correctly handle colon (`:`) characters in staged filenames.
