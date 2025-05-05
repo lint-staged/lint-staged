@@ -22,12 +22,28 @@ describe('getStagedFiles', () => {
   it('should return array of file names', async () => {
     execGit.mockImplementationOnce(
       async () =>
-        ':000000 100644 0000000 0000000 A\u0000foo.js:000000 100644 0000000 0000000 A\u0000bar.js'
+        ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
     )
 
     const staged = await getStagedFiles({ cwd: '/' })
     // Windows filepaths
     expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
+
+    expect(execGit).toHaveBeenCalledWith(
+      ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
+      { cwd: '/' }
+    )
+  })
+
+  it('should allow colons in file names', async () => {
+    execGit.mockImplementationOnce(
+      async () =>
+        ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar:qux.js\u0000'
+    )
+
+    const staged = await getStagedFiles({ cwd: '/' })
+    // Windows filepaths
+    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar:qux.js')])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
@@ -51,7 +67,7 @@ describe('getStagedFiles', () => {
   it('should support overriding diff trees with ...', async () => {
     execGit.mockImplementationOnce(
       async () =>
-        ':000000 100644 0000000 0000000 A\u0000foo.js:000000 100644 0000000 0000000 A\u0000bar.js'
+        ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
     )
 
     const staged = await getStagedFiles({ cwd: '/', diff: 'main...my-branch' })
@@ -67,7 +83,7 @@ describe('getStagedFiles', () => {
   it('should support overriding diff trees with multiple args', async () => {
     execGit.mockImplementationOnce(
       async () =>
-        ':000000 100644 0000000 0000000 A\u0000foo.js:000000 100644 0000000 0000000 A\u0000bar.js'
+        ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
     )
 
     const staged = await getStagedFiles({ cwd: '/', diff: 'main my-branch' })
@@ -83,7 +99,7 @@ describe('getStagedFiles', () => {
   it('should support overriding diff-filter', async () => {
     execGit.mockImplementationOnce(
       async () =>
-        ':000000 100644 0000000 0000000 A\u0000foo.js:000000 100644 0000000 0000000 A\u0000bar.js'
+        ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
     )
 
     const staged = await getStagedFiles({ cwd: '/', diffFilter: 'ACDMRTUXB' })
