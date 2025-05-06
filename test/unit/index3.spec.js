@@ -1,10 +1,6 @@
 import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
 
-jest.unstable_mockModule('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => {}),
-}))
-
 jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
   validateOptions: jest.fn(async () => {}),
 }))

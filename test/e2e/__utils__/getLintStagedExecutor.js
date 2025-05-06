@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import spawn from 'nano-spawn'
+import { execaCommand } from 'execa'
 
 import { getRepoRootPath } from '../../__utils__/getRepoRootPath.js'
 
@@ -8,9 +8,9 @@ const lintStagedBin = path.resolve(getRepoRootPath(), 'bin/lint-staged.js')
 
 /**
  * @param {string} cwd
- * @returns {(params?: string[], options?: import('nano-spawn').Options) => import('nano-spawn').Subprocess}
+ * @return {Function}
  */
 export const getLintStagedExecutor =
   (cwd) =>
-  (params = [], options) =>
-    spawn('node', [lintStagedBin, `--cwd=${cwd}`, ...params], options)
+  (params = '', options) =>
+    execaCommand(`${lintStagedBin} --cwd=${cwd} ${params}`, options)
