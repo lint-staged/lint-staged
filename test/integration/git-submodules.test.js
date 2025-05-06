@@ -20,7 +20,7 @@ describe('lint-staged', () => {
       // create a new repo for the git submodule to a temp path
       let submoduleDir = path.resolve(cwd, 'submodule-temp')
       await fs.mkdir(submoduleDir, { recursive: true })
-      await execGit(['init'], { cwd: submoduleDir })
+      await execGit('init', { cwd: submoduleDir })
       await execGit(['config', 'user.name', '"test"'], { cwd: submoduleDir })
       await execGit(['config', 'user.email', '"test@test.com"'], { cwd: submoduleDir })
       await appendFile('README.md', '# Test\n', submoduleDir)

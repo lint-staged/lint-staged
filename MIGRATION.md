@@ -31,16 +31,6 @@ If you were using the shell option to avoid passing filenames to tasks, for exam
 export default { '*.ts': () => 'tsc --noEmit' }
 ```
 
-#### Processes are spawned using `nano-spawn`
-
-Processes are spawned using [nano-spawn](https://github.com/sindresorhus/nano-spawn) instead of [execa](https://github.com/sindresorhus/execa). If you are using Node.js scripts as tasks, you might need to explicitly run them with `node`, especially when using Windows:
-
-```json
-{
-  "*.js": "node my-js-linter.js"
-}
-```
-
 ## v15
 
 - Since `v15.0.0` _lint-staged_ no longer supports Node.js 16. Please upgrade your Node.js version to at least `18.12.0`.

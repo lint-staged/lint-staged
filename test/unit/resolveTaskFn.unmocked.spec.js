@@ -21,7 +21,7 @@ describe('resolveTaskFn', () => {
       `"node -e "process.exit(1)" [FAILED]"`
     )
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"node -e "setTimeout(() => void 0, 10000)" [SIGKILL]"`
+      `"node -e "setTimeout(() => void 0, 10000)" [KILLED]"`
     )
   })
 })

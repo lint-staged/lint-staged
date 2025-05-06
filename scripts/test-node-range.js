@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 import chalk from 'chalk'
-import spawn from 'nano-spawn'
+import { execaCommand } from 'execa'
 import { subset } from 'semver'
 
 const packageJson = JSON.parse(
@@ -26,13 +26,8 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
    * @example <caption>when matching multiple versions</caption>
    * [">=6.0", ">=6.0"]
    */
-  const { output } = await spawn('npm', [
-    'info',
-    `${dependency}@${version}`,
-    'engines.node',
-    '--json',
-  ])
-  const json = JSON.parse(output)
+  const { stdout } = await execaCommand(`npm info ${dependency}@${version} engines.node --json`)
+  const json = JSON.parse(stdout)
 
   const requiredVersion = Array.isArray(json) ? json[json.length - 1] : json
 
