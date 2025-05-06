@@ -1,11 +1,12 @@
 import { jest } from '@jest/globals'
+import { SubprocessError } from 'nano-spawn'
 
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
-import { getMockExeca } from './__utils__/getMockExeca.js'
-import { mockExecaReturnValue } from './__utils__/mockExecaReturnValue.js'
+import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
+import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.js'
 
-const { execa, execaCommand } = await getMockExeca()
+const { default: spawn } = await getMockNanoSpawn()
 
 jest.unstable_mockModule('pidtree', () => ({
   default: jest.fn(async () => []),
@@ -21,8 +22,7 @@ const defaultOpts = { files: ['test.js'] }
 
 describe('resolveTaskFn', () => {
   beforeEach(() => {
-    execa.mockClear()
-    execaCommand.mockClear()
+    spawn.mockClear()
   })
 
   it('should support non npm scripts', async () => {
@@ -33,12 +33,10 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
-      reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
@@ -52,97 +50,15 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
-      reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
 
-  it('should not append pathsToLint when isFn and shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      isFn: true,
-      shell: true,
-      command: 'node --arg=true ./myscript.js test.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: true,
-      stdin: 'ignore',
-    })
-  })
-
-  it('should work with shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      shell: true,
-      command: 'node --arg=true ./myscript.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: true,
-      stdin: 'ignore',
-    })
-  })
-
-  it('should work with path to custom shell', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      ...defaultOpts,
-      shell: '/bin/bash',
-      command: 'node --arg=true ./myscript.js',
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith('node --arg=true ./myscript.js test.js', {
-      cwd: process.cwd(),
-      preferLocal: true,
-      reject: false,
-      shell: '/bin/bash',
-      stdin: 'ignore',
-    })
-  })
-
-  it('shell should work with spaces in file paths', async () => {
-    expect.assertions(2)
-    const taskFn = resolveTaskFn({
-      shell: true,
-      command: 'node --arg=true ./myscript.js',
-      files: ['test file.js', 'file with/multiple spaces.js'],
-    })
-
-    await taskFn()
-    expect(execaCommand).toHaveBeenCalledTimes(1)
-    expect(execaCommand).toHaveBeenLastCalledWith(
-      'node --arg=true ./myscript.js test\\ file.js file\\ with/multiple\\ spaces.js',
-      {
-        cwd: process.cwd(),
-        preferLocal: true,
-        reject: false,
-        shell: true,
-        stdin: 'ignore',
-      }
-    )
-  })
-
-  it('should pass `topLevelDir` as `cwd` to `execa()` topLevelDir !== process.cwd for git commands', async () => {
+  it('should pass `topLevelDir` as `cwd` to `spawn()` topLevelDir !== process.cwd for git commands', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({
       ...defaultOpts,
@@ -151,41 +67,37 @@ describe('resolveTaskFn', () => {
     })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
       cwd: '../',
       preferLocal: true,
-      reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
 
-  it('should not pass `topLevelDir` as `cwd` to `execa()` if a non-git binary is called', async () => {
+  it('should not pass `topLevelDir` as `cwd` to `spawn()` if a non-git binary is called', async () => {
     expect.assertions(2)
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
 
     await taskFn()
-    expect(execa).toHaveBeenCalledTimes(1)
-    expect(execa).toHaveBeenLastCalledWith('jest', ['test.js'], {
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('jest', ['test.js'], {
       cwd: process.cwd(),
       preferLocal: true,
-      reject: false,
-      shell: false,
       stdin: 'ignore',
     })
   })
 
   it('should throw error for failed tasks', async () => {
     expect.assertions(1)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: 'Mock error',
-        stderr: '',
-        code: 0,
-        failed: true,
-        cmd: 'mock cmd',
-      })
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Mock error',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
@@ -194,16 +106,15 @@ describe('resolveTaskFn', () => {
 
   it('should throw error for interrupted processes', async () => {
     expect.assertions(1)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: 'Mock error',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: false,
-        signal: 'SIGINT',
-        cmd: 'mock cmd',
-      })
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Mock error',
+          signalName: 'SIGINT',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
@@ -214,21 +125,19 @@ describe('resolveTaskFn', () => {
 
   it('should throw error for killed processes without signal', async () => {
     expect.assertions(1)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: 'Mock error',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: true,
-        signal: undefined,
-        cmd: 'mock cmd',
-      })
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Mock error',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-killed-linter' })
     await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"mock-killed-linter [KILLED]"`
+      `"mock-killed-linter [FAILED]"`
     )
   })
 
@@ -241,19 +150,19 @@ describe('resolveTaskFn', () => {
   })
 
   it('should add TaskError on error', async () => {
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: 'Mock error',
-        stderr: '',
-        code: 0,
-        failed: true,
-        cmd: 'mock cmd',
-      })
+    expect.assertions(2)
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Mock error',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const context = getInitialState()
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock-fail-linter' })
-    expect.assertions(2)
     await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(
       `"mock-fail-linter [FAILED]"`
     )
@@ -262,15 +171,11 @@ describe('resolveTaskFn', () => {
 
   it('should not add output when there is none', async () => {
     expect.assertions(2)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: false,
-        signal: undefined,
-        cmd: 'mock cmd',
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue({
+        output: '',
+        nodeChildProcess: { pid: 0 },
       })
     )
 
@@ -283,15 +188,11 @@ describe('resolveTaskFn', () => {
 
   it('should add output even when task succeeds if `verbose: true`', async () => {
     expect.assertions(2)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: 'Mock success',
-        stderr: '',
-        code: 0,
-        failed: false,
-        killed: false,
-        signal: undefined,
-        cmd: 'mock cmd',
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue({
+        output: 'Mock success',
+        nodeChildProcess: { pid: 0 },
       })
     )
 
@@ -310,21 +211,19 @@ describe('resolveTaskFn', () => {
 
   it('should not add title to output when task errors while quiet', async () => {
     expect.assertions(2)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: 'stderr',
-        code: 1,
-        failed: true,
-        killed: false,
-        signal: undefined,
-        cmd: 'mock cmd',
-      })
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'stderr',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
-    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
+    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
 
     expect(context.output).toMatchInlineSnapshot(`
       [
@@ -335,40 +234,25 @@ describe('resolveTaskFn', () => {
 
   it('should not print anything when task errors without output while quiet', async () => {
     expect.assertions(2)
-    execa.mockReturnValueOnce(
-      mockExecaReturnValue({
-        stdout: '',
-        stderr: '',
-        code: 1,
-        failed: true,
-        killed: false,
-        signal: undefined,
-        cmd: 'mock cmd',
-      })
+
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
     )
 
     const taskFn = resolveTaskFn({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
-    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [1]"`)
+    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
 
     expect(context.output).toEqual([])
   })
 
   it('should not kill long running tasks without errors in context', async () => {
-    execa.mockImplementationOnce(() =>
-      mockExecaReturnValue(
-        {
-          stdout: 'a-ok',
-          stderr: '',
-          code: 0,
-          cmd: 'mock cmd',
-          failed: false,
-          killed: false,
-          signal: null,
-        },
-        1000
-      )
-    )
+    spawn.mockImplementationOnce(() => mockNanoSpawnReturnValue(undefined, 1000))
 
     const context = getInitialState()
     const taskFn = resolveTaskFn({ command: 'node' })
@@ -380,17 +264,13 @@ describe('resolveTaskFn', () => {
   })
 
   it('should ignore pid-tree errors', async () => {
-    execa.mockImplementationOnce(() =>
-      mockExecaReturnValue(
-        {
-          stdout: 'a-ok',
-          stderr: '',
-          code: 0,
-          cmd: 'mock cmd',
-          failed: false,
-          killed: false,
-          signal: null,
-        },
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGKILL',
+          nodeChildProcess: { pid: 0 },
+        }),
         1000
       )
     )
@@ -407,21 +287,17 @@ describe('resolveTaskFn', () => {
 
     jest.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
   })
 
   it('should kill a long running task when error event is emitted', async () => {
-    execa.mockImplementationOnce(() =>
-      mockExecaReturnValue(
-        {
-          stdout: 'a-ok',
-          stderr: '',
-          code: 0,
-          cmd: 'mock cmd',
-          failed: false,
-          killed: false,
-          signal: null,
-        },
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGKILL',
+          nodeChildProcess: { pid: 0 },
+        }),
         1000
       )
     )
@@ -434,23 +310,19 @@ describe('resolveTaskFn', () => {
 
     jest.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
   })
 
-  it('should also kill child processes of killed execa processes', async () => {
+  it('should also kill child processes of killed spawn processes', async () => {
     expect.assertions(3)
 
-    execa.mockImplementationOnce(() =>
-      mockExecaReturnValue(
-        {
-          stdout: 'a-ok',
-          stderr: '',
-          code: 0,
-          cmd: 'mock cmd',
-          failed: false,
-          killed: false,
-          signal: null,
-        },
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGKILL',
+          nodeChildProcess: { pid: 0 },
+        }),
         1000
       )
     )
@@ -472,7 +344,7 @@ describe('resolveTaskFn', () => {
 
     jest.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
 
     expect(mockKill).toHaveBeenCalledTimes(1)
     expect(mockKill).toHaveBeenCalledWith('1234')
@@ -485,17 +357,13 @@ describe('resolveTaskFn', () => {
   it('should ignore error when trying to kill child processes', async () => {
     expect.assertions(3)
 
-    execa.mockImplementationOnce(() =>
-      mockExecaReturnValue(
-        {
-          stdout: 'a-ok',
-          stderr: '',
-          code: 0,
-          cmd: 'mock cmd',
-          failed: false,
-          killed: false,
-          signal: null,
-        },
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGKILL',
+          nodeChildProcess: { pid: 0 },
+        }),
         1000
       )
     )
@@ -519,7 +387,7 @@ describe('resolveTaskFn', () => {
 
     jest.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [KILLED]"`)
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
 
     expect(mockKill).toHaveBeenCalledTimes(1)
     expect(mockKill).toHaveBeenCalledWith('1234')

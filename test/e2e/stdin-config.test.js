@@ -19,9 +19,13 @@ describe('lint-staged', () => {
       await execGit(['add', 'test file.js'])
 
       // Run lint-staged with config from stdin
-      await lintStaged('-c -', {
-        input: JSON.stringify(configFixtures.prettierWrite),
-      })
+      const subprocess = lintStaged(['-c', '-'])
+
+      const childProcess = await subprocess.nodeChildProcess
+      childProcess.stdin.write(JSON.stringify(configFixtures.prettierWrite))
+      childProcess.stdin.end()
+
+      await subprocess
 
       // Nothing was wrong so file was prettified
       expect(await readFile('test file.js')).toEqual(fileFixtures.prettyJS)
@@ -40,10 +44,17 @@ describe('lint-staged', () => {
       // Break JSON by removing } from the end
       const brokenJSONConfig = JSON.stringify(configFixtures.prettierWrite).replace('"}', '"')
 
+      // Run lint-staged with config from stdin
+      const subprocess = lintStaged(['-c', '-'])
+
+      const childProcess = await subprocess.nodeChildProcess
+      childProcess.stdin.write(brokenJSONConfig)
+      childProcess.stdin.end()
+
       // Run lint-staged with broken config from stdin
-      await expect(lintStaged('-c -', { input: brokenJSONConfig })).rejects.toThrow(
-        'Failed to read config from stdin'
-      )
+      await expect(subprocess).rejects.toMatchObject({
+        stderr: expect.stringContaining('Failed to read config from stdin'),
+      })
 
       // File was not edited
       expect(await readFile('test file.js')).toEqual(fileFixtures.uglyJS)
