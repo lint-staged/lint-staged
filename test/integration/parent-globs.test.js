@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { jest } from '@jest/globals'
@@ -18,18 +19,37 @@ describe('lint-staged', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
+      const script = path.join(cwd, 'deeper', 'even', 'script.mjs')
+
+      await writeFile(
+        script,
+        `
+        import fs from 'node:fs/promises'
+        import path from 'node:path' 
+
+        const files = process.argv.slice(2)
+
+        for (const file of files) {
+          await fs.writeFile(file, 'level-2')
+        }
+        `
+      )
+
+      await fs.chmod(script, '755')
+
       // Include single-level parent glob in deeper config
       await writeFile(
-        'deeper/even/.lintstagedrc.js',
-        `module.exports = { '../*.js': (files) => files.map((f) => \`echo level-2 > \${f}\`) }`
+        'deeper/even/lint-staged.config.mjs',
+        `
+        export default { '../*.js': "node script.mjs" }
+        `
       )
 
       // Stage all files
       await execGit(['add', '.'])
 
-      // Run lint-staged with `--shell` so that tasks do their thing
-      // Run in 'deeper/' so that root config is ignored
-      await gitCommit({ lintStaged: { shell: true } }, path.join(cwd, 'deeper/even'))
+      // Run in 'deeper/even' so that root config is ignored
+      await gitCommit(undefined, path.join(cwd, 'deeper', 'even'))
 
       // Two levels above, no match
       expect(await readFile('file.js')).toEqual('')
