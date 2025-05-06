@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -59,7 +59,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -115,9 +115,8 @@ jobs:
         node:
           - 18
           - 20
-          - 21
           - 22
-          - 23
+          - 24
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
@@ -165,9 +164,8 @@ jobs:
         node:
           - 18
           - 20
-          - 21
           - 22
-          - 23
+          - 24
     name: Node.js ${{ matrix.node }} on windows-latest (MSYS2)
     runs-on: windows-latest
     defaults:
@@ -207,9 +205,8 @@ jobs:
         node:
           - 18
           - 20
-          - 21
           - 22
-          - 23
+          - 24
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
