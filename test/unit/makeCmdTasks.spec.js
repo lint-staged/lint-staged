@@ -48,6 +48,7 @@ describe('makeCmdTasks', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
+      shell: false,
       stdin: 'ignore',
     })
     taskPromise = linter2.task()
@@ -58,6 +59,7 @@ describe('makeCmdTasks', () => {
       cwd: process.cwd(),
       preferLocal: true,
       reject: false,
+      shell: false,
       stdin: 'ignore',
     })
   })

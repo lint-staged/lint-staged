@@ -9,28 +9,6 @@ jestGlobals.setTimeout(20000)
 jestGlobals.retryTimes(2)
 
 describe('lint-staged', () => {
-  const getScript = (echo) => `
-    import fs from 'node:fs/promises'
-    import path from 'node:path'
-
-    const files = process.argv.slice(2)
-
-    for (const file of files) {
-      await fs.writeFile(file, '${echo}')
-    }
-  `
-
-  const SCRIPT_FILE = 'script.mjs'
-
-  const LINT_STAGED_CONFIG = `
-    import path from 'node:path'
-    import { fileURLToPath } from 'node:url'
-
-    const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-    export default { '*.js': \`node \${path.resolve(__dirname, '${SCRIPT_FILE}')}\` }
-  `
-
   test(
     'supports multiple configuration files',
     withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
@@ -41,33 +19,32 @@ describe('lint-staged', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
-      await writeFile(SCRIPT_FILE, getScript('level-0'))
-      await writeFile('lint-staged.config.mjs', LINT_STAGED_CONFIG)
+      const echoJSConfig = (echo) =>
+        `module.exports = { '*.js': (files) => files.map((f) => \`echo "${echo}" > \${f}\`) }`
 
-      await writeFile(`deeper/${SCRIPT_FILE}`, getScript('level-1'))
-      await writeFile('deeper/lint-staged.config.mjs', LINT_STAGED_CONFIG)
-
-      await writeFile(`deeper/even/${SCRIPT_FILE}`, getScript('level-2'))
-      await writeFile('deeper/even/lint-staged.config.mjs', LINT_STAGED_CONFIG)
+      await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
+      await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig('level-2'))
 
       // Stage all files
       await execGit(['add', '.'])
 
-      await gitCommit()
+      // Run lint-staged with `--shell` so that tasks do their thing
+      await gitCommit({ lintStaged: { shell: true } })
 
-      // 'file.js' matched 'lint-staged.config.mjs s'
+      // 'file.js' matched '.lintstagedrc.json'
       expect(await readFile('file.js')).toMatch('level-0')
 
-      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs s'
+      // 'deeper/file.js' matched 'deeper/.lintstagedrc.json'
       expect(await readFile('deeper/file.js')).toMatch('level-1')
 
-      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/file.js' matched 'deeper/even/.lintstagedrc.json'
       expect(await readFile('deeper/even/file.js')).toMatch('level-2')
 
-      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/.lintstagedrc.json'
       expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
 
-      // 'a/very/deep/file/path/file.js' matched 'lint-staged.config.mjs s'
+      // 'a/very/deep/file/path/file.js' matched '.lintstagedrc.json'
       expect(await readFile('a/very/deep/file/path/file.js')).toMatch('level-0')
     })
   )
@@ -82,30 +59,17 @@ describe('lint-staged', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
-      const ECHO_RELATIVE = `
-        import fs from 'node:fs/promises'
-        import path from 'node:path' 
-    
-        const files = process.argv.slice(2)
-    
-        for (const file of files) {
-          await fs.writeFile(file, \`\${file}\`)
-        }
-      `
+      const echoJSConfig = `module.exports = { '*.js': (files) => files.map((f) => \`echo \${f} > \${f}\`) }`
 
-      await writeFile(SCRIPT_FILE, ECHO_RELATIVE)
-      await writeFile('lint-staged.config.mjs', LINT_STAGED_CONFIG)
-
-      await writeFile(`deeper/${SCRIPT_FILE}`, ECHO_RELATIVE)
-      await writeFile('deeper/lint-staged.config.mjs', LINT_STAGED_CONFIG)
-
-      await writeFile(`deeper/even/${SCRIPT_FILE}`, ECHO_RELATIVE)
-      await writeFile('deeper/even/lint-staged.config.mjs', LINT_STAGED_CONFIG)
+      await writeFile('.lintstagedrc.js', echoJSConfig)
+      await writeFile('deeper/.lintstagedrc.js', echoJSConfig)
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig)
 
       // Stage all files
       await execGit(['add', '.'])
 
-      await gitCommit({ lintStaged: { relative: true } })
+      // Run lint-staged with `--shell` so that tasks do their thing
+      await gitCommit({ lintStaged: { relative: true, shell: true } })
 
       // 'file.js' is relative to '.'
       expect(await readFile('file.js')).toMatch('file.js')
@@ -136,31 +100,30 @@ describe('lint-staged', () => {
       await writeFile('deeper/even/deeper/file.js', '')
       await writeFile('a/very/deep/file/path/file.js', '')
 
-      await writeFile(SCRIPT_FILE, getScript('level-0'))
-      await writeFile('lint-staged.config.mjs', LINT_STAGED_CONFIG)
+      const echoJSConfig = (echo) =>
+        `module.exports = { '*.js': (files) => files.map((f) => \`echo ${echo} > \${f}\`) }`
 
-      await writeFile(`deeper/${SCRIPT_FILE}`, getScript('level-1'))
-      await writeFile('deeper/lint-staged.config.mjs', LINT_STAGED_CONFIG)
-
-      await writeFile(`deeper/even/${SCRIPT_FILE}`, getScript('level-2'))
-      await writeFile('deeper/even/lint-staged.config.mjs', LINT_STAGED_CONFIG)
+      await writeFile('.lintstagedrc.js', echoJSConfig('level-0'))
+      await writeFile('deeper/.lintstagedrc.js', echoJSConfig('level-1'))
+      await writeFile('deeper/even/.lintstagedrc.js', echoJSConfig('level-2'))
 
       // Stage all files
       await execGit(['add', '.'])
 
+      // Run lint-staged with `--shell` so that tasks do their thing
       // Run in 'deeper/' so that root config is ignored
-      await gitCommit(undefined, path.resolve(cwd, 'deeper'))
+      await gitCommit({ lintStaged: { shell: true } }, path.join(cwd, 'deeper'))
 
       // 'file.js' was ignored
       expect(await readFile('file.js')).toEqual('')
 
-      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs s'
+      // 'deeper/file.js' matched 'deeper/.lintstagedrc.json'
       expect(await readFile('deeper/file.js')).toMatch('level-1')
 
-      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/file.js' matched 'deeper/even/.lintstagedrc.json'
       expect(await readFile('deeper/even/file.js')).toMatch('level-2')
 
-      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/.lintstagedrc.json'
       expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
 
       // 'a/very/deep/file/path/file.js' was ignored

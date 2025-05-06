@@ -102,6 +102,8 @@ program.option('-q, --quiet', 'disable lint-staged’s own console output', fals
 
 program.option('-r, --relative', 'pass relative filepaths to tasks', false)
 
+program.option('-x, --shell [path]', 'skip parsing of tasks for better shell support', false)
+
 program.option(
   '-v, --verbose',
   'show task output even when tasks succeed; by default only failed output is shown',
@@ -127,6 +129,7 @@ const options = {
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
+  shell: cliOptions.shell /* Either a boolean or a string pointing to the shell */,
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,
