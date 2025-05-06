@@ -1,5 +1,11 @@
 # lint-staged
 
+## 15.5.2
+
+### Patch Changes
+
+- [#1544](https://github.com/lint-staged/lint-staged/pull/1544) [`5561321`](https://github.com/lint-staged/lint-staged/commit/556132176afce1701b4766c00ffd23159d437cb4) Thanks [@YimingIsCOLD](https://github.com/YimingIsCOLD)! - Correctly handle colon (`:`) characters in staged filenames.
+
 ## 15.5.1
 
 ### Patch Changes
