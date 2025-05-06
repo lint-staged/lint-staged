@@ -24,7 +24,7 @@ jobs:
           token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
