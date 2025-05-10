@@ -113,7 +113,6 @@ jobs:
       matrix:
         # Test with Node.js active LTS versions, and the latest version
         node:
-          - 18
           - 20
           - 22
           - 24
@@ -162,7 +161,6 @@ jobs:
     strategy:
       matrix:
         node:
-          - 18
           - 20
           - 22
           - 24
@@ -203,7 +201,6 @@ jobs:
     strategy:
       matrix:
         node:
-          - 18
           - 20
           - 22
           - 24
