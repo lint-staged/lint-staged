@@ -1,5 +1,59 @@
 # lint-staged
 
+## 16.0.0
+
+### Major Changes
+
+- [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - Processes are spawned using [nano-spawn](https://github.com/sindresorhus/nano-spawn) instead of [execa](https://github.com/sindresorhus/execa). If you are using Node.js scripts as tasks, you might need to explicitly run them with `node`, especially when using Windows:
+
+  ```json
+  {
+    "*.js": "node my-js-linter.js"
+  }
+  ```
+
+- [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - The `--shell` flag has been removed and _lint-staged_ no longer supports evaluating commands directly via a shell. To migrate existing commands, you can create a shell script and invoke it instead. Lint-staged will pass matched staged files as a list of arguments, accessible via `"$@"`:
+
+  ```shell
+  # my-script.sh
+  #!/bin/bash
+
+  echo "Staged files: $@"
+  ```
+
+  and
+
+  ```json
+  { "*.js": "my-script.sh" }
+  ```
+
+  If you were using the shell option to avoid passing filenames to tasks, for example `bash -c 'tsc --noEmit'`, use the function syntax instead:
+
+  ```js
+  export default { '*.ts': () => 'tsc --noEmit' }
+  ```
+
+- [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - Validation for deprecated advanced configuration has been removed. The advanced configuration was removed in _lint-staged_ version 9 and until now validation has failed if advanced configuration options were detected. Going forward the entire configuration will be treated with the same logic and if these advanced options are still present, they might be treated as valid globs for staged files instead.
+
+- [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - The lowest supported Node.js version is `20.18`. Please upgrade your Node.js version.
+
+### Minor Changes
+
+- [#1401](https://github.com/lint-staged/lint-staged/pull/1401) [`27110ef`](https://github.com/lint-staged/lint-staged/commit/27110ef8ee92c5d104235b4094abb3197b5bf074) Thanks [@RohitLuthra19](https://github.com/RohitLuthra19)! - Added support for directly running functions on staged files. To configure a function task, use an object with a title and the task itself:
+
+  ```js
+  export default {
+    '*.js': {
+      title: 'My task',
+      task: async (files) => {
+        console.log('Staged JS files:', files)
+      },
+    },
+  }
+  ```
+
+  _Lint-staged_ will run your function task with the staged files matching the configured glob as its argument, and show the custom title in its console output.
+
 ## 15.5.2
 
 ### Patch Changes
