@@ -152,7 +152,7 @@ _Lint-staged_ can be configured in many ways:
   whether your project's _package.json_ contains the `"type": "module"` option or not.
 - Pass a configuration file using the `--config` or `-c` flag
 
-Configuration should be an object where each value is a command to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
+Configuration should be an object where each value is a **command** to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
 
 You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
@@ -335,12 +335,19 @@ export default {
 
 This will result in _lint-staged_ first running `eslint .` (matching _all_ files), and if it passes, `prettier --write file-1.js file-2.js`, when you have staged files `file-1.js`, `file-2.js` and `README.md`.
 
-### Function signature
+### JavaScript Functions
 
-The function can also be async:
+You can also configure _lint-staged_ to run a JavaScript/Node.js script directly, passing the list of staged files as an argument:
 
-```ts
-(filenames: string[]) => string | string[] | Promise<string | string[]>
+```js
+export default {
+  '*.js': {
+    title: 'Log staged JS files to console',
+    task: async (files) => {
+      console.log('Staged JS files:', files)
+    },
+  },
+}
 ```
 
 ### Example: Export a function to build your own matchers
