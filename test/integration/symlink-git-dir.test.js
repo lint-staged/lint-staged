@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { jest } from '@jest/globals'
 
+import { createTempDir } from '../__utils__/createTempDir.js'
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -14,9 +15,10 @@ describe('lint-staged', () => {
   test(
     'supports symlinked git dir',
     withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
-      // Rename `.git` to `git` and add symbolic link pointing to it
-      await fs.rename(path.resolve(cwd, '.git'), path.resolve(cwd, 'git'))
-      await fs.symlink(path.resolve(cwd, 'git'), path.resolve(cwd, '.git'), 'dir')
+      const tempDir = await createTempDir()
+      // Move `.git` to tempDir and add symbolic link pointing to it
+      await fs.rename(path.resolve(cwd, '.git'), path.resolve(cwd, tempDir))
+      await fs.symlink(path.resolve(cwd, tempDir), path.resolve(cwd, '.git'), 'dir')
 
       await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
