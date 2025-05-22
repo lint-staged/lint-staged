@@ -8,6 +8,7 @@ import {
   GetBackupStashError,
   GitError,
   HideUnstagedChangesError,
+  HideUntrackedFilesError,
   RestoreMergeStatusError,
 } from '../../lib/symbols.js'
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
@@ -153,6 +154,29 @@ describe('gitWorkflow', () => {
 
         /** @todo `git mv` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
         expect(normalizeWindowsNewlines(await readFile('TEST.md'))).toStrictEqual(origContent)
+      })
+    )
+  })
+
+  describe('hideUntrackedFiles', () => {
+    it(
+      'should handle errors',
+      withGitIntegration(async ({ cwd }) => {
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+
+        const totallyRandom = `totally_random_file-${Date.now().toString()}`
+        gitWorkflow.untrackedFiles = [totallyRandom]
+        const ctx = getInitialState()
+        await expect(gitWorkflow.hideUntrackedFiles(ctx)).rejects.toThrow(
+          'ENOENT: no such file or directory'
+        )
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(HideUntrackedFilesError)).toBe(true)
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
   })
