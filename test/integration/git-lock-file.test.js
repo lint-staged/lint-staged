@@ -32,8 +32,6 @@ describe('lint-staged', () => {
 
         const diff = await execGit(['diff'])
 
-        await execGit(['add', 'add-git-lock.mjs'])
-
         // Run lint-staged with `prettier --write` and commit pretty file
         // The task creates a git lock file and runs `git add` to simulate failure
         await expect(
