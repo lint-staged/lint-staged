@@ -3,6 +3,7 @@ import {
   cleanupSkipped,
   restoreOriginalStateSkipped,
   restoreUnstagedChangesSkipped,
+  restoreUntrackedFilesSkipped,
 } from '../../lib/state.js'
 import { GitError, RestoreOriginalStateError } from '../../lib/symbols.js'
 
@@ -21,6 +22,13 @@ describe('applyModificationsSkipped', () => {
 describe('restoreUnstagedChangesSkipped', () => {
   it('should return error message when there is an unkown git error', () => {
     const result = restoreUnstagedChangesSkipped({ errors: new Set([GitError]) })
+    expect(typeof result === 'string').toEqual(true)
+  })
+})
+
+describe('restoreUntrackedFilesSkipped', () => {
+  it('should return error message when there is an unkown git error', () => {
+    const result = restoreUntrackedFilesSkipped({ errors: new Set([GitError]) })
     expect(typeof result === 'string').toEqual(true)
   })
 })
