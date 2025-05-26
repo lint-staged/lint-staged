@@ -28,7 +28,10 @@
     "lint-staged": "bin/lint-staged.js"
   },
   "exports": {
-    ".": "./lib/index.js",
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
     "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
