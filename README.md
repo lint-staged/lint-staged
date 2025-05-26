@@ -34,13 +34,28 @@ $ git commit
 
 </details>
 
+## Table of Contents
+
+- [Why](#why)
+- [Installation and setup](#installation-and-setup)
+- [Changelog](#changelog)
+- [Command line flags](#command-line-flags)
+- [Configuration](#configuration)
+- [Filtering files](#filtering-files)
+- [What commands are supported?](#what-commands-are-supported)
+- [Running multiple commands in a sequence](#running-multiple-commands-in-a-sequence)
+- [Using JS configuration files](#using-js-configuration-files)
+- [Reformatting the code](#reformatting-the-code)
+- [Examples](#examples)
+- [Frequently Asked Questions](#frequently-asked-questions)
+
 ## Why
 
 Code quality tasks like formatters and linters make more sense when run before committing your code. By doing so you can ensure no errors go into the repository and enforce code style. But running a task on a whole project can be slow, and opinionated tasks such as linting can sometimes produce irrelevant results. Ultimately you only want to check files that will be committed.
 
 This project contains a script that will run arbitrary shell tasks with a list of staged files as an argument, filtered by a specified glob pattern.
 
-## Related blog posts and talks
+### Related blog posts and talks
 
 - [Introductory Medium post - Andrey Okonetchnikov, 2016](https://medium.com/@okonetchnikov/make-linting-great-again-f3890e1ad6b8#.8qepn2b5l)
 - [Running Jest Tests Before Each Git Commit - Ben McCormick, 2017](https://benmccormick.org/2017/02/26/running-jest-tests-before-each-git-commit/)
@@ -70,7 +85,7 @@ Now change a few files, `git add` or `git add --patch` some of them to your comm
 
 See [examples](#examples) and [configuration](#configuration) for more information.
 
-> [!CAUTION]  
+> [!CAUTION]
 > _Lint-staged_ runs `git` operations affecting the files in your repository. By default _lint-staged_ creates a `git stash` as a backup of the original state before running any configured tasks to help prevent data loss.
 
 ## Changelog
@@ -998,7 +1013,7 @@ ESLint v8.51.0 introduced [`--no-warn-ignored` CLI flag](https://eslint.org/docs
 
 When running `lint-staged` via Husky hooks, TypeScript may ignore `tsconfig.json`, leading to errors like:
 
-> **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.  
+> **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.
 > **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.
 
 See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.
