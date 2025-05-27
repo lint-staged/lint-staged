@@ -1,5 +1,17 @@
 # lint-staged
 
+## 16.1.0
+
+### Minor Changes
+
+- [#1536](https://github.com/lint-staged/lint-staged/pull/1536) [`e729daa`](https://github.com/lint-staged/lint-staged/commit/e729daa3b3ae28e613f63e730652dbfad5d1c594) Thanks [@iiroj](https://github.com/iiroj)! - A new flag `--no-revert` has been introduced for when task modifications should be applied to the index before aborting the commit in case of errors. By default, _lint-staged_ will clear all task modifications and revert to the original state.
+
+- [#1550](https://github.com/lint-staged/lint-staged/pull/1550) [`b27fa3f`](https://github.com/lint-staged/lint-staged/commit/b27fa3fecb75bcdcaa4bcd483c9d5c0755a22607) Thanks [@iiroj](https://github.com/iiroj)! - _Lint-staged_ now ignores symlinks and leaves them out from the list of staged files.
+
+### Patch Changes
+
+- [#1558](https://github.com/lint-staged/lint-staged/pull/1558) [`c37dc38`](https://github.com/lint-staged/lint-staged/commit/c37dc38dddbdebc41df4dbd909d79c98c3f69eb3) Thanks [@iiroj](https://github.com/iiroj)! - The minimum required Node.js version is lowered to `20.17` following [nano-spawn@1.0.2](https://github.com/sindresorhus/nano-spawn/releases/tag/v1.0.2).
+
 ## 16.0.0
 
 ### Major Changes
