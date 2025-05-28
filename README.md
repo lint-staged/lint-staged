@@ -115,6 +115,8 @@ Options:
   --no-revert                        do not revert to original state in case of errors.
   --no-stash                         disable the backup stash. Implies "--no-revert".
   --no-hide-partially-staged         disable hiding unstaged changes from partially staged files
+  --hide-unstaged                    enable hiding unstaged files
+  --hide-untracked                   enable hiding untracked files
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -v, --verbose                      show task output even when tasks succeed; by default only failed output is
