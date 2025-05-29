@@ -2,7 +2,9 @@
 
 #### Updated Node.js version requirement
 
-The lowest supported Node.js version is `18.19.0` or `20.5.0`, following requirements of `execa@9`. Please upgrade your Node.js version.
+For version `lint-staged@16.0.0` the lowest supported Node.js version is `20.19.0`, following requirements of `nano-spawn`. Please upgrade your Node.js version.
+
+For version `lint-staged@16.1.0` this is lowered to `20.17.0`, again following `nano-spawn`.
 
 #### Removed validation for removed advanced configuration file options
 
