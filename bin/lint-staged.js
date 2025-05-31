@@ -74,11 +74,18 @@ program
   )
 
 program
-  .addOption(new Option('--stash', 'enable the backup stash').default(true).hideHelp())
   .addOption(
-    new Option('--no-stash', 'disable the backup stash. Implies "--no-revert".')
+    new Option('--stash', 'enable the backup stash, and revert in case of errors')
+      .default(true)
+      .hideHelp()
+  )
+  .addOption(
+    new Option(
+      '--no-stash',
+      'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged", "--no-hide-unstaged", and "--no-hide-untracked".'
+    )
       .default(false)
-      .implies({ revert: false, hidePartiallyStaged: false })
+      .implies({ hidePartiallyStaged: false, hideUnstaged: false, hideUntracked: false })
   )
 
 program
@@ -92,6 +99,18 @@ program
       '--no-hide-partially-staged',
       'disable hiding unstaged changes from partially staged files'
     ).default(false)
+  )
+
+program
+  .addOption(new Option('--hide-unstaged', 'hide unstaged files').default(false))
+  .addOption(
+    new Option('--no-hide-unstaged', 'disable hiding unstaged files').default(true).hideHelp()
+  )
+
+program
+  .addOption(new Option('--hide-untracked', 'hide untracked files').default(false))
+  .addOption(
+    new Option('--no-hide-untracked', 'disable hiding untracked files').default(true).hideHelp()
   )
 
 program.option('-q, --quiet', 'disable lint-staged’s own console output', false)
@@ -126,6 +145,8 @@ const options = {
   revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  hideUnstaged: !!cliOptions.hideUnstaged,
+  hideUntracked: !!cliOptions.hideUntracked,
   verbose: !!cliOptions.verbose,
 }
 
