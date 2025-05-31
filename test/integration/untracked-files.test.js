@@ -63,6 +63,29 @@ describe('lint-staged', () => {
   )
 
   test(
+    'hides untracked files with --hide-untracked option',
+    withGitIntegration(async ({ writeFile, execGit, gitCommit }) => {
+      await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+
+      // Stage pretty file
+      await writeFile('test2.js', fileFixtures.prettyJS)
+      await execGit(['add', 'test2.js'])
+
+      // Create untracked file
+      await writeFile('test2.js', fileFixtures.prettyJS)
+
+      // Create untracked file within untracked directory
+      await writeFile('test_dir/test.js', fileFixtures.prettyJS)
+
+      const output = await gitCommit({ lintStaged: { hideUntracked: true } })
+
+      expect(output).toMatch('Hiding unstaged changes...')
+      expect(output).toMatch('Applying modifications from tasks...')
+      expect(output).toMatch('Restoring unstaged changes...')
+    })
+  )
+
+  test(
     'restores untracked files with --hide-untracked option when no errors from linter',
     withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
