@@ -78,7 +78,7 @@ program
   .addOption(
     new Option('--no-stash', 'disable the backup stash. Implies "--no-revert".')
       .default(false)
-      .implies({ revert: false, hidePartiallyStaged: false })
+      .implies({ revert: false })
   )
 
 program

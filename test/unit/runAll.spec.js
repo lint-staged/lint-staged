@@ -366,6 +366,13 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used')
   })
 
+  it('should warn when --no-hide-partially-staged was used', async () => {
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, hidePartiallyStaged: false })
+    expect(console.printHistory()).toMatch(
+      'Skipping hiding unstaged changes from partially staged files because `--no-hide-partially-staged` was used.'
+    )
+  })
+
   it('should support function tasks', async () => {
     const staged = ['foo.js']
     getStagedFiles.mockImplementationOnce(async () => staged)
