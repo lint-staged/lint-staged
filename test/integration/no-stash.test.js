@@ -24,9 +24,6 @@ describe('lint-staged', () => {
       const stdout = await gitCommit({ lintStaged: { stash: false } })
 
       expect(stdout).toMatch('Skipping backup because `--no-stash` was used')
-      expect(stdout).toMatch(
-        'Skipping hiding unstaged changes from partially staged files because `--no-stash` was used'
-      )
 
       // Nothing is wrong, so a new commit is created
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -99,6 +96,29 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('initial commit')
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS) // file was still fixed
       expect(await readFile('test2.js')).toEqual(fileFixtures.invalidJS)
+    })
+  )
+
+  test(
+    'hides and restores unstaged changes to partially staged files by default even with --no-stash',
+    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+
+      // Stage ugly file
+      await appendFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', '.'])
+
+      // Edit ugly file but do not stage changes
+      const appended = '\n\nconsole.log("test");\n'
+      await appendFile('test.js', appended)
+
+      await gitCommit({
+        lintStaged: { stash: false },
+      })
+
+      // File is pretty, and has been edited with unstaged changes
+      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS + appended)
+      expect(await execGit(['status'])).toMatch('modified:   test.js')
     })
   )
 })
