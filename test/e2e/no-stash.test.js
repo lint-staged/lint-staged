@@ -29,7 +29,9 @@ describe('lint-staged', () => {
 
       res = await lintStaged(['--no-stash'])
       expect(res.stdout).toMatch('No staged files found.')
-      expect(res.stderr).toMatch('Skipping backup because `--no-stash` was used.')
+      expect(res.stderr).toMatch(
+        'Skipping backup because `--no-stash` was used. This might result in data loss.'
+      )
 
       res = await lintStaged(['--diff=main...my-branch'])
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
@@ -42,6 +44,32 @@ describe('lint-staged', () => {
 
       res = await lintStaged(['--diff=main...my-branch', '--no-stash'])
       expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+    })
+  )
+
+  test(
+    "--no-stash doesn't imply --no-hide-partially-staged, losing conflicting unstaged changes",
+    withGitIntegration(async ({ execGit, readFile, writeFile, cwd }) => {
+      const lintStaged = getLintStagedExecutor(cwd)
+
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+
+      // Stage ugly file
+      await writeFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', '.'])
+
+      // modify file with unstaged changes
+      await writeFile('test.js', fileFixtures.uglyJSWithChanges)
+
+      // lint-staged fails because file is ugly
+      await expect(lintStaged(['--no-stash'])).rejects.toMatchObject({
+        stderr: expect.stringContaining('prettier --list-different'),
+      })
+
+      // unstaged changes were discarded
+      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
+
+      expect(await execGit(['status'])).toMatch('new file:   test.js')
     })
   )
 })
