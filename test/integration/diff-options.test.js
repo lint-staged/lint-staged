@@ -68,4 +68,31 @@ describe('lint-staged', () => {
       console = globalConsoleTemp
     })
   )
+
+  test(
+    'supports staged deleted files',
+    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      const globalConsoleTemp = console
+      console = makeConsoleMock()
+
+      // Stage and commit ugly file
+      await appendFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', 'test.js'])
+      await execGit(['commit', '-m', 'test'])
+
+      // Staged deleted file
+      await execGit(['rm', 'test.js'])
+
+      // Run lint-staged with `--diff-filter=D` to include only deleted files.
+      const passed = await lintStaged({
+        config: { '*.js': 'prettier --list-different' },
+        cwd,
+        diffFilter: 'D',
+      })
+
+      expect(passed).toEqual(true)
+
+      console = globalConsoleTemp
+    })
+  )
 })
