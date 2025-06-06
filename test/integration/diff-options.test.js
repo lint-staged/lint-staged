@@ -85,7 +85,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged with `--diff-filter=D` to include only deleted files.
       const passed = await lintStaged({
-        config: { '*.js': 'prettier --list-different' },
+        config: { '*.js': 'prettier --list-different --no-error-on-unmatched-pattern' },
         cwd,
         diffFilter: 'D',
       })
