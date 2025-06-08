@@ -255,7 +255,7 @@ describe('getSpawnedTask', () => {
     spawn.mockImplementationOnce(() => mockNanoSpawnReturnValue(undefined, 1000))
 
     const context = getInitialState()
-    const taskFn = getSpawnedTask({ command: 'node' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
     const taskPromise = taskFn(context)
 
     jest.runOnlyPendingTimers()
@@ -280,7 +280,7 @@ describe('getSpawnedTask', () => {
     })
 
     const context = getInitialState()
-    const taskFn = getSpawnedTask({ command: 'node' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
     const taskPromise = taskFn(context)
 
     context.events.emit('lint-staged:taskError')
@@ -303,7 +303,7 @@ describe('getSpawnedTask', () => {
     )
 
     const context = getInitialState()
-    const taskFn = getSpawnedTask({ command: 'node' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
     const taskPromise = taskFn(context)
 
     context.events.emit('lint-staged:taskError')
@@ -335,7 +335,7 @@ describe('getSpawnedTask', () => {
 
     pidTree.mockImplementationOnce(() => ['1234'])
 
-    const taskFn = getSpawnedTask({ command: 'node' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
 
     const context = getInitialState()
     const taskPromise = taskFn(context)
@@ -378,7 +378,7 @@ describe('getSpawnedTask', () => {
 
     pidTree.mockImplementationOnce(() => ['1234'])
 
-    const taskFn = getSpawnedTask({ command: 'node' })
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
 
     const context = getInitialState()
     const taskPromise = taskFn(context)

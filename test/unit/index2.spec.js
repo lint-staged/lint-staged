@@ -15,7 +15,7 @@ jest.unstable_mockModule('../../lib/execGit.js', () => ({
 }))
 
 jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({
-  getStagedFiles: jest.fn(async () => [MOCK_STAGED_FILE]),
+  getStagedFiles: jest.fn(async () => [{ filepath: MOCK_STAGED_FILE, status: 'M' }]),
 }))
 
 jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({

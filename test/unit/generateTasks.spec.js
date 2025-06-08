@@ -26,7 +26,7 @@ const files = [
   '/repo/deeper/test2.txt',
   '/repo/even/deeper/test.txt',
   '/repo/.hidden/test.txt',
-]
+].map((filepath) => ({ filepath, status: 'A' }))
 
 const config = {
   '*.js': 'root-js',
@@ -39,8 +39,8 @@ const config = {
 }
 
 describe('generateTasks', () => {
-  it('should return absolute paths', async () => {
-    const [task] = await generateTasks({
+  it('should return absolute paths', () => {
+    const [task] = generateTasks({
       config: {
         '*': 'lint',
       },
@@ -52,8 +52,8 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should not match non-children files', async () => {
-    const result = await generateTasks({ config, cwd: '/test', files })
+  it('should not match non-children files', () => {
+    const result = generateTasks({ config, cwd: '/test', files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
@@ -62,8 +62,8 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should return an empty file list for tasks with no matches.', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should return an empty file list for tasks with no matches.', () => {
+    const result = generateTasks({ config, cwd, files })
 
     result.forEach((task) => {
       if (task.commands === 'unknown-js' || task.commands === 'parent-dir-css-or-js') {
@@ -76,8 +76,8 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern "*.js"', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should match pattern "*.js"', () => {
+    const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
       pattern: '*.js',
@@ -88,12 +88,12 @@ describe('generateTasks', () => {
         `/repo/deeper/test2.js`,
         `/repo/even/deeper/test.js`,
         `/repo/.hidden/test.js`,
-      ].map(normalizeWindowsPath),
+      ].map((filepath) => ({ filepath: normalizeWindowsPath(filepath), status: 'A' })),
     })
   })
 
-  it('should match pattern "**/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should match pattern "**/*.js"', () => {
+    const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '**/*.js')
     expect(linter).toEqual({
       pattern: '**/*.js',
@@ -104,32 +104,38 @@ describe('generateTasks', () => {
         `/repo/deeper/test2.js`,
         `/repo/even/deeper/test.js`,
         `/repo/.hidden/test.js`,
-      ].map(normalizeWindowsPath),
+      ].map((filepath) => ({ filepath: normalizeWindowsPath(filepath), status: 'A' })),
     })
   })
 
-  it('should match pattern "deeper/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should match pattern "deeper/*.js"', () => {
+    const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === 'deeper/*.js')
     expect(linter).toEqual({
       pattern: 'deeper/*.js',
       commands: 'deeper-js',
-      fileList: [`/repo/deeper/test.js`, `/repo/deeper/test2.js`].map(normalizeWindowsPath),
+      fileList: [`/repo/deeper/test.js`, `/repo/deeper/test2.js`].map((filepath) => ({
+        filepath: normalizeWindowsPath(filepath),
+        status: 'A',
+      })),
     })
   })
 
-  it('should match pattern ".hidden/*.js"', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should match pattern ".hidden/*.js"', () => {
+    const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '.hidden/*.js')
     expect(linter).toEqual({
       pattern: '.hidden/*.js',
       commands: 'hidden-js',
-      fileList: [`/repo/.hidden/test.js`].map(normalizeWindowsPath),
+      fileList: [`/repo/.hidden/test.js`].map((filepath) => ({
+        filepath: normalizeWindowsPath(filepath),
+        status: 'A',
+      })),
     })
   })
 
-  it('should match pattern "*.{css,js}"', async () => {
-    const result = await generateTasks({ config, cwd, files })
+  it('should match pattern "*.{css,js}"', () => {
+    const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
       pattern: '*.{css,js}',
@@ -145,12 +151,12 @@ describe('generateTasks', () => {
         `/repo/deeper/test2.css`,
         `/repo/even/deeper/test.css`,
         `/repo/.hidden/test.css`,
-      ].map(normalizeWindowsPath),
+      ].map((filepath) => ({ filepath: normalizeWindowsPath(filepath), status: 'A' })),
     })
   })
 
-  it('should match pattern "test{1..2}.css"', async () => {
-    const result = await generateTasks({
+  it('should match pattern "test{1..2}.css"', () => {
+    const result = generateTasks({
       config: {
         'test{1..2}.css': 'lint',
       },
@@ -164,12 +170,15 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: 'test{1..2}.css',
       commands: 'lint',
-      fileList: [`/repo/deeper/test1.css`, `/repo/deeper/test2.css`].map(normalizeWindowsPath),
+      fileList: [`/repo/deeper/test1.css`, `/repo/deeper/test2.css`].map((filepath) => ({
+        filepath: normalizeWindowsPath(filepath),
+        status: 'A',
+      })),
     })
   })
 
-  it('should not match files in parent directory by default', async () => {
-    const result = await generateTasks({
+  it('should not match files in parent directory by default', () => {
+    const result = generateTasks({
       config,
       cwd: '/repo/deeper',
       files,
@@ -178,12 +187,15 @@ describe('generateTasks', () => {
     expect(linter).toEqual({
       pattern: '*.js',
       commands: 'root-js',
-      fileList: [`/repo/deeper/test.js`, `/repo/deeper/test2.js`].map(normalizeWindowsPath),
+      fileList: [`/repo/deeper/test.js`, `/repo/deeper/test2.js`].map((filepath) => ({
+        filepath: normalizeWindowsPath(filepath),
+        status: 'A',
+      })),
     })
   })
 
-  it('should match files in parent directory when pattern starts with "../"', async () => {
-    const result = await generateTasks({
+  it('should match files in parent directory when pattern starts with "../"', () => {
+    const result = generateTasks({
       config,
       cwd: '/repo/deeper',
       files,
@@ -191,13 +203,16 @@ describe('generateTasks', () => {
     const linter = result.find((item) => item.pattern === '../*.{css,js}')
     expect(linter).toEqual({
       commands: 'parent-dir-css-or-js',
-      fileList: [`/repo/test.js`, `/repo/test.css`].map(normalizeWindowsPath),
+      fileList: [`/repo/test.js`, `/repo/test.css`].map((filepath) => ({
+        filepath: normalizeWindowsPath(filepath),
+        status: 'A',
+      })),
       pattern: '../*.{css,js}',
     })
   })
 
-  it('should be able to return relative paths for "*.{css,js}"', async () => {
-    const result = await generateTasks({ config, cwd, files, relative: true })
+  it('should be able to return relative paths for "*.{css,js}"', () => {
+    const result = generateTasks({ config, cwd, files, relative: true })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
       pattern: '*.{css,js}',
@@ -213,7 +228,7 @@ describe('generateTasks', () => {
         'deeper/test2.css',
         'even/deeper/test.css',
         '.hidden/test.css',
-      ],
+      ].map((filepath) => ({ filepath, status: 'A' })),
     })
   })
 })

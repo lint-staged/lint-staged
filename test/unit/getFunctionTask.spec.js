@@ -6,14 +6,12 @@ import { TaskError } from '../../lib/symbols.js'
 
 describe('getFunctionTask', () => {
   it('should return wrapped function task', async () => {
-    const files = ['file.js']
-
     const cmd = {
       title: 'My task',
       task: jest.fn(),
     }
 
-    const wrapped = await getFunctionTask(cmd, files)
+    const wrapped = await getFunctionTask(cmd, [{ filepath: 'file.js', status: 'M' }])
 
     expect(wrapped).toEqual([
       {
@@ -25,12 +23,10 @@ describe('getFunctionTask', () => {
     wrapped[0].task()
 
     expect(cmd.task).toHaveBeenCalledTimes(1)
-    expect(cmd.task).toHaveBeenCalledWith(files)
+    expect(cmd.task).toHaveBeenCalledWith(['file.js'])
   })
 
   it('should wrap function task failure', async () => {
-    const files = ['file.js']
-
     const cmd = {
       title: 'My task',
       task: jest.fn().mockImplementation(async () => {
@@ -38,7 +34,7 @@ describe('getFunctionTask', () => {
       }),
     }
 
-    const wrapped = await getFunctionTask(cmd, files)
+    const wrapped = await getFunctionTask(cmd, [{ filepath: 'file.js', status: 'M' }])
 
     expect(wrapped).toEqual([
       {

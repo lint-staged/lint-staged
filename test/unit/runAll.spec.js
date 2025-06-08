@@ -123,7 +123,7 @@ describe('runAll', () => {
   it('should exit without output when no staged files match configured tasks and quiet', async () => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockImplementationOnce(async () => ({
       '': { '*.css': 'echo "sample"' },
     }))
@@ -135,7 +135,7 @@ describe('runAll', () => {
 
   it('should not skip tasks if there are files', async () => {
     expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockImplementationOnce(async () => ({
       '': { '*.js': 'echo "sample"' },
     }))
@@ -148,7 +148,7 @@ describe('runAll', () => {
   it('should skip tasks if previous git error', async () => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockImplementationOnce(async () => ({
       '': { '*.js': 'echo "sample"' },
     }))
@@ -166,7 +166,7 @@ describe('runAll', () => {
   it('should skip applying unstaged modifications if there are errors during a task', async () => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockImplementationOnce(async () => ({
       '': { '*.js': 'echo "sample"' },
     }))
@@ -195,7 +195,7 @@ describe('runAll', () => {
   it('should skip tasks and restore state if terminated', async () => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockImplementationOnce(async () => ({
       '': { '*.js': 'echo "sample"' },
     }))
@@ -226,7 +226,7 @@ describe('runAll', () => {
 
   it('should resolve matched files to cwd when using relative option', async () => {
     // A staged file inside test/, which will be our cwd
-    getStagedFiles.mockImplementationOnce(async () => ['test/foo.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'test/foo.js', status: 'A' }])
 
     // We are only interested in the `matchedFileChunks` generation
     let expected
@@ -257,11 +257,21 @@ describe('runAll', () => {
     expect(mockTask).toHaveBeenCalledWith(['foo.js'])
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
-    expect(expected).toEqual([[normalizePath(path.join(cwd, 'test/foo.js'))]])
+    expect(expected).toEqual([
+      [
+        {
+          filepath: normalizePath(path.join(cwd, 'test/foo.js')),
+          status: 'A',
+        },
+      ],
+    ])
   })
 
   it('should resolve matched files to config locations with multiple configs', async () => {
-    getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
+    getStagedFiles.mockImplementationOnce(async () => [
+      { filepath: 'foo.js', status: 'A' },
+      { filepath: 'test/foo.js', status: 'A' },
+    ])
 
     const mockTask = jest.fn(() => ['echo "sample"'])
 
@@ -288,14 +298,17 @@ describe('runAll', () => {
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([
       [
-        normalizePath(path.join(process.cwd(), 'test/foo.js')),
-        normalizePath(path.join(process.cwd(), 'foo.js')),
+        { filepath: normalizePath(path.join(process.cwd(), 'test/foo.js')), status: 'A' },
+        { filepath: normalizePath(path.join(process.cwd(), 'foo.js')), status: 'A' },
       ],
     ])
   })
 
   it('should resolve matched files to explicit cwd with multiple configs', async () => {
-    getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
+    getStagedFiles.mockImplementationOnce(async () => [
+      { filepath: 'foo.js', status: 'A' },
+      { filepath: 'test/foo.js', status: 'A' },
+    ])
 
     const mockTask = jest.fn(() => ['echo "sample"'])
 
@@ -317,7 +330,10 @@ describe('runAll', () => {
   })
 
   it('should error when no configurations found', async () => {
-    getStagedFiles.mockImplementationOnce(async () => ['foo.js', 'test/foo.js'])
+    getStagedFiles.mockImplementationOnce(async () => [
+      { filepath: 'foo.js', status: 'A' },
+      { filepath: 'test/foo.js', status: 'A' },
+    ])
 
     searchConfigs.mockResolvedValueOnce({})
 
@@ -336,7 +352,7 @@ describe('runAll', () => {
   })
 
   it('should warn when "git add" was used in commands', async () => {
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     searchConfigs.mockResolvedValueOnce({
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
@@ -346,7 +362,7 @@ describe('runAll', () => {
   })
 
   it('should not warn about "git add" when --quiet was used', async () => {
-    getStagedFiles.mockImplementationOnce(async () => ['sample.js'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
     await expect(runAll({ configObject: { '*.js': ['git add'] }, quiet: true })).rejects.toThrow()
     expect(console.printHistory()).toEqual('')
   })
@@ -376,8 +392,7 @@ describe('runAll', () => {
   })
 
   it('should support function tasks', async () => {
-    const staged = ['foo.js']
-    getStagedFiles.mockImplementationOnce(async () => staged)
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
 
     const task = jest.fn()
     const configObject = { '*.js': { title: 'My task', task } }
@@ -392,6 +407,6 @@ describe('runAll', () => {
     })
 
     expect(task).toHaveBeenCalledTimes(1)
-    expect(task).toHaveBeenCalledWith(staged)
+    expect(task).toHaveBeenCalledWith(['foo.js'])
   })
 })
