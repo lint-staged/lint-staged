@@ -353,7 +353,9 @@ describe('runAll', () => {
 
   it('should warn when --no-stash was used', async () => {
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false })
-    expect(console.printHistory()).toMatch('Skipping backup because `--no-stash` was used')
+    expect(console.printHistory()).toMatch(
+      'Skipping backup because `--no-stash` was used. This might result in data loss.'
+    )
   })
 
   it('should not warn when --no-stash was used together with --quiet', async () => {
@@ -363,7 +365,14 @@ describe('runAll', () => {
 
   it('should warn when --diff was used', async () => {
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, diff: 'branch1...branch2' })
-    expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used')
+    expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used.')
+  })
+
+  it('should warn when --no-hide-partially-staged was used', async () => {
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, hidePartiallyStaged: false })
+    expect(console.printHistory()).toMatch(
+      'Skipping hiding unstaged changes from partially staged files because `--no-hide-partially-staged` was used.'
+    )
   })
 
   it('should support function tasks', async () => {

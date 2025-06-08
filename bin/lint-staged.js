@@ -85,7 +85,12 @@ program
       'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged", "--no-hide-unstaged", and "--no-hide-untracked".'
     )
       .default(false)
-      .implies({ hidePartiallyStaged: false, hideUnstaged: false, hideUntracked: false })
+      .implies({
+        hidePartiallyStaged: false,
+        hideUnstaged: false,
+        hideUntracked: false,
+        revert: false,
+      })
   )
 
 program
