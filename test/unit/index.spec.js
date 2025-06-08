@@ -54,7 +54,7 @@ describe('lintStaged', () => {
   it('should return true when passed', async () => {
     expect.assertions(1)
 
-    getStagedFiles.mockImplementationOnce(async () => ['sample.java'])
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.java', status: 'M' }])
 
     const config = { '*': 'node -e "process.exit(0)"' }
 
