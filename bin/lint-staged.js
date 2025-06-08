@@ -74,23 +74,11 @@ program
   )
 
 program
+  .addOption(new Option('--stash', 'enable the backup stash').default(true).hideHelp())
   .addOption(
-    new Option('--stash', 'enable the backup stash, and revert in case of errors')
-      .default(true)
-      .hideHelp()
-  )
-  .addOption(
-    new Option(
-      '--no-stash',
-      'disable the backup stash, and do not revert in case of errors. Implies "--no-hide-partially-staged", "--no-hide-unstaged", and "--no-hide-untracked".'
-    )
+    new Option('--no-stash', 'disable the backup stash. Implies "--no-revert".')
       .default(false)
-      .implies({
-        hidePartiallyStaged: false,
-        hideUnstaged: false,
-        hideUntracked: false,
-        revert: false,
-      })
+      .implies({ revert: false })
   )
 
 program
