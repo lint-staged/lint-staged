@@ -34,7 +34,7 @@ describe('lint-staged', () => {
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('committed pretty file')
 
-      // Tthere are no staged changes because state wasn't restored
+      // There are no staged changes because state wasn't restored
       expect(await execGit(['status', '-z'])).toMatch('')
 
       // File is now pretty, because lint-staged ran Prettier which removed the modifications
