@@ -145,7 +145,7 @@ Any lost modifications can be restored from a git stash:
 - **`--max-arg-length`**: long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
 - **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
 - **`--no-hide-partially-staged`**: By default, unstaged changes from partially staged files will be hidden and applied back after running tasks. This option will disable this behavior, causing those changes to also be committed.
-- **`--quiet`**: Supress all CLI output, except from tasks.
+- **`--quiet`**: Suppress all CLI output, except from tasks.
 - **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
 - **`--no-revert`**: By default all task modifications will be reverted in case of an error. This option will disable the behavior, and apply task modifications to the index before aborting the commit.
 - **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.

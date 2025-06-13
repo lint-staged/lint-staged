@@ -3,7 +3,7 @@ export default {
   collectCoverageFrom: [
     'lib/**/*.js',
     /**
-     * Instanbul uses babel to parse coverage data,
+     * Istanbul uses babel to parse coverage data,
      * so `import.meta` is not available
      */
     '!lib/resolveConfig.js',
