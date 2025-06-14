@@ -27,7 +27,10 @@ describe('getStagedFiles', () => {
 
     const staged = await getStagedFiles({ cwd: '/' })
     // Windows filepaths
-    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'A' },
+      { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
+    ])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
@@ -43,7 +46,10 @@ describe('getStagedFiles', () => {
 
     const staged = await getStagedFiles({ cwd: '/' })
     // Windows filepaths
-    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar:qux.js')])
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'A' },
+      { filepath: normalizeWindowsPath('/bar:qux.js'), status: 'A' },
+    ])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
@@ -72,7 +78,10 @@ describe('getStagedFiles', () => {
 
     const staged = await getStagedFiles({ cwd: '/', diff: 'main...my-branch' })
     // Windows filepaths
-    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'A' },
+      { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
+    ])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACMR', 'main...my-branch', '--raw', '-z'],
@@ -88,7 +97,10 @@ describe('getStagedFiles', () => {
 
     const staged = await getStagedFiles({ cwd: '/', diff: 'main my-branch' })
     // Windows filepaths
-    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'A' },
+      { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
+    ])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACMR', 'main', 'my-branch', '--raw', '-z'],
@@ -104,7 +116,10 @@ describe('getStagedFiles', () => {
 
     const staged = await getStagedFiles({ cwd: '/', diffFilter: 'ACDMRTUXB' })
     // Windows filepaths
-    expect(staged).toEqual([normalizeWindowsPath('/foo.js'), normalizeWindowsPath('/bar.js')])
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'A' },
+      { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
+    ])
 
     expect(execGit).toHaveBeenCalledWith(
       ['diff', '--diff-filter=ACDMRTUXB', '--staged', '--raw', '-z'],

@@ -12,13 +12,21 @@ describe('getSpawnedTasks', () => {
   })
 
   it('should return an array', async () => {
-    const array = await getSpawnedTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
+    const array = await getSpawnedTasks({
+      commands: 'test',
+      topLevelDir,
+      files: [{ filepath: 'test.js', status: 'M' }],
+    })
     expect(array).toBeInstanceOf(Array)
   })
 
   it('should work with a single command', async () => {
     expect.assertions(4)
-    const res = await getSpawnedTasks({ commands: 'test', topLevelDir, files: ['test.js'] })
+    const res = await getSpawnedTasks({
+      commands: 'test',
+      topLevelDir,
+      files: [{ filepath: 'test.js', status: 'M' }],
+    })
     expect(res.length).toBe(1)
     const [linter] = res
     expect(linter.title).toBe('test')
@@ -33,7 +41,7 @@ describe('getSpawnedTasks', () => {
     const res = await getSpawnedTasks({
       commands: ['test', 'test2'],
       topLevelDir,
-      files: ['test.js'],
+      files: [{ filepath: 'test.js', status: 'M' }],
     })
     expect(res.length).toBe(2)
     const [linter1, linter2] = res
@@ -61,7 +69,11 @@ describe('getSpawnedTasks', () => {
   })
 
   it('should work with function task returning a string', async () => {
-    const res = await getSpawnedTasks({ commands: () => 'test', topLevelDir, files: ['test.js'] })
+    const res = await getSpawnedTasks({
+      commands: () => 'test',
+      topLevelDir,
+      files: [{ filepath: 'test.js', status: 'M' }],
+    })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
@@ -70,7 +82,7 @@ describe('getSpawnedTasks', () => {
     const res = await getSpawnedTasks({
       commands: () => ['test', 'test2'],
       topLevelDir,
-      files: ['test.js'],
+      files: [{ filepath: 'test.js', status: 'M' }],
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('test')
@@ -81,7 +93,10 @@ describe('getSpawnedTasks', () => {
     const res = await getSpawnedTasks({
       commands: (filenames) => filenames.map((file) => `test ${file}`),
       topLevelDir,
-      files: ['test.js', 'test2.js'],
+      files: [
+        { filepath: 'test.js', status: 'M' },
+        { filepath: 'test2.js', status: 'A' },
+      ],
     })
     expect(res.length).toBe(2)
     expect(res[0].title).toEqual('test test.js')
@@ -92,7 +107,11 @@ describe('getSpawnedTasks', () => {
     const res = await getSpawnedTasks({
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       topLevelDir,
-      files: ['test.js', 'test2.js', 'test3.js'],
+      files: [
+        { filepath: 'test.js', status: 'M' },
+        { filepath: 'test2.js', status: 'A' },
+        { filepath: 'test3.js', status: 'R' },
+      ],
     })
     expect(res.length).toBe(5)
     expect(res[0].title).toEqual('test')
@@ -106,15 +125,20 @@ describe('getSpawnedTasks', () => {
     const res = await getSpawnedTasks({
       commands: async () => 'test',
       topLevelDir,
-      files: ['test.js'],
+      files: [{ filepath: 'test.js', status: 'M' }],
     })
     expect(res.length).toBe(1)
     expect(res[0].title).toEqual('test')
   })
 
   it("should throw when function task doesn't return string | string[]", async () => {
-    await expect(getSpawnedTasks({ commands: () => null, topLevelDir, files: ['test.js'] })).rejects
-      .toThrowErrorMatchingInlineSnapshot(`
+    await expect(
+      getSpawnedTasks({
+        commands: () => null,
+        topLevelDir,
+        files: [{ filepath: 'test.js', status: 'M' }],
+      })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
             "✖ Validation Error:
 
               Invalid value for '[Function]': null

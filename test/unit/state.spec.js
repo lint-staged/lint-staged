@@ -34,7 +34,7 @@ describe('applyModificationsSkipped', () => {
     expect(result).toEqual(false)
   })
 
-  it('should return error message when there is an unkown git error', () => {
+  it('should return error message when there is an unknown git error', () => {
     const state = getInitialState()
     const result = applyModificationsSkipped({
       ...state,
@@ -47,7 +47,7 @@ describe('applyModificationsSkipped', () => {
 })
 
 describe('restoreUnstagedChangesSkipped', () => {
-  it('should return error message when there is an unkown git error', () => {
+  it('should return error message when there is an unknown git error', () => {
     const state = getInitialState()
     const result = restoreUnstagedChangesSkipped({
       ...state,
@@ -105,7 +105,7 @@ describe('restoreOriginalStateEnabled', () => {
 })
 
 describe('restoreOriginalStateSkipped', () => {
-  it('should return error message when there is an unkown git error', () => {
+  it('should return error message when there is an unknown git error', () => {
     const state = getInitialState()
     const result = restoreOriginalStateSkipped({
       ...state,
