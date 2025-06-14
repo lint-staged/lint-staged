@@ -123,4 +123,45 @@ describe('lint-staged', () => {
       expect(await execGit(['status'])).toMatch('modified:   test.js')
     })
   )
+
+  test(
+    'loses conflicting unstaged changes when linter fixes staged file when using --no-stash',
+    withGitIntegration(async ({ writeFile, execGit, gitCommit, readFile }) => {
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+
+      // Stage ugly file
+      await writeFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', '.'])
+
+      // modify file with unstaged changes
+      await writeFile('test.js', fileFixtures.uglyJSWithChanges)
+
+      let error
+      try {
+        await gitCommit({
+          lintStaged: { stash: false },
+        })
+      } catch (err) {
+        error = err.message
+      }
+
+      expect(error).toMatch(
+        'Skipping backup because `--no-stash` was used. This might result in data loss.'
+      )
+      expect(error).toMatch('Unstaged changes could not be restored due to a merge conflict')
+      expect(error).toMatch('Unstaged changes have been kept back in a patch file:')
+      expect(error).toMatch('lint-staged_unstaged.patch')
+
+      expect(await readFile('.git/lint-staged_unstaged.patch')).toMatch(`
+-    'foo': 'bar'
++    'foo': 'bar',
++    'bar': 'baz'
+`)
+
+      // File was left in merge conflict state
+      expect(await execGit(['status'])).toMatch('both modified:   test.js')
+      expect(await readFile('test.js')).toMatch('<<<<<<< ours')
+      expect(await readFile('test.js')).toMatch('>>>>>>> theirs')
+    })
+  )
 })

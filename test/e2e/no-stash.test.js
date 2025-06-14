@@ -63,7 +63,9 @@ describe('lint-staged', () => {
 
       // lint-staged fails because file is ugly
       await expect(lintStaged(['--no-stash'])).rejects.toMatchObject({
-        stderr: expect.stringContaining('prettier --list-different'),
+        stderr: expect.stringContaining(
+          'Skipping backup because `--no-stash` was used. This might result in data loss.'
+        ),
       })
 
       // unstaged changes were discarded
