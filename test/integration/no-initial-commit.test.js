@@ -17,8 +17,12 @@ describe('lint-staged', () => {
         await appendFile('test.js', prettyJS, cwd)
         await execGit(['add', 'test.js'], { cwd })
 
-        await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"fatal: your current branch 'main' does not have any commits yet"`
+        await expect(execGit(['log', '-1'], { cwd })).rejects.toThrow(
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "fatal: your current branch 'main' does not have any commits yet"
+            ),
+          })
         )
 
         expect(await gitCommit({})).toMatch(
