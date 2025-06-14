@@ -17,9 +17,10 @@ describe('lint-staged', () => {
         await appendFile('test.js', prettyJS, cwd)
         await execGit(['add', 'test.js'], { cwd })
 
-        await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"fatal: your current branch 'main' does not have any commits yet"`
-        )
+        await expect(execGit(['log', '-1'], { cwd })).rejects.toThrowErrorMatchingInlineSnapshot(`
+          "fatal: your current branch 'main' does not have any commits yet
+          Cause: Command failed with exit code 128: git -c 'submodule.recurse=false' log -1"
+        `)
 
         expect(await gitCommit({})).toMatch(
           'Skipping backup because there’s no initial commit yet. This might result in data loss.'
