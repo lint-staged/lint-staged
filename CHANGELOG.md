@@ -14,7 +14,7 @@
 
 - [#1565](https://github.com/lint-staged/lint-staged/pull/1565) [`3686977`](https://github.com/lint-staged/lint-staged/commit/3686977ccdadf70b709c16c0346ef6c2b18e2376) Thanks [@iiroj](https://github.com/iiroj)! - _Lint-staged_ now explicitly warns about potential data loss when using `--no-stash`.
 
-- [#1571](https://github.com/lint-staged/lint-staged/pull/1571) [`02299a9`](https://github.com/lint-staged/lint-staged/commit/02299a9e4f98a05c13beb27f3596af73aaa8c150) Thanks [@iiroj](https://github.com/iiroj)! - Function tasks (introduced in v16.0.0) only received the staged files matching the conpmnfigured glob, instead of all staged files.
+- [#1571](https://github.com/lint-staged/lint-staged/pull/1571) [`02299a9`](https://github.com/lint-staged/lint-staged/commit/02299a9e4f98a05c13beb27f3596af73aaa8c150) Thanks [@iiroj](https://github.com/iiroj)! - Function tasks (introduced in v16.0.0) only receive the staged files matching the configured glob, instead of all staged files.
 
 - [#1563](https://github.com/lint-staged/lint-staged/pull/1563) [`bc61c74`](https://github.com/lint-staged/lint-staged/commit/bc61c74383b6d100c55b8d275b979d583ffbe5a1) Thanks [@iiroj](https://github.com/iiroj)! - This version fixes incorrect behavior where unstaged changes were committed when using the `--no-stash` option. This happened because `--no-stash` implied `--no-hide-partially-staged`, meaning unstaged changes to files which also had other staged changes were added to the commit by _lint-staged_; this is no longer the case.
 
