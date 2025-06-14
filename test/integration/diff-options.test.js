@@ -98,6 +98,36 @@ describe('lint-staged', () => {
   )
 
   test(
+    'supports staged deleted files restored by linter',
+    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      const globalConsoleTemp = console
+      console = makeConsoleMock()
+
+      // Stage and commit ugly file
+      await appendFile('test.js', fileFixtures.uglyJS)
+      await execGit(['add', 'test.js'])
+      await execGit(['commit', '-m', 'test'])
+
+      // Staged deleted file
+      await execGit(['rm', 'test.js'])
+
+      // Run lint-staged with `--diff-filter=D` to include only deleted files.
+      // Use git to restore deleted staged file and then prettify it
+      const passed = await lintStaged({
+        config: { '*.js': ['git reset --', 'git checkout --', 'prettier --write'] },
+        cwd,
+        diffFilter: 'D',
+      })
+
+      expect(passed).toEqual(false)
+      expect(console.printHistory()).not.toMatch('No files matching the pattern were found:')
+      expect(console.printHistory()).toMatch('lint-staged prevented an empty git commit.')
+
+      console = globalConsoleTemp
+    })
+  )
+
+  test(
     'supports staged deleted files not processed by linter',
     withGitIntegration(async ({ appendFile, cwd, execGit }) => {
       const globalConsoleTemp = console
