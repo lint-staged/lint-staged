@@ -1,5 +1,13 @@
 # lint-staged
 
+## 16.1.2
+
+### Patch Changes
+
+- [#1570](https://github.com/lint-staged/lint-staged/pull/1570) [`a7c0c88`](https://github.com/lint-staged/lint-staged/commit/a7c0c88bcfe94e695528cb33e69fea58586691fc) Thanks [@ItsNickBarry](https://github.com/ItsNickBarry)! - When using `--diff-filter` with the `D` option to include deleted staged files, _lint-staged_ no longer tries to stage the deleted files, unless they're no longer deleted. Previously this caused an error from `git add` like `fatal: pathspec 'deleted-file' did not match any files`.
+
+- [`38f942e`](https://github.com/lint-staged/lint-staged/commit/38f942ecc456355d5f12af68db1696f3411f65c2) Thanks [@iiroj](https://github.com/iiroj)! - Removed an extraneous log entry that printed `shouldHidePArtiallyStagedFiles` to console output.
+
 ## 16.1.1
 
 ### Patch Changes
