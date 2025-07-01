@@ -94,6 +94,18 @@ program
     ).default(false)
   )
 
+program
+  .addOption(new Option('--hide-unstaged', 'hide unstaged files').default(false))
+  .addOption(
+    new Option('--no-hide-unstaged', 'disable hiding unstaged files').default(true).hideHelp()
+  )
+
+program
+  .addOption(new Option('--hide-untracked', 'hide untracked files').default(false))
+  .addOption(
+    new Option('--no-hide-untracked', 'disable hiding untracked files').default(true).hideHelp()
+  )
+
 program.option('-q, --quiet', 'disable lint-staged’s own console output', false)
 
 program.option('-r, --relative', 'pass relative filepaths to tasks', false)
@@ -126,6 +138,8 @@ const options = {
   revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  hideUnstaged: !!cliOptions.hideUnstaged,
+  hideUntracked: !!cliOptions.hideUntracked,
   verbose: !!cliOptions.verbose,
 }
 
