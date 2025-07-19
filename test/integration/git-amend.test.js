@@ -1,17 +1,40 @@
 import { jest } from '@jest/globals'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 jest.setTimeout(20000)
 jest.retryTimes(2)
 
+const MD_CONFIG = JSON.stringify({ '*.md': 'prettier --write' })
+
 describe('lint-staged', () => {
+  test(
+    'works when amending previous commit',
+    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+      await appendFile('.lintstagedrc.json', MD_CONFIG)
+
+      // Edit file from previous commit by adding way too many newlines
+      await appendFile('README.md', '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Amended\n')
+      await execGit(['add', 'README.md'])
+
+      // Run lint-staged with `prettier --write` and commit ugly amends
+      await gitCommit({ gitCommit: ['--amend', '--no-edit'] })
+
+      // There's only a single newline because Prettier fixed it
+      expect(await readFile('README.md')).toMatchInlineSnapshot(`
+                      "# Test
+
+                      ## Amended
+                      "
+              `)
+    })
+  )
+
   test(
     'works when amending previous commit with unstaged changes',
     withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await appendFile('.lintstagedrc.json', MD_CONFIG)
 
       // Edit file from previous commit
       await appendFile('README.md', '\n## Amended\n')

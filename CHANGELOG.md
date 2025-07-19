@@ -1,12 +1,20 @@
 # lint-staged
 
+## 16.1.2
+
+### Patch Changes
+
+- [#1570](https://github.com/lint-staged/lint-staged/pull/1570) [`a7c0c88`](https://github.com/lint-staged/lint-staged/commit/a7c0c88bcfe94e695528cb33e69fea58586691fc) Thanks [@ItsNickBarry](https://github.com/ItsNickBarry)! - When using `--diff-filter` with the `D` option to include deleted staged files, _lint-staged_ no longer tries to stage the deleted files, unless they're no longer deleted. Previously this caused an error from `git add` like `fatal: pathspec 'deleted-file' did not match any files`.
+
+- [`38f942e`](https://github.com/lint-staged/lint-staged/commit/38f942ecc456355d5f12af68db1696f3411f65c2) Thanks [@iiroj](https://github.com/iiroj)! - Removed an extraneous log entry that printed `shouldHidePArtiallyStagedFiles` to console output.
+
 ## 16.1.1
 
 ### Patch Changes
 
 - [#1565](https://github.com/lint-staged/lint-staged/pull/1565) [`3686977`](https://github.com/lint-staged/lint-staged/commit/3686977ccdadf70b709c16c0346ef6c2b18e2376) Thanks [@iiroj](https://github.com/iiroj)! - _Lint-staged_ now explicitly warns about potential data loss when using `--no-stash`.
 
-- [#1571](https://github.com/lint-staged/lint-staged/pull/1571) [`02299a9`](https://github.com/lint-staged/lint-staged/commit/02299a9e4f98a05c13beb27f3596af73aaa8c150) Thanks [@iiroj](https://github.com/iiroj)! - Function tasks (introduced in v16.0.0) only received the staged files matching the conpmnfigured glob, instead of all staged files.
+- [#1571](https://github.com/lint-staged/lint-staged/pull/1571) [`02299a9`](https://github.com/lint-staged/lint-staged/commit/02299a9e4f98a05c13beb27f3596af73aaa8c150) Thanks [@iiroj](https://github.com/iiroj)! - Function tasks (introduced in v16.0.0) only receive the staged files matching the configured glob, instead of all staged files.
 
 - [#1563](https://github.com/lint-staged/lint-staged/pull/1563) [`bc61c74`](https://github.com/lint-staged/lint-staged/commit/bc61c74383b6d100c55b8d275b979d583ffbe5a1) Thanks [@iiroj](https://github.com/iiroj)! - This version fixes incorrect behavior where unstaged changes were committed when using the `--no-stash` option. This happened because `--no-stash` implied `--no-hide-partially-staged`, meaning unstaged changes to files which also had other staged changes were added to the commit by _lint-staged_; this is no longer the case.
 

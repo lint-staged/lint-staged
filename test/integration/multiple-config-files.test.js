@@ -55,19 +55,19 @@ describe('lint-staged', () => {
 
       await gitCommit()
 
-      // 'file.js' matched 'lint-staged.config.mjs s'
+      // 'file.js' matched 'lint-staged.config.mjs'
       expect(await readFile('file.js')).toMatch('level-0')
 
-      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs s'
+      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs'
       expect(await readFile('deeper/file.js')).toMatch('level-1')
 
-      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs'
       expect(await readFile('deeper/even/file.js')).toMatch('level-2')
 
-      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs'
       expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
 
-      // 'a/very/deep/file/path/file.js' matched 'lint-staged.config.mjs s'
+      // 'a/very/deep/file/path/file.js' matched 'lint-staged.config.mjs'
       expect(await readFile('a/very/deep/file/path/file.js')).toMatch('level-0')
     })
   )
@@ -154,13 +154,13 @@ describe('lint-staged', () => {
       // 'file.js' was ignored
       expect(await readFile('file.js')).toEqual('')
 
-      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs s'
+      // 'deeper/file.js' matched 'deeper/lint-staged.config.mjs'
       expect(await readFile('deeper/file.js')).toMatch('level-1')
 
-      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/file.js' matched 'deeper/even/lint-staged.config.mjs'
       expect(await readFile('deeper/even/file.js')).toMatch('level-2')
 
-      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs s'
+      // 'deeper/even/deeper/file.js' matched from parent 'deeper/even/lint-staged.config.mjs'
       expect(await readFile('deeper/even/deeper/file.js')).toMatch('level-2')
 
       // 'a/very/deep/file/path/file.js' was ignored

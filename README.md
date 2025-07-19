@@ -306,7 +306,7 @@ Supported are any executables installed locally or globally via `npm` as well as
 
 > Using globally installed scripts is discouraged, since lint-staged may not work for someone who doesn't have it installed.
 
-`lint-staged` uses [execa](https://github.com/sindresorhus/execa#preferlocal) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
+`lint-staged` uses [nano-spawn](https://github.com/sindresorhus/nano-spawn?tab=readme-ov-file#optionspreferlocal) to locate locally installed scripts. So in your `.lintstagedrc` you can write:
 
 ```json
 {
