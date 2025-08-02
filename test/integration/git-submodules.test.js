@@ -13,7 +13,10 @@ describe('lint-staged', () => {
   test(
     'handles git submodules',
     withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile, removeFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify({ '*': 'prettier --list-different' }))
+      await appendFile(
+        '.lintstagedrc.json',
+        JSON.stringify({ '*': 'prettier --list-different --ignore-unknown' })
+      )
       await execGit(['add', '.'])
       await execGit(['commit', '-m initial commit'])
 
