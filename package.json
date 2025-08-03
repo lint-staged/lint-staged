@@ -35,6 +35,7 @@
     "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
+  "types": "./lib/index.d.ts",
   "files": [
     "bin/",
     "lib/",
