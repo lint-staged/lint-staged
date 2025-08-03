@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.1.4
+
+### Patch Changes
+
+- [#1604](https://github.com/lint-staged/lint-staged/pull/1604) [`90b37b0`](https://github.com/lint-staged/lint-staged/commit/90b37b00c2c30b9cacf6c080f6a0885e1151eb7a) Thanks [@iiroj](https://github.com/iiroj)! - Add another `types` field to `package.json` to make even more sure NPM detects that _lint-staged_ includes built-in TypeScript type definitions.
+
 ## 16.1.3
 
 ### Patch Changes
