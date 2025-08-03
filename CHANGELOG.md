@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.1.3
+
+### Patch Changes
+
+- [#1602](https://github.com/lint-staged/lint-staged/pull/1602) [`7ea700b`](https://github.com/lint-staged/lint-staged/commit/7ea700bcf3d0078a01720a9c8dc13a271387afbd) Thanks [@dword-design](https://github.com/dword-design)! - Add the `types` field to `package.json` to make sure NPM detects _lint-staged_ includes built-in TypeScript type definitions.
+
 ## 16.1.2
 
 ### Patch Changes
@@ -113,7 +119,6 @@
   By default Prettier [prefers double quotes](https://prettier.io/docs/rationale#strings).
 
   #### Previously
-
   1. Stage `file.js` with only double quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -121,7 +126,6 @@
   1. Commit was not done, original state is restored and single quotes `'` are staged
 
   #### Now
-
   1. Stage `file.js` with only double-quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
