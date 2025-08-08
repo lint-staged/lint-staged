@@ -115,7 +115,7 @@ describe('gitWorkflow', () => {
 
   describe('hideUnstagedChanges', () => {
     it(
-      'should handle errors',
+      'should handle errors with partially staged files',
       withGitIntegration(async ({ cwd }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
@@ -125,6 +125,29 @@ describe('gitWorkflow', () => {
         const totallyRandom = `totally_random_file-${Date.now().toString()}`
         gitWorkflow.partiallyStagedFiles = [totallyRandom]
         const ctx = getInitialState()
+        await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrow(
+          `pathspec '${totallyRandom}' did not match any file(s) known to git`
+        )
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(HideUnstagedChangesError)).toBe(true)
+        expect(ctx.errors.has(GitError)).toBe(true)
+      })
+    )
+
+    it(
+      'should handle errors with unstaged files',
+      withGitIntegration(async ({ cwd }) => {
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+
+        const totallyRandom = `totally_random_file-${Date.now().toString()}`
+        gitWorkflow.unstagedFiles = [totallyRandom]
+        const ctx = getInitialState()
+        ctx.shouldHidePartiallyStaged = false
+        ctx.shouldHideUnstaged = true
         await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrow(
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
