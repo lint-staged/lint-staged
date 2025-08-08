@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.1.5
+
+### Patch Changes
+
+- [#1608](https://github.com/lint-staged/lint-staged/pull/1608) [`4e3ce22`](https://github.com/lint-staged/lint-staged/commit/4e3ce225b33f759f78a84d156189dc38e536cdc6) Thanks [@srsatt](https://github.com/srsatt)! - Detect the git repo's top-level directory correctly when in a worktree.
+
 ## 16.1.4
 
 ### Patch Changes
