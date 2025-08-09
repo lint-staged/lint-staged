@@ -12,7 +12,7 @@ jest.unstable_mockModule('pidtree', () => ({
   default: jest.fn(async () => []),
 }))
 
-const { default: pidTree } = await import('pidtree')
+const { default: pidtree } = await import('pidtree')
 
 const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
 
@@ -22,6 +22,7 @@ const defaultOpts = { files: ['test.js'] }
 
 describe('getSpawnedTask', () => {
   beforeEach(() => {
+    pidtree.mockClear()
     spawn.mockClear()
   })
 
@@ -275,7 +276,7 @@ describe('getSpawnedTask', () => {
       )
     )
 
-    pidTree.mockImplementationOnce(() => {
+    pidtree.mockImplementationOnce(() => {
       throw new Error('No matching pid found')
     })
 
@@ -313,6 +314,30 @@ describe('getSpawnedTask', () => {
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
   })
 
+  it('should not try to kill subprocesses if main pid missing', async () => {
+    spawn.mockReturnValueOnce(
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: '',
+          signalName: 'SIGKILL',
+          nodeChildProcess: { pid: undefined },
+        }),
+        1000
+      )
+    )
+
+    const context = getInitialState()
+    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
+    const taskPromise = taskFn(context)
+
+    context.events.emit('lint-staged:taskError')
+
+    jest.runAllTimers()
+
+    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    expect(pidtree).not.toHaveBeenCalled()
+  })
+
   it('should also kill child processes of killed spawn processes', async () => {
     expect.assertions(3)
 
@@ -333,7 +358,7 @@ describe('getSpawnedTask', () => {
       value: mockKill,
     })
 
-    pidTree.mockImplementationOnce(() => ['1234'])
+    pidtree.mockImplementationOnce(() => ['1234'])
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
 
@@ -347,7 +372,7 @@ describe('getSpawnedTask', () => {
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
 
     expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledWith('1234')
+    expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')
 
     Object.defineProperty(process, 'kill', {
       value: realKill,
@@ -376,7 +401,7 @@ describe('getSpawnedTask', () => {
       value: mockKill,
     })
 
-    pidTree.mockImplementationOnce(() => ['1234'])
+    pidtree.mockImplementationOnce(() => ['1234'])
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
 
@@ -390,7 +415,7 @@ describe('getSpawnedTask', () => {
     await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
 
     expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledWith('1234')
+    expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')
 
     Object.defineProperty(process, 'kill', {
       value: realKill,
