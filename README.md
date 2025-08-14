@@ -112,6 +112,7 @@ Options:
   --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
                                      "--no-stash".
   --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
+  --continue-on-error                run all tasks to completion even if one fails (default: false)
   --fail-on-changes                  fail with exit code 1 when tasks modify tracked files (default: false)
   --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
   --no-revert                        do not revert to original state in case of errors.
@@ -165,6 +166,10 @@ By default tasks are filtered against all files staged in git, generated from `g
 #### `--diff-filter [string]`
 
 By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
+
+#### `--continue-on-error`
+
+By default _lint-staged_ will "exit early" when any of the configured tasks fails, to make sure the runtime is short. With this flag, _lint-staged_ will instead run all tasks to completion and only fail at the end, allowing all task output to be seen.
 
 #### `--fail-on-changes`
 

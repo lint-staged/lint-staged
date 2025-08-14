@@ -33,6 +33,11 @@ export type Options = {
    */
   configPath?: string
   /**
+   * Run all tasks to completion even if one fails
+   * @default false
+   */
+  continueOnError?: boolean
+  /**
    * Working directory to run all tasks in, defaults to current working directory
    */
   cwd?: string

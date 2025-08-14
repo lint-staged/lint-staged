@@ -409,4 +409,60 @@ describe('runAll', () => {
     expect(task).toHaveBeenCalledTimes(1)
     expect(task).toHaveBeenCalledWith(['foo.js'])
   })
+
+  it('should reject immediately when continueOnError is false (default)', async () => {
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': 'echo "failing command"' },
+    }))
+
+    // Mock first spawn call (git operations) to succeed
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue({
+        output: 'Success',
+        nodeChildProcess: { pid: 0 },
+      })
+    )
+
+    // Mock second spawn call (the actual task) to fail
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Command failed',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
+    )
+
+    // With continueOnError: false (default), should reject
+    await expect(runAll({ continueOnError: false })).rejects.toThrow('lint-staged failed')
+  })
+
+  it('should reject after running all tasks when continueOnError is true', async () => {
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': 'echo "failing command"' },
+    }))
+
+    // Mock first spawn call (git operations) to succeed
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue({
+        output: 'Success',
+        nodeChildProcess: { pid: 0 },
+      })
+    )
+
+    // Mock second spawn call (the actual task) to fail
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue(
+        Object.assign(new SubprocessError(), {
+          output: 'Command failed',
+          nodeChildProcess: { pid: 0 },
+        })
+      )
+    )
+
+    // With continueOnError: true, should still reject but after running all tasks
+    await expect(runAll({ continueOnError: true })).rejects.toThrow('lint-staged failed')
+  })
 })

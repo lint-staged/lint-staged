@@ -64,6 +64,11 @@ program
     )
   )
   .addOption(
+    new Option('--continue-on-error', 'run all tasks to completion even if one fails').default(
+      false
+    )
+  )
+  .addOption(
     new Option(
       '--fail-on-changes',
       'fail with exit code 1 when tasks modify tracked files'
@@ -128,6 +133,7 @@ const options = {
   allowEmpty: !!cliOptions.allowEmpty,
   concurrent: JSON.parse(cliOptions.concurrent),
   configPath: cliOptions.config,
+  continueOnError: !!cliOptions.continueOnError,
   cwd: cliOptions.cwd,
   debug: !!cliOptions.debug,
   diff: cliOptions.diff,
