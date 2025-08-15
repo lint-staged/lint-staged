@@ -391,6 +391,40 @@ describe('runAll', () => {
     )
   })
 
+  it('should pass add option to GitWorkflow', async () => {
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': ['echo "sample"'] },
+    }))
+    const mockConstructor = jest.fn(() => mockGitWorkflow)
+    GitWorkflow.mockImplementationOnce(mockConstructor)
+
+    await runAll({ configObject: { '*.js': ['echo "sample"'] }, add: false })
+
+    expect(mockConstructor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        add: false,
+      })
+    )
+  })
+
+  it('should default add to true when not specified', async () => {
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': ['echo "sample"'] },
+    }))
+    const mockConstructor = jest.fn(() => mockGitWorkflow)
+    GitWorkflow.mockImplementationOnce(mockConstructor)
+
+    await runAll({ configObject: { '*.js': ['echo "sample"'] } })
+
+    expect(mockConstructor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        add: true,
+      })
+    )
+  })
+
   it('should support function tasks', async () => {
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
 

@@ -98,6 +98,19 @@ program.option('-q, --quiet', 'disable lint-staged’s own console output', fals
 
 program.option('-r, --relative', 'pass relative filepaths to tasks', false)
 
+// Use explicit Option instances (consistent with other negatable flags)
+program
+  .addOption(
+    new Option('--add', 'enable automatic adding of file changes after tasks complete')
+      .default(true)
+      .hideHelp()
+  )
+  .addOption(
+    new Option('--no-add', 'disable automatic adding of file changes after tasks complete').default(
+      false
+    )
+  )
+
 program.option(
   '-v, --verbose',
   'show task output even when tasks succeed; by default only failed output is shown',
@@ -126,6 +139,7 @@ const options = {
   revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  add: !!cliOptions.add,
   verbose: !!cliOptions.verbose,
 }
 
