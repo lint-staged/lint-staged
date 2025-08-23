@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`validateConfig should throw and should print validation errors for invalid config 1`] = `"Configuration should be an object or a function"`;
 
