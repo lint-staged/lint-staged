@@ -116,4 +116,47 @@ describe('lint-staged', () => {
       await expect(gitCommit({ lintStaged: { staging: false } })).resolves.not.toThrow()
     })
   )
+
+  test(
+    'should handle conflicts between task changes and unstaged changes with --no-add',
+    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+      await writeFile(
+        '.lintstagedrc.json',
+        JSON.stringify({
+          '*.js': ['prettier --write'],
+        })
+      )
+
+      // Stage a file with formatting issues
+      await writeFile('test.js', UGLY_FILE)
+      await execGit(['add', 'test.js'])
+
+      // Edit the file again with unstaged changes that would conflict with prettier
+      const UGLY_WITH_CHANGES = `console.log('Hello, world!' )\nconsole.log('Added line')`
+      await writeFile('test.js', UGLY_WITH_CHANGES)
+
+      // Run lint-staged with --no-add flag
+      let error
+      try {
+        await gitCommit({ lintStaged: { add: false } })
+      } catch (err) {
+        error = err.message
+      }
+
+      // With --no-add, lint-staged should fail to restore unstaged changes due to conflict
+      expect(error).toMatch('Reverting to original state because of errors')
+      expect(error).toMatch('Unstaged changes could not be restored due to a merge conflict')
+
+      // Check that no commit was created
+      const revCount = await execGit(['rev-list', '--count', 'HEAD'])
+      expect(revCount).toEqual('1')
+
+      // Verify the file was reverted to its original state (with unstaged changes)
+      expect(await readFile('test.js')).toEqual(UGLY_WITH_CHANGES)
+
+      // Check git status shows the file as modified and staged
+      const status = await execGit(['status', '--porcelain'])
+      expect(status).toMatch(/^[AM]M test\.js/)
+    })
+  )
 })
