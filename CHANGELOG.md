@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.1.6
+
+### Patch Changes
+
+- [#1610](https://github.com/lint-staged/lint-staged/pull/1610) [`e93578e`](https://github.com/lint-staged/lint-staged/commit/e93578e265a69ed6b02fcaa11486078c1bdbdaaa) Thanks [@iiroj](https://github.com/iiroj)! - Try to improve terminating of subprocess of tasks by using `SIGKILL`, and only calling `pidtree` when the the main task process has a known pid.
+
 ## 16.1.5
 
 ### Patch Changes
