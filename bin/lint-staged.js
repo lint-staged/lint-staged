@@ -34,6 +34,8 @@ program.allowExcessArguments()
 
 program.option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
 
+program.option('--continue-on-error', 'continue running all tasks even if one fails', false)
+
 program.option(
   '-p, --concurrent <number|boolean>',
   'the number of tasks to run concurrently, or false for serial',
@@ -116,6 +118,7 @@ const options = {
   allowEmpty: !!cliOptions.allowEmpty,
   concurrent: JSON.parse(cliOptions.concurrent),
   configPath: cliOptions.config,
+  continueOnError: !!cliOptions.continueOnError,
   cwd: cliOptions.cwd,
   debug: !!cliOptions.debug,
   diff: cliOptions.diff,
