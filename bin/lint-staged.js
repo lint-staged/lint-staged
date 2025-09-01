@@ -21,53 +21,65 @@ const debugLog = debug('lint-staged:bin')
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
 
-program.version(await getVersion())
-
-/**
- * This shouldn't be necessary for lint-staged, but add migration step just in case
- * to preserve old behavior of "commander".
- *
- * @todo remove this in the major version
- * @see https://github.com/tj/commander.js/releases/tag/v13.0.0
- * */
-program.allowExcessArguments()
-
-program.option('--allow-empty', 'allow empty commits when tasks revert all staged changes', false)
-
-program.option(
-  '-p, --concurrent <number|boolean>',
-  'the number of tasks to run concurrently, or false for serial',
-  true
-)
-
-program.option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
-
-program.option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
-
-program.option('-d, --debug', 'print additional debug information', false)
-
-program.addOption(
-  new Option(
-    '--diff [string]',
-    'override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash".'
-  ).implies({ stash: false })
-)
-
-program.option(
-  '--diff-filter [string]',
-  'override the default "--diff-filter=ACMR" flag of "git diff" to get list of files'
-)
-
-program.option('--exit-code', 'fail with exit code 1 when tasks modify tracked files', false)
-
-program.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
-
-/**
- * We don't want to show the `--revert` flag because it's on by default, and only show the
- * negatable flag `--no-rever` instead. There seems to be a bug in Commander.js where
- * configuring only the latter won't actually set the default value.
- */
 program
+  .version(await getVersion())
+
+  /**
+   * This shouldn't be necessary for lint-staged, but add migration step just in case
+   * to preserve old behavior of "commander".
+   *
+   * @todo remove this in the major version
+   * @see https://github.com/tj/commander.js/releases/tag/v13.0.0
+   * */
+  .allowExcessArguments()
+
+  .addOption(
+    new Option('--allow-empty', 'allow empty commits when tasks revert all staged changes').default(
+      false
+    )
+  )
+  .addOption(
+    new Option(
+      '-p, --concurrent <number|boolean>',
+      'the number of tasks to run concurrently, or false for serial'
+    ).default(true)
+  )
+  .addOption(
+    new Option('-c, --config [path]', 'path to configuration file, or - to read from stdin')
+  )
+  .addOption(
+    new Option('--cwd [path]', 'run all tasks in specific directory, instead of the current')
+  )
+  .addOption(new Option('-d, --debug', 'print additional debug information').default(false))
+  .addOption(
+    new Option(
+      '--diff [string]',
+      'override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash".'
+    ).implies({ stash: false })
+  )
+  .addOption(
+    new Option(
+      '--diff-filter [string]',
+      'override the default "--diff-filter=ACMR" flag of "git diff" to get list of files'
+    )
+  )
+  .addOption(
+    new Option('--exit-code', 'fail with exit code 1 when tasks modify tracked files').default(
+      false
+    )
+  )
+  .addOption(
+    new Option(
+      '--max-arg-length [number]',
+      'maximum length of the command-line argument string'
+    ).default(0)
+  )
+
+  /**
+   * We don't want to show the `--revert` flag because it's on by default, and only show the
+   * negatable flag `--no-rever` instead. There seems to be a bug in Commander.js where
+   * configuring only the latter won't actually set the default value.
+   */
   .addOption(
     new Option('--revert', 'revert to original state in case of errors').default(true).hideHelp()
   )
@@ -75,7 +87,6 @@ program
     new Option('--no-revert', 'do not revert to original state in case of errors.').default(false)
   )
 
-program
   .addOption(new Option('--stash', 'enable the backup stash').default(true).hideHelp())
   .addOption(
     new Option('--no-stash', 'disable the backup stash. Implies "--no-revert".')
@@ -83,7 +94,6 @@ program
       .implies({ revert: false })
   )
 
-program
   .addOption(
     new Option('--hide-partially-staged', 'hide unstaged changes from partially staged files')
       .default(true)
@@ -96,17 +106,16 @@ program
     ).default(false)
   )
 
-program.option('-q, --quiet', 'disable lint-staged’s own console output', false)
+  .addOption(new Option('-q, --quiet', 'disable lint-staged’s own console output').default(false))
+  .addOption(new Option('-r, --relative', 'pass relative filepaths to tasks').default(false))
+  .addOption(
+    new Option(
+      '-v, --verbose',
+      'show task output even when tasks succeed; by default only failed output is shown'
+    ).default(false)
+  )
 
-program.option('-r, --relative', 'pass relative filepaths to tasks', false)
-
-program.option(
-  '-v, --verbose',
-  'show task output even when tasks succeed; by default only failed output is shown',
-  false
-)
-
-program.addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
+  .addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
 
 const cliOptions = program.parse(process.argv).opts()
 
