@@ -58,6 +58,8 @@ program.option(
   'override the default "--diff-filter=ACMR" flag of "git diff" to get list of files'
 )
 
+program.option('--exit-code', 'fail with exit code 1 when tasks modify tracked files', false)
+
 program.option('--max-arg-length [number]', 'maximum length of the command-line argument string', 0)
 
 /**
@@ -120,6 +122,7 @@ const options = {
   debug: !!cliOptions.debug,
   diff: cliOptions.diff,
   diffFilter: cliOptions.diffFilter,
+  exitCode: !!cliOptions.exitCode,
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
