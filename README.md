@@ -130,27 +130,73 @@ Any lost modifications can be restored from a git stash:
   > git stash apply --index stash@{0}
 ```
 
-- **`--allow-empty`**: By default, when tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
-- **`--concurrent [number|boolean]`**: Controls the [concurrency of tasks](#task-concurrency) being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
-  - `false`: Run all tasks serially
-  - `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
-  - `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
-- **`--config [path]`**: Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
-- **`--cwd [path]`**: By default tasks run in the current working directory. Use the `--cwd some/directory` to override this. The path can be absolute or relative to the current working directory.
-- **`--debug`**: Run in debug mode. When set, it does the following:
-  - uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
-  - uses [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) for `listr2`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
-    (the [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) can also be activated by setting the `TERM=dumb` or `NODE_ENV=test` environment variables)
-- **`--diff`**: By default tasks are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [git diff](https://git-scm.com/docs/git-diff) and [gitrevisions](https://git-scm.com/docs/gitrevisions). This option also implies `--no-stash`.
-- **`--diff-filter`**: By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
-- **`--exit-code`**: By default modifications made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. When combined with the `--no-revert` flag the committer will have to manually stage all the changes and try again.
-- **`--max-arg-length`**: long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
-- **`--no-stash`**: By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
-- **`--no-hide-partially-staged`**: By default, unstaged changes from partially staged files will be hidden and applied back after running tasks. This option will disable this behavior, causing those changes to also be committed.
-- **`--quiet`**: Suppress all CLI output, except from tasks.
-- **`--relative`**: Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
-- **`--no-revert`**: By default all task modifications will be reverted in case of an error. This option will disable the behavior, and apply task modifications to the index before aborting the commit.
-- **`--verbose`**: Show task output even when tasks succeed. By default only failed output is shown.
+#### `--allow-empty`
+
+By default, when tasks undo all staged changes, lint-staged will exit with an error and abort the commit. Use this flag to allow creating empty git commits.
+
+#### `--concurrent [number|boolean]`
+
+Controls the [concurrency of tasks](#task-concurrency) being run by lint-staged. **NOTE**: This does NOT affect the concurrency of subtasks (they will always be run sequentially). Possible values are:
+
+- `false`: Run all tasks serially
+- `true` (default) : _Infinite_ concurrency. Runs as many tasks in parallel as possible.
+- `{number}`: Run the specified number of tasks in parallel, where `1` is equivalent to `false`.
+
+#### `--config [path]`
+
+Manually specify a path to a config file or npm package name. Note: when used, lint-staged won't perform the config file search and will print an error if the specified file cannot be found. If '-' is provided as the filename then the config will be read from stdin, allowing piping in the config like `cat my-config.json | npx lint-staged --config -`.
+
+#### `--cwd [path]`
+
+By default tasks run in the current working directory. Use the `--cwd some/directory` to override this. The path can be absolute or relative to the current working directory.
+
+#### `--debug`
+
+Run in debug mode. When set, it does the following:
+
+- uses [debug](https://github.com/visionmedia/debug) internally to log additional information about staged files, commands being executed, location of binaries, etc. Debug logs, which are automatically enabled by passing the flag, can also be enabled by setting the environment variable `$DEBUG` to `lint-staged*`.
+- uses [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) for `listr2`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
+  (the [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) can also be activated by setting the `TERM=dumb` or `NODE_ENV=test` environment variables)
+
+#### `--diff`
+
+By default tasks are filtered against all files staged in git, generated from `git diff --staged`. This option allows you to override the `--staged` flag with arbitrary revisions. For example to get a list of changed files between two branches, use `--diff="branch1...branch2"`. You can also read more from about [git diff](https://git-scm.com/docs/git-diff) and [gitrevisions](https://git-scm.com/docs/gitrevisions). This option also implies `--no-stash`.
+
+#### `--diff-filter [string]`
+
+By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
+
+#### `--exit-code`
+
+By default modifications made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. When combined with the `--no-revert` flag the committer will have to manually stage all the changes and try again.
+
+#### `--max-arg-length [number]`
+
+long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
+
+#### `--no-stash`
+
+By default a backup stash will be created before running the tasks, and all task modifications will be reverted in case of an error. This option will disable creating the stash, and instead leave all modifications in the index when aborting the commit.
+
+#### `--no-hide-partially-staged`
+
+By default, unstaged changes from partially staged files will be hidden and applied back after running tasks. This option will disable this behavior, causing those changes to also be committed.
+
+#### `--quiet`
+
+Suppress all CLI output, except from tasks.
+
+#### `--relative`
+
+Pass filepaths relative to `process.cwd()` (where `lint-staged` runs) to tasks. Default is `false`.
+
+#### `--no-revert`
+
+By default all task modifications will be reverted in case of an error. This option will disable the behavior, and apply task modifications to the index before aborting the commit.
+
+#### `--verbose`
+
+Show task output even when tasks succeed. By default only failed output is shown.
 
 ## Configuration
 
