@@ -1,5 +1,16 @@
 # lint-staged
 
+## 16.2.0
+
+### Minor Changes
+
+- [#1615](https://github.com/lint-staged/lint-staged/pull/1615) [`99eb742`](https://github.com/lint-staged/lint-staged/commit/99eb74200e8db69e72dba45314025953b8b0794e) Thanks [@iiroj](https://github.com/iiroj)! - Added a new option `--exit-code` to make _lint-staged_ exit with code 1 when tasks modify any files, making the `precommit` hook fail. This is in line with the `git diff --exit-code` option. When combined with the `--no-revert` flag, this can be used to make the committer manually stage any task modifications, and attempt to commit again.
+
+  ```shell
+  # Fail when tasks modify files, forcing the committer to stage them manually
+  npx lint-staged --no-revert --exit-code
+  ```
+
 ## 16.1.6
 
 ### Patch Changes
