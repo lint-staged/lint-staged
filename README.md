@@ -960,6 +960,14 @@ You can then run lint-staged against the same files with:
 npx lint-staged --diff="main...my-branch"
 ```
 
+Note that --diff="main..my-branch" will have files that changed on `main` and are not yet caught up on `my-branch` be detected as changed files. 
+
+To see just that changes on the current branch, as compared to `main` you may wish to use: 
+
+```
+npx lint-staged --diff="$(git merge-base main HEAD)"
+```
+
 </details>
 
 ### Can I use `lint-staged` with `ng lint`
