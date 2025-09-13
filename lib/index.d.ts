@@ -56,7 +56,7 @@ export type Options = {
    * Fail with exit code 1 when tasks modify tracked files
    * @default false
    */
-  exitCode?: true
+  failOnChanges?: true
   /**
    * Maximum argument string length, by default automatically detected
    */

@@ -9,7 +9,7 @@ jest.retryTimes(2)
 
 describe('lint-staged', () => {
   test(
-    'should fail when tasks modify files and --exit-code is used',
+    'should fail when tasks modify files and --fail-on-changes is used',
     withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -21,11 +21,11 @@ describe('lint-staged', () => {
       await expect(() =>
         gitCommit({
           lintStaged: {
-            exitCode: true,
+            failOnChanges: true,
             quiet: true,
           },
         })
-      ).rejects.toThrow('lint-staged failed because `--exit-code` was used')
+      ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
 
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
       expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
@@ -33,7 +33,7 @@ describe('lint-staged', () => {
   )
 
   test(
-    'should not fail --exit-code is used but tasks do not modify files',
+    'should not fail --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -44,7 +44,7 @@ describe('lint-staged', () => {
       // Run lint-staged with `prettier --write` so that it modifies files
       await gitCommit({
         lintStaged: {
-          exitCode: true,
+          failOnChanges: true,
           quiet: true,
         },
       })
@@ -55,7 +55,7 @@ describe('lint-staged', () => {
   )
 
   test(
-    'should fail and leave task modifications in worktree when --exit-code and --no-revert are used',
+    'should fail and leave task modifications in worktree when --fail-on-changes and --no-revert are used',
     withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -67,12 +67,12 @@ describe('lint-staged', () => {
       await expect(() =>
         gitCommit({
           lintStaged: {
-            exitCode: true,
+            failOnChanges: true,
             revert: false, // --no-revert
             quiet: true,
           },
         })
-      ).rejects.toThrow('lint-staged failed because `--exit-code` was used')
+      ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
 
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)

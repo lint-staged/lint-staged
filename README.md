@@ -112,7 +112,7 @@ Options:
   --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
                                      "--no-stash".
   --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
-  --exit-code                        fail with exit code 1 when tasks modify tracked files (default: false)
+  --fail-on-changes                  fail with exit code 1 when tasks modify tracked files (default: false)
   --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
   --no-revert                        do not revert to original state in case of errors.
   --no-stash                         disable the backup stash. Implies "--no-revert".
@@ -166,9 +166,9 @@ By default tasks are filtered against all files staged in git, generated from `g
 
 By default only files that are _added_, _copied_, _modified_, or _renamed_ are included. Use this flag to override the default `ACMR` value with something else: _added_ (`A`), _copied_ (`C`), _deleted_ (`D`), _modified_ (`M`), _renamed_ (`R`), _type changed_ (`T`), _unmerged_ (`U`), _unknown_ (`X`), or _pairing broken_ (`B`). See also the `git diff` docs for [--diff-filter](https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203).
 
-#### `--exit-code`
+#### `--fail-on-changes`
 
-By default modifications made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. When combined with the `--no-revert` flag the committer will have to manually stage all the changes and try again.
+By default changes made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. When combined with the `--no-revert` flag the committer will have to manually stage all the changes and try again.
 
 #### `--max-arg-length [number]`
 
@@ -960,9 +960,9 @@ You can then run lint-staged against the same files with:
 npx lint-staged --diff="main...my-branch"
 ```
 
-Note that --diff="main..my-branch" will have files that changed on `main` and are not yet caught up on `my-branch` be detected as changed files. 
+Note that --diff="main..my-branch" will have files that changed on `main` and are not yet caught up on `my-branch` be detected as changed files.
 
-To see just that changes on the current branch, as compared to `main` you may wish to use: 
+To see just that changes on the current branch, as compared to `main` you may wish to use:
 
 ```
 npx lint-staged --diff="$(git merge-base main HEAD)"

@@ -64,9 +64,10 @@ program
     )
   )
   .addOption(
-    new Option('--exit-code', 'fail with exit code 1 when tasks modify tracked files').default(
-      false
-    )
+    new Option(
+      '--fail-on-changes',
+      'fail with exit code 1 when tasks modify tracked files'
+    ).default(false)
   )
   .addOption(
     new Option(
@@ -131,7 +132,7 @@ const options = {
   debug: !!cliOptions.debug,
   diff: cliOptions.diff,
   diffFilter: cliOptions.diffFilter,
-  exitCode: !!cliOptions.exitCode,
+  failOnChanges: !!cliOptions.failOnChanges,
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
