@@ -66,4 +66,4 @@ jobs:
           gh pr review --approve "${{github.event.pull_request.html_url}}"
           gh pr merge --rebase --auto --delete "${{github.event.pull_request.html_url}}"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
