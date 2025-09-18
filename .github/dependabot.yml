@@ -2,15 +2,11 @@ version: 2
 updates:
   - package-ecosystem: 'npm'
     directory: '/'
-    groups:
-      dependencies:
-        patterns:
-          - '*'
     schedule:
       interval: 'daily'
       time: '03:00'
       timezone: 'Europe/Helsinki'
     cooldown:
-      default-days: 2
-    open-pull-requests-limit: 1
+      default-days: 3
     versioning-strategy: increase
+    labels: []
