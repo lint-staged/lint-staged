@@ -33,6 +33,11 @@ export type Options = {
    */
   configPath?: string
   /**
+   * Run all tasks to completion even if one fails
+   * @default false
+   */
+  continueOnError?: boolean
+  /**
    * Working directory to run all tasks in, defaults to current working directory
    */
   cwd?: string
@@ -52,6 +57,11 @@ export type Options = {
    * @default "ACMR"
    */
   diffFilter?: string
+  /**
+   * Fail with exit code 1 when tasks modify tracked files
+   * @default false
+   */
+  failOnChanges?: true
   /**
    * Maximum argument string length, by default automatically detected
    */

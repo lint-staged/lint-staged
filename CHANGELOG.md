@@ -1,5 +1,29 @@
 # lint-staged
 
+## 16.1.6
+
+### Patch Changes
+
+- [#1610](https://github.com/lint-staged/lint-staged/pull/1610) [`e93578e`](https://github.com/lint-staged/lint-staged/commit/e93578e265a69ed6b02fcaa11486078c1bdbdaaa) Thanks [@iiroj](https://github.com/iiroj)! - Try to improve terminating of subprocess of tasks by using `SIGKILL`, and only calling `pidtree` when the the main task process has a known pid.
+
+## 16.1.5
+
+### Patch Changes
+
+- [#1608](https://github.com/lint-staged/lint-staged/pull/1608) [`4e3ce22`](https://github.com/lint-staged/lint-staged/commit/4e3ce225b33f759f78a84d156189dc38e536cdc6) Thanks [@srsatt](https://github.com/srsatt)! - Detect the git repo's top-level directory correctly when in a worktree.
+
+## 16.1.4
+
+### Patch Changes
+
+- [#1604](https://github.com/lint-staged/lint-staged/pull/1604) [`90b37b0`](https://github.com/lint-staged/lint-staged/commit/90b37b00c2c30b9cacf6c080f6a0885e1151eb7a) Thanks [@iiroj](https://github.com/iiroj)! - Add another `types` field to `package.json` to make even more sure NPM detects that _lint-staged_ includes built-in TypeScript type definitions.
+
+## 16.1.3
+
+### Patch Changes
+
+- [#1602](https://github.com/lint-staged/lint-staged/pull/1602) [`7ea700b`](https://github.com/lint-staged/lint-staged/commit/7ea700bcf3d0078a01720a9c8dc13a271387afbd) Thanks [@dword-design](https://github.com/dword-design)! - Add the `types` field to `package.json` to make sure NPM detects _lint-staged_ includes built-in TypeScript type definitions.
+
 ## 16.1.2
 
 ### Patch Changes
@@ -113,7 +137,6 @@
   By default Prettier [prefers double quotes](https://prettier.io/docs/rationale#strings).
 
   #### Previously
-
   1. Stage `file.js` with only double quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -121,7 +144,6 @@
   1. Commit was not done, original state is restored and single quotes `'` are staged
 
   #### Now
-
   1. Stage `file.js` with only double-quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
