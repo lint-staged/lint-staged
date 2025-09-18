@@ -11,7 +11,7 @@ permissions:
 jobs:
   dependabot-changeset:
     name: Create changeset for Dependabot
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'lint-staged/lint-staged'
+    if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,10 +58,10 @@ jobs:
 
   dependabot-automerge:
     name: Automatically merge Dependabot Pull Request
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'lint-staged/lint-staged'
+    if: github.actor == 'dependabot[bot]'
     needs: dependabot-changeset
     runs-on: ubuntu-latest
     steps:
       - run: |
-          gh pr review --aprove "${{github.event.pull_request.html_url}}"
+          gh pr review --approve "${{github.event.pull_request.html_url}}"
           gh pr merge --rebase --auto --delete "${{github.event.pull_request.html_url}}"
