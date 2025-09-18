@@ -67,6 +67,16 @@ export type Options = {
    */
   maxArgLength?: number
   /**
+   * Whether to hide unstaged changes from partially staged files before running tasks
+   * @default true
+   */
+  hidePartiallyStaged?: boolean
+  /**
+   * Whether to hide all unstaged changes before running tasks
+   * @default false
+   */
+  hideUnstaged?: boolean
+  /**
    * Disable lint-staged’s own console output
    * @default false
    */
@@ -87,11 +97,6 @@ export type Options = {
    * @default true
    */
   stash?: boolean
-  /**
-   * Whether to hide unstaged changes from partially staged files before running tasks
-   * @default true
-   */
-  hidePartiallyStaged?: boolean
   /**
    * Show task output even when tasks succeed; by default only failed output is shown
    * @default false

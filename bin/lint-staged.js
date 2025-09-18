@@ -112,6 +112,12 @@ program
     ).default(false)
   )
 
+  .addOption(
+    new Option('--hide-unstaged', 'hide all unstaged changes, instead of just partially staged')
+      .default(false)
+      .implies({ hidePartiallyStaged: true })
+  )
+
   .addOption(new Option('-q, --quiet', 'disable lint-staged’s own console output').default(false))
   .addOption(new Option('-r, --relative', 'pass relative filepaths to tasks').default(false))
   .addOption(
@@ -139,12 +145,13 @@ const options = {
   diff: cliOptions.diff,
   diffFilter: cliOptions.diffFilter,
   failOnChanges: !!cliOptions.failOnChanges,
+  hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  hideUnstaged: !!cliOptions.hideUnstaged,
   maxArgLength: cliOptions.maxArgLength || undefined,
   quiet: !!cliOptions.quiet,
   relative: !!cliOptions.relative,
   revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
-  hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
   verbose: !!cliOptions.verbose,
 }
 

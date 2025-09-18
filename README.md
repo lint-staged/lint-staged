@@ -118,6 +118,7 @@ Options:
   --no-revert                        do not revert to original state in case of errors.
   --no-stash                         disable the backup stash. Implies "--no-revert".
   --no-hide-partially-staged         disable hiding unstaged changes from partially staged files
+  --hide-unstaged                    hide all unstaged changes, instead of just partially staged (default: false)
   -q, --quiet                        disable lint-staged’s own console output (default: false)
   -r, --relative                     pass relative filepaths to tasks (default: false)
   -v, --verbose                      show task output even when tasks succeed; by default only failed output is shown
@@ -186,6 +187,10 @@ By default a backup stash will be created before running the tasks, and all task
 #### `--no-hide-partially-staged`
 
 By default, unstaged changes from partially staged files will be hidden and applied back after running tasks. This option will disable this behavior, causing those changes to also be committed.
+
+#### `--hide-unstaged`
+
+Use this option to hide all unstaged changes to tracked files before running tasks. The changes will be applied back after running the tasks. Note that the combination of flags `--hide-unstaged --no-hide-partially-staged` isn't meaningful and behaves the same as just `--hide-unstaged`.
 
 #### `--quiet`
 
