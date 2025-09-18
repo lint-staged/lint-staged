@@ -28,7 +28,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
 
   Commitlint:
@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   TypeScript:
@@ -68,7 +68,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: npm run typecheck
 
   ESLint:
@@ -86,7 +86,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: npm run lint
 
   test-node-range:
@@ -105,7 +105,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: node ./scripts/test-node-range.js
 
   test-matrix:
@@ -138,7 +138,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       # Print current Node.js version
       - run: node --version
       # Print current npm version
@@ -189,7 +189,7 @@ jobs:
           restore-keys: |
             windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: node --version
       - run: npm --version
       - run: git --version
@@ -221,7 +221,7 @@ jobs:
           restore-keys: |
             windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - run: node --version
       - run: npm --version
       - run: git --version

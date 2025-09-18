@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
       - name: Configure git for Dependabot
         run: |
           git config --global user.name "$(git show -s --format='%an' ${{ github.event.pull_request.head.sha }})"
