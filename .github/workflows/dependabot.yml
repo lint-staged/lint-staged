@@ -11,15 +11,14 @@ permissions:
 jobs:
   dependabot-changeset:
     name: Create changeset for Dependabot
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'lint-staged/lint-staged'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
-          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
+          token: ${{ secrets.DEPENDABOT_ }} # PAT token
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
@@ -56,3 +55,13 @@ jobs:
           git add .
           git commit --amend --no-edit
           git push --force --force-with-lease
+
+  dependabot-automerge:
+    name: Automatically merge Dependabot Pull Request
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'lint-staged/lint-staged'
+    needs: dependabot-changeset
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          gh pr review --aprove "${{github.event.pull_request.html_url}}"
+          gh pr merge --rebase --auto --delete "${{github.event.pull_request.html_url}}"
