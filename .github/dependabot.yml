@@ -9,4 +9,5 @@ updates:
     cooldown:
       default-days: 3
     versioning-strategy: increase
-    labels: []
+    labels:
+      - dependabot
