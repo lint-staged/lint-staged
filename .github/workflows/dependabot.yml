@@ -18,6 +18,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
+          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
