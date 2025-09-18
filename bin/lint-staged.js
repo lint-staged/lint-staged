@@ -111,7 +111,14 @@ program
       'disable hiding unstaged changes from partially staged files'
     ).default(false)
   )
-
+  .addOption(new Option('--hide-unstaged', 'hide unstaged files').default(false))
+  .addOption(
+    new Option('--no-hide-unstaged', 'disable hiding unstaged files').default(true).hideHelp()
+  )
+  .addOption(new Option('--hide-untracked', 'hide untracked files').default(false))
+  .addOption(
+    new Option('--no-hide-untracked', 'disable hiding untracked files').default(true).hideHelp()
+  )
   .addOption(new Option('-q, --quiet', 'disable lint-staged’s own console output').default(false))
   .addOption(new Option('-r, --relative', 'pass relative filepaths to tasks').default(false))
   .addOption(
@@ -120,7 +127,6 @@ program
       'show task output even when tasks succeed; by default only failed output is shown'
     ).default(false)
   )
-
   .addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
 
 const cliOptions = program.parse(process.argv).opts()
@@ -145,6 +151,8 @@ const options = {
   revert: !!cliOptions.revert, // commander inverts `no-<x>` flags to `!x`
   stash: !!cliOptions.stash, // commander inverts `no-<x>` flags to `!x`
   hidePartiallyStaged: !!cliOptions.hidePartiallyStaged, // commander inverts `no-<x>` flags to `!x`
+  hideUnstaged: !!cliOptions.hideUnstaged,
+  hideUntracked: !!cliOptions.hideUntracked,
   verbose: !!cliOptions.verbose,
 }
 
