@@ -119,7 +119,7 @@ jobs:
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
-          - macos-14 # macOS Sonoma M1 runners
+          - macos-latest
           - windows-latest
     name: Node.js v${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
