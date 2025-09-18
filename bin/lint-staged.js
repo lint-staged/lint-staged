@@ -176,9 +176,7 @@ if (options.configPath === '-') {
   }
 }
 
-try {
-  const passed = await lintStaged(options)
-  process.exitCode = passed ? 0 : 1
-} catch {
+const passed = await lintStaged(options)
+if (!passed) {
   process.exitCode = 1
 }
