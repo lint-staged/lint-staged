@@ -13,7 +13,7 @@ permissions:
 jobs:
   dependabot-changeset:
     name: Create changeset for Dependabot
-    if: github.event.workflow_run.triggering_actor == 'dependabot[bot]'
+    if: github.event.workflow_run.pull_requests.id && github.event.workflow_run.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
