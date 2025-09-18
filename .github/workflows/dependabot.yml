@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ secrets.DEPENDABOT_ }} # PAT token
+          token: ${{ secrets.DEPENDABOT_TOKEN }} # PAT token
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
