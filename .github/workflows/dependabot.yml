@@ -1,11 +1,9 @@
-name: Dependabot Pull Requests
+name: Pull Requests
 
 on:
-  workflow_run:
-    workflows:
-      - Pull Requests
-    types:
-      - completed
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -13,13 +11,15 @@ permissions:
 jobs:
   dependabot-changeset:
     name: Create changeset for Dependabot
-    if: github.event.workflow_run.pull_requests.id && github.event.workflow_run.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
+          token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
@@ -34,13 +34,13 @@ jobs:
         run: npm ci
       - name: Configure git for Dependabot
         run: |
-          git config --global user.name "$(git show -s --format='%an' ${{ github.event.workflow_run.head_sha }})"
-          git config --global user.email "$(git show -s --format='%ae' ${{ github.event.workflow_run.head_sha }})"
+          git config --global user.name "$(git show -s --format='%an' ${{ github.event.pull_request.head.sha }})"
+          git config --global user.email "$(git show -s --format='%ae' ${{ github.event.pull_request.head.sha }})"
       - name: Create changeset
         run: |
-          COMMIT_BODY=$(git show -s --format='%b' "${{ github.event.workflow_run.head_sha }}")
+          COMMIT_BODY=$(git show -s --format='%b' "${{ github.event.pull_request.head.sha }}")
           SUMMARY=$(echo "${COMMIT_BODY}" | head -1)
-          CHANGESET_FILE=".changeset/dependabot-${{ github.event.workflow_run.pull_requests.id }}.md"
+          CHANGESET_FILE=".changeset/dependabot-${{ github.event.pull_request.id }}.md"
           echo -e "---" >| $CHANGESET_FILE
           echo -e "lint-staged: patch" >> $CHANGESET_FILE
           echo -e "---\n" >> $CHANGESET_FILE
@@ -49,7 +49,7 @@ jobs:
       - id: diff
         name: Check changeset diff
         continue-on-error: true
-        run: git diff --staged --exit-code -- .changeset/dependabot-${{ github.event.workflow_run.pull_requests.id }}.md
+        run: git diff --staged --exit-code -- .changeset/dependabot-${{ github.event.pull_request.id }}.md
       - name: Update PR with changeset
         if: steps.diff.outcome == 'failure'
         run: |
