@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import vitest from '@vitest/eslint-plugin'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import nodeRecommended from 'eslint-plugin-n/configs/recommended-module.js'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
@@ -25,7 +26,11 @@ export default [
   },
   {
     files: ['test/**/*.js'],
+    plugins: {
+      vitest,
+    },
     rules: {
+      ...vitest.configs.recommended.rules,
       'no-global-assign': 'off',
     },
   },
