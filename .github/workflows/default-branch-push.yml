@@ -8,14 +8,19 @@ on:
     tags-ignore:
       - '*'
 
+permissions:
+  contents: write
+  issues: read
+  packages: write
+  pull-requests: write
+  id-token: write
+
 jobs:
+  npm:
+    uses: ./.github/workflows/npm.yml
+
   Release:
-    permissions:
-      contents: write
-      issues: read
-      packages: write
-      pull-requests: write
-      id-token: write
+    needs: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,11 +34,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:

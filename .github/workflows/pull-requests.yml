@@ -9,7 +9,11 @@ permissions:
   contents: read
 
 jobs:
+  npm:
+    uses: ./.github/workflows/npm.yml
+
   Changesets:
+    needs: npm
     # Changesets no longer exist when releasing
     if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
     runs-on: ubuntu-latest
@@ -24,14 +28,11 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: npx changeset status --since=${{ github.event.pull_request.base.sha }}
 
   Commitlint:
+    needs: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,14 +45,11 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   TypeScript:
+    needs: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,14 +62,11 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: npm run typecheck
 
   ESLint:
+    needs: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -82,15 +77,12 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: npm run lint
 
   test-node-range:
     name: Test Node.js version range
+    needs: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -101,14 +93,11 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: node ./scripts/test-node-range.js
 
   test-matrix:
+    needs: npm
     strategy:
       matrix:
         # Test with Node.js active LTS versions, and the latest version
@@ -134,9 +123,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       # Print current Node.js version
@@ -152,12 +139,13 @@ jobs:
       # Run tests
       - run: npm test
       - uses: actions/upload-artifact@v4
-        if: matrix.os == 'ubuntu-latest' && matrix.node == '20'
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '24'
         with:
           name: cobertura-coverage.xml
           path: coverage/cobertura-coverage.xml
 
   test-msys2:
+    needs: npm
     strategy:
       matrix:
         node:
@@ -185,9 +173,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          key: node-modules-windows-latest-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       - run: node --version
@@ -198,6 +184,7 @@ jobs:
       - run: npm test
 
   test-cygwin:
+    needs: npm
     strategy:
       matrix:
         node:
@@ -217,9 +204,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            windows-latest-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          key: node-modules-windows-latest-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       - run: node --version

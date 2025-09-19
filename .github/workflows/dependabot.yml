@@ -9,8 +9,12 @@ permissions:
   contents: write
 
 jobs:
+  npm:
+    uses: ./.github/workflows/npm.yml
+
   dependabot-changeset:
     name: Create changeset for Dependabot
+    needs: npm
     if: github.actor == 'dependabot[bot]' && github.triggering_actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -26,11 +30,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ubuntu-latest-20-${{ hashFiles('**/package-lock.json') }}
-      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - name: Configure git for Dependabot
         run: |
           git config --global user.name "$(git show -s --format='%an' ${{ github.event.pull_request.head.sha }})"

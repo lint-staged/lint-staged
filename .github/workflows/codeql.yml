@@ -4,18 +4,19 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 0 * * 1' # 00:00 on Monday.
-  workflow_call:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '0 0 * * 1' # 00:00 on Monday.
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   CodeQL:
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
     steps:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
