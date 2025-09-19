@@ -35,7 +35,14 @@ jobs:
         run: |
           git config --global user.name "$(git show -s --format='%an' ${{ github.event.pull_request.head.sha }})"
           git config --global user.email "$(git show -s --format='%ae' ${{ github.event.pull_request.head.sha }})"
+      - id: detect
+        name: Detect prod/dev dependency update
+        run: |
+          COMMIT_SUBJECT=$(git show -s --format='%s' "${{ github.event.pull_request.head.sha }}")
+          [[ "${COMMIT_SUBJECT}" == "build(deps): "* ]] && GENERATE_CHANGESET=true || GENERATE_CHANGESET=false
+          echo "generate=$GENERATE_CHANGESET" >> "$GITHUB_OUTPUT"
       - name: Create changeset
+        if: steps.detect.outputs.generate == 'true'
         run: |
           COMMIT_BODY=$(git show -s --format='%b' "${{ github.event.pull_request.head.sha }}")
           SUMMARY=$(echo "${COMMIT_BODY}" | head -1)
@@ -44,6 +51,13 @@ jobs:
           echo -e "lint-staged: patch" >> $CHANGESET_FILE
           echo -e "---\n" >> $CHANGESET_FILE
           echo "$SUMMARY" >> $CHANGESET_FILE
+          git add $CHANGESET_FILE
+      - name: Create empty changeset
+        if: steps.detect.outputs.generate != 'true'
+        run: |
+          CHANGESET_FILE=".changeset/dependabot-${{ github.event.pull_request.id }}.md"
+          echo -e "---" >| $CHANGESET_FILE
+          echo -e "---" >> $CHANGESET_FILE
           git add $CHANGESET_FILE
       - id: diff
         name: Check changeset diff
