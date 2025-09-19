@@ -2,5 +2,5 @@
 export default {
   '*.js': 'eslint --fix',
   '*.{json,md}': 'prettier --write',
-  '*.ts': 'tsc --noEmit --strict',
+  '*.ts': () => 'tsc',
 }

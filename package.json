@@ -41,9 +41,9 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "vitest --coverage",
+    "test": "vitest",
     "test:watch": "npm run test -- --watch",
-    "typecheck": "tsc --noEmit --strict test/types/index.ts",
+    "typecheck": "tsc",
     "version": "npx changeset version",
     "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
     "tag": "npx changeset tag"
