@@ -1,18 +1,15 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierWrite } from './__fixtures__/configs.js'
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'does not care about staged file outside current cwd with another staged file',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('file.js', uglyJS)
       await writeFile('deeper/file.js', uglyJS)
       await writeFile('deeper/.lintstagedrc.json', JSON.stringify(prettierWrite))
@@ -30,7 +27,7 @@ describe('lint-staged', () => {
 
   test(
     'not care about staged file outside current cwd without any other staged files',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('file.js', uglyJS)
       await writeFile('deeper/.lintstagedrc.json', JSON.stringify(prettierWrite))
       await execGit(['add', '.'])

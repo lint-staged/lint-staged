@@ -1,11 +1,11 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { afterEach, describe, it, vi } from 'vitest'
 
 import { normalizePath } from '../../lib/normalizePath.js'
 
-jest.unstable_mockModule('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => ''),
+vi.mock('../../lib/execGit.js', () => ({
+  execGit: vi.fn(async () => ''),
 }))
 
 const { execGit } = await import('../../lib/execGit.js')
@@ -16,10 +16,10 @@ const normalizeWindowsPath = (input) => normalizePath(path.resolve('/', input))
 
 describe('getStagedFiles', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
-  it('should return array of file names', async () => {
+  it('should return array of file names', async ({ expect }) => {
     execGit.mockImplementationOnce(
       async () =>
         ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
@@ -38,7 +38,7 @@ describe('getStagedFiles', () => {
     )
   })
 
-  it('should allow colons in file names', async () => {
+  it('should allow colons in file names', async ({ expect }) => {
     execGit.mockImplementationOnce(
       async () =>
         ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar:qux.js\u0000'
@@ -57,12 +57,12 @@ describe('getStagedFiles', () => {
     )
   })
 
-  it('should return empty array when no staged files', async () => {
+  it('should return empty array when no staged files', async ({ expect }) => {
     const staged = await getStagedFiles()
     expect(staged).toEqual([])
   })
 
-  it('should return null in case of error', async () => {
+  it('should return null in case of error', async ({ expect }) => {
     execGit.mockImplementationOnce(async () => {
       throw new Error('fatal: not a git repository (or any of the parent directories): .git')
     })
@@ -70,7 +70,7 @@ describe('getStagedFiles', () => {
     expect(staged).toEqual(null)
   })
 
-  it('should support overriding diff trees with ...', async () => {
+  it('should support overriding diff trees with ...', async ({ expect }) => {
     execGit.mockImplementationOnce(
       async () =>
         ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
@@ -89,7 +89,7 @@ describe('getStagedFiles', () => {
     )
   })
 
-  it('should support overriding diff trees with multiple args', async () => {
+  it('should support overriding diff trees with multiple args', async ({ expect }) => {
     execGit.mockImplementationOnce(
       async () =>
         ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'
@@ -108,7 +108,7 @@ describe('getStagedFiles', () => {
     )
   })
 
-  it('should support overriding diff-filter', async () => {
+  it('should support overriding diff-filter', async ({ expect }) => {
     execGit.mockImplementationOnce(
       async () =>
         ':000000 100644 0000000 0000000 A\u0000foo.js\u0000:000000 100644 0000000 0000000 A\u0000bar.js\u0000'

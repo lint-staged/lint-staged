@@ -1,17 +1,14 @@
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { describe, test } from 'vitest'
 
 import lintStaged from '../../lib/index.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'supports overriding file list using --diff',
-    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
       const globalConsoleTemp = console
       console = makeConsoleMock()
 
@@ -44,7 +41,7 @@ describe('lint-staged', () => {
 
   test(
     'supports overriding default --diff-filter',
-    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
       const globalConsoleTemp = console
       console = makeConsoleMock()
 
@@ -71,7 +68,7 @@ describe('lint-staged', () => {
 
   test(
     'supports staged deleted files processed by linter',
-    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
       const globalConsoleTemp = console
       console = makeConsoleMock()
 
@@ -99,7 +96,7 @@ describe('lint-staged', () => {
 
   test(
     'supports staged deleted files restored by linter',
-    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
       const globalConsoleTemp = console
       console = makeConsoleMock()
 
@@ -129,7 +126,7 @@ describe('lint-staged', () => {
 
   test(
     'supports staged deleted files not processed by linter',
-    withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
       const globalConsoleTemp = console
       console = makeConsoleMock()
 

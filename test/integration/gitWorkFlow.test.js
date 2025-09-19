@@ -1,7 +1,8 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, it, vi } from 'vitest'
 
+import { writeFile } from '../../lib/file.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
 import { getInitialState } from '../../lib/state.js'
 import {
@@ -13,35 +14,28 @@ import {
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.unstable_mockModule('../../lib/file.js', () => ({
-  writeFile: jest.fn(() => Promise.resolve()),
+vi.mock('../../lib/file.js', () => ({
+  writeFile: vi.fn(() => Promise.resolve()),
 }))
-
-const { writeFile } = await import('../../lib/file.js')
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 describe('gitWorkflow', () => {
   describe('prepare', () => {
     it(
       'should handle errors',
-      withGitIntegration(async ({ cwd }) => {
+      withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
 
-        jest.doMock('execa', () => Promise.reject({}))
+        vi.doMock('execa', () => Promise.reject({}))
         const ctx = getInitialState()
         // mock a simple failure
         gitWorkflow.getUnstagedFiles = () => ['foo']
         gitWorkflow.getHiddenFilepath = () => {
           throw new Error('test')
         }
-        await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"test"`
-        )
+        await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrow('test')
 
         expect(ctx.errors).toBeInstanceOf(Set)
         expect(ctx.errors.has(GitError)).toBe(true)
@@ -52,15 +46,15 @@ describe('gitWorkflow', () => {
   describe('cleanup', () => {
     it(
       'should handle errors',
-      withGitIntegration(async ({ cwd }) => {
+      withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
 
         const ctx = getInitialState()
-        await expect(gitWorkflow.cleanup(ctx)).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"lint-staged automatic backup is missing!"`
+        await expect(gitWorkflow.cleanup(ctx)).rejects.toThrow(
+          'lint-staged automatic backup is missing!'
         )
 
         expect(ctx.errors).toBeInstanceOf(Set)
@@ -73,7 +67,7 @@ describe('gitWorkflow', () => {
   describe('getUnstagedFiles', () => {
     it(
       'should return null when no unstaged changes',
-      withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -89,7 +83,7 @@ describe('gitWorkflow', () => {
 
     it(
       'should return unquoted files',
-      withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -110,7 +104,7 @@ describe('gitWorkflow', () => {
 
     it(
       'should return only partially changes files',
-      withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -129,7 +123,7 @@ describe('gitWorkflow', () => {
 
     it(
       'should include to and from for renamed files',
-      withGitIntegration(async ({ appendFile, cwd, execGit }) => {
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -151,7 +145,7 @@ describe('gitWorkflow', () => {
   describe('hideUnstagedChanges', () => {
     it(
       'should handle errors',
-      withGitIntegration(async ({ cwd }) => {
+      withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -172,7 +166,7 @@ describe('gitWorkflow', () => {
 
     it(
       'should checkout renamed file when hiding changes',
-      withGitIntegration(async ({ appendFile, cwd, execGit, readFile }) => {
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect, readFile }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -195,7 +189,7 @@ describe('gitWorkflow', () => {
   describe('restoreMergeStatus', () => {
     it(
       'should handle error when restoring merge state fails',
-      withGitIntegration(async ({ cwd }) => {
+      withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -204,10 +198,8 @@ describe('gitWorkflow', () => {
         gitWorkflow.mergeHeadBuffer = true
         writeFile.mockImplementation(() => Promise.reject('test'))
         const ctx = getInitialState()
-        await expect(
-          gitWorkflow.restoreMergeStatus(ctx)
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"Merge state could not be restored due to an error!"`
+        await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrow(
+          'Merge state could not be restored due to an error!'
         )
 
         expect(ctx.errors).toBeInstanceOf(Set)

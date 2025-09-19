@@ -1,3 +1,5 @@
+import { describe, it } from 'vitest'
+
 import {
   applyModificationsSkipped,
   cleanupSkipped,
@@ -14,7 +16,7 @@ import {
 } from '../../lib/symbols.js'
 
 describe('applyModificationsSkipped', () => {
-  it('should return false when reverting is disabled', () => {
+  it('should return false when reverting is disabled', ({ expect }) => {
     const state = getInitialState()
     const result = applyModificationsSkipped({
       ...state,
@@ -24,7 +26,7 @@ describe('applyModificationsSkipped', () => {
     expect(result).toEqual(false)
   })
 
-  it('should return false when backup is disabled', () => {
+  it('should return false when backup is disabled', ({ expect }) => {
     const state = getInitialState()
     const result = applyModificationsSkipped({
       ...state,
@@ -34,7 +36,7 @@ describe('applyModificationsSkipped', () => {
     expect(result).toEqual(false)
   })
 
-  it('should return error message when there is an unknown git error', () => {
+  it('should return error message when there is an unknown git error', ({ expect }) => {
     const state = getInitialState()
     const result = applyModificationsSkipped({
       ...state,
@@ -47,7 +49,7 @@ describe('applyModificationsSkipped', () => {
 })
 
 describe('restoreUnstagedChangesSkipped', () => {
-  it('should return error message when there is an unknown git error', () => {
+  it('should return error message when there is an unknown git error', ({ expect }) => {
     const state = getInitialState()
     const result = restoreUnstagedChangesSkipped({
       ...state,
@@ -59,7 +61,7 @@ describe('restoreUnstagedChangesSkipped', () => {
 })
 
 describe('restoreOriginalStateEnabled', () => {
-  it('should return false by default', () => {
+  it('should return false by default', ({ expect }) => {
     const state = getInitialState()
     const result = restoreOriginalStateEnabled({
       ...state,
@@ -68,7 +70,7 @@ describe('restoreOriginalStateEnabled', () => {
     expect(result).toEqual(false)
   })
 
-  it('should return true when backup enabled and there are task errors', () => {
+  it('should return true when backup enabled and there are task errors', ({ expect }) => {
     const state = getInitialState()
     const result = restoreOriginalStateEnabled({
       ...state,
@@ -79,7 +81,9 @@ describe('restoreOriginalStateEnabled', () => {
     expect(result).toEqual(true)
   })
 
-  it('should return true when backup enabled and unstaged changes failed to restore', () => {
+  it('should return true when backup enabled and unstaged changes failed to restore', ({
+    expect,
+  }) => {
     const state = getInitialState()
     const result = restoreOriginalStateEnabled({
       ...state,
@@ -91,7 +95,7 @@ describe('restoreOriginalStateEnabled', () => {
     expect(result).toEqual(true)
   })
 
-  it('should return false when reverting is disabled', () => {
+  it('should return false when reverting is disabled', ({ expect }) => {
     const state = getInitialState()
     const result = restoreOriginalStateEnabled({
       ...state,
@@ -105,7 +109,7 @@ describe('restoreOriginalStateEnabled', () => {
 })
 
 describe('restoreOriginalStateSkipped', () => {
-  it('should return error message when there is an unknown git error', () => {
+  it('should return error message when there is an unknown git error', ({ expect }) => {
     const state = getInitialState()
     const result = restoreOriginalStateSkipped({
       ...state,
@@ -117,7 +121,7 @@ describe('restoreOriginalStateSkipped', () => {
 })
 
 describe('shouldSkipCleanup', () => {
-  it('should return error message when reverting to original state fails', () => {
+  it('should return error message when reverting to original state fails', ({ expect }) => {
     const state = getInitialState()
     const result = cleanupSkipped({
       ...state,

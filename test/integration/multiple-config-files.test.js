@@ -1,12 +1,9 @@
 import path from 'node:path'
 
-import { jest as jestGlobals } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { normalizePath } from '../../lib/normalizePath.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jestGlobals.setTimeout(20000)
-jestGlobals.retryTimes(2)
 
 describe('lint-staged', () => {
   const getScript = (echo) => `
@@ -33,7 +30,7 @@ describe('lint-staged', () => {
 
   test(
     'supports multiple configuration files',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       // Add some empty files
       await writeFile('file.js', '')
       await writeFile('deeper/file.js', '')
@@ -74,7 +71,7 @@ describe('lint-staged', () => {
 
   test(
     'supports multiple configuration files with --relative',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       // Add some empty files
       await writeFile('file.js', '')
       await writeFile('deeper/file.js', '')
@@ -128,7 +125,7 @@ describe('lint-staged', () => {
 
   test(
     'ignores multiple configs files outside cwd',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       // Add some empty files
       await writeFile('file.js', '')
       await writeFile('deeper/file.js', '')

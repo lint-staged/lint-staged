@@ -1,18 +1,15 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as fileFixtures from './__fixtures__/files.js'
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 describe('lint-staged --continue-on-error', () => {
   addConfigFileSerializer()
 
   test(
     'fails to commit but shows all errors when --continue-on-error is used',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       // Create a config with multiple linters where some will fail
       await writeFile(
         '.lintstagedrc.json',
@@ -50,7 +47,7 @@ describe('lint-staged --continue-on-error', () => {
 
   test(
     'commits successfully when all linters pass with --continue-on-error',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
@@ -78,7 +75,7 @@ describe('lint-staged --continue-on-error', () => {
 
   test(
     'stops on first error without --continue-on-error (default behavior)',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({

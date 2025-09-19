@@ -1,31 +1,31 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { describe, it, vi } from 'vitest'
 
 import { getRepoRootPath } from '../__utils__/getRepoRootPath.js'
 
 const MOCK_STAGED_FILE = path.join(getRepoRootPath(), 'test/__mocks__/sample.js')
 
-jest.unstable_mockModule('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => {
+vi.mock('../../lib/execGit.js', () => ({
+  execGit: vi.fn(async () => {
     /** Mock fails by default */
     return ''
   }),
 }))
 
-jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({
-  getStagedFiles: jest.fn(async () => [{ filepath: MOCK_STAGED_FILE, status: 'M' }]),
+vi.mock('../../lib/getStagedFiles.js', () => ({
+  getStagedFiles: vi.fn(async () => [{ filepath: MOCK_STAGED_FILE, status: 'M' }]),
 }))
 
-jest.unstable_mockModule('../../lib/resolveGitRepo.js', () => ({
-  resolveGitRepo: jest.fn(async () => ({ topLevelDir: 'foo', gitConfigDir: 'bar' })),
+vi.mock('../../lib/resolveGitRepo.js', () => ({
+  resolveGitRepo: vi.fn(async () => ({ topLevelDir: 'foo', gitConfigDir: 'bar' })),
 }))
 
 const { default: lintStaged } = await import('../../lib/index.js')
 
 describe('lintStaged', () => {
-  it('should catch errors from js function config', async () => {
+  it('should catch errors from js function config', async ({ expect }) => {
     const logger = makeConsoleMock()
     const config = {
       '*': () => {

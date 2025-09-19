@@ -1,14 +1,14 @@
-import { expect, jest } from '@jest/globals'
+import { describe, it, vi } from 'vitest'
 
 import { getFunctionTask } from '../../lib/getFunctionTask.js'
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
 
 describe('getFunctionTask', () => {
-  it('should return wrapped function task', async () => {
+  it('should return wrapped function task', async ({ expect }) => {
     const cmd = {
       title: 'My task',
-      task: jest.fn(),
+      task: vi.fn(),
     }
 
     const wrapped = await getFunctionTask(cmd, [{ filepath: 'file.js', status: 'M' }])
@@ -26,10 +26,10 @@ describe('getFunctionTask', () => {
     expect(cmd.task).toHaveBeenCalledWith(['file.js'])
   })
 
-  it('should wrap function task failure', async () => {
+  it('should wrap function task failure', async ({ expect }) => {
     const cmd = {
       title: 'My task',
-      task: jest.fn().mockImplementation(async () => {
+      task: vi.fn().mockImplementation(async () => {
         throw new Error('test error')
       }),
     }
@@ -45,9 +45,7 @@ describe('getFunctionTask', () => {
 
     const context = getInitialState()
 
-    await expect(wrapped[0].task(context)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"My task [FAILED]"`
-    )
+    await expect(wrapped[0].task(context)).rejects.toThrow('My task [FAILED]')
 
     expect(context.errors.has(TaskError)).toEqual(true)
   })

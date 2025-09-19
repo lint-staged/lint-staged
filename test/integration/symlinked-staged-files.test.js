@@ -1,19 +1,16 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { expect, jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'ignores symlinked staged files',
-    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
       await appendFile('test.js', fileFixtures.uglyJS)
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 

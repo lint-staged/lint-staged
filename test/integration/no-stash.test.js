@@ -1,19 +1,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'skips backup and revert with --no-stash',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage pretty file
@@ -36,7 +33,7 @@ describe('lint-staged', () => {
 
   test(
     'aborts commit without reverting with --no-stash, when merge conflict',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       // Stage file
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
@@ -80,7 +77,7 @@ describe('lint-staged', () => {
 
   test(
     'aborts commit without reverting with --no-stash, when  invalid syntax in file',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -103,7 +100,7 @@ describe('lint-staged', () => {
 
   test(
     'hides and restores unstaged changes to partially staged files by default even with --no-stash',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly file
@@ -126,7 +123,7 @@ describe('lint-staged', () => {
 
   test(
     'loses conflicting unstaged changes when linter fixes staged file when using --no-stash',
-    withGitIntegration(async ({ writeFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ writeFile, execGit, expect, gitCommit, readFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly file

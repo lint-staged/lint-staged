@@ -1,16 +1,13 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'ignores untracked files',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
       // Stage pretty file
@@ -36,7 +33,7 @@ describe('lint-staged', () => {
 
   test(
     'ingores untracked files when task fails',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
       // Stage unfixable file

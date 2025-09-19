@@ -2,19 +2,19 @@ import { constants } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { beforeEach, describe, it, vi } from 'vitest'
 
 import { InvalidOptionsError } from '../../lib/symbols.js'
 import { validateOptions } from '../../lib/validateOptions.js'
 
 describe('validateOptions', () => {
-  const mockAccess = jest.spyOn(fs, 'access')
+  const mockAccess = vi.spyOn(fs, 'access')
   beforeEach(() => {
     mockAccess.mockClear()
   })
 
-  it('should resolve empty and missing config', async () => {
+  it('should resolve empty and missing config', async ({ expect }) => {
     expect.assertions(3)
 
     const logger = makeConsoleMock()
@@ -28,7 +28,7 @@ describe('validateOptions', () => {
   })
 
   describe('cwd', () => {
-    it('should resolve with valid absolute cwd option', async () => {
+    it('should resolve with valid absolute cwd option', async ({ expect }) => {
       expect.assertions(4)
 
       const logger = makeConsoleMock()
@@ -41,7 +41,7 @@ describe('validateOptions', () => {
       expect(logger.history()).toHaveLength(0)
     })
 
-    it('should resolve with valid relative cwd option', async () => {
+    it('should resolve with valid relative cwd option', async ({ expect }) => {
       expect.assertions(4)
 
       const logger = makeConsoleMock()
@@ -54,7 +54,7 @@ describe('validateOptions', () => {
       expect(logger.history()).toHaveLength(0)
     })
 
-    it('should reject with invalid cwd option', async () => {
+    it('should reject with invalid cwd option', async ({ expect }) => {
       expect.assertions(4)
 
       const logger = makeConsoleMock()
@@ -69,7 +69,6 @@ describe('validateOptions', () => {
         constants.F_OK
       )
 
-      // eslint-disable-next-line jest/no-interpolation-in-snapshots
       expect(logger.printHistory()).toMatchInlineSnapshot(`
         "
         ERROR ✖ Validation Error:

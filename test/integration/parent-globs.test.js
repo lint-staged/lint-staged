@@ -1,17 +1,14 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 describe('lint-staged', () => {
   test(
     'works with parent glob "../*.js"',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       // Add some empty files
       await writeFile('file.js', '')
       await writeFile('deeper/file.js', '')

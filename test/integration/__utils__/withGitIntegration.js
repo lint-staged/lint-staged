@@ -19,7 +19,13 @@ const getGitUtils = (cwd) => {
     throw new Error('Do not run integration tests without an explicit Working Directory!')
   }
 
-  // Get file content, coercing Windows `\r\n` newlines to `\n`
+  /**
+   * Get file content, coercing Windows `\r\n` newlines to `\n`
+   *
+   * @param {string} filename relative to the working directory
+   * @param {string} [dir] the working directory, by default CWD
+   * @returns {Promise<string>} file content
+   */
   const readFile = async (filename, dir = cwd) => {
     const filepath = path.resolve(dir, filename)
 
@@ -32,7 +38,14 @@ const getGitUtils = (cwd) => {
     }
   }
 
-  // Append to file, creating if it doesn't exist
+  /**
+   * Append content to file, creating if it doesn't exist
+   *
+   * @param {string} filename relative to the working directory
+   * @param {string} content
+   * @param {string} [dir] the working directory, by default CWD
+   * @returns {Promise<void>}
+   */
   const appendFile = async (filename, content, dir = cwd) => {
     const filepath = path.resolve(dir, filename)
 
@@ -45,7 +58,14 @@ const getGitUtils = (cwd) => {
     }
   }
 
-  // Write (over) file, creating if it doesn't exist
+  /**
+   * Write (over) file, creating if it doesn't exist
+   *
+   * @param {string} filename relative to the working directory
+   * @param {string} content
+   * @param {string} [dir] the working directory, by default CWD
+   * @returns {Promise<void>}
+   */
   const writeFile = async (filename, content, dir = cwd) => {
     const filepath = path.resolve(dir, filename)
 
@@ -58,7 +78,13 @@ const getGitUtils = (cwd) => {
     }
   }
 
-  // Remove file
+  /**
+   * Remove file
+   *
+   * @param {string} filename relative to the working directory
+   * @param {string} [dir] the working directory, by default CWD
+   * @returns {Promise<void>}
+   */
   const removeFile = async (filename, dir = cwd) => {
     const filepath = path.resolve(dir, filename)
 
@@ -70,10 +96,25 @@ const getGitUtils = (cwd) => {
     }
   }
 
-  // Wrap execGit to always pass `gitOps`
+  /**
+   * Wrap execGit to always pass `cwd`
+   *
+   * @param {Parameters<typeof execGitBase>[0]} args
+   * @param {Parameters<typeof execGitBase>[1]} [options]
+   */
   const execGit = async (args, options = {}) => execGitBase(args, { cwd, ...options })
 
-  // Execute lintStaged before git commit to emulate lint-staged cli
+  /**
+   * Execute lintStaged before git commit to emulate lint-staged cli
+   *
+   * @typedef {import('../../../lib/index').Options} LintStagedOptions
+   * @typedef {{ lintStaged: LintStagedOptions, gitCommit: string[] }} Options
+   *
+   * @param {Options} [options]
+   * @param {string} [dir] the working directory, by default CWD
+   *
+   * @returns the cli output
+   */
   const gitCommit = async (options, dir = cwd) => {
     const globalConsoleTemp = console
     const logger = makeConsoleMock()
@@ -97,9 +138,18 @@ const getGitUtils = (cwd) => {
   return { appendFile, execGit, gitCommit, readFile, removeFile, writeFile }
 }
 
+/**
+ * @typedef {import('vitest').ExpectStatic} Expect
+ * @typedef {{ expect: Expect, cwd: string } & ReturnType<typeof getGitUtils} TestfunctionInput
+ * @typedef {import('vitest').TestFunction<TestfunctionInput>} TestFunction
+ * @typedef {{ initialCommit?: boolean }} IntegrationTestOptions
+ *
+ * @param {TestFunction} testFunction
+ * @param {IntegrationTestOptions} options
+ */
 export const withGitIntegration =
-  (testCase, { initialCommit = true } = {}) =>
-  async () => {
+  (testFunction, { initialCommit = true } = {}) =>
+  async ({ expect }) => {
     const cwd = await createTempDir()
 
     const utils = getGitUtils(cwd)
@@ -122,7 +172,7 @@ export const withGitIntegration =
     }
 
     try {
-      await testCase({ ...utils, cwd })
+      await testFunction({ ...utils, expect, cwd })
     } finally {
       await fs.rm(cwd, { recursive: true })
     }

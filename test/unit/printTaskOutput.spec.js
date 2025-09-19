@@ -1,14 +1,14 @@
-import { jest } from '@jest/globals'
+import { describe, it, vi } from 'vitest'
 
 import { printTaskOutput } from '../../lib/printTaskOutput.js'
 
 const logger = {
-  error: jest.fn(() => {}),
-  log: jest.fn(() => {}),
+  error: vi.fn(() => {}),
+  log: vi.fn(() => {}),
 }
 
 describe('printTaskOutput', () => {
-  it('should no-op when context is incomplete', () => {
+  it('should no-op when context is incomplete', ({ expect }) => {
     printTaskOutput(undefined, logger)
     printTaskOutput({}, logger)
     expect(logger.error).toHaveBeenCalledTimes(0)

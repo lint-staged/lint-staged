@@ -2,8 +2,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { beforeEach, describe, it } from 'vitest'
 
 import { loadConfig } from '../../lib/loadConfig.js'
 import { createTempDir } from '../__utils__/createTempDir.js'
@@ -17,7 +17,7 @@ describe('loadConfig', () => {
     logger.clearHistory()
   })
 
-  it('should load JSON config file', async () => {
+  it('should load JSON config file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -32,7 +32,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load YAML config file', async () => {
+  it('should load YAML config file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -47,7 +47,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should not return config when YAML config file is invalid', async () => {
+  it('should not return config when YAML config file is invalid', async ({ expect }) => {
     expect.assertions(2)
 
     const { config } = await loadConfig(
@@ -60,7 +60,7 @@ describe('loadConfig', () => {
     expect(config).toBeUndefined()
   })
 
-  it('should load advanced config from absolute .js filepath', async () => {
+  it('should load advanced config from absolute .js filepath', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -76,7 +76,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load advanced config file from relative .js filepath', async () => {
+  it('should load advanced config file from relative .js filepath', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -92,7 +92,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load CommonJS config from absolute .cjs file', async () => {
+  it('should load CommonJS config from absolute .cjs file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -108,7 +108,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load CommonJS config file from relative path', async () => {
+  it('should load CommonJS config file from relative path', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -124,7 +124,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load CommonJS from relative .cjs file', async () => {
+  it('should load CommonJS from relative .cjs file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -139,7 +139,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load EMS config file from .mjs file', async () => {
+  it('should load EMS config file from .mjs file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -157,7 +157,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load EMS config file from .js file', async () => {
+  it('should load EMS config file from .js file', async ({ expect }) => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
@@ -175,13 +175,11 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should load a CJS module when specified', async () => {
+  it('should load a CJS module when specified', async ({ expect }) => {
     expect.assertions(1)
 
-    jest.mock('my-lint-staged-config')
-
     const { config } = await loadConfig(
-      { configPath: 'my-lint-staged-config', quiet: true },
+      { configPath: path.join(__dirname, '__mocks__', 'my-lint-staged-config'), quiet: true },
       logger
     )
 
@@ -192,7 +190,7 @@ describe('loadConfig', () => {
     `)
   })
 
-  it('should return empty object when config file is not found', async () => {
+  it('should return empty object when config file is not found', async ({ expect }) => {
     expect.assertions(1)
 
     const result = await loadConfig({ cwd: '/' })
@@ -200,7 +198,7 @@ describe('loadConfig', () => {
     expect(result).toMatchInlineSnapshot(`{}`)
   })
 
-  it('should return empty object when explicit config file is not found', async () => {
+  it('should return empty object when explicit config file is not found', async ({ expect }) => {
     expect.assertions(1)
 
     const result = await loadConfig({ configPath: 'fake-config-file.yml' }, logger)
@@ -208,7 +206,7 @@ describe('loadConfig', () => {
     expect(result).toMatchInlineSnapshot(`{}`)
   })
 
-  it('should return empty object ".lintstagedrc.json" file is invalid', async () => {
+  it('should return empty object ".lintstagedrc.json" file is invalid', async ({ expect }) => {
     expect.assertions(1)
 
     const result = await loadConfig(
@@ -219,7 +217,7 @@ describe('loadConfig', () => {
     expect(result).toMatchInlineSnapshot(`{}`)
   })
 
-  it('should read config from package.json', async () => {
+  it('should read config from package.json', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.json')
 
@@ -247,7 +245,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should not return config when package.json file is invalid', async () => {
+  it('should not return config when package.json file is invalid', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.json')
 
@@ -264,7 +262,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should read "lint-staged" key from package.yaml', async () => {
+  it('should read "lint-staged" key from package.yaml', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.yaml')
 
@@ -290,7 +288,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should read "lint-staged" key from package.yml', async () => {
+  it('should read "lint-staged" key from package.yml', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.yml')
 
@@ -316,7 +314,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should not return config when package.yaml file is invalid', async () => {
+  it('should not return config when package.yaml file is invalid', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'package.yaml')
 
@@ -333,7 +331,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should treat config file without extension as YAML', async () => {
+  it('should treat config file without extension as YAML', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'lint-staged-config')
 
@@ -354,7 +352,7 @@ describe('loadConfig', () => {
     }
   })
 
-  it('should not return config when invalid file without extension', async () => {
+  it('should not return config when invalid file without extension', async ({ expect }) => {
     const tempDir = await createTempDir()
     const configPath = path.join(tempDir, 'lint-staged-config')
 

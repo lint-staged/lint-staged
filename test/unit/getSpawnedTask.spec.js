@@ -1,5 +1,5 @@
-import { jest } from '@jest/globals'
 import { SubprocessError } from 'nano-spawn'
+import { beforeEach, describe, it, vi } from 'vitest'
 
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
@@ -8,15 +8,15 @@ import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.j
 
 const { default: spawn } = await getMockNanoSpawn()
 
-jest.unstable_mockModule('pidtree', () => ({
-  default: jest.fn(async () => []),
+vi.mock('pidtree', () => ({
+  default: vi.fn(async () => []),
 }))
 
 const { default: pidtree } = await import('pidtree')
 
 const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
 
-jest.useFakeTimers()
+vi.useFakeTimers()
 
 const defaultOpts = { files: ['test.js'] }
 
@@ -26,7 +26,7 @@ describe('getSpawnedTask', () => {
     spawn.mockClear()
   })
 
-  it('should support non npm scripts', async () => {
+  it('should support non npm scripts', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
       ...defaultOpts,
@@ -42,7 +42,7 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should not append pathsToLint when isFn', async () => {
+  it('should not append pathsToLint when isFn', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
       ...defaultOpts,
@@ -59,7 +59,9 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should pass `topLevelDir` as `cwd` to `spawn()` topLevelDir !== process.cwd for git commands', async () => {
+  it('should pass `topLevelDir` as `cwd` to `spawn()` topLevelDir !== process.cwd for git commands', async ({
+    expect,
+  }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
       ...defaultOpts,
@@ -76,7 +78,9 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should not pass `topLevelDir` as `cwd` to `spawn()` if a non-git binary is called', async () => {
+  it('should not pass `topLevelDir` as `cwd` to `spawn()` if a non-git binary is called', async ({
+    expect,
+  }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
 
@@ -89,7 +93,7 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should throw error for failed tasks', async () => {
+  it('should throw error for failed tasks', async ({ expect }) => {
     expect.assertions(1)
 
     spawn.mockReturnValueOnce(
@@ -102,10 +106,10 @@ describe('getSpawnedTask', () => {
     )
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-fail-linter' })
-    await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(`"mock-fail-linter [FAILED]"`)
+    await expect(taskFn()).rejects.toThrow('mock-fail-linter [FAILED]')
   })
 
-  it('should throw error for interrupted processes', async () => {
+  it('should throw error for interrupted processes', async ({ expect }) => {
     expect.assertions(1)
 
     spawn.mockReturnValueOnce(
@@ -119,12 +123,10 @@ describe('getSpawnedTask', () => {
     )
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-killed-linter' })
-    await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"mock-killed-linter [SIGINT]"`
-    )
+    await expect(taskFn()).rejects.toThrow('mock-killed-linter [SIGINT]')
   })
 
-  it('should throw error for killed processes without signal', async () => {
+  it('should throw error for killed processes without signal', async ({ expect }) => {
     expect.assertions(1)
 
     spawn.mockReturnValueOnce(
@@ -137,12 +139,10 @@ describe('getSpawnedTask', () => {
     )
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-killed-linter' })
-    await expect(taskFn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"mock-killed-linter [FAILED]"`
-    )
+    await expect(taskFn()).rejects.toThrow('mock-killed-linter [FAILED]')
   })
 
-  it('should not add TaskError if no error occur', async () => {
+  it('should not add TaskError if no error occur', async ({ expect }) => {
     expect.assertions(1)
     const context = getInitialState()
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'jest', topLevelDir: '../' })
@@ -150,7 +150,7 @@ describe('getSpawnedTask', () => {
     expect(context.errors.has(TaskError)).toEqual(false)
   })
 
-  it('should add TaskError on error', async () => {
+  it('should add TaskError on error', async ({ expect }) => {
     expect.assertions(2)
 
     spawn.mockReturnValueOnce(
@@ -164,13 +164,11 @@ describe('getSpawnedTask', () => {
 
     const context = getInitialState()
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock-fail-linter' })
-    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"mock-fail-linter [FAILED]"`
-    )
+    await expect(taskFn(context)).rejects.toThrow('mock-fail-linter [FAILED]')
     expect(context.errors.has(TaskError)).toEqual(true)
   })
 
-  it('should not add output when there is none', async () => {
+  it('should not add output when there is none', async ({ expect }) => {
     expect.assertions(2)
 
     spawn.mockReturnValueOnce(
@@ -187,7 +185,7 @@ describe('getSpawnedTask', () => {
     expect(context.output).toEqual([])
   })
 
-  it('should add output even when task succeeds if `verbose: true`', async () => {
+  it('should add output even when task succeeds if `verbose: true`', async ({ expect }) => {
     expect.assertions(2)
 
     spawn.mockReturnValueOnce(
@@ -210,7 +208,7 @@ describe('getSpawnedTask', () => {
     `)
   })
 
-  it('should not add title to output when task errors while quiet', async () => {
+  it('should not add title to output when task errors while quiet', async ({ expect }) => {
     expect.assertions(2)
 
     spawn.mockReturnValueOnce(
@@ -224,7 +222,7 @@ describe('getSpawnedTask', () => {
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
-    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
+    await expect(taskFn(context)).rejects.toThrow('mock cmd [FAILED]')
 
     expect(context.output).toMatchInlineSnapshot(`
       [
@@ -233,7 +231,9 @@ describe('getSpawnedTask', () => {
     `)
   })
 
-  it('should not print anything when task errors without output while quiet', async () => {
+  it('should not print anything when task errors without output while quiet', async ({
+    expect,
+  }) => {
     expect.assertions(2)
 
     spawn.mockReturnValueOnce(
@@ -247,24 +247,24 @@ describe('getSpawnedTask', () => {
 
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'mock cmd' })
     const context = getInitialState({ quiet: true })
-    await expect(taskFn(context)).rejects.toThrowErrorMatchingInlineSnapshot(`"mock cmd [FAILED]"`)
+    await expect(taskFn(context)).rejects.toThrow('mock cmd [FAILED]')
 
     expect(context.output).toEqual([])
   })
 
-  it('should not kill long running tasks without errors in context', async () => {
+  it('should not kill long running tasks without errors in context', async ({ expect }) => {
     spawn.mockImplementationOnce(() => mockNanoSpawnReturnValue(undefined, 1000))
 
     const context = getInitialState()
     const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
     const taskPromise = taskFn(context)
 
-    jest.runOnlyPendingTimers()
+    vi.runOnlyPendingTimers()
 
     await expect(taskPromise).resolves.toEqual()
   })
 
-  it('should ignore pid-tree errors', async () => {
+  it('should ignore pid-tree errors', async ({ expect }) => {
     spawn.mockReturnValueOnce(
       mockNanoSpawnReturnValue(
         Object.assign(new SubprocessError(), {
@@ -286,12 +286,12 @@ describe('getSpawnedTask', () => {
 
     context.events.emit('lint-staged:taskError')
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
   })
 
-  it('should kill a long running task when error event is emitted', async () => {
+  it('should kill a long running task when error event is emitted', async ({ expect }) => {
     spawn.mockReturnValueOnce(
       mockNanoSpawnReturnValue(
         Object.assign(new SubprocessError(), {
@@ -309,12 +309,12 @@ describe('getSpawnedTask', () => {
 
     context.events.emit('lint-staged:taskError')
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
   })
 
-  it('should not try to kill subprocesses if main pid missing', async () => {
+  it('should not try to kill subprocesses if main pid missing', async ({ expect }) => {
     spawn.mockReturnValueOnce(
       mockNanoSpawnReturnValue(
         Object.assign(new SubprocessError(), {
@@ -332,13 +332,13 @@ describe('getSpawnedTask', () => {
 
     context.events.emit('lint-staged:taskError')
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
     expect(pidtree).not.toHaveBeenCalled()
   })
 
-  it('should also kill child processes of killed spawn processes', async () => {
+  it('should also kill child processes of killed spawn processes', async ({ expect }) => {
     expect.assertions(3)
 
     spawn.mockReturnValueOnce(
@@ -353,7 +353,7 @@ describe('getSpawnedTask', () => {
     )
 
     const realKill = process.kill
-    const mockKill = jest.fn()
+    const mockKill = vi.fn()
     Object.defineProperty(process, 'kill', {
       value: mockKill,
     })
@@ -367,9 +367,9 @@ describe('getSpawnedTask', () => {
 
     context.events.emit('lint-staged:taskError')
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
 
     expect(mockKill).toHaveBeenCalledTimes(1)
     expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')
@@ -379,7 +379,7 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should ignore error when trying to kill child processes', async () => {
+  it('should ignore error when trying to kill child processes', async ({ expect }) => {
     expect.assertions(3)
 
     spawn.mockReturnValueOnce(
@@ -394,7 +394,7 @@ describe('getSpawnedTask', () => {
     )
 
     const realKill = process.kill
-    const mockKill = jest.fn(() => {
+    const mockKill = vi.fn(() => {
       throw new Error('kill ESRCH')
     })
     Object.defineProperty(process, 'kill', {
@@ -410,9 +410,9 @@ describe('getSpawnedTask', () => {
 
     context.events.emit('lint-staged:taskError')
 
-    jest.runAllTimers()
+    vi.runAllTimers()
 
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(`"node [SIGKILL]"`)
+    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
 
     expect(mockKill).toHaveBeenCalledTimes(1)
     expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')

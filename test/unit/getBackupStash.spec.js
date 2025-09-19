@@ -1,10 +1,10 @@
-import { jest } from '@jest/globals'
+import { describe, it, vi } from 'vitest'
 
 import { getInitialState } from '../../lib/state.js'
 import { GetBackupStashError } from '../../lib/symbols'
 
-jest.unstable_mockModule('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => {
+vi.mock('../../lib/execGit.js', () => ({
+  execGit: vi.fn(async () => {
     /** Mock fails by default */
     return ''
   }),
@@ -17,7 +17,7 @@ describe('gitWorkflow', () => {
   const options = { gitConfigDir: '.' }
 
   describe('getBackupStash', () => {
-    it('should throw when stash not found', async () => {
+    it('should throw when stash not found', async ({ expect }) => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
 
@@ -28,7 +28,7 @@ describe('gitWorkflow', () => {
       expect(ctx.errors.has(GetBackupStashError)).toEqual(true)
     })
 
-    it('should throw when stash not found even when other stashes are', async () => {
+    it('should throw when stash not found even when other stashes are', async ({ expect }) => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
       ctx.backupHash = 'not-found'
@@ -42,7 +42,7 @@ describe('gitWorkflow', () => {
       expect(ctx.errors.has(GetBackupStashError)).toEqual(true)
     })
 
-    it('should return ref to the backup stash', async () => {
+    it('should return ref to the backup stash', async ({ expect }) => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
       ctx.backupHash = 'abc123'

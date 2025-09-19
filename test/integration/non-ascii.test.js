@@ -1,15 +1,12 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   const getQuotePathTest = (state) =>
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       // Run lint-staged with `prettier --write` and commit pretty files
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -44,10 +41,8 @@ describe('lint-staged', () => {
       // expect(await readFile('👋.js')).toEqual(fileFixtures.prettyJS)
     })
 
-  // eslint-disable-next-line jest/expect-expect
   test('handles files with non-ascii characters when core.quotepath is on', getQuotePathTest('on'))
 
-  // eslint-disable-next-line jest/expect-expect
   test(
     'handles files with non-ascii characters when core.quotepath is off',
     getQuotePathTest('off')

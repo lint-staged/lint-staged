@@ -1,16 +1,13 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'should fail when tasks modify files and --fail-on-changes is used',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly files
@@ -34,7 +31,7 @@ describe('lint-staged', () => {
 
   test(
     'should not fail --fail-on-changes is used but tasks do not modify files',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly files
@@ -56,7 +53,7 @@ describe('lint-staged', () => {
 
   test(
     'should fail and leave task modifications in worktree when --fail-on-changes and --no-revert are used',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly files

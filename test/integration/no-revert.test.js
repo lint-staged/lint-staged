@@ -1,9 +1,6 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 const UGLY_FILE = `console.log('Hello, world!', unreferencedVariable)`
 
@@ -13,7 +10,7 @@ const PRETTY_FILE = `console.log("Hello, world!", unreferencedVariable);
 describe('lint-staged', () => {
   test(
     'should revert linter changes by default',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
@@ -35,7 +32,7 @@ describe('lint-staged', () => {
 
   test(
     'should not revert linter changes when --no-revert is used',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
