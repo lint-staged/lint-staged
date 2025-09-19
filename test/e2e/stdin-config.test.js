@@ -1,17 +1,14 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from '../integration/__fixtures__/configs.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
 import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'reads config from stdin',
-    withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, readFile, writeFile }) => {
       const lintStaged = getLintStagedExecutor(cwd)
 
       // Stage ugly file
@@ -34,7 +31,7 @@ describe('lint-staged', () => {
 
   test(
     'fails when stdin config is not valid',
-    withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, readFile, writeFile }) => {
       const lintStaged = getLintStagedExecutor(cwd)
 
       // Stage ugly file

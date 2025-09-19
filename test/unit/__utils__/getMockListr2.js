@@ -1,15 +1,15 @@
-import { jest } from '@jest/globals'
 import { figures } from 'listr2'
+import { vi } from 'vitest'
 
 export const getMockListr2 = async () => {
-  const mockRunner = jest.fn()
-  mockRunner.run = jest.fn()
+  const mockRunner = vi.fn()
+  mockRunner.run = vi.fn()
 
-  jest.unstable_mockModule('listr2', () => ({
-    Listr: jest.fn(() => mockRunner),
-    ListrLogger: jest.fn(),
+  vi.mock('listr2', () => ({
+    Listr: vi.fn(() => mockRunner),
+    ListrLogger: vi.fn(),
     figures,
-    ProcessOutput: jest.fn(),
+    ProcessOutput: vi.fn(),
   }))
 
   return import('listr2')

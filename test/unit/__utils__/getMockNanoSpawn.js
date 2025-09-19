@@ -1,14 +1,14 @@
-import { jest } from '@jest/globals'
-import { SubprocessError } from 'nano-spawn'
+import { vi } from 'vitest'
 
 import { mockNanoSpawnReturnValue } from './mockNanoSpawnReturnValue.js'
 
 /** @returns {Promise<jest.Mocked<import('nano-spawn')>>} */
-export const getMockNanoSpawn = async (mockReturnValue) => {
-  jest.unstable_mockModule('nano-spawn', () => {
+export const getMockNanoSpawn = async () => {
+  vi.mock('nano-spawn', async (importOriginal) => {
+    const mod = await importOriginal()
     return {
-      default: jest.fn(() => mockNanoSpawnReturnValue(mockReturnValue)),
-      SubprocessError,
+      ...mod,
+      default: vi.fn(() => mockNanoSpawnReturnValue()),
     }
   })
 

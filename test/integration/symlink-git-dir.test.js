@@ -1,19 +1,16 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'supports symlinked git dir',
-    withGitIntegration(async ({ cwd, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       // Rename `.git` to `git` and add symbolic link pointing to it
       await fs.rename(path.resolve(cwd, '.git'), path.resolve(cwd, 'git'))
       await fs.symlink(path.resolve(cwd, 'git'), path.resolve(cwd, '.git'), 'dir')

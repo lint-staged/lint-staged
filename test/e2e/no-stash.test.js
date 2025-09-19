@@ -1,17 +1,14 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from '../integration/__fixtures__/configs.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
 import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     '--diff implies --no-stash',
-    withGitIntegration(async ({ execGit, writeFile, cwd }) => {
+    withGitIntegration(async ({ execGit, expect, writeFile, cwd }) => {
       const lintStaged = getLintStagedExecutor(cwd)
 
       await execGit(['checkout', '-b', 'my-branch'])
@@ -49,7 +46,7 @@ describe('lint-staged', () => {
 
   test(
     "--no-stash doesn't imply --no-hide-partially-staged, losing conflicting unstaged changes",
-    withGitIntegration(async ({ execGit, readFile, writeFile, cwd }) => {
+    withGitIntegration(async ({ execGit, expect, readFile, writeFile, cwd }) => {
       const lintStaged = getLintStagedExecutor(cwd)
 
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))

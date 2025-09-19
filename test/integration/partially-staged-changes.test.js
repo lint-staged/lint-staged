@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
@@ -6,15 +6,12 @@ import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 addConfigFileSerializer()
 
 describe('lint-staged', () => {
   test(
     'commits partial change from partially staged file when no errors from linter',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage pretty file
@@ -53,7 +50,7 @@ describe('lint-staged', () => {
 
   test(
     'commits partial change from partially staged file when no errors from linter and linter modifies file',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly file
@@ -86,7 +83,7 @@ describe('lint-staged', () => {
 
   test(
     'fails to commit partial change from partially staged file when errors from linter',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage ugly file
@@ -113,7 +110,7 @@ describe('lint-staged', () => {
 
   test(
     'fails to commit partial change from partially staged file when errors from linter and linter modifies files',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Add unfixable file to commit so `prettier --write` breaks

@@ -1,19 +1,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { expect, jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierListDifferent, prettierWrite } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'handles merge conflicts',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       const fileInBranchA = `module.exports = "foo";\n`
       const fileInBranchB = `module.exports = 'bar'\n`
       const fileInBranchBFixed = `module.exports = "bar";\n`
@@ -75,7 +72,7 @@ describe('lint-staged', () => {
 
   test(
     'handles merge conflict when task errors',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       const fileInBranchA = `module.exports = "foo";\n`
       const fileInBranchB = `module.exports = 'bar'\n`
       const fileInBranchBFixed = `module.exports = "bar";\n`
@@ -138,7 +135,7 @@ describe('lint-staged', () => {
 
   test(
     'fails to commit entire staged file when there are unrecoverable merge conflicts',
-    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit }) => {
       // Stage file
       await appendFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
@@ -173,7 +170,7 @@ describe('lint-staged', () => {
    */
   test(
     'operates on too many files during merge conflict',
-    withGitIntegration(async ({ appendFile, gitCommit, readFile, writeFile, execGit }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       const commonContent = `export function     common()  {    };\n\n\n\n`
 
       const upstreamContent = `export function      upstream() {    };\n\n\n\n`

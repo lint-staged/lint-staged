@@ -10,18 +10,20 @@
  * Licensed under the MIT License
  */
 
+import { describe, it } from 'vitest'
+
 import { normalizePath } from '../../lib/normalizePath'
 
 describe('normalizePath', () => {
   describe('single slash', () => {
-    it('should always return a single forward slash', () => {
+    it('should always return a single forward slash', ({ expect }) => {
       expect(normalizePath('/')).toEqual('/')
       expect(normalizePath('\\')).toEqual('/')
     })
   })
 
   describe('strip trailing slashes', () => {
-    it.each([
+    it.for([
       ['../../foo/bar', '../../foo/bar'],
       ['..\\..\\foo/bar', '../../foo/bar'],
       ['..\\\\..\\\\foo/bar', '../../foo/bar'],
@@ -52,7 +54,7 @@ describe('normalizePath', () => {
       ['foo\\bar\\baz', 'foo/bar/baz'],
       ['foo\\bar\\baz\\', 'foo/bar/baz'],
       ['foo\\bar\\baz\\\\\\', 'foo/bar/baz'],
-    ])('should normalize %s', (input, output) => {
+    ])('should normalize %s', ([input, output], { expect }) => {
       expect(normalizePath(input)).toEqual(output)
     })
   })

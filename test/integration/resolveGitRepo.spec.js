@@ -2,6 +2,8 @@ import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { describe, it } from 'vitest'
+
 import { normalizePath } from '../../lib/normalizePath.js'
 import { resolveGitRepo } from '../../lib/resolveGitRepo.js'
 
@@ -9,12 +11,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = normalizePath(path.join(__dirname, '../../'))
 
 describe('resolveGitRepo', () => {
-  it('should resolve to repo root', async () => {
+  it('should resolve to repo root', async ({ expect }) => {
     const { topLevelDir } = await resolveGitRepo(__dirname)
     expect(topLevelDir).toEqual(normalizePath(REPO_ROOT))
   })
 
-  it('should return "topLevelDir" value compatible with node:child_process', async () => {
+  it('should return "topLevelDir" value compatible with node:child_process', async ({ expect }) => {
     const { topLevelDir } = await resolveGitRepo(__dirname)
     expect(topLevelDir).toEqual(normalizePath(REPO_ROOT))
 
@@ -26,7 +28,9 @@ describe('resolveGitRepo', () => {
     expect(stdout).toMatch('lint-staged')
   })
 
-  it('should return "gitConfigDir" value compatible with node:child_process', async () => {
+  it('should return "gitConfigDir" value compatible with node:child_process', async ({
+    expect,
+  }) => {
     const { gitConfigDir } = await resolveGitRepo()
 
     // Path ends in "/.git"

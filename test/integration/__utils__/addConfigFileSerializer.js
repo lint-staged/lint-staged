@@ -1,4 +1,6 @@
-import ansiSerializer from 'jest-snapshot-serializer-ansi'
+import { stripVTControlCharacters } from 'node:util'
+
+import { expect } from 'vitest'
 
 import { replaceSerializer } from './replaceSerializer'
 
@@ -17,13 +19,8 @@ const replaceFilepathSerializer = replaceSerializer(
 export const addConfigFileSerializer = () => {
   // Awkwardly merge three serializers
   expect.addSnapshotSerializer({
-    test: (val) =>
-      ansiSerializer.test(val) ||
-      replaceConfigPathSerializer.test(val) ||
-      replaceFilepathSerializer.test(val),
-    print: (val, serialize) =>
-      replaceFilepathSerializer.print(
-        replaceConfigPathSerializer.print(ansiSerializer.print(val, serialize))
-      ),
+    test: (val) => replaceConfigPathSerializer.test(val) || replaceFilepathSerializer.test(val),
+    print: (val) => replaceFilepathSerializer.print(val),
+    serialize: (val) => stripVTControlCharacters(val),
   })
 }

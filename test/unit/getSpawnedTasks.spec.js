@@ -1,3 +1,5 @@
+import { beforeEach, describe, it } from 'vitest'
+
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 
 const { default: spawn } = await getMockNanoSpawn()
@@ -11,7 +13,7 @@ describe('getSpawnedTasks', () => {
     spawn.mockClear()
   })
 
-  it('should return an array', async () => {
+  it('should return an array', async ({ expect }) => {
     const array = await getSpawnedTasks({
       commands: 'test',
       topLevelDir,
@@ -20,7 +22,7 @@ describe('getSpawnedTasks', () => {
     expect(array).toBeInstanceOf(Array)
   })
 
-  it('should work with a single command', async () => {
+  it('should work with a single command', async ({ expect }) => {
     expect.assertions(4)
     const res = await getSpawnedTasks({
       commands: 'test',
@@ -36,7 +38,7 @@ describe('getSpawnedTasks', () => {
     await taskPromise
   })
 
-  it('should work with multiple commands', async () => {
+  it('should work with multiple commands', async ({ expect }) => {
     expect.assertions(9)
     const res = await getSpawnedTasks({
       commands: ['test', 'test2'],
@@ -68,7 +70,7 @@ describe('getSpawnedTasks', () => {
     })
   })
 
-  it('should work with function task returning a string', async () => {
+  it('should work with function task returning a string', async ({ expect }) => {
     const res = await getSpawnedTasks({
       commands: () => 'test',
       topLevelDir,
@@ -78,7 +80,7 @@ describe('getSpawnedTasks', () => {
     expect(res[0].title).toEqual('test')
   })
 
-  it('should work with function task returning array of string', async () => {
+  it('should work with function task returning array of string', async ({ expect }) => {
     const res = await getSpawnedTasks({
       commands: () => ['test', 'test2'],
       topLevelDir,
@@ -89,7 +91,7 @@ describe('getSpawnedTasks', () => {
     expect(res[1].title).toEqual('test2')
   })
 
-  it('should work with function task accepting arguments', async () => {
+  it('should work with function task accepting arguments', async ({ expect }) => {
     const res = await getSpawnedTasks({
       commands: (filenames) => filenames.map((file) => `test ${file}`),
       topLevelDir,
@@ -103,7 +105,7 @@ describe('getSpawnedTasks', () => {
     expect(res[1].title).toEqual('test test2.js')
   })
 
-  it('should work with array of mixed string and function tasks', async () => {
+  it('should work with array of mixed string and function tasks', async ({ expect }) => {
     const res = await getSpawnedTasks({
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       topLevelDir,
@@ -121,7 +123,7 @@ describe('getSpawnedTasks', () => {
     expect(res[4].title).toEqual('test test3.js')
   })
 
-  it('should work with async function tasks', async () => {
+  it('should work with async function tasks', async ({ expect }) => {
     const res = await getSpawnedTasks({
       commands: async () => 'test',
       topLevelDir,
@@ -131,23 +133,21 @@ describe('getSpawnedTasks', () => {
     expect(res[0].title).toEqual('test')
   })
 
-  it("should throw when function task doesn't return string | string[]", async () => {
+  it("should throw when function task doesn't return string | string[]", async ({ expect }) => {
     await expect(
       getSpawnedTasks({
         commands: () => null,
         topLevelDir,
         files: [{ filepath: 'test.js', status: 'M' }],
       })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`
-            "✖ Validation Error:
+    ).rejects.toThrow(`✖ Validation Error:
 
-              Invalid value for '[Function]': null
+  Invalid value for '[Function]': null
 
-              Function task should return a string or an array of strings"
-          `)
+  Function task should return a string or an array of strings`)
   })
 
-  it('should prevent function from mutating original file list', async () => {
+  it('should prevent function from mutating original file list', async ({ expect }) => {
     const files = ['test.js']
 
     const res = await getSpawnedTasks({

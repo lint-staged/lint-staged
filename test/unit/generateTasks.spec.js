@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import { describe, it } from 'vitest'
+
 import { generateTasks } from '../../lib/generateTasks.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 
@@ -39,7 +41,7 @@ const config = {
 }
 
 describe('generateTasks', () => {
-  it('should return absolute paths', () => {
+  it('should return absolute paths', ({ expect }) => {
     const [task] = generateTasks({
       config: {
         '*': 'lint',
@@ -52,7 +54,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should not match non-children files', () => {
+  it('should not match non-children files', ({ expect }) => {
     const result = generateTasks({ config, cwd: '/test', files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
@@ -62,21 +64,19 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should return an empty file list for tasks with no matches.', () => {
+  it('should return an empty file list for tasks with no matches.', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
 
     result.forEach((task) => {
       if (task.commands === 'unknown-js' || task.commands === 'parent-dir-css-or-js') {
-        // eslint-disable-next-line jest/no-conditional-expect
         expect(task.fileList.length).toEqual(0)
       } else {
-        // eslint-disable-next-line jest/no-conditional-expect
         expect(task.fileList.length).not.toEqual(0)
       }
     })
   })
 
-  it('should match pattern "*.js"', () => {
+  it('should match pattern "*.js"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '*.js')
     expect(linter).toEqual({
@@ -92,7 +92,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern "**/*.js"', () => {
+  it('should match pattern "**/*.js"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '**/*.js')
     expect(linter).toEqual({
@@ -108,7 +108,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern "deeper/*.js"', () => {
+  it('should match pattern "deeper/*.js"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === 'deeper/*.js')
     expect(linter).toEqual({
@@ -121,7 +121,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern ".hidden/*.js"', () => {
+  it('should match pattern ".hidden/*.js"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '.hidden/*.js')
     expect(linter).toEqual({
@@ -134,7 +134,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern "*.{css,js}"', () => {
+  it('should match pattern "*.{css,js}"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({
@@ -155,7 +155,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match pattern "test{1..2}.css"', () => {
+  it('should match pattern "test{1..2}.css"', ({ expect }) => {
     const result = generateTasks({
       config: {
         'test{1..2}.css': 'lint',
@@ -177,7 +177,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should not match files in parent directory by default', () => {
+  it('should not match files in parent directory by default', ({ expect }) => {
     const result = generateTasks({
       config,
       cwd: '/repo/deeper',
@@ -194,7 +194,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should match files in parent directory when pattern starts with "../"', () => {
+  it('should match files in parent directory when pattern starts with "../"', ({ expect }) => {
     const result = generateTasks({
       config,
       cwd: '/repo/deeper',
@@ -211,7 +211,7 @@ describe('generateTasks', () => {
     })
   })
 
-  it('should be able to return relative paths for "*.{css,js}"', () => {
+  it('should be able to return relative paths for "*.{css,js}"', ({ expect }) => {
     const result = generateTasks({ config, cwd, files, relative: true })
     const linter = result.find((item) => item.pattern === '*.{css,js}')
     expect(linter).toEqual({

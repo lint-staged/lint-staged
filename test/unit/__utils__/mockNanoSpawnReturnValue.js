@@ -1,5 +1,3 @@
-import { SubprocessError } from 'nano-spawn'
-
 const MOCK_DEFAULT_VALUE = {
   output: 'a-ok',
   nodeChildProcess: { pid: 0 },
@@ -10,7 +8,7 @@ export const mockNanoSpawnReturnValue = (value = MOCK_DEFAULT_VALUE, executionTi
   let triggerResult
   let resolveTimeout
 
-  const isFailed = value instanceof SubprocessError
+  const isFailed = value instanceof Error
 
   const returnedPromise = executionTime
     ? new Promise((resolve, reject) => {

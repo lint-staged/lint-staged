@@ -1,18 +1,15 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 describe('lint-staged', () => {
   test(
     'fails when linter creates a .git/index.lock',
     withGitIntegration(
-      async ({ appendFile, cwd, execGit, gitCommit, readFile, removeFile, writeFile }) => {
+      async ({ appendFile, cwd, execGit, expect, gitCommit, readFile, removeFile, writeFile }) => {
         // Stage ugly file
         await appendFile('test.js', uglyJS)
         await execGit(['add', 'test.js'])

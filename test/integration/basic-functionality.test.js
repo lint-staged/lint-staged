@@ -1,22 +1,19 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   addConfigFileSerializer()
 
   test(
     'commits entire staged file when no errors from linter',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage pretty file
@@ -35,7 +32,7 @@ describe('lint-staged', () => {
 
   test(
     'commits entire staged file when no errors and linter modifies file',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage multiple ugly files
@@ -58,7 +55,7 @@ describe('lint-staged', () => {
 
   test(
     'fails to commit entire staged file when errors from linter',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage ugly file
@@ -79,7 +76,7 @@ describe('lint-staged', () => {
 
   test(
     'fails to commit entire staged file when errors from linter and linter modifies files',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Add unfixable file to commit so `prettier --write` breaks
@@ -100,7 +97,7 @@ describe('lint-staged', () => {
 
   test(
     'clears unstaged changes when linter applies same changes',
-    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Stage ugly file
@@ -132,7 +129,7 @@ describe('lint-staged', () => {
 
   test(
     'runs chunked tasks when necessary',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage two files
@@ -155,7 +152,7 @@ describe('lint-staged', () => {
 
   test(
     'fails when backup stash is missing',
-    withGitIntegration(async ({ execGit, gitCommit, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, writeFile }) => {
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', 'test.js'])
 
@@ -172,7 +169,7 @@ describe('lint-staged', () => {
 
   test(
     'handles files that begin with dash',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       await writeFile('--looks-like-flag.js', fileFixtures.uglyJS)
@@ -187,7 +184,7 @@ describe('lint-staged', () => {
 
   test(
     'works when a branch named stash exists',
-    withGitIntegration(async ({ execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // create a new branch called stash

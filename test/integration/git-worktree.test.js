@@ -1,18 +1,15 @@
 import path from 'node:path'
 
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'handles git worktrees',
-    withGitIntegration(async ({ appendFile, cwd, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
       // create a new branch and add it as worktree

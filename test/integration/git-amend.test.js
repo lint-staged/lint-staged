@@ -1,17 +1,14 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
-
-jest.setTimeout(20000)
-jest.retryTimes(2)
 
 const MD_CONFIG = JSON.stringify({ '*.md': 'prettier --write' })
 
 describe('lint-staged', () => {
   test(
     'works when amending previous commit',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', MD_CONFIG)
 
       // Edit file from previous commit by adding way too many newlines
@@ -33,7 +30,7 @@ describe('lint-staged', () => {
 
   test(
     'works when amending previous commit with unstaged changes',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
       await appendFile('.lintstagedrc.json', MD_CONFIG)
 
       // Edit file from previous commit

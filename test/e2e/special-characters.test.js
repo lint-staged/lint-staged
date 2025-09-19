@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import { describe, test } from 'vitest'
+
 import { getRepoRootPath } from '../__utils__/getRepoRootPath.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
@@ -15,19 +17,20 @@ describe('lint-staged', () => {
   test.each([['$test.js'], ['[test].js'], ['(test).js']])(
     'supports running "%s" with ESLint + Prettier',
     async (filename) =>
-      withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
-        const lintStaged = getLintStagedExecutor(cwd)
+      ({ expect }) =>
+        withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
+          const lintStaged = getLintStagedExecutor(cwd)
 
-        await writeFile('.lintstagedrc.json', JSON.stringify(BASIC_CONFIG))
+          await writeFile('.lintstagedrc.json', JSON.stringify(BASIC_CONFIG))
 
-        await writeFile(filename, fileFixtures.uglyJS)
-        await execGit(['add', filename])
+          await writeFile(filename, fileFixtures.uglyJS)
+          await execGit(['add', filename])
 
-        const result = await lintStaged()
+          const result = await lintStaged()
 
-        expect(result.exitCode).toEqual(0)
+          expect(result.exitCode).toEqual(0)
 
-        expect(await readFile(filename)).toEqual(fileFixtures.prettyJS)
-      })
+          expect(await readFile(filename)).toEqual(fileFixtures.prettyJS)
+        })
   )
 })

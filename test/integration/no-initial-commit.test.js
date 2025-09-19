@@ -1,17 +1,14 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import { prettierListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     'skips backup when run on an empty git repo without an initial commit',
     withGitIntegration(
-      async ({ appendFile, execGit, gitCommit, readFile, cwd }) => {
+      async ({ appendFile, execGit, expect, gitCommit, readFile, cwd }) => {
         await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
         await appendFile('test.js', prettyJS, cwd)

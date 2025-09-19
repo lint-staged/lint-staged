@@ -1,16 +1,13 @@
-import { jest } from '@jest/globals'
+import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-jest.setTimeout(20000)
-jest.retryTimes(2)
-
 describe('lint-staged', () => {
   test(
     "fails when task reverts staged changes without `--allow-empty`, to prevent an empty git commit, but doesn't reset state",
-    withGitIntegration(async ({ execGit, gitCommit, readFile, removeFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, removeFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Create and commit a pretty file without running lint-staged
@@ -44,7 +41,7 @@ describe('lint-staged', () => {
 
   test(
     'creates commit when task reverts staged changed and --allow-empty is used',
-    withGitIntegration(async ({ appendFile, execGit, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
       // Create and commit a pretty file without running lint-staged

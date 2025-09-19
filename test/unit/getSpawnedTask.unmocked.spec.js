@@ -1,8 +1,10 @@
+import { describe, it } from 'vitest'
+
 import { getSpawnedTask } from '../../lib/getSpawnedTask.js'
 import { getInitialState } from '../../lib/state.js'
 
 describe('getSpawnedTask', () => {
-  it('should kill a long running task when another fails', async () => {
+  it('should kill a long running task when another fails', async ({ expect }) => {
     const context = getInitialState()
 
     const taskFn = getSpawnedTask({
@@ -17,11 +19,7 @@ describe('getSpawnedTask', () => {
     })
     const task2Promise = taskFn2(context)
 
-    await expect(task2Promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"node -e "process.exit(1)" [FAILED]"`
-    )
-    await expect(taskPromise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"node -e "setTimeout(() => void 0, 10000)" [SIGKILL]"`
-    )
+    await expect(task2Promise).rejects.toThrow(`node -e "process.exit(1)" [FAILED]`)
+    await expect(taskPromise).rejects.toThrow(`node -e "setTimeout(() => void 0, 10000)" [SIGKILL]`)
   })
 })

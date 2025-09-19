@@ -1,16 +1,16 @@
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { describe, it, vi } from 'vitest'
 
-jest.unstable_mockModule('../../lib/execGit.js', () => ({
-  execGit: jest.fn(async () => {}),
+vi.mock('../../lib/execGit.js', () => ({
+  execGit: vi.fn(async () => {}),
 }))
 
-jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
-  validateOptions: jest.fn(async () => {}),
+vi.mock('../../lib/validateOptions.js', () => ({
+  validateOptions: vi.fn(async () => {}),
 }))
 
-jest.unstable_mockModule('../../lib/runAll.js', () => ({
-  runAll: jest.fn(async () => {}),
+vi.mock('../../lib/runAll.js', () => ({
+  runAll: vi.fn(async () => {}),
 }))
 
 const { default: lintStaged } = await import('../../lib/index.js')
@@ -21,7 +21,7 @@ const { ApplyEmptyCommitError, ConfigNotFoundError, GitError } = await import(
 )
 
 describe('lintStaged', () => {
-  it('should log error when configuration not found', async () => {
+  it('should log error when configuration not found', async ({ expect }) => {
     const ctx = getInitialState()
     ctx.errors.add(ConfigNotFoundError)
     runAll.mockImplementationOnce(async () => {
@@ -38,7 +38,7 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should log error when preventing empty commit', async () => {
+  it('should log error when preventing empty commit', async ({ expect }) => {
     const ctx = getInitialState()
     ctx.errors.add(ApplyEmptyCommitError)
     runAll.mockImplementationOnce(async () => {
@@ -58,7 +58,7 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should log error and git stash message when a git operation failed', async () => {
+  it('should log error and git stash message when a git operation failed', async ({ expect }) => {
     const ctx = getInitialState()
     ctx.shouldBackup = true
     ctx.errors.add(GitError)
@@ -83,7 +83,9 @@ describe('lintStaged', () => {
     `)
   })
 
-  it('should log error without git stash message when a git operation failed and backup disabled', async () => {
+  it('should log error without git stash message when a git operation failed and backup disabled', async ({
+    expect,
+  }) => {
     const ctx = getInitialState()
     ctx.shouldBackup = false
     ctx.errors.add(GitError)
@@ -106,7 +108,7 @@ describe('lintStaged', () => {
     )
   })
 
-  it('should throw when context is malformed', async () => {
+  it('should throw when context is malformed', async ({ expect }) => {
     expect.assertions(2)
 
     const testError = Symbol()
@@ -118,21 +120,19 @@ describe('lintStaged', () => {
     const logger = makeConsoleMock()
 
     await lintStaged({}, logger).catch((error) => {
-      // eslint-disable-next-line jest/no-conditional-expect
       expect(error).toEqual(testError)
     })
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
-  it.each`
-    platform    | maxArgLength
-    ${'darwin'} | ${262144 / 2}
-    ${'win32'}  | ${8191 / 2}
-    ${'others'} | ${131072 / 2}
-  `(
-    'should use default max arg length of $maxArgLength on $platform',
-    async ({ platform, maxArgLength }) => {
+  it.for([
+    ['darwin', 262144 / 2],
+    ['win32', 8191 / 2],
+    ['others', 131072 / 2],
+  ])(
+    'should use default max arg length of $1 on $2',
+    async ([platform, maxArgLength], { expect }) => {
       const realPlatform = process.platform
       Object.defineProperty(process, 'platform', {
         value: platform,

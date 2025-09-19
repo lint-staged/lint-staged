@@ -1,23 +1,23 @@
-import { jest } from '@jest/globals'
 import makeConsoleMock from 'consolemock'
+import { beforeEach, describe, it, vi } from 'vitest'
 
-jest.unstable_mockModule('debug', () => {
-  const debug = jest.fn().mockReturnValue(jest.fn())
-  debug.enable = jest.fn()
+vi.mock('debug', () => {
+  const debug = vi.fn().mockReturnValue(vi.fn())
+  debug.enable = vi.fn()
 
   return { default: debug }
 })
 
-jest.unstable_mockModule('lilconfig', () => ({
-  lilconfig: jest.fn(),
+vi.mock('lilconfig', () => ({
+  lilconfig: vi.fn(),
 }))
 
-jest.unstable_mockModule('../../lib/getStagedFiles.js', () => ({ getStagedFiles: jest.fn() }))
+vi.mock('../../lib/getStagedFiles.js', () => ({ getStagedFiles: vi.fn() }))
 
-jest.unstable_mockModule('../../lib/gitWorkflow.js', () => ({ GitWorkflow: jest.fn() }))
+vi.mock('../../lib/gitWorkflow.js', () => ({ GitWorkflow: vi.fn() }))
 
-jest.unstable_mockModule('../../lib/validateOptions.js', () => ({
-  validateOptions: jest.fn().mockImplementation(async () => void {}),
+vi.mock('../../lib/validateOptions.js', () => ({
+  validateOptions: vi.fn().mockImplementation(async () => void {}),
 }))
 
 const { default: debugLib } = await import('debug')
@@ -31,11 +31,11 @@ describe('lintStaged', () => {
   const logger = makeConsoleMock()
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     logger.clearHistory()
   })
 
-  it('should use lilconfig if no params are passed', async () => {
+  it('should use lilconfig if no params are passed', async ({ expect }) => {
     expect.assertions(2)
 
     const config = { '*': 'mytask' }
@@ -51,7 +51,7 @@ describe('lintStaged', () => {
     expect(debugLib.enable).not.toHaveBeenCalled()
   })
 
-  it('should return true when passed', async () => {
+  it('should return true when passed', async ({ expect }) => {
     expect.assertions(1)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.java', status: 'M' }])
@@ -61,7 +61,7 @@ describe('lintStaged', () => {
     await expect(lintStaged({ config, quiet: true }, logger)).resolves.toEqual(true)
   })
 
-  it('should use use the console if no logger is passed', async () => {
+  it('should use use the console if no logger is passed', async ({ expect }) => {
     expect.assertions(1)
 
     lilconfig({ config: {} })
@@ -80,7 +80,7 @@ describe('lintStaged', () => {
     console = previousConsole
   })
 
-  it('should enable debugger', async () => {
+  it('should enable debugger', async ({ expect }) => {
     expect.assertions(1)
 
     lilconfig({ config: {} })

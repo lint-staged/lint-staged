@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import { describe, it } from 'vitest'
+
 import { chunkFiles } from '../../lib/chunkFiles.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 
@@ -13,7 +15,7 @@ describe('chunkFiles', () => {
 
   const baseDir = normalizePath('/opt/git/example.git')
 
-  it('should default to sane value', () => {
+  it('should default to sane value', ({ expect }) => {
     const chunkedFiles = chunkFiles({
       baseDir,
       files: [{ filepath: 'foo.js', status: 'M' }],
@@ -29,12 +31,12 @@ describe('chunkFiles', () => {
     ])
   })
 
-  it('should not chunk short argument string', () => {
+  it('should not chunk short argument string', ({ expect }) => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 1000, relative: true })
     expect(chunkedFiles).toEqual([files])
   })
 
-  it('should chunk too long argument string', () => {
+  it('should chunk too long argument string', ({ expect }) => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20, relative: false })
     expect(chunkedFiles).toEqual(
       files.map((file) => [
@@ -46,7 +48,7 @@ describe('chunkFiles', () => {
     )
   })
 
-  it('should take into account relative setting', () => {
+  it('should take into account relative setting', ({ expect }) => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 20, relative: true })
     expect(chunkedFiles).toEqual([
       [files[0], files[1]],
@@ -54,7 +56,7 @@ describe('chunkFiles', () => {
     ])
   })
 
-  it('should resolve absolute paths by default', () => {
+  it('should resolve absolute paths by default', ({ expect }) => {
     const chunkedFiles = chunkFiles({ baseDir, files })
     expect(chunkedFiles).toEqual([
       files.map((file) => ({
@@ -64,7 +66,7 @@ describe('chunkFiles', () => {
     ])
   })
 
-  it('should resolve absolute paths by default even when maxArgLength is set', () => {
+  it('should resolve absolute paths by default even when maxArgLength is set', ({ expect }) => {
     const chunkedFiles = chunkFiles({ baseDir, files, maxArgLength: 262144 })
     expect(chunkedFiles).toEqual([
       files.map((file) => ({

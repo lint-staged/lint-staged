@@ -1,4 +1,5 @@
 import makeConsoleMock from 'consolemock'
+import { describe, it } from 'vitest'
 
 import {
   DOUBLE_BRACES_REGEXP,
@@ -7,59 +8,59 @@ import {
 } from '../../lib/validateBraces.js'
 
 describe('INCORRECT_BRACES_REGEXP', () => {
-  it(`should match '*.{js}'`, () => {
+  it(`should match '*.{js}'`, ({ expect }) => {
     expect('*.{js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
-  it(`should match 'file_{10}'`, () => {
+  it(`should match 'file_{10}'`, ({ expect }) => {
     expect('file_{test}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
-  it(`should match '*.{spec\\.js}'`, () => {
+  it(`should match '*.{spec\\.js}'`, ({ expect }) => {
     expect('*.{spec\\.js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
-  it(`should match '*.{js\\,ts}'`, () => {
+  it(`should match '*.{js\\,ts}'`, ({ expect }) => {
     expect('*.{js\\,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
   })
 
-  it("should not match '*.${js}'", () => {
+  it("should not match '*.${js}'", ({ expect }) => {
     expect('*.${js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
-  it(`should not match '.{js,ts}'`, () => {
+  it(`should not match '.{js,ts}'`, ({ expect }) => {
     expect('.{js,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
-  it(`should not match 'file_{1..10}'`, () => {
+  it(`should not match 'file_{1..10}'`, ({ expect }) => {
     expect('file_{1..10}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
-  it(`should not match '*.\\{js\\}'`, () => {
+  it(`should not match '*.\\{js\\}'`, ({ expect }) => {
     expect('*.\\{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
-  it(`should not match '*.\\{js}'`, () => {
+  it(`should not match '*.\\{js}'`, ({ expect }) => {
     expect('*.\\{js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 
-  it(`should not match '*.{js\\}'`, () => {
+  it(`should not match '*.{js\\}'`, ({ expect }) => {
     expect('*.{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
   })
 })
 
 describe('DOUBLE_BRACES_REGEXP', () => {
-  it(`should match '*.{{js,ts}}'`, () => {
+  it(`should match '*.{{js,ts}}'`, ({ expect }) => {
     expect('*.{{js,ts}}'.match(DOUBLE_BRACES_REGEXP)).toBeTruthy()
   })
 
-  it(`should not match '*.{{js,ts},{css}}'`, () => {
+  it(`should not match '*.{{js,ts},{css}}'`, ({ expect }) => {
     expect('*.{{js,ts},{css}}'.match(DOUBLE_BRACES_REGEXP)).toBeFalsy()
   })
 })
 
 describe('validateBraces', () => {
-  it('should warn about `*.{js}` and return fixed pattern', () => {
+  it('should warn about `*.{js}` and return fixed pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{js}', logger)
@@ -72,7 +73,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  it('should warn about `*.{ts}{x}` and return fixed pattern', () => {
+  it('should warn about `*.{ts}{x}` and return fixed pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{ts}{x}', logger)
@@ -85,7 +86,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  it('should warn about `*.{js,{ts}}` and return fixed pattern', () => {
+  it('should warn about `*.{js,{ts}}` and return fixed pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{js,{ts}}', logger)
@@ -98,7 +99,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  it('should warn about `*.{{js,ts}}` and return fixed pattern', () => {
+  it('should warn about `*.{{js,ts}}` and return fixed pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{{js,ts}}', logger)
@@ -111,7 +112,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  it('should warn about `*.{{js,ts},{css}}` and return fixed pattern', () => {
+  it('should warn about `*.{{js,ts},{css}}` and return fixed pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.{{js,ts},{css}}', logger)
@@ -124,7 +125,7 @@ describe('validateBraces', () => {
     `)
   })
 
-  it('should not warn about `*.\\{js\\}` and return the same pattern', () => {
+  it('should not warn about `*.\\{js\\}` and return the same pattern', ({ expect }) => {
     const logger = makeConsoleMock()
 
     const fixedBraces = validateBraces('*.\\{js\\}', logger)
