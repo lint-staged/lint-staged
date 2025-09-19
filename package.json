@@ -40,9 +40,8 @@
     "MIGRATION.md"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint",
     "test": "vitest",
-    "test:watch": "npm run test -- --watch",
     "typecheck": "tsc",
     "version": "npx changeset version",
     "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
