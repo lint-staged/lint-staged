@@ -7,19 +7,26 @@ describe('getSpawnedTask', () => {
   it('should kill a long running task when another fails', async ({ expect }) => {
     const context = getInitialState()
 
-    const taskFn = getSpawnedTask({
-      command: 'node -e "setTimeout(() => void 0, 10000)"',
-      isFn: true,
-    })
-    const taskPromise = taskFn(context)
+    const results = await Promise.allSettled([
+      getSpawnedTask({
+        command: 'node -e "setTimeout(() => void 0, 10000)"',
+        isFn: true,
+      })(context),
+      getSpawnedTask({
+        command: 'node -e "process.exit(1)"',
+        isFn: true,
+      })(context),
+    ])
 
-    const taskFn2 = getSpawnedTask({
-      command: 'node -e "process.exit(1)"',
-      isFn: true,
-    })
-    const task2Promise = taskFn2(context)
-
-    await expect(task2Promise).rejects.toThrow(`node -e "process.exit(1)" [FAILED]`)
-    await expect(taskPromise).rejects.toThrow(`node -e "setTimeout(() => void 0, 10000)" [SIGKILL]`)
+    expect(results).toEqual([
+      {
+        status: 'rejected',
+        reason: Error('node -e "setTimeout(() => void 0, 10000)" [SIGKILL]'),
+      },
+      {
+        status: 'rejected',
+        reason: Error('node -e "process.exit(1)" [FAILED]'),
+      },
+    ])
   })
 })
