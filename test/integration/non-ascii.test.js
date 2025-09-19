@@ -41,8 +41,10 @@ describe('lint-staged', () => {
       // expect(await readFile('👋.js')).toEqual(fileFixtures.prettyJS)
     })
 
+  // eslint-disable-next-line vitest/expect-expect
   test('handles files with non-ascii characters when core.quotepath is on', getQuotePathTest('on'))
 
+  // eslint-disable-next-line vitest/expect-expect
   test(
     'handles files with non-ascii characters when core.quotepath is off',
     getQuotePathTest('off')
