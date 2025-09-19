@@ -1,0 +1,25 @@
+name: Npm
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  Install:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          registry-url: https://registry.npmjs.org
+      - uses: actions/cache@v4
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
+      - if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts

@@ -43,7 +43,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
+    "test": "npx cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:watch": "npm run test -- --watch",
     "typecheck": "tsc --noEmit --strict test/types/index.ts",
     "version": "npx changeset version",
