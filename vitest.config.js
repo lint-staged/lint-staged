@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
+      enabled: true,
       experimentalAstAwareRemapping: true,
       include: ['lib/**/*.js'],
       provider: 'v8',
@@ -24,14 +25,25 @@ export default defineConfig({
         test: {
           name: 'e2e',
           include: ['test/e2e/**/*.(test|spec).js'],
-          testTimeout: 10_000,
+          testTimeout: 20_000, // Windows in GitHub Actions...
         },
       },
       {
         test: {
           name: 'integration',
           include: ['test/integration/**/*.(test|spec).js'],
-          testTimeout: 10_000,
+          testTimeout: 20_000, // Windows in GitHub Actions...
+        },
+      },
+      {
+        test: {
+          name: 'types',
+          include: ['test/types/index.(test|spec).ts'],
+          testTimeout: 5_000,
+          typecheck: {
+            enabled: true,
+            include: ['test/types/index.(test|spec).ts'],
+          },
         },
       },
       {
