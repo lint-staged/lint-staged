@@ -55,15 +55,3 @@ jobs:
           git add .
           git commit --amend --no-edit
           git push --force --force-with-lease
-
-  dependabot-automerge:
-    name: Automatically merge Dependabot Pull Request
-    if: github.actor == 'dependabot[bot]'
-    needs: dependabot-changeset
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          gh pr review --approve "${{github.event.pull_request.html_url}}"
-          gh pr merge --auto --rebase --delete-branch "${{github.event.pull_request.html_url}}"
-        env:
-          GH_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
