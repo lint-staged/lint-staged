@@ -1,8 +1,14 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { afterEach, describe, it, vi } from 'vitest'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+import { beforeEach, describe, it, vi } from 'vitest'
+
+import { PACKAGE_JSON_FILE } from '../../lib/configFiles.js'
 import { normalizePath } from '../../lib/normalizePath.js'
+import { listConfigFilesFromFs } from '../../lib/searchConfigs.js'
+
+vi.spyOn(fs, 'access').mockImplementation(vi.fn())
 
 vi.mock('../../lib/execGit.js', () => ({
   execGit: vi.fn(async () => {
@@ -25,8 +31,8 @@ const { searchConfigs } = await import('../../lib/searchConfigs.js')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('searchConfigs', () => {
-  afterEach(() => {
-    vi.clearAllMocks()
+  beforeEach(() => {
+    vi.resetAllMocks()
   })
 
   it('should throw for invalid config object', async ({ expect }) => {
@@ -79,9 +85,10 @@ describe('searchConfigs', () => {
   it('should return auto-discovered config from cwd when not found from git', async ({
     expect,
   }) => {
-    const configPath = normalizePath(path.join(process.cwd(), '.lintstagedrc.json'))
+    const configPath = normalizePath(path.join(process.cwd(), 'lint-staged.config.js'))
     const config = { '*.js': 'eslint' }
 
+    execGit.mockResolvedValueOnce('')
     loadConfig.mockResolvedValueOnce({ config, filepath: configPath })
 
     await expect(searchConfigs({})).resolves.toEqual({ [configPath]: config })
@@ -127,5 +134,37 @@ describe('searchConfigs', () => {
     const configs = await searchConfigs({})
 
     expect(Object.keys(configs)).toEqual([topLevelConfig])
+  })
+})
+
+describe('listConfigFilesFromFs', () => {
+  it('should find config from root level', async ({ expect }) => {
+    const cwd = process.cwd()
+    const rootDir = path.parse(cwd).root
+
+    /** Only call that success is to "/package.json" */
+    fs.access.mockImplementation(
+      vi.fn(async (f) => {
+        const { dir, base } = path.parse(f)
+        if (dir === rootDir && base === PACKAGE_JSON_FILE) {
+          return
+        }
+
+        throw new Error()
+      })
+    )
+
+    const configs = await listConfigFilesFromFs({ cwd: process.cwd() })
+
+    expect(configs).toEqual([normalizePath(path.join(rootDir, PACKAGE_JSON_FILE))])
+  })
+
+  it('should not get stuck in infinite recursion when no configs found', async ({ expect }) => {
+    /** Only call that success is to "/package.json" */
+    fs.access.mockImplementation(vi.fn().mockRejectedValue(new Error()))
+
+    const configs = await listConfigFilesFromFs({ cwd: process.cwd() })
+
+    expect(configs).toEqual([])
   })
 })

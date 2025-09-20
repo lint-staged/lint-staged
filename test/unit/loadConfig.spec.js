@@ -193,7 +193,7 @@ describe('loadConfig', () => {
   it('should return empty object when config file is not found', async ({ expect }) => {
     expect.assertions(1)
 
-    const result = await loadConfig({ cwd: '/' })
+    const result = await loadConfig({}, logger)
 
     expect(result).toMatchInlineSnapshot(`{}`)
   })

@@ -7,8 +7,6 @@ vi.mock('../../lib/debug.js', () => ({
   isDebugEnv: vi.fn(),
 }))
 
-vi.mock('lilconfig', () => ({ lilconfig: vi.fn() }))
-
 vi.mock('../../lib/getStagedFiles.js', () => ({ getStagedFiles: vi.fn() }))
 
 vi.mock('../../lib/gitWorkflow.js', () => ({ GitWorkflow: vi.fn() }))
@@ -18,7 +16,6 @@ vi.mock('../../lib/validateOptions.js', () => ({
 }))
 
 const { enableDebug } = await import('../../lib/debug.js')
-const { lilconfig } = await import('lilconfig')
 const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
 const { default: lintStaged } = await import('../../lib/index.js')
 
@@ -30,22 +27,6 @@ describe('lintStaged', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     logger.clearHistory()
-  })
-
-  it('should use lilconfig if no params are passed', async ({ expect }) => {
-    expect.assertions(2)
-
-    const config = { '*': 'mytask' }
-    lilconfig({ config })
-
-    await lintStaged(undefined, logger)
-
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR ✖ Failed to get staged files!"
-    `)
-
-    expect(enableDebug).not.toHaveBeenCalled()
   })
 
   it('should return true when passed', async ({ expect }) => {
@@ -60,8 +41,6 @@ describe('lintStaged', () => {
 
   it('should use use the console if no logger is passed', async ({ expect }) => {
     expect.assertions(1)
-
-    lilconfig({ config: {} })
 
     const previousConsole = console
     const mockedConsole = makeConsoleMock()
@@ -79,8 +58,6 @@ describe('lintStaged', () => {
 
   it('should enable debugger', async ({ expect }) => {
     expect.assertions(1)
-
-    lilconfig({ config: {} })
 
     await lintStaged({ debug: true }, logger)
 
