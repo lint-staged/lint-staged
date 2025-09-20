@@ -1,16 +1,13 @@
 import makeConsoleMock from 'consolemock'
 import { beforeEach, describe, it, vi } from 'vitest'
 
-vi.mock('debug', () => {
-  const debug = vi.fn().mockReturnValue(vi.fn())
-  debug.enable = vi.fn()
-
-  return { default: debug }
-})
-
-vi.mock('lilconfig', () => ({
-  lilconfig: vi.fn(),
+vi.mock('../../lib/debug.js', () => ({
+  createDebug: vi.fn().mockReturnValue(vi.fn()),
+  enableDebug: vi.fn(),
+  isDebugEnv: vi.fn(),
 }))
+
+vi.mock('lilconfig', () => ({ lilconfig: vi.fn() }))
 
 vi.mock('../../lib/getStagedFiles.js', () => ({ getStagedFiles: vi.fn() }))
 
@@ -20,7 +17,7 @@ vi.mock('../../lib/validateOptions.js', () => ({
   validateOptions: vi.fn().mockImplementation(async () => void {}),
 }))
 
-const { default: debugLib } = await import('debug')
+const { enableDebug } = await import('../../lib/debug.js')
 const { lilconfig } = await import('lilconfig')
 const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
 const { default: lintStaged } = await import('../../lib/index.js')
@@ -48,7 +45,7 @@ describe('lintStaged', () => {
       ERROR ✖ Failed to get staged files!"
     `)
 
-    expect(debugLib.enable).not.toHaveBeenCalled()
+    expect(enableDebug).not.toHaveBeenCalled()
   })
 
   it('should return true when passed', async ({ expect }) => {
@@ -87,6 +84,6 @@ describe('lintStaged', () => {
 
     await lintStaged({ debug: true }, logger)
 
-    expect(debugLib.enable).toHaveBeenCalled()
+    expect(enableDebug).toHaveBeenCalled()
   })
 })
