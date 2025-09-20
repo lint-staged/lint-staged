@@ -1,9 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
-import chalk from 'chalk'
 import spawn from 'nano-spawn'
 import { subset } from 'semver'
+
+import { bold, green, red } from '../lib/colors.js'
 
 const packageJson = JSON.parse(
   await readFile(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -11,11 +12,11 @@ const packageJson = JSON.parse(
 
 const lintStagedRequires = packageJson.engines.node
 
-console.log(`Currently required Node.js version: ${lintStagedRequires}`)
+console.log(bold(`Currently required Node.js version: ${lintStagedRequires}`))
 
-console.log(chalk.dim('-----------------------------'))
-console.log(chalk.dim('Testing current dependencies:'))
-console.log(chalk.dim('-----------------------------'))
+console.log('-----------------------------')
+console.log('Testing current dependencies:')
+console.log('-----------------------------')
 
 let allDependenciesSupported = true
 
@@ -43,7 +44,7 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
     allDependenciesSupported = false
   }
 
-  const color = isSubset ? chalk.greenBright : chalk.redBright
+  const color = isSubset ? green : red
   const symbol = isSubset ? `✓` : '×'
 
   console.log(`${color(`${symbol} ${dependency}`)}:`, requiredVersion)

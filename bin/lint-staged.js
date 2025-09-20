@@ -2,7 +2,6 @@
 
 import { userInfo } from 'node:os'
 
-import { supportsColor } from 'chalk'
 import { Option, program } from 'commander'
 import debug from 'debug'
 
@@ -10,11 +9,6 @@ import lintStaged from '../lib/index.js'
 import { CONFIG_STDIN_ERROR, RESTORE_STASH_EXAMPLE } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
 import { getVersion } from '../lib/version.js'
-
-// Force colors for packages that depend on https://www.npmjs.com/package/supports-color
-if (supportsColor) {
-  process.env.FORCE_COLOR = supportsColor.level.toString()
-}
 
 const debugLog = debug('lint-staged:bin')
 
