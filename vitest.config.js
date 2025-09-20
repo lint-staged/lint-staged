@@ -20,6 +20,9 @@ export default defineConfig({
         statements: [90, 100],
       },
     },
+    env: {
+      NO_COLOR: '',
+    },
     projects: [
       {
         test: {
