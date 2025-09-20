@@ -3,14 +3,14 @@
 import { userInfo } from 'node:os'
 
 import { Option, program } from 'commander'
-import debug from 'debug'
 
+import { createDebug, enableDebug } from '../lib/debug.js'
 import lintStaged from '../lib/index.js'
 import { CONFIG_STDIN_ERROR, RESTORE_STASH_EXAMPLE } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
 import { getVersion } from '../lib/version.js'
 
-const debugLog = debug('lint-staged:bin')
+const debugLog = createDebug('lint-staged:bin')
 
 // Do not terminate main Listr process on SIGINT
 process.on('SIGINT', () => {})
@@ -126,7 +126,7 @@ program
 const cliOptions = program.parse(process.argv).opts()
 
 if (cliOptions.debug) {
-  debug.enable('lint-staged*')
+  enableDebug()
 }
 
 const options = {
