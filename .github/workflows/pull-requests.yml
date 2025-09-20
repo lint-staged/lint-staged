@@ -21,9 +21,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -38,9 +39,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -55,9 +57,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -70,9 +73,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -86,9 +90,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -116,9 +121,10 @@ jobs:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -161,9 +167,10 @@ jobs:
             git
       - run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
@@ -192,9 +199,10 @@ jobs:
       - uses: cygwin/cygwin-install-action@v5
       - run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false
       - uses: actions/cache@v4
         id: cache-node_modules
         with:
