@@ -23,7 +23,7 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
           token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
