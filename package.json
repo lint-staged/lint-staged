@@ -19,7 +19,7 @@
     "url": "https://opencollective.com/lint-staged"
   },
   "engines": {
-    "node": ">=20.17"
+    "node": ">=20.18"
   },
   "type": "module",
   "bin": {
