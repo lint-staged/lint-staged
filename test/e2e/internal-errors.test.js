@@ -12,7 +12,7 @@ describe('lint-staged', () => {
       const lintStaged = getLintStagedExecutor(cwd)
 
       await writeFile(
-        'lint-staged.config.js',
+        'lint-staged.config.mjs',
         `
           export default () => {
             throw new Error('Lint-staged config failure test')
@@ -27,11 +27,8 @@ describe('lint-staged', () => {
 
       const subProcessError = await lintStaged(['--debug']).catch((e) => e)
 
-      expect(subProcessError).toHaveProperty('exitCode', 1)
-      expect(subProcessError).toHaveProperty(
-        'stderr',
-        expect.stringContaining("throw new Error('Lint-staged config failure test')")
-      )
+      expect(subProcessError.exitCode).toBe(1)
+      expect(subProcessError.output).toMatch("throw new Error('Lint-staged config failure test')")
     })
   )
 })
