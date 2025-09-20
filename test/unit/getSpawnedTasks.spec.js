@@ -58,6 +58,7 @@ describe('getSpawnedTasks', () => {
       cwd: process.cwd(),
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
@@ -67,6 +68,7 @@ describe('getSpawnedTasks', () => {
       cwd: process.cwd(),
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
   })
 

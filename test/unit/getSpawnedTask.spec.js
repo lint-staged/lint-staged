@@ -26,6 +26,24 @@ describe('getSpawnedTask', () => {
     spawn.mockClear()
   })
 
+  it('should pass FORCE_COLOR var to task when color supported', async ({ expect }) => {
+    expect.assertions(2)
+    const taskFn = getSpawnedTask({
+      ...defaultOpts,
+      command: 'node --arg=true ./myscript.js',
+      color: true,
+    })
+
+    await taskFn()
+    expect(spawn).toHaveBeenCalledTimes(1)
+    expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
+      cwd: process.cwd(),
+      preferLocal: true,
+      stdin: 'ignore',
+      env: { FORCE_COLOR: 'true' },
+    })
+  })
+
   it('should support non npm scripts', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
@@ -39,6 +57,7 @@ describe('getSpawnedTask', () => {
       cwd: process.cwd(),
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
   })
 
@@ -56,6 +75,7 @@ describe('getSpawnedTask', () => {
       cwd: process.cwd(),
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
   })
 
@@ -75,6 +95,7 @@ describe('getSpawnedTask', () => {
       cwd: '../',
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
   })
 
@@ -90,6 +111,7 @@ describe('getSpawnedTask', () => {
       cwd: process.cwd(),
       preferLocal: true,
       stdin: 'ignore',
+      env: { NO_COLOR: 'true' },
     })
   })
 
