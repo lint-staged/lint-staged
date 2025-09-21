@@ -24,8 +24,8 @@ describe('lint-staged', () => {
         })
       ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
 
-      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
+      // Changes weren't reverted because "--no-revert" is implied
+      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
     })
   )
 
@@ -52,7 +52,7 @@ describe('lint-staged', () => {
   )
 
   test(
-    'should fail and leave task modifications in worktree when --fail-on-changes and --no-revert are used',
+    'should fail and revert when both --fail-on-changes and --revert are used',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -65,14 +65,14 @@ describe('lint-staged', () => {
         gitCommit({
           lintStaged: {
             failOnChanges: true,
-            revert: false, // --no-revert
+            revert: true,
             quiet: true,
           },
         })
       ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
 
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
-      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
+      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
     })
   )
 })

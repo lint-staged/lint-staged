@@ -63,10 +63,9 @@ program
     )
   )
   .addOption(
-    new Option(
-      '--fail-on-changes',
-      'fail with exit code 1 when tasks modify tracked files'
-    ).default(false)
+    new Option('--fail-on-changes', 'fail with exit code 1 when tasks modify tracked files')
+      .default(false)
+      .implies({ revert: false })
   )
   .addOption(
     new Option(

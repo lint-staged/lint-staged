@@ -174,7 +174,7 @@ By default _lint-staged_ will "exit early" when any of the configured tasks fail
 
 #### `--fail-on-changes`
 
-By default changes made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. When combined with the `--no-revert` flag the committer will have to manually stage all the changes and try again.
+By default changes made by tasks are automatically staged and added to the commit. This flag disables the behavior and makes _lint-staged_ exit with code 1, failing the commit instead. Using this flag also implies the `--no-revert` flag which means any changes made my tasks will be left in the working tree after failing, so that they can be manually staged and the commit tried again.
 
 #### `--max-arg-length [number]`
 
