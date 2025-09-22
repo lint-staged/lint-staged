@@ -68,7 +68,7 @@
     "cross-env": "10.0.0",
     "eslint": "9.35.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-n": "17.23.0",
+    "eslint-plugin-n": "17.23.1",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "husky": "9.1.7",
