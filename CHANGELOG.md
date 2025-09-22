@@ -1,5 +1,35 @@
 # lint-staged
 
+## 16.2.0
+
+### Minor Changes
+
+- [#1615](https://github.com/lint-staged/lint-staged/pull/1615) [`99eb742`](https://github.com/lint-staged/lint-staged/commit/99eb74200e8db69e72dba45314025953b8b0794e) Thanks [@iiroj](https://github.com/iiroj)! - Added a new option `--fail-on-changes` to make _lint-staged_ exit with code 1 when tasks modify any files, making the `precommit` hook fail. This is similar to the `git diff --exit-code` option. Using this flag also implies the `--no-revert` flag which means any changes made my tasks will be left in the working tree after failing, so that they can be manually staged and the commit tried again.
+
+- [#1611](https://github.com/lint-staged/lint-staged/pull/1611) [`cd05fd3`](https://github.com/lint-staged/lint-staged/commit/cd05fd349594baf586fbafb05588ff07d86060b7) Thanks [@rlorenzo](https://github.com/rlorenzo)! - Added a new option `--continue-on-error` so that _lint-staged_ will run all tasks to completion even if some of them fail. By default, _lint-staded_ will exit early on the first failure.
+
+- [#1637](https://github.com/lint-staged/lint-staged/pull/1637) [`82fcc07`](https://github.com/lint-staged/lint-staged/commit/82fcc0789c17bf6b2ea2649147abec77fa619375) Thanks [@iiroj](https://github.com/iiroj)! - Internal _lint-staged_ errors are now thrown and visible in the console output. Previously they were caught with the process exit code set to 1, but not logged. This happens when, for example, there's a syntax error in the _lint-staged_ configuration file.
+
+- [#1647](https://github.com/lint-staged/lint-staged/pull/1647) [`a5ecc06`](https://github.com/lint-staged/lint-staged/commit/a5ecc0605d52756167417c84cb0007ea7bceaaa3) Thanks [@iiroj](https://github.com/iiroj)! - Remove [debug](https://github.com/debug-js/debug) as a dependency due to recent malware issue; read more at https://github.com/debug-js/debug/issues/1005. Because of this, the `DEBUG` environment variable is no longer supported — use the `--debug` to enable debugging
+
+- [#1636](https://github.com/lint-staged/lint-staged/pull/1636) [`8db2717`](https://github.com/lint-staged/lint-staged/commit/8db2717574ebfa2b80e0fc4eb0b24d705fd264fc) Thanks [@iiroj](https://github.com/iiroj)! - Added a new option `--hide-unstaged` so that _lint-staged_ will hide all unstaged changes to tracked files before running tasks. The changes will be applied back after running the tasks. Note that the combination of flags `--hide-unstaged --no-hide-partially-staged` isn't meaningful and behaves the same as just `--hide-unstaged`.
+
+  Thanks to [@ItsNickBarry](https://github.com/ItsNickBarry) for the idea and initial implementation in [#1552](https://github.com/lint-staged/lint-staged/pull/1552).
+
+- [#1648](https://github.com/lint-staged/lint-staged/pull/1648) [`7900b3b`](https://github.com/lint-staged/lint-staged/commit/7900b3b79c5e2e69662cb8b1bcbcae79c3549421) Thanks [@iiroj](https://github.com/iiroj)! - Remove [lilconfig](https://github.com/antonk52/lilconfig) to reduce reliance on third-party dependencies. It was used to find possible config files outside of those tracked in Git, including from the parent directories. This behavior has been moved directly into _lint-staged_ and should work about the same.
+
+### Patch Changes
+
+- [#1633](https://github.com/lint-staged/lint-staged/pull/1633) [`7f9e485`](https://github.com/lint-staged/lint-staged/commit/7f9e485a981707897e0d417f6a62008f0c098e00) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bumps [listr2](https://github.com/listr2/listr2) from 9.0.3 to 9.0.4.
+
+- [#1626](https://github.com/lint-staged/lint-staged/pull/1626) [`99d5a9b`](https://github.com/lint-staged/lint-staged/commit/99d5a9b0ddcba7d471d39ff3969d37988f1e2705) Thanks [@iiroj](https://github.com/iiroj)! - Due to recent phishing attacks, for example [chalk@5.6.1](https://github.com/chalk/chalk/issues/656) was released with malware. To avoid _lint-staged_'s users being at risk the **direct dependencies are pinned to exact versions**, instead of allowing future patch versions with the [caret (`^`) range](https://docs.npmjs.com/cli/v6/using-npm/semver#caret-ranges-123-025-004).
+
+- [#1588](https://github.com/lint-staged/lint-staged/pull/1588) [`035bbf2`](https://github.com/lint-staged/lint-staged/commit/035bbf268ac47bbaf2cfa737c3b2240d38feb22e) Thanks [@outslept](https://github.com/outslept)! - Increase performance by listing staged files and searching for configuration concurrently.
+
+- [#1645](https://github.com/lint-staged/lint-staged/pull/1645) [`deba3ad`](https://github.com/lint-staged/lint-staged/commit/deba3ad83581938dd71b86b563e62827b5fc2a0a) Thanks [@iiroj](https://github.com/iiroj)! - Remove [chalk](https://github.com/chalk/chalk) as a dependency due to recent malware issue; read more at https://github.com/chalk/chalk/issues/656.
+
+  If you are having trouble with ANSI color codes when using _lint-staged_, you can try setting either `FORCE_COLOR=true` or `NO_COLOR=true` env variables.
+
 ## 16.1.6
 
 ### Patch Changes
