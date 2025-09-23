@@ -12,6 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            .node-version
+            package-lock.json
+            package.json
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
