@@ -108,7 +108,7 @@ program
   .addOption(
     new Option('--hide-unstaged', 'hide all unstaged changes, instead of just partially staged')
       .default(false)
-      .implies({ hidePartiallyStaged: true })
+      .implies({ hidePartiallyStaged: false })
   )
 
   .addOption(new Option('-q, --quiet', 'disable lint-staged’s own console output').default(false))

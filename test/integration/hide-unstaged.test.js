@@ -38,4 +38,28 @@ describe('lint-staged', () => {
       expect(await readFile('pretty_2.js')).toEqual(fileFixtures.uglyJS)
     })
   )
+
+  test(
+    'should restore unstaged changes to partially staged files when using --hide-unstaged',
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+
+      // Stage ugly file
+      await writeFile('ugly.js', fileFixtures.uglyJS)
+      await execGit(['add', 'ugly.js'])
+
+      // Add unstaged changes to create a merge conflict when prettier fixes staged version
+      await writeFile('ugly.js', fileFixtures.uglyJSWithChanges)
+
+      await gitCommit({ lintStaged: { hideUnstaged: true } })
+
+      const gitStatus = await execGit(['status', '-z'])
+      expect(gitStatus).toMatch(' M ugly.js')
+
+      expect(await readFile('ugly.js')).toEqual(fileFixtures.uglyJSWithChanges)
+
+      await execGit(['checkout', 'ugly.js'])
+      expect(await readFile('ugly.js')).toEqual(fileFixtures.prettyJS)
+    })
+  )
 })
