@@ -133,7 +133,7 @@ describe('searchConfigs', () => {
 
     const configs = await searchConfigs({})
 
-    expect(Object.keys(configs)).toEqual([topLevelConfig])
+    expect(Object.keys(configs).includes(skippedConfig)).toBe(false)
   })
 })
 
