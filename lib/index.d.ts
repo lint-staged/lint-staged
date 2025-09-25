@@ -1,12 +1,12 @@
-type SyncGenerateTask = (stagedFileNames: string[]) => string | string[]
+type SyncGenerateTask = (stagedFileNames: readonly string[]) => string | string[]
 
-type AsyncGenerateTask = (stagedFileNames: string[]) => Promise<string | string[]>
+type AsyncGenerateTask = (stagedFileNames: readonly string[]) => Promise<string | string[]>
 
 type GenerateTask = SyncGenerateTask | AsyncGenerateTask
 
 type TaskFunction = {
   title: string
-  task: (stagedFileNames: string[]) => void | Promise<void>
+  task: (stagedFileNames: readonly string[]) => void | Promise<void>
 }
 
 export type Configuration =
@@ -19,6 +19,11 @@ export type Options = {
    * @default false
    */
   allowEmpty?: boolean
+  /**
+   * Enable or disable ANSI color codes in output. By default value is auto-detected
+   * and controlled by `FORCE_COLOR` or `NO_COLOR` env variables.
+   */
+  color?: boolean
   /**
    * The number of tasks to run concurrently, or `false` to run tasks serially
    * @default true
@@ -104,12 +109,13 @@ export type Options = {
   verbose?: boolean
 }
 
-type LogFunction = (...params: any) => void
+type LogFunction = typeof console.log
 
 type Logger = {
   log: LogFunction
   warn: LogFunction
   error: LogFunction
+  debug: LogFunction
 }
 
 /**

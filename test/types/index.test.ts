@@ -8,50 +8,50 @@ test('lint-staged TypeScript types', () => {
 
     '*.ext2': ['eslint', 'prettier'],
 
-    '*.ext3': (fileNames: string[]) => {
+    '*.ext3': (fileNames: readonly string[]) => {
       return `eslint ${fileNames.join(' ')}`
     },
 
-    '*.ext4': (fileNames: string[]) => {
+    '*.ext4': (fileNames: readonly string[]) => {
       return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
     },
 
-    '*.ext5': async (fileNames: string[]) => {
+    '*.ext5': async (fileNames: readonly string[]) => {
       return `eslint ${fileNames.join(' ')}`
     },
 
-    '*.ext6': async (fileNames: string[]) => {
+    '*.ext6': async (fileNames: readonly string[]) => {
       return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
     },
 
     '*.ext7': {
       title: 'Sync Function Task',
-      task: (fileNames: string[]) => {
+      task: (fileNames: readonly string[]) => {
         console.log(fileNames)
       },
     },
 
     '*.ext8': {
       title: 'Async Function Task',
-      task: async (fileNames: string[]) => {
+      task: async (fileNames: readonly string[]) => {
         console.log(fileNames)
       },
     },
   }).toExtend<Configuration>()
 
-  expectTypeOf((fileNames: string[]) => {
+  expectTypeOf((fileNames: readonly string[]) => {
     return `eslint ${fileNames.join(' ')}`
   }).toExtend<Configuration>()
 
-  expectTypeOf((fileNames: string[]) => {
+  expectTypeOf((fileNames: readonly string[]) => {
     return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
-  expectTypeOf(async (fileNames: string[]) => {
+  expectTypeOf(async (fileNames: readonly string[]) => {
     return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
-  expectTypeOf(async (fileNames: string[]) => {
+  expectTypeOf(async (fileNames: readonly string[]) => {
     return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
