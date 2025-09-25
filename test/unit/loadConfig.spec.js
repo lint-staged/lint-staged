@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import makeConsoleMock from 'consolemock'
 import { beforeEach, describe, it } from 'vitest'
 
-import { loadConfig } from '../../lib/loadConfig.js'
+import { dynamicImport, loadConfig } from '../../lib/loadConfig.js'
 import { createTempDir } from '../__utils__/createTempDir.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -20,10 +20,7 @@ describe('loadConfig', () => {
   it('should load JSON config file', async ({ expect }) => {
     expect.assertions(1)
 
-    const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.json') },
-      logger
-    )
+    const { config } = await loadConfig(path.join(__dirname, '__mocks__', 'my-config.json'), logger)
 
     expect(config).toMatchInlineSnapshot(`
       {
@@ -35,10 +32,7 @@ describe('loadConfig', () => {
   it('should load YAML config file', async ({ expect }) => {
     expect.assertions(1)
 
-    const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-config.yml') },
-      logger
-    )
+    const { config } = await loadConfig(path.join(__dirname, '__mocks__', 'my-config.yml'), logger)
 
     expect(config).toMatchInlineSnapshot(`
       {
@@ -51,7 +45,7 @@ describe('loadConfig', () => {
     expect.assertions(2)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'invalid-config-file.yml') },
+      path.join(__dirname, '__mocks__', 'invalid-config-file.yml'),
       logger
     )
 
@@ -64,7 +58,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'advanced-esm-config.js') },
+      path.join(__dirname, '__mocks__', 'advanced-esm-config.js'),
       logger
     )
 
@@ -80,7 +74,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', 'unit', '__mocks__', 'advanced-esm-config.js') },
+      path.join('test', 'unit', '__mocks__', 'advanced-esm-config.js'),
       logger
     )
 
@@ -96,7 +90,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'advanced-cjs-config.cjs') },
+      path.join(__dirname, '__mocks__', 'advanced-cjs-config.cjs'),
       logger
     )
 
@@ -112,7 +106,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', 'unit', '__mocks__', 'advanced-cjs-config.cjs') },
+      path.join('test', 'unit', '__mocks__', 'advanced-cjs-config.cjs'),
       logger
     )
 
@@ -128,7 +122,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join('test', 'unit', '__mocks__', 'cjs', 'my-config.cjs') },
+      path.join('test', 'unit', '__mocks__', 'cjs', 'my-config.cjs'),
       logger
     )
 
@@ -143,10 +137,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      {
-        configPath: path.join('test', 'unit', '__mocks__', 'esm-config.mjs'),
-        quiet: true,
-      },
+      path.join('test', 'unit', '__mocks__', 'esm-config.mjs'),
       logger
     )
 
@@ -161,10 +152,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      {
-        configPath: path.join('test', 'unit', '__mocks__', 'esm-config-in-js.js'),
-        quiet: true,
-      },
+      path.join('test', 'unit', '__mocks__', 'esm-config-in-js.js'),
       logger
     )
 
@@ -179,7 +167,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'my-lint-staged-config'), quiet: true },
+      path.join(__dirname, '__mocks__', 'my-lint-staged-config'),
       logger
     )
 
@@ -201,7 +189,7 @@ describe('loadConfig', () => {
   it('should return empty object when explicit config file is not found', async ({ expect }) => {
     expect.assertions(1)
 
-    const result = await loadConfig({ configPath: 'fake-config-file.yml' }, logger)
+    const result = await loadConfig('fake-config-file.yml', logger)
 
     expect(result).toMatchInlineSnapshot(`{}`)
   })
@@ -210,7 +198,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const result = await loadConfig(
-      { configPath: path.join(__dirname, '__mocks__', 'invalid-json-config.json') },
+      path.join(__dirname, '__mocks__', 'invalid-json-config.json'),
       logger
     )
 
@@ -233,7 +221,7 @@ describe('loadConfig', () => {
         })
       )
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toMatchInlineSnapshot(`
       {
@@ -254,7 +242,7 @@ describe('loadConfig', () => {
 
       await fs.writeFile(configPath, '{')
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toBeNull()
     } finally {
@@ -276,7 +264,7 @@ describe('loadConfig', () => {
         `
       )
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toMatchInlineSnapshot(`
         {
@@ -302,7 +290,7 @@ describe('loadConfig', () => {
         `
       )
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toMatchInlineSnapshot(`
         {
@@ -323,7 +311,7 @@ describe('loadConfig', () => {
 
       await fs.writeFile(configPath, '{')
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toBeNull()
     } finally {
@@ -340,7 +328,7 @@ describe('loadConfig', () => {
 
       await fs.writeFile(configPath, `"*": mytask`)
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toMatchInlineSnapshot(`
         {
@@ -361,11 +349,17 @@ describe('loadConfig', () => {
 
       await fs.writeFile(configPath, `{`)
 
-      const { config } = await loadConfig({ configPath }, logger)
+      const { config } = await loadConfig(configPath, logger)
 
       expect(config).toBeUndefined()
     } finally {
       await fs.rm(tempDir, { recursive: true })
     }
+  })
+})
+
+describe('dynamicImport', () => {
+  it('should log errors into console', async ({ expect }) => {
+    await expect(() => dynamicImport('not-found.js')).rejects.toThrow(`Cannot find module`)
   })
 })
