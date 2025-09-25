@@ -142,7 +142,7 @@ describe('gitWorkflow', () => {
     )
   })
 
-  describe('hideUnstagedChanges', () => {
+  describe('hidePartiallyStagedChanges', () => {
     it(
       'should handle errors',
       withGitIntegration(async ({ cwd, expect }) => {
@@ -154,7 +154,7 @@ describe('gitWorkflow', () => {
         const totallyRandom = `totally_random_file-${Date.now().toString()}`
         gitWorkflow.unstagedFiles = [totallyRandom]
         const ctx = getInitialState()
-        await expect(gitWorkflow.hideUnstagedChanges(ctx)).rejects.toThrow(
+        await expect(gitWorkflow.hidePartiallyStagedChanges(ctx)).rejects.toThrow(
           `pathspec '${totallyRandom}' did not match any file(s) known to git`
         )
 
@@ -178,7 +178,7 @@ describe('gitWorkflow', () => {
 
         gitWorkflow.unstagedFiles = await gitWorkflow.getUnstagedFiles(true)
         const ctx = getInitialState()
-        await gitWorkflow.hideUnstagedChanges(ctx)
+        await gitWorkflow.hidePartiallyStagedChanges(ctx)
 
         /** @todo `git mv` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
         expect(normalizeWindowsNewlines(await readFile('TEST.md'))).toStrictEqual(origContent)

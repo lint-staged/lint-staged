@@ -127,9 +127,9 @@ Options:
 
 Any lost modifications can be restored from a git stash:
 
-  > git stash list
-  stash@{0}: automatic lint-staged backup
-  > git stash apply --index stash@{0}
+  > git stash list --format="%h %s"
+  h0a0s0h0 On main: lint-staged automatic backup
+  > git apply --index h0a0s0h0
 ```
 
 #### `--allow-empty`

@@ -26,7 +26,7 @@ describe('lint-staged', () => {
 
       expect(output).toMatch('Hiding unstaged changes to partially staged files...')
       expect(output).toMatch('Applying modifications from tasks...')
-      expect(output).toMatch('Restoring unstaged changes to partially staged files...')
+      expect(output).toMatch('Restoring unstaged changes...')
 
       // Nothing is wrong, so a new commit is created and file is pretty
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
