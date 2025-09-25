@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [#1615](https://github.com/lint-staged/lint-staged/pull/1615) [`99eb742`](https://github.com/lint-staged/lint-staged/commit/99eb74200e8db69e72dba45314025953b8b0794e) Thanks [@iiroj](https://github.com/iiroj)! - Added a new option `--fail-on-changes` to make _lint-staged_ exit with code 1 when tasks modify any files, making the `precommit` hook fail. This is similar to the `git diff --exit-code` option. Using this flag also implies the `--no-revert` flag which means any changes made my tasks will be left in the working tree after failing, so that they can be manually staged and the commit tried again.
+- [#1615](https://github.com/lint-staged/lint-staged/pull/1615) [`99eb742`](https://github.com/lint-staged/lint-staged/commit/99eb74200e8db69e72dba45314025953b8b0794e) Thanks [@iiroj](https://github.com/iiroj)! - Added a new option `--fail-on-changes` to make _lint-staged_ exit with code 1 when tasks modify any files, making the `precommit` hook fail. This is similar to the `git diff --exit-code` option. Using this flag also implies the `--no-revert` flag which means any changes made by tasks will be left in the working tree after failing, so that they can be manually staged and the commit tried again.
 
 - [#1611](https://github.com/lint-staged/lint-staged/pull/1611) [`cd05fd3`](https://github.com/lint-staged/lint-staged/commit/cd05fd349594baf586fbafb05588ff07d86060b7) Thanks [@rlorenzo](https://github.com/rlorenzo)! - Added a new option `--continue-on-error` so that _lint-staged_ will run all tasks to completion even if some of them fail. By default, _lint-staded_ will exit early on the first failure.
 
