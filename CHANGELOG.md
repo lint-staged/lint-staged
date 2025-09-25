@@ -1,5 +1,26 @@
 # lint-staged
 
+## 16.2.1
+
+### Patch Changes
+
+- [#1664](https://github.com/lint-staged/lint-staged/pull/1664) [`8277b3b`](https://github.com/lint-staged/lint-staged/commit/8277b3b298421ebbb39c43d7e3538481e15c4659) Thanks [@iiroj](https://github.com/iiroj)! - The built-in TypeScript types have been updated to more closely match the implementation. Notably, the list of staged files supplied to task functions is `readonly string[]` and can't be mutated. Thanks [@outslept](https://github.com/outslept)!
+
+  ```diff
+  export default {
+  ---  "*": (files: string[]) => void console.log('staged files', files)
+  +++  "*": (files: readonly string[]) => void console.log('staged files', files)
+  }
+  ```
+
+- [#1654](https://github.com/lint-staged/lint-staged/pull/1654) [`70b9af3`](https://github.com/lint-staged/lint-staged/commit/70b9af3ac3fd66af94936e55bb3e91381937b41f) Thanks [@iiroj](https://github.com/iiroj)! - This version has been published from GitHub Actions using [Trusted Publishing for npm packages](https://docs.npmjs.com/trusted-publishers).
+
+- [#1659](https://github.com/lint-staged/lint-staged/pull/1659) [`4996817`](https://github.com/lint-staged/lint-staged/commit/49968170abb3bab7ac8dc0a6bc5ea92850337baa) Thanks [@iiroj](https://github.com/iiroj)! - Fix searching configuration files when the working directory is a subdirectory of a git repository, and there are `package.json` files in the working directory. This situation might happen when running _lint-staged_ for a single package in a monorepo.
+
+- [#1654](https://github.com/lint-staged/lint-staged/pull/1654) [`7021f0a`](https://github.com/lint-staged/lint-staged/commit/7021f0af40ac1d5787501894c0f2222980023703) Thanks [@iiroj](https://github.com/iiroj)! - Return the caret semver range (`^`) to direct dependencies so that future patch and minor versions are allowed. This enables projects to better maintain and deduplicate their own transitive dependencies while not requiring direct updates to _lint-staged_. This was changed in [16.2.0](https://github.com/lint-staged/lint-staged/releases/tag/v16.2.0) after the vulnerability issues with `chalk` and `debug`, which were also removed in the same version.
+
+  Given the recent vulnerabilities in the _npm_ ecosystem, it's best to be very careful when updating dependencies.
+
 ## 16.2.0
 
 ### Minor Changes
