@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.2.4
+
+### Patch Changes
+
+- [#1671](https://github.com/lint-staged/lint-staged/pull/1671) [`581a54e`](https://github.com/lint-staged/lint-staged/commit/581a54eea6ba3a3a1b715407c895f63a961903f3) Thanks [@iiroj](https://github.com/iiroj)! - Speed up execution by only importing the `yaml` depedency if using YAML configuration files.
+
 ## 16.2.3
 
 ### Patch Changes
