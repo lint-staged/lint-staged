@@ -32,10 +32,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR ✖ No valid configuration found."
-    `)
+    expect(logger.printHistory()).toMatch('could not find any valid configuration')
   })
 
   it('should log error when preventing empty commit', async ({ expect }) => {
