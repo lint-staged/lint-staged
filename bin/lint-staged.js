@@ -6,7 +6,7 @@ import { Option, program } from 'commander'
 
 import { createDebug, enableDebug } from '../lib/debug.js'
 import lintStaged from '../lib/index.js'
-import { CONFIG_STDIN_ERROR, RESTORE_STASH_EXAMPLE } from '../lib/messages.js'
+import { CONFIG_STDIN_ERROR, restoreStashExample } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
 import { getVersion } from '../lib/version.js'
 
@@ -120,7 +120,7 @@ program
     ).default(false)
   )
 
-  .addHelpText('afterAll', '\n' + RESTORE_STASH_EXAMPLE)
+  .addHelpText('afterAll', '\n' + restoreStashExample())
 
 const cliOptions = program.parse(process.argv).opts()
 

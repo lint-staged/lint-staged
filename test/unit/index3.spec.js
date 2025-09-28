@@ -60,6 +60,7 @@ describe('lintStaged', () => {
 
   it('should log error and git stash message when a git operation failed', async ({ expect }) => {
     const ctx = getInitialState()
+    ctx.backupHash = 'deadbeef'
     ctx.shouldBackup = true
     ctx.errors.add(GitError)
     runAll.mockImplementationOnce(async () => {
@@ -77,8 +78,8 @@ describe('lintStaged', () => {
       ERROR Any lost modifications can be restored from a git stash:
 
         > git stash list --format="%h %s"
-        h0a0s0h0 On main: lint-staged automatic backup
-        > git apply --index h0a0s0h0
+        deadbeef On main: lint-staged automatic backup
+        > git apply --index deadbeef
       "
     `)
   })
