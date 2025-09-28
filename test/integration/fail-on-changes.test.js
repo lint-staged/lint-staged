@@ -30,7 +30,7 @@ describe('lint-staged', () => {
   )
 
   test(
-    'should not fail --fail-on-changes is used but tasks do not modify files',
+    'should not fail when --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
@@ -66,7 +66,6 @@ describe('lint-staged', () => {
           lintStaged: {
             failOnChanges: true,
             revert: true,
-            quiet: true,
           },
         })
       ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
