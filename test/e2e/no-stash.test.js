@@ -19,13 +19,13 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m', 'test'])
 
       let res = await lintStaged()
-      expect(res.stdout).toMatch('No staged files found.')
+      expect(res.stdout).toMatch('could not find any staged files.')
 
       res = await lintStaged(['--stash'])
-      expect(res.stdout).toMatch('No staged files found.')
+      expect(res.stdout).toMatch('could not find any staged files.')
 
       res = await lintStaged(['--no-stash'])
-      expect(res.stdout).toMatch('No staged files found.')
+      expect(res.stdout).toMatch('could not find any staged files.')
       expect(res.stderr).toMatch(
         'Skipping backup because `--no-stash` was used. This might result in data loss.'
       )

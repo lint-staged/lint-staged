@@ -60,7 +60,7 @@ describe('lint-staged', () => {
       // Lint-staged passed because no matching (deleted) files
       expect(passed).toEqual(true)
 
-      expect(console.printHistory()).toMatch('No staged files found')
+      expect(console.printHistory()).toMatch('could not find any staged files')
 
       console = globalConsoleTemp
     })

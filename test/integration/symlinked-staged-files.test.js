@@ -31,7 +31,7 @@ describe('lint-staged', () => {
       const result = await gitCommit()
 
       /** lint-staged ignored symlink */
-      expect(result).toMatch('No staged files found')
+      expect(result).toMatch('could not find any staged files')
     })
   )
 })

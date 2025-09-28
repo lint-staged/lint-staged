@@ -92,7 +92,7 @@ describe('runAll', () => {
   it('should print output when no staged files', async ({ expect }) => {
     expect.assertions(1)
     await expect(runAll({ configObject: {}, configPath })).resolves.toMatchObject({
-      output: [expect.stringContaining('No staged files found')],
+      output: [expect.stringContaining('could not find any staged files')],
       quiet: false,
     })
   })

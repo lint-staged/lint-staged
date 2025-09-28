@@ -34,7 +34,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged in "deeper/""
       await expect(gitCommit({ cwd: path.join(cwd, 'deeper') })).resolves.toMatch(
-        `No staged files match any configured task`
+        `could not find any staged files matching configured tasks`
       )
 
       // File outside deeper/ was not fixed
