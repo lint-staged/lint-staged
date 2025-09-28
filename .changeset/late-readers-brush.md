@@ -2,7 +2,7 @@
 'lint-staged': patch
 ---
 
-The backup stash will not be dropped when using `--fail-on-changes` and there are errors. When reverting to original state is disabled (via `--no-revert` or `--fail-on-changes`, hidden (partially) unstaged changes are still restored automatically so that it's easier to resolve the situation manually.
+The backup stash will not be dropped when using `--fail-on-changes` and there are errors. When reverting to original state is disabled (via `--no-revert` or `--fail-on-changes`), hidden (partially) unstaged changes are still restored automatically so that it's easier to resolve the situation manually.
 
 Additionally, the example for using the backup stash manually now uses the correct backup hash, if available:
 
