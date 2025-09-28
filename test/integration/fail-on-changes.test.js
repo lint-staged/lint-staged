@@ -14,15 +14,19 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
-      // Run lint-staged with `prettier --write` so that it modifies files
-      await expect(() =>
-        gitCommit({
+      expect.assertions(3)
+
+      try {
+        // Run lint-staged with `prettier --write` so that it modifies files
+        await gitCommit({
           lintStaged: {
             failOnChanges: true,
-            quiet: true,
           },
         })
-      ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
+      } catch (error) {
+        expect(error.message).toMatch('lint-staged failed because `--fail-on-changes` was used')
+        expect(error.message).toMatch('"skip":"Cleaning up temporary files..."')
+      }
 
       // Changes weren't reverted because "--no-revert" is implied
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
