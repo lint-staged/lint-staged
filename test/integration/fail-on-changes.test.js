@@ -38,7 +38,7 @@ describe('lint-staged', () => {
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
 
-      // Stage ugly files
+      // Stage pretty files
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', 'test.js'])
 
@@ -52,6 +52,61 @@ describe('lint-staged', () => {
 
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
+    })
+  )
+
+  test(
+    'should not fail with partially staged changes when --fail-on-changes is used but tasks do not modify files',
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+
+      // Stage pretty files
+      await writeFile('test.js', fileFixtures.prettyJS)
+      await execGit(['add', 'test.js'])
+
+      // Edit file to ugly but keep unstaged
+      await writeFile('test.js', fileFixtures.uglyJS)
+
+      // Run lint-staged with `prettier --write` so that it modifies files
+      await gitCommit({
+        lintStaged: {
+          failOnChanges: true,
+          quiet: true,
+        },
+      })
+
+      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+
+      // Partially staged changes were restored
+      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
+    })
+  )
+  test(
+    'should not fail with unstaged staged changes when --fail-on-changes is used but tasks do not modify files',
+    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+
+      // Stage pretty files
+      await writeFile('test.js', fileFixtures.prettyJS)
+      await execGit(['add', 'test.js'])
+
+      // Add second ugly file but keep unstaged
+      await writeFile('test2.js', fileFixtures.uglyJS)
+
+      // Run lint-staged with `prettier --write` so that it modifies files
+      await gitCommit({
+        lintStaged: {
+          failOnChanges: true,
+          hideUnstaged: true,
+          quiet: true,
+        },
+      })
+
+      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+
+      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
+      // Partially staged changes were restored
+      expect(await readFile('test2.js')).toEqual(fileFixtures.uglyJS)
     })
   )
 

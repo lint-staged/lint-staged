@@ -5,6 +5,7 @@ import { SubprocessError } from 'nano-spawn'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
 import { normalizePath } from '../../lib/normalizePath.js'
+import { TaskError } from '../../lib/symbols.js'
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.js'
 
@@ -17,6 +18,7 @@ vi.mock('../../lib/getStagedFiles.js', () => ({
 const mockGitWorkflow = {
   prepare: vi.fn(() => Promise.resolve()),
   hideUnstagedChanges: vi.fn(() => Promise.resolve()),
+  runTasks: vi.fn(() => Promise.resolve()),
   applyModifications: vi.fn(() => Promise.resolve()),
   restoreUnstagedChanges: vi.fn(() => Promise.resolve()),
   restoreOriginalState: vi.fn(() => Promise.resolve()),
@@ -180,14 +182,10 @@ describe('runAll', () => {
       })
     )
 
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: 'Has staged files',
-          nodeChildProcess: { pid: 0 },
-        })
-      )
-    )
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      ctx.errors.add(TaskError)
+      return task.newListr(listrTasks)
+    })
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
@@ -218,6 +216,10 @@ describe('runAll', () => {
         })
       )
     )
+
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      return task.newListr(listrTasks)
+    })
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
@@ -404,6 +406,10 @@ describe('runAll', () => {
       '': configObject,
     }))
 
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      return task.newListr(listrTasks)
+    })
+
     await runAll({
       configObject: { '*.js': { title: 'My task', task } },
       relative: true, // make sure filenames are relative for easier assertion below
@@ -437,6 +443,10 @@ describe('runAll', () => {
       )
     )
 
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      return task.newListr(listrTasks)
+    })
+
     // With continueOnError: false (default), should reject
     await expect(runAll({ continueOnError: false })).rejects.toThrow('lint-staged failed')
   })
@@ -464,6 +474,10 @@ describe('runAll', () => {
         })
       )
     )
+
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      return task.newListr(listrTasks)
+    })
 
     // With continueOnError: true, should still reject but after running all tasks
     await expect(runAll({ continueOnError: true })).rejects.toThrow('lint-staged failed')
