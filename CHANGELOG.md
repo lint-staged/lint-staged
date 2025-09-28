@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.2.3
+
+### Patch Changes
+
+- [#1669](https://github.com/lint-staged/lint-staged/pull/1669) [`27cd541`](https://github.com/lint-staged/lint-staged/commit/27cd5413d973baea6b4f3da704fb3bee8298e751) Thanks [@iiroj](https://github.com/iiroj)! - When using `--fail-on-changes`, automatically hidden (partially) unstaged changes are no longer counted to make _lint-staged_ fail.
+
 ## 16.2.2
 
 ### Patch Changes
