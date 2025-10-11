@@ -258,7 +258,7 @@ describe('runAll', () => {
 
     // task received relative `foo.js`
     expect(mockTask).toHaveBeenCalledTimes(1)
-    expect(mockTask).toHaveBeenCalledWith(['foo.js'])
+    expect(mockTask).toHaveBeenCalledExactlyOnceWith(['foo.js'])
     // GitWorkflow received absolute `test/foo.js`
     expect(mockConstructor).toHaveBeenCalledTimes(1)
     expect(expected).toEqual([
@@ -416,7 +416,7 @@ describe('runAll', () => {
     })
 
     expect(task).toHaveBeenCalledTimes(1)
-    expect(task).toHaveBeenCalledWith(['foo.js'])
+    expect(task).toHaveBeenCalledExactlyOnceWith(['foo.js'])
   })
 
   it('should reject immediately when continueOnError is false (default)', async ({ expect }) => {

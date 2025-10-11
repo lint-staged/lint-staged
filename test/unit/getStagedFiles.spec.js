@@ -32,7 +32,7 @@ describe('getStagedFiles', () => {
       { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
     ])
 
-    expect(execGit).toHaveBeenCalledWith(
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(
       ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
       { cwd: '/' }
     )
@@ -51,7 +51,7 @@ describe('getStagedFiles', () => {
       { filepath: normalizeWindowsPath('/bar:qux.js'), status: 'A' },
     ])
 
-    expect(execGit).toHaveBeenCalledWith(
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(
       ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
       { cwd: '/' }
     )
@@ -83,7 +83,7 @@ describe('getStagedFiles', () => {
       { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
     ])
 
-    expect(execGit).toHaveBeenCalledWith(
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(
       ['diff', '--diff-filter=ACMR', 'main...my-branch', '--raw', '-z'],
       { cwd: '/' }
     )
@@ -102,7 +102,7 @@ describe('getStagedFiles', () => {
       { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
     ])
 
-    expect(execGit).toHaveBeenCalledWith(
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(
       ['diff', '--diff-filter=ACMR', 'main', 'my-branch', '--raw', '-z'],
       { cwd: '/' }
     )
@@ -121,7 +121,7 @@ describe('getStagedFiles', () => {
       { filepath: normalizeWindowsPath('/bar.js'), status: 'A' },
     ])
 
-    expect(execGit).toHaveBeenCalledWith(
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(
       ['diff', '--diff-filter=ACDMRTUXB', '--staged', '--raw', '-z'],
       { cwd: '/' }
     )
