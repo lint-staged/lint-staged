@@ -1,6 +1,6 @@
 {
   "name": "lint-staged",
-  "version": "16.2.3",
+  "version": "16.2.4",
   "description": "Lint files staged by git",
   "license": "MIT",
   "repository": {

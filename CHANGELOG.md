@@ -1,5 +1,13 @@
 # lint-staged
 
+## 16.2.4
+
+### Patch Changes
+
+- [#1682](https://github.com/lint-staged/lint-staged/pull/1682) [`0176038`](https://github.com/lint-staged/lint-staged/commit/01760380e57080d136cc396455346c36aef5770e) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies, including [`nano-spawn@2.0.0`](https://github.com/sindresorhus/nano-spawn/releases/tag/v2.0.0) with bug fixes.
+
+- [#1671](https://github.com/lint-staged/lint-staged/pull/1671) [`581a54e`](https://github.com/lint-staged/lint-staged/commit/581a54eea6ba3a3a1b715407c895f63a961903f3) Thanks [@iiroj](https://github.com/iiroj)! - Speed up execution by only importing the `yaml` depedency if using YAML configuration files.
+
 ## 16.2.3
 
 ### Patch Changes
