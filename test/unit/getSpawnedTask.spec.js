@@ -394,7 +394,7 @@ describe('getSpawnedTask', () => {
     await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
 
     expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')
+    expect(mockKill).toHaveBeenCalledExactlyOnceWith('1234', 'SIGKILL')
 
     Object.defineProperty(process, 'kill', {
       value: realKill,
@@ -437,7 +437,7 @@ describe('getSpawnedTask', () => {
     await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
 
     expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledWith('1234', 'SIGKILL')
+    expect(mockKill).toHaveBeenCalledExactlyOnceWith('1234', 'SIGKILL')
 
     Object.defineProperty(process, 'kill', {
       value: realKill,

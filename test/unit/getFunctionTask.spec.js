@@ -23,7 +23,7 @@ describe('getFunctionTask', () => {
     wrapped[0].task()
 
     expect(cmd.task).toHaveBeenCalledTimes(1)
-    expect(cmd.task).toHaveBeenCalledWith(['file.js'])
+    expect(cmd.task).toHaveBeenCalledExactlyOnceWith(['file.js'])
   })
 
   it('should wrap function task failure', async ({ expect }) => {

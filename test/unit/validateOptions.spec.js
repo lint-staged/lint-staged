@@ -36,7 +36,7 @@ describe('validateOptions', () => {
       await expect(validateOptions({ cwd: process.cwd() }, logger)).resolves.toBeUndefined()
 
       expect(mockAccess).toHaveBeenCalledTimes(1)
-      expect(mockAccess).toHaveBeenCalledWith(process.cwd(), constants.F_OK)
+      expect(mockAccess).toHaveBeenCalledExactlyOnceWith(process.cwd(), constants.F_OK)
 
       expect(logger.history()).toHaveLength(0)
     })
@@ -49,7 +49,10 @@ describe('validateOptions', () => {
       await expect(validateOptions({ cwd: 'test' }, logger)).resolves.toBeUndefined()
 
       expect(mockAccess).toHaveBeenCalledTimes(1)
-      expect(mockAccess).toHaveBeenCalledWith(path.join(process.cwd(), 'test'), constants.F_OK)
+      expect(mockAccess).toHaveBeenCalledExactlyOnceWith(
+        path.join(process.cwd(), 'test'),
+        constants.F_OK
+      )
 
       expect(logger.history()).toHaveLength(0)
     })
@@ -64,7 +67,7 @@ describe('validateOptions', () => {
       )
 
       expect(mockAccess).toHaveBeenCalledTimes(1)
-      expect(mockAccess).toHaveBeenCalledWith(
+      expect(mockAccess).toHaveBeenCalledExactlyOnceWith(
         path.join(process.cwd(), 'non_existent'),
         constants.F_OK
       )
