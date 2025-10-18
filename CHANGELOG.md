@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.2.5
+
+### Patch Changes
+
+- [#1687](https://github.com/lint-staged/lint-staged/pull/1687) [`9e02d9d`](https://github.com/lint-staged/lint-staged/commit/9e02d9dc8a84bfeb7995520f00f7080b07a2e839) Thanks [@iiroj](https://github.com/iiroj)! - Fix unhandled promise rejection when spawning tasks (_instead of the tasks themselves failing_). Previously when a task failed to spawn, _lint-staged_ also failed and the backup stash might not have been automatically restored.
+
 ## 16.2.4
 
 ### Patch Changes
