@@ -23,9 +23,7 @@ describe('lint-staged', () => {
       await execGit(['add', 'test.js'])
 
       await expect(lintStaged()).rejects.toMatchObject({
-        output: expect.stringContaining(
-          `node -e "new Promise(resolve => setTimeout(resolve, 1000))" failed without output (SIGKILL)`
-        ),
+        output: expect.stringContaining('Command was terminated with SIGKILL'),
       })
     })
   )
