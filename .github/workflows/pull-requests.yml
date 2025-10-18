@@ -106,7 +106,7 @@ jobs:
       matrix:
         # Test with Node.js active LTS versions, and the latest version
         node:
-          - '20.17.0' # lowest supported version
+          - '20.18.0' # lowest supported version
           - '20.x'
           - '22.x'
           - '24.x'
@@ -149,7 +149,7 @@ jobs:
     strategy:
       matrix:
         node:
-          - 20.17.0 # lowest supported version
+          - 20.18.0 # lowest supported version
           - 20
           - 22
           - 24
@@ -189,7 +189,7 @@ jobs:
     strategy:
       matrix:
         node:
-          - 20.17.0 # lowest supported version
+          - 20.18.0 # lowest supported version
           - 20
           - 22
           - 24
