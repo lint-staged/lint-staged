@@ -175,7 +175,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: node-modules-windows-latest-${{ hashFiles('package-lock.json') }}
+          key: node-modules-windows-msys2-latest-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       - run: node --version
@@ -207,7 +207,7 @@ jobs:
         id: cache-node_modules
         with:
           path: node_modules
-          key: node-modules-windows-latest-${{ hashFiles('package-lock.json') }}
+          key: node-modules-windows-cygwin-latest-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
       - run: node --version
