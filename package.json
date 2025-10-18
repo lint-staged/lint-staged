@@ -53,7 +53,9 @@
     "micromatch": "^4.0.8",
     "nano-spawn": "^2.0.0",
     "pidtree": "^0.6.0",
-    "string-argv": "^0.3.2",
+    "string-argv": "^0.3.2"
+  },
+  "optionalDependencies": {
     "yaml": "^2.8.1"
   },
   "devDependencies": {
@@ -76,7 +78,8 @@
     "prettier": "3.6.2",
     "semver": "7.7.3",
     "typescript": "5.9.3",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "yaml": "2.8.1"
   },
   "keywords": [
     "lint",
