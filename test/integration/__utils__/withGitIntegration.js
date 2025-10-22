@@ -107,7 +107,7 @@ const getGitUtils = (cwd) => {
   /**
    * Execute lintStaged before git commit to emulate lint-staged cli
    *
-   * @typedef {import('../../../lib/index').Options} LintStagedOptions
+   * @typedef {import('../../../lib/index.d.ts').Options} LintStagedOptions
    * @typedef {{ lintStaged: LintStagedOptions, gitCommit: string[] }} Options
    *
    * @param {Options} [options]
