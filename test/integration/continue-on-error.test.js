@@ -9,13 +9,6 @@ describe('lint-staged --continue-on-error', () => {
 
   test(
     'fails to commit but shows all errors when --continue-on-error is used',
-    {
-      /**
-       * @todo this test fails because "Running second command" doesn't really run
-       * due to an issue with the "--continue-on-error" flag.
-       */
-      fails: true,
-    },
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       // Create a config with multiple linters where some will fail
       await writeFile(
@@ -41,7 +34,7 @@ describe('lint-staged --continue-on-error', () => {
       try {
         // Run lint-staged with --continue-on-error
         // It should still fail overall, but run all commands
-        await gitCommit(['--continue-on-error'])
+        await gitCommit({ lintStaged: { continueOnError: true } })
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
@@ -77,7 +70,7 @@ describe('lint-staged --continue-on-error', () => {
       await execGit(['add', 'README.md'])
 
       // Run lint-staged with --continue-on-error - should succeed
-      const result = await gitCommit(['--continue-on-error'])
+      const result = await gitCommit({ lintStaged: { continueOnError: true } })
 
       expect(result).toMatch(/COMPLETED.*prettier --list-different/)
       expect(result).toMatch(/COMPLETED.*Running second command/)
@@ -114,7 +107,7 @@ describe('lint-staged --continue-on-error', () => {
 
       try {
         // Run lint-staged without --continue-on-error (default behavior)
-        await gitCommit(['--continue-on-error'])
+        await gitCommit({ lintStaged: { continueOnError: false } })
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
