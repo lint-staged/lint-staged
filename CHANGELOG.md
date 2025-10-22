@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.2.6
+
+### Patch Changes
+
+- [#1693](https://github.com/lint-staged/lint-staged/pull/1693) [`33d4502`](https://github.com/lint-staged/lint-staged/commit/33d4502ef9c939a9c6f41fc630a34e0985220f8e) Thanks [@Adrian-Baran-GY](https://github.com/Adrian-Baran-GY)! - Fix problems with `--continue-on-error` option, where tasks might have still been killed (`SIGINT`) when one of them failed.
+
 ## 16.2.5
 
 ### Patch Changes
