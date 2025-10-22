@@ -452,9 +452,19 @@ describe('runAll', () => {
   })
 
   it('should reject after running all tasks when continueOnError is true', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
+    getStagedFiles.mockImplementationOnce(async () => [
+      {
+        filepath: 'foo.js',
+        status: 'A',
+      },
+      { filepath: 'bar.py', status: 'A' },
+    ])
+
     searchConfigs.mockImplementationOnce(async () => ({
-      '': { '*.js': 'echo "failing command"' },
+      '': {
+        '*.js': ['echo "success js command 1"', 'echo "success js command 2"'],
+        '*.py': 'echo "failing py command"',
+      },
     }))
 
     // Mock first spawn call (git operations) to succeed
@@ -465,7 +475,15 @@ describe('runAll', () => {
       })
     )
 
-    // Mock second spawn call (the actual task) to fail
+    // Mock second spawn call (`echo "success js command 1"`) to succeed
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue({
+        output: 'Success',
+        nodeChildProcess: { pid: 0 },
+      })
+    )
+
+    // Mock second spawn call (`echo "failing py command"`) to fail
     spawn.mockImplementationOnce(() =>
       mockNanoSpawnReturnValue(
         Object.assign(new SubprocessError(), {
@@ -475,11 +493,32 @@ describe('runAll', () => {
       )
     )
 
+    // Mock first spawn call ('success js command 2') to succeed
+    spawn.mockImplementationOnce(() =>
+      mockNanoSpawnReturnValue(
+        {
+          output: 'Success',
+          nodeChildProcess: { pid: 0 },
+        },
+        1000
+      )
+    )
+
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
       return task.newListr(listrTasks)
     })
 
     // With continueOnError: true, should still reject but after running all tasks
     await expect(runAll({ continueOnError: true })).rejects.toThrow('lint-staged failed')
+
+    expect(console.printHistory()).toMatch(
+      /"data":"COMPLETED".*"title":"echo \\"success js command 1\\"/
+    )
+    expect(console.printHistory()).toMatch(
+      /"data":{"error":"echo \\"failing py command\\" \[FAILED\]"}/
+    )
+    expect(console.printHistory()).toMatch(
+      /"data":"COMPLETED".*"title":"echo \\"success js command 2\\"/
+    )
   })
 })
