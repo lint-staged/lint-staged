@@ -24,7 +24,7 @@ describe('supportsAnsiColors', () => {
         env: { [envVarName]: envVarValue },
       }
 
-      expect(supportsAnsiColors(process)).toBe(expected)
+      expect(supportsAnsiColors(process, false)).toBe(expected)
     }
   )
 
@@ -44,7 +44,7 @@ describe('supportsAnsiColors', () => {
         env: { [envVarName]: envVarValue },
       }
 
-      expect(supportsAnsiColors(process)).toBe(expected)
+      expect(supportsAnsiColors(process, false)).toBe(expected)
     }
   )
 
@@ -53,7 +53,7 @@ describe('supportsAnsiColors', () => {
       platform: 'win32',
     }
 
-    expect(supportsAnsiColors(process)).toBe(true)
+    expect(supportsAnsiColors(process, false)).toBe(true)
   })
 
   it('should return false for non-TTY', ({ expect }) => {
