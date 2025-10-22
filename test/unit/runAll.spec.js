@@ -26,7 +26,9 @@ const mockGitWorkflow = {
 }
 
 vi.mock('../../lib/gitWorkflow.js', () => ({
-  GitWorkflow: vi.fn(() => mockGitWorkflow),
+  GitWorkflow: vi.fn(function () {
+    return mockGitWorkflow
+  }),
 }))
 
 vi.mock('../../lib/resolveGitRepo.js', () => ({
@@ -234,7 +236,9 @@ describe('runAll', () => {
 
     // We are only interested in the `matchedFileChunks` generation
     let expected
-    const mockConstructor = vi.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
+    const mockConstructor = vi.fn(function ({ matchedFileChunks }) {
+      expected = matchedFileChunks
+    })
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
     const mockTask = vi.fn(() => ['echo "sample"'])
@@ -288,7 +292,9 @@ describe('runAll', () => {
 
     // We are only interested in the `matchedFileChunks` generation
     let expected
-    const mockConstructor = vi.fn(({ matchedFileChunks }) => (expected = matchedFileChunks))
+    const mockConstructor = vi.fn(function ({ matchedFileChunks }) {
+      expected = matchedFileChunks
+    })
     GitWorkflow.mockImplementationOnce(mockConstructor)
 
     await runAll({
