@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "commander": "^14.0.1",
-    "listr2": "^9.0.4",
+    "listr2": "^9.0.5",
     "micromatch": "^4.0.8",
     "nano-spawn": "^2.0.0",
     "pidtree": "^0.6.0",
