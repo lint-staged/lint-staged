@@ -54,6 +54,7 @@
     "nano-spawn": "^2.0.0",
     "pidtree": "^0.6.0",
     "string-argv": "^0.3.2",
+    "tinyexec": "^1.0.1",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
