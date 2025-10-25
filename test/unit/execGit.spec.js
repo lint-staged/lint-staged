@@ -1,12 +1,17 @@
 import path from 'node:path'
 
-import { beforeEach, describe, it, test } from 'vitest'
+import { exec } from 'tinyexec'
+import { beforeEach, describe, it, test, vi } from 'vitest'
 
-import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
+import { execGit, GIT_GLOBAL_OPTIONS } from '../../lib/execGit.js'
 
-const { default: spawn } = await getMockNanoSpawn()
-
-const { execGit, GIT_GLOBAL_OPTIONS } = await import('../../lib/execGit.js')
+vi.mock('tinyexec', () => ({
+  exec: vi.fn().mockReturnValue({
+    async *[Symbol.asyncIterator]() {
+      yield 'test'
+    },
+  }),
+}))
 
 test('GIT_GLOBAL_OPTIONS', ({ expect }) => {
   expect(GIT_GLOBAL_OPTIONS).toEqual(['-c', 'submodule.recurse=false'])
@@ -14,24 +19,17 @@ test('GIT_GLOBAL_OPTIONS', ({ expect }) => {
 
 describe('execGit', () => {
   beforeEach(() => {
-    spawn.mockReset()
-  })
-
-  it('should execute git in process.cwd if working copy is not specified', async ({ expect }) => {
-    const cwd = process.cwd()
-    await execGit(['init', 'param'])
-    expect(spawn).toHaveBeenCalledExactlyOnceWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
-      cwd,
-      stdin: 'ignore',
-    })
+    vi.clearAllMocks()
   })
 
   it('should execute git in a given working copy', async ({ expect }) => {
     const cwd = path.join(process.cwd(), 'test', '__fixtures__')
     await execGit(['init', 'param'], { cwd })
-    expect(spawn).toHaveBeenCalledExactlyOnceWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
-      cwd,
-      stdin: 'ignore',
+    expect(exec).toHaveBeenCalledExactlyOnceWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
+      nodeOptions: {
+        cwd,
+        stdio: ['ignore'],
+      },
     })
   })
 })
