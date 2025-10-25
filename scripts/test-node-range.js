@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
-import spawn from 'nano-spawn'
 import { subset } from 'semver'
+import { exec } from 'tinyexec'
 
 import { bold, green, red } from '../lib/colors.js'
 
@@ -27,13 +27,14 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
    * @example <caption>when matching multiple versions</caption>
    * [">=6.0", ">=6.0"]
    */
-  const { output } = await spawn('npm', [
+  const { stdout } = await exec('npm', [
     'info',
     `${dependency}@${version}`,
     'engines.node',
     '--json',
   ])
-  const json = JSON.parse(output)
+
+  const json = stdout ? JSON.parse(stdout.trim()) : ''
 
   const requiredVersion = Array.isArray(json) ? json[json.length - 1] : json
 
@@ -47,7 +48,7 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
   const color = isSubset ? green : red
   const symbol = isSubset ? `✓` : '×'
 
-  console.log(`${color(`${symbol} ${dependency}`)}:`, requiredVersion)
+  console.log(`${color(`${symbol} ${dependency}`)}:`, requiredVersion || '?')
 }
 
 if (!allDependenciesSupported) {
