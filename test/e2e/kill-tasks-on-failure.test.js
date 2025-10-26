@@ -22,9 +22,11 @@ describe('lint-staged', () => {
       await execGit(['add', '.lintstagedrc.json'])
       await execGit(['add', 'test.js'])
 
-      await expect(lintStaged()).rejects.toMatchObject({
-        output: expect.stringContaining('Command was terminated with SIGKILL'),
-      })
+      await expect(lintStaged()).rejects.toEqual(
+        expect.objectContaining({
+          output: expect.stringContaining('Command was terminated with SIGKILL'),
+        })
+      )
     })
   )
 })

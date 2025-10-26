@@ -1,3 +1,4 @@
+import { SubprocessError } from 'nano-spawn'
 import { describe, it } from 'vitest'
 
 import { getSpawnedTask } from '../../lib/getSpawnedTask.js'
@@ -21,11 +22,15 @@ describe('getSpawnedTask', () => {
     expect(results).toEqual([
       {
         status: 'rejected',
-        reason: Error('node -e "setTimeout(() => void 0, 10000)" [SIGKILL]'),
+        reason: Error('node -e "setTimeout(() => void 0, 10000)" [SIGKILL]', {
+          cause: expect.any(SubprocessError),
+        }),
       },
       {
         status: 'rejected',
-        reason: Error('node -e "process.exit(1)" [FAILED]'),
+        reason: Error('node -e "process.exit(1)" [FAILED]', {
+          cause: expect.any(SubprocessError),
+        }),
       },
     ])
   })
