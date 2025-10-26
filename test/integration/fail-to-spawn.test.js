@@ -22,7 +22,7 @@ describe('lint-staged', () => {
       await expect(gitCommit()).rejects.toThrow(
         isWindowsActions()
           ? "'cmd-not-found' is not recognized as an internal or external command"
-          : 'cmd-not-found failed to spawn'
+          : 'Task failed to spawn: cmd-not-found'
       )
     })
   )
