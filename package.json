@@ -52,7 +52,6 @@
     "listr2": "^9.0.5",
     "micromatch": "^4.0.8",
     "nano-spawn": "^2.0.0",
-    "pidtree": "^0.6.0",
     "string-argv": "^0.3.2",
     "yaml": "^2.8.1"
   },
