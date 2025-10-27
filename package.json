@@ -76,7 +76,7 @@
     "prettier": "3.6.2",
     "semver": "7.7.3",
     "typescript": "5.9.3",
-    "vitest": "4.0.1"
+    "vitest": "4.0.2"
   },
   "keywords": [
     "lint",
