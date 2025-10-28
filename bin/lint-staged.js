@@ -12,9 +12,6 @@ import { getVersion } from '../lib/version.js'
 
 const debugLog = createDebug('lint-staged:bin')
 
-// Do not terminate main Listr process on SIGINT
-process.on('SIGINT', () => {})
-
 program
   .version(await getVersion())
 

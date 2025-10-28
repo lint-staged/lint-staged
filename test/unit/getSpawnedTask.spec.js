@@ -1,7 +1,6 @@
 import { SubprocessError } from 'nano-spawn'
 import { beforeEach, describe, it, vi } from 'vitest'
 
-import { killSubProcesses } from '../../lib/killSubprocesses.js'
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
@@ -13,11 +12,9 @@ const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
 
 vi.useFakeTimers()
 
-vi.mock('../../lib/killSubprocesses.js', () => ({
-  killSubProcesses: vi.fn(),
-}))
+const abortController = { abort: vi.fn(), signal: { addEventListener: vi.fn() } }
 
-const defaultOpts = { files: ['test.js'] }
+const defaultOpts = { abortController, files: ['test.js'] }
 
 describe('getSpawnedTask', () => {
   beforeEach(() => {
@@ -36,6 +33,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { FORCE_COLOR: 'true' },
@@ -53,6 +51,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -71,6 +70,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -91,6 +91,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
       cwd: '../',
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -107,6 +108,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('jest', ['test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -282,60 +284,5 @@ describe('getSpawnedTask', () => {
     vi.runOnlyPendingTimers()
 
     await expect(taskPromise).resolves.toEqual()
-  })
-
-  it('should kill a long running task when error event is emitted', async ({ expect }) => {
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 0 },
-        }),
-        1000
-      )
-    )
-
-    const context = getInitialState()
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-  })
-
-  it('should also kill child processes of killed spawn processes', async ({ expect }) => {
-    expect.assertions(2)
-
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 1234 },
-        }),
-        1000
-      )
-    )
-
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-
-    const context = getInitialState()
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-
-    expect(killSubProcesses).toHaveBeenCalledWith(
-      expect.objectContaining({
-        pid: 1234,
-      })
-    )
   })
 })
