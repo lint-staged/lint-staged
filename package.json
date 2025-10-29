@@ -48,7 +48,7 @@
     "tag": "npx changeset tag"
   },
   "dependencies": {
-    "commander": "^14.0.1",
+    "commander": "^14.0.2",
     "listr2": "^9.0.5",
     "micromatch": "^4.0.8",
     "nano-spawn": "^2.0.0",
