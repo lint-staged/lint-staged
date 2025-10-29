@@ -15,6 +15,12 @@ export type Configuration =
 
 export type Options = {
   /**
+   * Run on all tracked files instead of just staged files.
+   * @warn This implies `stash: false` and conflicts with `diff` and `diffFilter`.
+   * @default false
+   */
+  all?: boolean
+  /**
    * Allow empty commits when tasks revert all staged changes
    * @default false
    */

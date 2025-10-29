@@ -28,6 +28,12 @@ program
   .allowExcessArguments()
 
   .addOption(
+    new Option('--all', 'run on all tracked files instead of just staged files')
+      .default(false)
+      .conflicts(['diff', 'diffFilter'])
+      .implies({ stash: false })
+  )
+  .addOption(
     new Option('--allow-empty', 'allow empty commits when tasks revert all staged changes').default(
       false
     )
@@ -129,6 +135,7 @@ if (cliOptions.debug) {
 }
 
 const options = {
+  all: !!cliOptions.all,
   allowEmpty: !!cliOptions.allowEmpty,
   concurrent: JSON.parse(cliOptions.concurrent),
   configPath: cliOptions.config,

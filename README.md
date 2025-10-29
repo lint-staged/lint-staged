@@ -104,6 +104,7 @@ Usage: lint-staged [options]
 
 Options:
   -V, --version                      output the version number
+  --all                              run on all tracked files instead of just staged files (default: false)
   --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
   -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
   -c, --config [path]                path to configuration file, or - to read from stdin
@@ -131,6 +132,30 @@ Any lost modifications can be restored from a git stash:
   h0a0s0h0 On main: lint-staged automatic backup
   > git apply --index h0a0s0h0
 ```
+
+#### `--all`
+
+Run lint-staged on all tracked files instead of just staged files.
+
+By default, lint-staged only runs on files that are staged in git. This flag changes that behavior to run on **all files tracked by git**, regardless of their staging status. This is useful for:
+
+- Running linters on the entire codebase in CI pipelines
+- One-time reformatting of an entire project
+- Validating that all files meet current coding standards
+- Multi-language monorepos with per-directory configurations
+
+**Example:**
+
+```bash
+# Run on all tracked files (useful in CI)
+npx lint-staged --all
+```
+
+**Important notes:**
+
+- This option conflicts with `--diff` and `--diff-filter` (these are different file selection modes)
+- Automatically disables stashing (`--no-stash`) since there are no staged changes to protect
+- Only processes files tracked by git (ignores untracked files)
 
 #### `--allow-empty`
 

@@ -9,7 +9,7 @@ vi.mock('../../lib/execGit.js', () => ({
 }))
 
 const { execGit } = await import('../../lib/execGit.js')
-const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
+const { getAllFiles, getStagedFiles } = await import('../../lib/getStagedFiles.js')
 
 // Windows filepaths
 const normalizeWindowsPath = (input) => normalizePath(path.resolve('/', input))
@@ -125,5 +125,50 @@ describe('getStagedFiles', () => {
       ['diff', '--diff-filter=ACDMRTUXB', '--staged', '--raw', '-z'],
       { cwd: '/' }
     )
+  })
+})
+
+describe('getAllFiles', () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should return all tracked files', async ({ expect }) => {
+    execGit.mockImplementationOnce(async () => 'file1.js\nfile2.ts\ndir/file3.css')
+
+    const files = await getAllFiles({ cwd: '/' })
+    expect(files).toHaveLength(3)
+    expect(files[0]).toMatchObject({
+      filepath: normalizeWindowsPath('/file1.js'),
+      status: 'M',
+    })
+    expect(files[1]).toMatchObject({
+      filepath: normalizeWindowsPath('/file2.ts'),
+      status: 'M',
+    })
+    expect(files[2]).toMatchObject({
+      filepath: normalizeWindowsPath('/dir/file3.css'),
+      status: 'M',
+    })
+
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(['ls-files'], { cwd: '/' })
+  })
+
+  it('should handle empty repository', async ({ expect }) => {
+    execGit.mockImplementationOnce(async () => '')
+
+    const files = await getAllFiles()
+
+    expect(files).toEqual([])
+  })
+
+  it('should return null on git command failure', async ({ expect }) => {
+    execGit.mockImplementationOnce(async () => {
+      throw new Error('fatal: not a git repository (or any of the parent directories): .git')
+    })
+
+    const files = await getAllFiles()
+
+    expect(files).toBeNull()
   })
 })
