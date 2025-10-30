@@ -17,22 +17,6 @@ describe('supportsAnsiColors', () => {
     ['FORCE_TTY', 'true', true],
     ['FORCE_TTY', '0', false],
     ['FORCE_TTY', 'false', false],
-  ])(
-    'should return $2 for process.env[$0]=$1',
-    ([envVarName, envVarValue, expected], { expect }) => {
-      const process = {
-        env: { [envVarName]: envVarValue },
-      }
-
-      expect(supportsAnsiColors(process, false)).toBe(expected)
-    }
-  )
-
-  it('should return true for TTY', ({ expect }) => {
-    expect(supportsAnsiColors({}, true)).toBe(true)
-  })
-
-  it.for([
     ['CI', '', true],
     ['CI', '1', true],
     ['CI', 'true', true],
@@ -47,6 +31,10 @@ describe('supportsAnsiColors', () => {
       expect(supportsAnsiColors(process, false)).toBe(expected)
     }
   )
+
+  it('should return true for TTY', ({ expect }) => {
+    expect(supportsAnsiColors({}, true)).toBe(true)
+  })
 
   it('should return true for process.platform === "win32"', ({ expect }) => {
     const process = {
