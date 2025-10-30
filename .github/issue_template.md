@@ -18,10 +18,12 @@ possible. Including what is the expected and actual behavior.
 <!--
 Run `lint-staged` in debug mode using the command line flag `--debug`. You can
 either modify your pre-commit script/command to include the flag or invoke
-`lint-staged` manually(`./node_modules/.bin/lint-staged --debug`). Read more
-about debug mode here -
-https://github.com/okonet/lint-staged#command-line-flags.
+`lint-staged` manually(`npx lint-staged --debug`). Read more
+about debug mode here: https://github.com/lint-staged/lint-staged#--debug.
+
+Without debug logs, it's difficult to provide any help.
 -->
+
 <details>
 
 <summary>expand to view</summary>
@@ -31,3 +33,7 @@ COPY THE DEBUG LOGS HERE
 ```
 
 </details>
+
+<!-- Please also check tihs boxes to certify that -->
+
+- [ ] I have read this issue template before submitting an issue
