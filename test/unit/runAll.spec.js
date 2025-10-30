@@ -4,12 +4,17 @@ import makeConsoleMock from 'consolemock'
 import { SubprocessError } from 'nano-spawn'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
+import { exec } from '../../lib/exec.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { TaskError } from '../../lib/symbols.js'
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.js'
 
 const { default: spawn } = await getMockNanoSpawn()
+
+vi.mock('../../lib/exec.js', () => ({
+  exec: vi.fn(() => 'ok'),
+}))
 
 vi.mock('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: vi.fn(async () => []),
@@ -177,12 +182,8 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue({
-        output: 'Has staged files',
-        nodeChildProcess: { pid: 0 },
-      })
-    )
+    // Mock first spawn call (git operations) to succeed
+    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
       ctx.errors.add(TaskError)
@@ -202,12 +203,8 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue({
-        output: 'Has staged files',
-        nodeChildProcess: { pid: 0 },
-      })
-    )
+    // Mock first spawn call (git operations) to succeed
+    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
     spawn.mockImplementationOnce(() =>
       mockNanoSpawnReturnValue(
@@ -432,12 +429,7 @@ describe('runAll', () => {
     }))
 
     // Mock first spawn call (git operations) to succeed
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue({
-        output: 'Success',
-        nodeChildProcess: { pid: 0 },
-      })
-    )
+    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
     // Mock second spawn call (the actual task) to fail
     spawn.mockImplementationOnce(() =>
@@ -474,12 +466,7 @@ describe('runAll', () => {
     }))
 
     // Mock first spawn call (git operations) to succeed
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue({
-        output: 'Success',
-        nodeChildProcess: { pid: 0 },
-      })
-    )
+    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
     // Mock second spawn call (`echo "success js command 1"`) to succeed
     spawn.mockImplementationOnce(() =>
