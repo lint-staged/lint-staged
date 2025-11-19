@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.2.7
+
+### Patch Changes
+
+- [#1711](https://github.com/lint-staged/lint-staged/pull/1711) [`ef74c8d`](https://github.com/lint-staged/lint-staged/commit/ef74c8d165d5acd3ce88567e02b891e0e9af8e0e) Thanks [@iiroj](https://github.com/iiroj)! - Do not display a "_failed to spawn_" error message when a task fails normally. This message is reserved for when the task didn't run because spawning it failed.
+
 ## 16.2.6
 
 ### Patch Changes
