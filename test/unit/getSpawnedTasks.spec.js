@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from 'vitest'
+import { beforeEach, describe, it, vi } from 'vitest'
 
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
 
@@ -6,15 +6,18 @@ const { default: spawn } = await getMockNanoSpawn()
 
 const { getSpawnedTasks } = await import('../../lib/getSpawnedTasks.js')
 
+const abortController = { abort: vi.fn(), signal: { addEventListener: vi.fn() } }
+
 describe('getSpawnedTasks', () => {
   const topLevelDir = process.cwd()
 
   beforeEach(() => {
-    spawn.mockClear()
+    vi.clearAllMocks()
   })
 
   it('should return an array', async ({ expect }) => {
     const array = await getSpawnedTasks({
+      abortController,
       commands: 'test',
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -25,6 +28,7 @@ describe('getSpawnedTasks', () => {
   it('should work with a single command', async ({ expect }) => {
     expect.assertions(4)
     const res = await getSpawnedTasks({
+      abortController,
       commands: 'test',
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -41,6 +45,7 @@ describe('getSpawnedTasks', () => {
   it('should work with multiple commands', async ({ expect }) => {
     expect.assertions(9)
     const res = await getSpawnedTasks({
+      abortController,
       commands: ['test', 'test2'],
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -56,6 +61,7 @@ describe('getSpawnedTasks', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('test', ['test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -66,6 +72,7 @@ describe('getSpawnedTasks', () => {
     expect(spawn).toHaveBeenCalledTimes(2)
     expect(spawn).toHaveBeenLastCalledWith('test2', ['test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -74,6 +81,7 @@ describe('getSpawnedTasks', () => {
 
   it('should work with function task returning a string', async ({ expect }) => {
     const res = await getSpawnedTasks({
+      abortController,
       commands: () => 'test',
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -84,6 +92,7 @@ describe('getSpawnedTasks', () => {
 
   it('should work with function task returning array of string', async ({ expect }) => {
     const res = await getSpawnedTasks({
+      abortController,
       commands: () => ['test', 'test2'],
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -95,6 +104,7 @@ describe('getSpawnedTasks', () => {
 
   it('should work with function task accepting arguments', async ({ expect }) => {
     const res = await getSpawnedTasks({
+      abortController,
       commands: (filenames) => filenames.map((file) => `test ${file}`),
       topLevelDir,
       files: [
@@ -109,6 +119,7 @@ describe('getSpawnedTasks', () => {
 
   it('should work with array of mixed string and function tasks', async ({ expect }) => {
     const res = await getSpawnedTasks({
+      abortController,
       commands: [() => 'test', 'test2', (files) => files.map((file) => `test ${file}`)],
       topLevelDir,
       files: [
@@ -127,6 +138,7 @@ describe('getSpawnedTasks', () => {
 
   it('should work with async function tasks', async ({ expect }) => {
     const res = await getSpawnedTasks({
+      abortController,
       commands: async () => 'test',
       topLevelDir,
       files: [{ filepath: 'test.js', status: 'M' }],
@@ -138,6 +150,7 @@ describe('getSpawnedTasks', () => {
   it("should throw when function task doesn't return string | string[]", async ({ expect }) => {
     await expect(
       getSpawnedTasks({
+        abortController,
         commands: () => null,
         topLevelDir,
         files: [{ filepath: 'test.js', status: 'M' }],
@@ -153,6 +166,7 @@ describe('getSpawnedTasks', () => {
     const files = ['test.js']
 
     const res = await getSpawnedTasks({
+      abortController,
       commands: (stagedFiles) => {
         /** Array.splice() mutates the array */
         stagedFiles.splice(0, 1)

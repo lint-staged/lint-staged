@@ -8,22 +8,17 @@ import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.j
 
 const { default: spawn } = await getMockNanoSpawn()
 
-vi.mock('pidtree', () => ({
-  default: vi.fn(async () => []),
-}))
-
-const { default: pidtree } = await import('pidtree')
-
 const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
 
 vi.useFakeTimers()
 
-const defaultOpts = { files: ['test.js'] }
+const abortController = { abort: vi.fn(), signal: { addEventListener: vi.fn() } }
+
+const defaultOpts = { abortController, files: ['test.js'] }
 
 describe('getSpawnedTask', () => {
   beforeEach(() => {
-    pidtree.mockClear()
-    spawn.mockClear()
+    vi.clearAllMocks()
   })
 
   it('should pass FORCE_COLOR var to task when color supported', async ({ expect }) => {
@@ -38,6 +33,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { FORCE_COLOR: 'true' },
@@ -55,6 +51,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -73,6 +70,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -93,6 +91,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
       cwd: '../',
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -109,6 +108,7 @@ describe('getSpawnedTask', () => {
     expect(spawn).toHaveBeenCalledTimes(1)
     expect(spawn).toHaveBeenLastCalledWith('jest', ['test.js'], {
       cwd: process.cwd(),
+      detached: true,
       preferLocal: true,
       stdin: 'ignore',
       env: { NO_COLOR: 'true' },
@@ -284,163 +284,5 @@ describe('getSpawnedTask', () => {
     vi.runOnlyPendingTimers()
 
     await expect(taskPromise).resolves.toEqual()
-  })
-
-  it('should ignore pid-tree errors', async ({ expect }) => {
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 0 },
-        }),
-        1000
-      )
-    )
-
-    pidtree.mockImplementationOnce(() => {
-      throw new Error('No matching pid found')
-    })
-
-    const context = getInitialState()
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-  })
-
-  it('should kill a long running task when error event is emitted', async ({ expect }) => {
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 0 },
-        }),
-        1000
-      )
-    )
-
-    const context = getInitialState()
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-  })
-
-  it('should not try to kill subprocesses if main pid missing', async ({ expect }) => {
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: undefined },
-        }),
-        1000
-      )
-    )
-
-    const context = getInitialState()
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-    expect(pidtree).not.toHaveBeenCalled()
-  })
-
-  it('should also kill child processes of killed spawn processes', async ({ expect }) => {
-    expect.assertions(3)
-
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 0 },
-        }),
-        1000
-      )
-    )
-
-    const realKill = process.kill
-    const mockKill = vi.fn()
-    Object.defineProperty(process, 'kill', {
-      value: mockKill,
-    })
-
-    pidtree.mockImplementationOnce(() => ['1234'])
-
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-
-    const context = getInitialState()
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-
-    expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledExactlyOnceWith('1234', 'SIGKILL')
-
-    Object.defineProperty(process, 'kill', {
-      value: realKill,
-    })
-  })
-
-  it('should ignore error when trying to kill child processes', async ({ expect }) => {
-    expect.assertions(3)
-
-    spawn.mockReturnValueOnce(
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGKILL',
-          nodeChildProcess: { pid: 0 },
-        }),
-        1000
-      )
-    )
-
-    const realKill = process.kill
-    const mockKill = vi.fn(() => {
-      throw new Error('kill ESRCH')
-    })
-    Object.defineProperty(process, 'kill', {
-      value: mockKill,
-    })
-
-    pidtree.mockImplementationOnce(() => ['1234'])
-
-    const taskFn = getSpawnedTask({ ...defaultOpts, command: 'node' })
-
-    const context = getInitialState()
-    const taskPromise = taskFn(context)
-
-    context.events.emit('lint-staged:taskError')
-
-    vi.runAllTimers()
-
-    await expect(taskPromise).rejects.toThrow('node [SIGKILL]')
-
-    expect(mockKill).toHaveBeenCalledTimes(1)
-    expect(mockKill).toHaveBeenCalledExactlyOnceWith('1234', 'SIGKILL')
-
-    Object.defineProperty(process, 'kill', {
-      value: realKill,
-    })
   })
 })

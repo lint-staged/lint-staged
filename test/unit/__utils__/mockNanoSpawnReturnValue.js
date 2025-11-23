@@ -19,12 +19,14 @@ export const mockNanoSpawnReturnValue = (value = MOCK_DEFAULT_VALUE, executionTi
       ? Promise.reject(value)
       : Promise.resolve(value)
 
-  returnedPromise.nodeChildProcess = value.nodeChildProcess
-
-  returnedPromise.nodeChildProcess.kill = () => {
-    clearTimeout(resolveTimeout)
-    triggerResult?.()
-  }
+  returnedPromise.nodeChildProcess = Promise.resolve(
+    Object.assign(value.nodeChildProcess, {
+      kill: () => {
+        clearTimeout(resolveTimeout)
+        triggerResult?.()
+      },
+    })
+  )
 
   return returnedPromise
 }
