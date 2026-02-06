@@ -358,6 +358,7 @@ describe('runAll', () => {
         relative: true,
       })
     } catch ({ ctx }) {
+      // eslint-disable-next-line vitest/no-conditional-expect
       expect(ctx.errors.has(ConfigNotFoundError)).toBe(true)
     }
   })

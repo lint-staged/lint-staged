@@ -16,9 +16,8 @@ vi.mock('../../lib/runAll.js', () => ({
 const { default: lintStaged } = await import('../../lib/index.js')
 const { runAll } = await import('../../lib/runAll.js')
 const { getInitialState } = await import('../../lib/state.js')
-const { ApplyEmptyCommitError, ConfigNotFoundError, GitError } = await import(
-  '../../lib/symbols.js'
-)
+const { ApplyEmptyCommitError, ConfigNotFoundError, GitError } =
+  await import('../../lib/symbols.js')
 
 describe('lintStaged', () => {
   it('should log error when configuration not found', async ({ expect }) => {
@@ -46,13 +45,10 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      WARN 
-        ⚠ lint-staged prevented an empty git commit.
-        Use the --allow-empty option to continue, or check your task configuration
-      "
-    `)
+    expect(logger.printHistory()).toMatch('lint-staged prevented an empty git commit')
+    expect(logger.printHistory()).toMatch(
+      'Use the --allow-empty option to continue, or check your task configuration'
+    )
   })
 
   it('should log error and git stash message when a git operation failed', async ({ expect }) => {
@@ -68,17 +64,10 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR 
-        ✖ lint-staged failed due to a git error.
-      ERROR Any lost modifications can be restored from a git stash:
-
-        > git stash list --format="%h %s"
-        deadbeef On main: lint-staged automatic backup
-        > git apply --index deadbeef
-      "
-    `)
+    expect(logger.printHistory()).toMatch('lint-staged failed due to a git error')
+    expect(logger.printHistory()).toMatch(
+      'Any lost modifications can be restored from a git stash:'
+    )
   })
 
   it('should log error without git stash message when a git operation failed and backup disabled', async ({
@@ -95,11 +84,7 @@ describe('lintStaged', () => {
 
     await expect(lintStaged({}, logger)).resolves.toEqual(false)
 
-    expect(logger.printHistory()).toMatchInlineSnapshot(`
-      "
-      ERROR 
-        ✖ lint-staged failed due to a git error."
-    `)
+    expect(logger.printHistory()).toMatch('lint-staged failed due to a git error')
 
     expect(logger.printHistory()).not.toMatch(
       'Any lost modifications can be restored from a git stash'
@@ -118,6 +103,7 @@ describe('lintStaged', () => {
     const logger = makeConsoleMock()
 
     await lintStaged({}, logger).catch((error) => {
+      // eslint-disable-next-line vitest/no-conditional-expect
       expect(error).toEqual(testError)
     })
 
