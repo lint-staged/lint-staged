@@ -72,6 +72,7 @@ describe('validateOptions', () => {
         constants.F_OK
       )
 
+      // eslint-disable-next-line vitest/no-interpolation-in-snapshots
       expect(logger.printHistory()).toMatchInlineSnapshot(`
         "
         ERROR ✖ Validation Error:
