@@ -14,8 +14,8 @@ jobs:
   Publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
