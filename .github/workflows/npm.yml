@@ -11,19 +11,19 @@ jobs:
     name: Install Dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .node-version
             package-lock.json
             package.json
           sparse-checkout-cone-mode: false
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules

@@ -23,15 +23,15 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # This is a PAT token that allows triggering of new Actions when 🦋 Changeset pushes a git tag
           token: ${{ secrets.CHANGESET_RELEASE_TOKEN }}
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules

@@ -18,14 +18,14 @@ jobs:
     if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -36,14 +36,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -54,14 +54,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -72,12 +72,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -89,12 +89,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -120,12 +120,12 @@ jobs:
     steps:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -166,12 +166,12 @@ jobs:
           install: >-
             git
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
@@ -196,14 +196,14 @@ jobs:
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
-      - uses: cygwin/cygwin-install-action@v5
+      - uses: cygwin/cygwin-install-action@v6
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: cache-node_modules
         with:
           path: node_modules
