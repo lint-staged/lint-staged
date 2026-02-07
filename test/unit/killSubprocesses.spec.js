@@ -30,7 +30,7 @@ describe('killSubProcesses', () => {
   })
 
   it('should kill Windows process and subprocesses', async ({ expect }) => {
-    await killSubProcesses({ pid: 1234 }, true)
+    await killSubProcesses(1234, true)
 
     expect(mockKill).not.toHaveBeenCalled()
 
@@ -44,7 +44,7 @@ describe('killSubProcesses', () => {
       value: mockKill,
     })
 
-    await killSubProcesses({ pid: 1234 }, false)
+    await killSubProcesses(1234, false)
 
     expect(mockKill).toHaveBeenCalledTimes(1)
     expect(mockKill).toHaveBeenCalledWith(-1234, 'SIGKILL')

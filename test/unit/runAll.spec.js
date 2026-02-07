@@ -5,6 +5,7 @@ import { SubprocessError } from 'nano-spawn'
 import { exec } from 'tinyexec'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
+import { Signal } from '../../lib/getAbortController.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { TaskError } from '../../lib/symbols.js'
 import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
@@ -204,15 +205,15 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: '',
-          signalName: 'SIGINT',
-          nodeChildProcess: { pid: 0 },
-        })
-      )
-    )
+    vi.mocked(exec).mockReturnValue({
+      process: {
+        signalCode: Signal.SIGINT,
+        kill: vi.fn(),
+      },
+      async *[Symbol.asyncIterator]() {
+        yield 'test'
+      },
+    })
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
       return task.newListr(listrTasks)
@@ -464,37 +465,30 @@ describe('runAll', () => {
       },
     }))
 
-    // Mock first spawn call (git operations) to succeed
+    // Mock first exec call (git operations) to succeed
     vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
-    // Mock second spawn call (`echo "success js command 1"`) to succeed
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue({
-        output: 'Success',
-        nodeChildProcess: { pid: 0 },
-      })
-    )
+    // Mock second task call (`echo "success js command 1"`) to succeed
+    vi.mocked(exec).mockReturnValueOnce({
+      async *[Symbol.asyncIterator]() {
+        yield 'test'
+      },
+    })
 
     // Mock second spawn call (`echo "failing py command"`) to fail
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: 'Command failed',
-          nodeChildProcess: { pid: 0 },
-        })
-      )
-    )
+    vi.mocked(exec).mockReturnValueOnce({
+      exitCode: 1,
+      async *[Symbol.asyncIterator]() {
+        yield 'test'
+      },
+    })
 
-    // Mock first spawn call ('success js command 2') to succeed
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue(
-        {
-          output: 'Success',
-          nodeChildProcess: { pid: 0 },
-        },
-        1000
-      )
-    )
+    // Mock second exec call ('success js command 2') to succeed
+    vi.mocked(exec).mockReturnValueOnce({
+      async *[Symbol.asyncIterator]() {
+        yield 'test'
+      },
+    })
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
       return task.newListr(listrTasks)

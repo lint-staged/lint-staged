@@ -25,7 +25,7 @@ describe('lint-staged', () => {
       await expect(lintStaged()).rejects.toEqual(
         expect.objectContaining({
           output: expect.stringContaining(
-            'Task terminated: node -e "new Promise(resolve => setTimeout(resolve, 1000))"'
+            'Task killed: node -e "new Promise(resolve => setTimeout(resolve, 1000))"'
           ),
         })
       )

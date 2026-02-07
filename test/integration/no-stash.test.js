@@ -87,7 +87,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged with --no-stash
       await expect(gitCommit({ lintStaged: { stash: false } })).rejects.toThrow(
-        'SyntaxError: Unexpected token'
+        'prettier --write [FAILED]'
       )
 
       // Something was wrong, so the commit was aborted
