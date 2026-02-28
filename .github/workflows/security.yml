@@ -23,3 +23,13 @@ jobs:
         with:
           languages: javascript
       - uses: github/codeql-action/analyze@v4
+
+  npm:
+    uses: ./.github/workflows/npm.yml
+
+  npm-audit:
+    runs-on: ubuntu-latest
+    needs: npm
+    steps:
+      - uses: actions/checkout@v6
+      - run: npm audit --include prod --audit-level high
