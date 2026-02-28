@@ -3,49 +3,51 @@ import { describe, it } from 'vitest'
 
 import {
   DOUBLE_BRACES_REGEXP,
-  INCORRECT_BRACES_REGEXP,
+  getIncorrectBracesRegexp,
   validateBraces,
 } from '../../lib/validateBraces.js'
 
-describe('INCORRECT_BRACES_REGEXP', () => {
+describe('getIncorrectBracesRegexp()', () => {
+  const incorrectBracesRegexp = getIncorrectBracesRegexp()
+
   it(`should match '*.{js}'`, ({ expect }) => {
-    expect('*.{js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
+    expect('*.{js}'.match(incorrectBracesRegexp)).toBeTruthy()
   })
 
   it(`should match 'file_{10}'`, ({ expect }) => {
-    expect('file_{test}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
+    expect('file_{test}'.match(incorrectBracesRegexp)).toBeTruthy()
   })
 
   it(`should match '*.{spec\\.js}'`, ({ expect }) => {
-    expect('*.{spec\\.js}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
+    expect('*.{spec\\.js}'.match(incorrectBracesRegexp)).toBeTruthy()
   })
 
   it(`should match '*.{js\\,ts}'`, ({ expect }) => {
-    expect('*.{js\\,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeTruthy()
+    expect('*.{js\\,ts}'.match(incorrectBracesRegexp)).toBeTruthy()
   })
 
   it("should not match '*.${js}'", ({ expect }) => {
-    expect('*.${js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('*.${js}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 
   it(`should not match '.{js,ts}'`, ({ expect }) => {
-    expect('.{js,ts}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('.{js,ts}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 
   it(`should not match 'file_{1..10}'`, ({ expect }) => {
-    expect('file_{1..10}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('file_{1..10}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 
   it(`should not match '*.\\{js\\}'`, ({ expect }) => {
-    expect('*.\\{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('*.\\{js\\}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 
   it(`should not match '*.\\{js}'`, ({ expect }) => {
-    expect('*.\\{js}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('*.\\{js}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 
   it(`should not match '*.{js\\}'`, ({ expect }) => {
-    expect('*.{js\\}'.match(INCORRECT_BRACES_REGEXP)).toBeFalsy()
+    expect('*.{js\\}'.match(incorrectBracesRegexp)).toBeFalsy()
   })
 })
 
