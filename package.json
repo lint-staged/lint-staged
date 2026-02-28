@@ -19,7 +19,7 @@
     "url": "https://opencollective.com/lint-staged"
   },
   "engines": {
-    "node": ">=20.17"
+    "node": ">=22.0.0"
   },
   "type": "module",
   "bin": {
@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "commander": "^14.0.3",
-    "listr2": "^9.0.5",
+    "listr2": "^10.1.1",
     "micromatch": "^4.0.8",
     "nano-spawn": "^2.0.0",
     "string-argv": "^0.3.2",
