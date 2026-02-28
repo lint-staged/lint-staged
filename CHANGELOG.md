@@ -1,5 +1,17 @@
 # lint-staged
 
+## 16.3.0
+
+### Minor Changes
+
+- [#1698](https://github.com/lint-staged/lint-staged/pull/1698) [`feda37a`](https://github.com/lint-staged/lint-staged/commit/feda37aa590789e847f32a4aabc346af1d79c547) Thanks [@iiroj](https://github.com/iiroj)! - Run external processes with [`tinyexec`](https://github.com/tinylibs/tinyexec) instead of [`nano-spawn`](https://github.com/sindresorhus/nano-spawn). `nano-spawn` replaced [`execa`](https://github.com/sindresorhus/execa) in _lint-staged_ version 16 to limit the amount of npm dependencies required, but caused some unknown issues related to spawning tasks. Let's hope `tinyexec` improves the situation.
+
+- [#1699](https://github.com/lint-staged/lint-staged/pull/1699) [`1346d16`](https://github.com/lint-staged/lint-staged/commit/1346d16387e188911ef64e8bad6b8a6252cb6d71) Thanks [@iiroj](https://github.com/iiroj)! - Remove `pidtree` as a dependency. When a task fails, its sub-processes are killed more efficiently via the process group on Unix systems, and the `taskkill` command on Windows.
+
+### Patch Changes
+
+- [#1726](https://github.com/lint-staged/lint-staged/pull/1726) [`87467aa`](https://github.com/lint-staged/lint-staged/commit/87467aaa76e1edc2547f3f3d462a4495afa5337d) Thanks [@iiroj](https://github.com/iiroj)! - Incorrect brace expansions like `*.{js}` (_nothing to expand_) are detected exhaustively, instead of just a single pass.
+
 ## 16.2.7
 
 ### Patch Changes
