@@ -14,7 +14,7 @@ describe('lint-staged', () => {
         '.lintstagedrc.json',
         JSON.stringify({
           '*.js': 'prettier --list-different',
-          '*.{js,ts}': 'node -e "new Promise(resolve => setTimeout(resolve, 1000))"',
+          '*.{js,ts}': 'node -e "new Promise(resolve => setTimeout(resolve, 100_000))"',
         })
       )
 
@@ -25,7 +25,7 @@ describe('lint-staged', () => {
       await expect(lintStaged()).rejects.toEqual(
         expect.objectContaining({
           output: expect.stringContaining(
-            'Task killed: node -e "new Promise(resolve => setTimeout(resolve, 1000))"'
+            'Task killed: node -e "new Promise(resolve => setTimeout(resolve, 100_000))"'
           ),
         })
       )
