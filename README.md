@@ -34,6 +34,10 @@ $ git commit
 
 </details>
 
+> [!Tip]
+> Do you only want to check staged files for errors, but not edit them automatically?  
+> You might be interested in this simpler shell script: [`lint-staged.sh`](https://github.com/lint-staged/lint-staged.sh).
+
 ## Table of Contents
 
 - [Why](#why)
