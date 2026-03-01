@@ -34,6 +34,6 @@ COPY THE DEBUG LOGS HERE
 
 </details>
 
-<!-- Please also check tihs boxes to certify that -->
+<!-- Check this box to certify that: -->
 
-- [ ] I have read this issue template before submitting an issue
+- [ ] I have read this issue template before submitting an issue. If left unchecked, the issue might be ignored or closed without consideration.

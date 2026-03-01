@@ -1,4 +1,5 @@
-**Please check all these boxes before opening a Pull Request**
+**Do not open Pull Requests unless they have been agreed to with the maintainer!**  
+**Otherwise they might be ignored or closed without consideration. Please open a new issue first!**
 
 - [ ] I have opened a GitHub issue beforehand and have agreed with the maintainer of this project
 - [ ] I have written unit, integration and e2e tests that cover the logic in this Pull Request
