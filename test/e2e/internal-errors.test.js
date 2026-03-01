@@ -1,16 +1,13 @@
-import { SubprocessError } from 'nano-spawn'
 import { describe, test } from 'vitest'
 
 import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
-import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
+import { forkLintStagedBin } from './__utils__/forkLintStagedBin.js'
 
 describe('lint-staged', () => {
   test(
     'throws internal errors',
     withGitIntegration(async ({ execGit, expect, writeFile, cwd }) => {
-      const lintStaged = getLintStagedExecutor(cwd)
-
       await writeFile(
         'lint-staged.config.mjs',
         `
@@ -23,12 +20,14 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
-      await expect(lintStaged()).rejects.toThrow(SubprocessError)
+      await expect(forkLintStagedBin(undefined, { cwd })).rejects.toThrow(
+        'Lint-staged config failure test'
+      )
 
-      const subProcessError = await lintStaged(['--debug']).catch((e) => e)
+      const error = await forkLintStagedBin(['--debug'], { cwd }).catch((e) => e)
 
-      expect(subProcessError.exitCode).toBe(1)
-      expect(subProcessError.output).toMatch("throw new Error('Lint-staged config failure test')")
+      expect(error.cause.exitCode).toBe(1)
+      expect(error.message).toMatch("throw new Error('Lint-staged config failure test')")
     })
   )
 })
