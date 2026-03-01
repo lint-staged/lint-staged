@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.3.1
+
+### Patch Changes
+
+- [#1729](https://github.com/lint-staged/lint-staged/pull/1729) [`cd5d762`](https://github.com/lint-staged/lint-staged/commit/cd5d762c288bcfe36274c32f018cea97dfe11280) Thanks [@iiroj](https://github.com/iiroj)! - Remove `nano-spawn` as a dependency from `package.json` as it was replaced with `tinyexec` and is no longer used.
+
 ## 16.3.0
 
 ### Minor Changes
