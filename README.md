@@ -67,8 +67,6 @@ This project contains a script that will run arbitrary shell tasks with a list o
 - [SurviveJS interview - Juho Vepsäläinen and Andrey Okonetchnikov, 2018](https://survivejs.com/blog/lint-staged-interview/)
 - [Prettier your CSharp with `dotnet-format` and `lint-staged`](https://johnnyreilly.com/2020/12/22/prettier-your-csharp-with-dotnet-format-and-lint-staged)
 
-> If you've written one, please submit a PR with the link to it!
-
 ## Installation and setup
 
 To install _lint-staged_ in the recommended way, you need to:
