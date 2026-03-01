@@ -3,14 +3,12 @@ import { describe, test } from 'vitest'
 import * as configFixtures from '../integration/__fixtures__/configs.js'
 import * as fileFixtures from '../integration/__fixtures__/files.js'
 import { withGitIntegration } from '../integration/__utils__/withGitIntegration.js'
-import { getLintStagedExecutor } from './__utils__/getLintStagedExecutor.js'
+import { forkLintStagedBin } from './__utils__/forkLintStagedBin.js'
 
 describe('lint-staged', () => {
   test(
     '--diff implies --no-stash',
     withGitIntegration(async ({ execGit, expect, writeFile, cwd }) => {
-      const lintStaged = getLintStagedExecutor(cwd)
-
       await execGit(['checkout', '-b', 'my-branch'])
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
       await writeFile('test.js', fileFixtures.prettyJS)
@@ -18,37 +16,33 @@ describe('lint-staged', () => {
       await execGit(['add', 'test.js'])
       await execGit(['commit', '-m', 'test'])
 
-      let res = await lintStaged()
-      expect(res.stdout).toMatch('could not find any staged files.')
+      let res = await forkLintStagedBin(undefined, { cwd })
+      expect(res).toMatch('could not find any staged files.')
 
-      res = await lintStaged(['--stash'])
-      expect(res.stdout).toMatch('could not find any staged files.')
+      res = await forkLintStagedBin(['--stash'], { cwd })
+      expect(res).toMatch('could not find any staged files.')
 
-      res = await lintStaged(['--no-stash'])
-      expect(res.stdout).toMatch('could not find any staged files.')
-      expect(res.stderr).toMatch(
+      res = await forkLintStagedBin(['--no-stash'], { cwd })
+      expect(res).toMatch('could not find any staged files.')
+      expect(res).toMatch(
         'Skipping backup because `--no-stash` was used. This might result in data loss.'
       )
 
-      res = await lintStaged(['--diff=main...my-branch'])
-      expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+      res = await forkLintStagedBin(['--diff=main...my-branch'], { cwd })
+      expect(res).toMatch('Skipping backup because `--diff` was used.')
 
-      await expect(lintStaged(['--diff=main...my-branch', '--stash'])).rejects.toThrow(
-        expect.objectContaining({
-          stderr: expect.stringContaining('lint-staged failed due to a git error.'),
-        })
-      )
+      await expect(
+        forkLintStagedBin(['--diff=main...my-branch', '--stash'], { cwd })
+      ).rejects.toThrow('lint-staged failed due to a git error.')
 
-      res = await lintStaged(['--diff=main...my-branch', '--no-stash'])
-      expect(res.stderr).toMatch('Skipping backup because `--diff` was used.')
+      res = await forkLintStagedBin(['--diff=main...my-branch', '--no-stash'], { cwd })
+      expect(res).toMatch('Skipping backup because `--diff` was used.')
     })
   )
 
   test(
     "--no-stash doesn't imply --no-hide-partially-staged, losing conflicting unstaged changes",
     withGitIntegration(async ({ execGit, expect, readFile, writeFile, cwd }) => {
-      const lintStaged = getLintStagedExecutor(cwd)
-
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
 
       // Stage ugly file
@@ -59,11 +53,9 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJSWithChanges)
 
       // lint-staged fails because file is ugly
-      await expect(lintStaged(['--no-stash'])).rejects.toMatchObject({
-        stderr: expect.stringContaining(
-          'Skipping backup because `--no-stash` was used. This might result in data loss.'
-        ),
-      })
+      await expect(forkLintStagedBin(['--no-stash'], { cwd })).rejects.toThrow(
+        'Skipping backup because `--no-stash` was used. This might result in data loss.'
+      )
 
       // unstaged changes were discarded
       expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)

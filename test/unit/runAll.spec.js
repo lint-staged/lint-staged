@@ -1,17 +1,12 @@
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
-import { SubprocessError } from 'nano-spawn'
 import { exec } from 'tinyexec'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
 import { Signal } from '../../lib/getAbortController.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { TaskError } from '../../lib/symbols.js'
-import { getMockNanoSpawn } from './__utils__/getMockNanoSpawn.js'
-import { mockNanoSpawnReturnValue } from './__utils__/mockNanoSpawnReturnValue.js'
-
-const { default: spawn } = await getMockNanoSpawn()
 
 vi.mock('tinyexec', () => ({
   exec: vi.fn().mockReturnValue({
@@ -430,16 +425,6 @@ describe('runAll', () => {
 
     // Mock first spawn call (git operations) to succeed
     vi.mocked(exec).mockResolvedValueOnce('Has staged files')
-
-    // Mock second spawn call (the actual task) to fail
-    spawn.mockImplementationOnce(() =>
-      mockNanoSpawnReturnValue(
-        Object.assign(new SubprocessError(), {
-          output: 'Command failed',
-          nodeChildProcess: { pid: 0 },
-        })
-      )
-    )
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
       return task.newListr(listrTasks)
