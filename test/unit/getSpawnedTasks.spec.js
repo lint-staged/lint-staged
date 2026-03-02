@@ -68,7 +68,6 @@ describe('getSpawnedTasks', () => {
     expect(exec).toHaveBeenLastCalledWith('test', ['test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        detached: true,
         stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
@@ -80,7 +79,6 @@ describe('getSpawnedTasks', () => {
     expect(exec).toHaveBeenLastCalledWith('test2', ['test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        detached: true,
         stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
