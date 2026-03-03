@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.3.2
+
+### Patch Changes
+
+- [#1735](https://github.com/lint-staged/lint-staged/pull/1735) [`2adaf6c`](https://github.com/lint-staged/lint-staged/commit/2adaf6c3a76152abddbf23b749dfa5d62982f3cf) Thanks [@iiroj](https://github.com/iiroj)! - Hide the extra `cmd` window on Windows by spawning tasks without the `detached` option.
+
 ## 16.3.1
 
 ### Patch Changes
