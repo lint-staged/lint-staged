@@ -65,24 +65,12 @@ describe('getSpawnedTasks', () => {
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(exec).toHaveBeenCalledTimes(1)
-    expect(exec).toHaveBeenLastCalledWith('test', ['test.js'], {
-      nodeOptions: {
-        cwd: process.cwd(),
-        stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
-      },
-    })
+    expect(exec).toHaveBeenLastCalledWith('test', ['test.js'], expect.any(Object))
     taskPromise = linter2.task()
     expect(taskPromise).toBeInstanceOf(Promise)
     await taskPromise
     expect(exec).toHaveBeenCalledTimes(2)
-    expect(exec).toHaveBeenLastCalledWith('test2', ['test.js'], {
-      nodeOptions: {
-        cwd: process.cwd(),
-        stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
-      },
-    })
+    expect(exec).toHaveBeenLastCalledWith('test2', ['test.js'], expect.any(Object))
   })
 
   it('should work with function task returning a string', async ({ expect }) => {

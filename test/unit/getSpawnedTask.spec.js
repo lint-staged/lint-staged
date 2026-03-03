@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
@@ -14,7 +16,7 @@ vi.mock('tinyexec', () => ({
   }),
 }))
 
-const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
+const { getSpawnedTask, getTaskEnv } = await import('../../lib/getSpawnedTask.js')
 
 vi.useFakeTimers()
 
@@ -31,25 +33,6 @@ describe('getSpawnedTask', () => {
     vi.clearAllMocks()
   })
 
-  it('should pass FORCE_COLOR var to task when color supported', async ({ expect }) => {
-    expect.assertions(2)
-    const taskFn = getSpawnedTask({
-      ...defaultOpts,
-      command: 'node --arg=true ./myscript.js',
-      color: true,
-    })
-
-    await taskFn()
-    expect(exec).toHaveBeenCalledTimes(1)
-    expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
-      nodeOptions: {
-        cwd: process.cwd(),
-        stdio: ['ignore'],
-        env: { FORCE_COLOR: 'true' },
-      },
-    })
-  })
-
   it('should support non npm scripts', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
@@ -63,7 +46,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: expect.objectContaining({ NO_COLOR: 'true' }),
       },
     })
   })
@@ -78,13 +61,11 @@ describe('getSpawnedTask', () => {
 
     await taskFn()
     expect(exec).toHaveBeenCalledTimes(1)
-    expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
-      nodeOptions: {
-        cwd: process.cwd(),
-        stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
-      },
-    })
+    expect(exec).toHaveBeenLastCalledWith(
+      'node',
+      ['--arg=true', './myscript.js', 'test.js'],
+      expect.any(Object)
+    )
   })
 
   it('should pass `topLevelDir` as `cwd` to `spawn()` topLevelDir !== process.cwd for git commands', async ({
@@ -100,11 +81,9 @@ describe('getSpawnedTask', () => {
     await taskFn()
     expect(exec).toHaveBeenCalledTimes(1)
     expect(exec).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
-      nodeOptions: {
+      nodeOptions: expect.objectContaining({
         cwd: '../',
-        stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
-      },
+      }),
     })
   })
 
@@ -117,11 +96,9 @@ describe('getSpawnedTask', () => {
     await taskFn()
     expect(exec).toHaveBeenCalledTimes(1)
     expect(exec).toHaveBeenLastCalledWith('jest', ['test.js'], {
-      nodeOptions: {
+      nodeOptions: expect.objectContaining({
         cwd: process.cwd(),
-        stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
-      },
+      }),
     })
   })
 
@@ -339,5 +316,56 @@ describe('getSpawnedTask', () => {
     await expect(() => taskFn()).rejects.toThrow('node [FAILED]')
 
     expect(abortController.signal.aborted).toBe(false)
+  })
+})
+
+describe('getTaskEnv', () => {
+  it('should add FORCE_COLOR=true to env when color enablef', ({ expect }) => {
+    const env = getTaskEnv({ color: true })
+    expect(env).toHaveProperty('FORCE_COLOR', 'true')
+    expect(env).not.toHaveProperty('NO_COLOR')
+  })
+
+  it('should add NO_COLOR=true to env when color disabled', ({ expect }) => {
+    const env = getTaskEnv({ color: false })
+    expect(env).toHaveProperty('NO_COLOR', 'true')
+    expect(env).not.toHaveProperty('FORCE_COLOR')
+  })
+
+  it('should prepend all node_modules/.bin to PATH', ({ expect }) => {
+    const PATH = path.join(path.sep, 'usr', 'local', 'bin')
+
+    const env = getTaskEnv({
+      env: { PATH },
+      cwd: path.join(path.sep, 'one', 'two', 'three'),
+    })
+
+    expect(env).toHaveProperty(
+      'PATH',
+      [
+        path.join(path.sep, 'one', 'two', 'three', 'node_modules', '.bin'),
+        path.join(path.sep, 'one', 'two', 'node_modules', '.bin'),
+        path.join(path.sep, 'one', 'node_modules', '.bin'),
+        path.join(path.sep, 'node_modules', '.bin'),
+        PATH,
+      ].join(':')
+    )
+  })
+
+  it('should format previously missing PATH correctly', ({ expect }) => {
+    const env = getTaskEnv({
+      env: {},
+      cwd: path.join(path.sep, 'one', 'two', 'three'),
+    })
+
+    expect(env).toHaveProperty(
+      'PATH',
+      [
+        path.join(path.sep, 'one', 'two', 'three', 'node_modules', '.bin'),
+        path.join(path.sep, 'one', 'two', 'node_modules', '.bin'),
+        path.join(path.sep, 'one', 'node_modules', '.bin'),
+        path.join(path.sep, 'node_modules', '.bin'),
+      ].join(':')
+    )
   })
 })
