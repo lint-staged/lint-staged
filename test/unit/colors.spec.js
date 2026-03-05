@@ -1,62 +1,25 @@
-import { describe, it } from 'vitest'
+import { describe, test, vi } from 'vitest'
 
-import { supportsAnsiColors, wrapAnsiColor } from '../../lib/colors.js'
+import { blackBright, blue, bold, red, yellow } from '../../lib/colors.js'
 
-describe('supportsAnsiColors', () => {
-  it.for([
-    ['NO_COLOR', '', false],
-    ['NO_COLOR', '0', false],
-    ['NO_COLOR', 'false', false],
-    ['FORCE_COLOR', '', true],
-    ['FORCE_COLOR', '1', true],
-    ['FORCE_COLOR', 'true', true],
-    ['FORCE_COLOR', '0', false],
-    ['FORCE_COLOR', 'false', false],
-    ['FORCE_TTY', '', true],
-    ['FORCE_TTY', '1', true],
-    ['FORCE_TTY', 'true', true],
-    ['FORCE_TTY', '0', false],
-    ['FORCE_TTY', 'false', false],
-    ['CI', '', true],
-    ['CI', '1', true],
-    ['CI', 'true', true],
-    ['TERM', 'dumb', false],
-  ])(
-    'should return $2 for process.env[$0]=$1',
-    ([envVarName, envVarValue, expected], { expect }) => {
-      const process = {
-        env: { [envVarName]: envVarValue },
-      }
+const colors = {
+  red,
+  blackBright,
+  blue,
+  bold,
+  yellow,
+}
 
-      expect(supportsAnsiColors(process, false)).toBe(expected)
-    }
-  )
+vi.stubEnv('FORCE_COLOR', 'true')
 
-  it('should return true for TTY', ({ expect }) => {
-    expect(supportsAnsiColors({}, true)).toBe(true)
-  })
-
-  it('should return true for process.platform === "win32"', ({ expect }) => {
-    const process = {
-      platform: 'win32',
-    }
-
-    expect(supportsAnsiColors(process, false)).toBe(true)
-  })
-
-  it('should return false for non-TTY', ({ expect }) => {
-    expect(supportsAnsiColors({}, false)).toBe(false)
-  })
-})
-
-describe('wrapAnsiColor', () => {
-  const RED = '\u001B[0;31m'
-
-  it('should return exact input when color not supported', ({ expect }) => {
-    expect(wrapAnsiColor(RED, false)('foobar')).toBe('foobar')
-  })
-
-  it('should return wrapped input when color is supported', ({ expect }) => {
-    expect(wrapAnsiColor(RED, true)('foobar')).toBe('\u001B[0;31mfoobar\u001B[0m')
+describe('colors', () => {
+  test.for([
+    ['red', '\u001b[31m_\u001b[39m'],
+    ['blackBright', '\u001b[90m_\u001b[39m'],
+    ['blue', '\u001b[34m_\u001b[39m'],
+    ['bold', '\u001b[1m_\u001b[22m'],
+    ['yellow', '\u001b[33m_\u001b[39m'],
+  ])("should format '_' in $0 as $1", ([color, expected], { expect }) => {
+    expect(colors[color]('_')).toEqual(expected)
   })
 })
