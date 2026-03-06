@@ -227,7 +227,7 @@ _Lint-staged_ can be configured in many ways:
   whether your project's _package.json_ contains the `"type": "module"` option or not.
 - Pass a configuration file using the `--config` or `-c` flag
 
-Configuration should be an object where each value is a **command** to run and its key is a glob pattern to use for this command. This package uses [micromatch](https://github.com/micromatch/micromatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
+Configuration should be an object where each value is a **command** to run and its key is a glob pattern to use for this command. This package uses [picomatch](https://github.com/micromatch/picomatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
 
 You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
@@ -329,9 +329,9 @@ Or, if necessary, you can limit the concurrency using `--concurrent <number>` or
 
 ## Filtering files
 
-Task commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [micromatch](https://github.com/micromatch/micromatch) for matching files with the following rules:
+Task commands work on a subset of all staged files, defined by a _glob pattern_. lint-staged uses [picomatch](https://github.com/micromatch/picomatch) for matching files with the following rules:
 
-- If the glob pattern contains no slashes (`/`), micromatch's `matchBase` option will be enabled, so globs match a file's basename regardless of directory:
+- If the glob pattern contains no slashes (`/`), picomatch's `matchBase` option will be enabled, so globs match a file's basename regardless of directory:
   - `"*.js"` will match all JS files, like `/test.js` and `/foo/bar/test.js`
   - `"!(*test).js"` will match all JS files, except those ending in `test.js`, so `foo.js` but not `foo.test.js`
   - `"!(*.css|*.js)"` will match all files except CSS and JS files
@@ -432,15 +432,15 @@ export default {
 
 ```js
 // lint-staged.config.js
-import micromatch from 'micromatch'
+import picomatch from 'picomatch'
 
 export default (allStagedFiles) => {
-  const shFiles = micromatch(allStagedFiles, ['**/src/**/*.sh'])
+  const shFiles = allStagedFiles.filter((file) => picomatch.isMatch(file, ['**/src/**/*.sh']))
   if (shFiles.length) {
     return `printf '%s\n' "Script files aren't allowed in src directory" >&2`
   }
-  const codeFiles = micromatch(allStagedFiles, ['**/*.js', '**/*.ts'])
-  const docFiles = micromatch(allStagedFiles, ['**/*.md'])
+  const codeFiles = allStagedFiles.filter((file) => picomatch.isMatch(file, ['**/*.js', '**/*.ts']))
+  const docFiles = allStagedFiles.filter((file) => picomatch.isMatch(file, ['**/*.md']))
   return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
 }
 ```
@@ -499,12 +499,12 @@ It's better to use the [function-based configuration (seen above)](https://githu
 
 ```js
 // lint-staged.config.js
-import micromatch from 'micromatch'
+import picomatch from 'picomatch'
 
 export default {
   '*': (allFiles) => {
-    const codeFiles = micromatch(allFiles, ['**/*.js', '**/*.ts'])
-    const docFiles = micromatch(allFiles, ['**/*.md'])
+    const codeFiles = allFiles.filter((file) => picomatch.isMatch(file, ['**/*.js', '**/*.ts']))
+    const docFiles = allFiles.filter((file) => picomatch.isMatch(file, ['**/*.md']))
     return [`eslint ${codeFiles.join(' ')}`, `mdl ${docFiles.join(' ')}`]
   },
 }
@@ -517,16 +517,16 @@ export default {
 <details>
   <summary>Click to expand</summary>
 
-If for some reason you want to ignore files from the glob match, you can use `micromatch.not()`:
+If for some reason you want to ignore files from the glob match, you can use `picomatch.isMatch()` with negated pattern(s):
 
 ```js
 // lint-staged.config.js
-import micromatch from 'micromatch'
+import picomatch from 'picomatch'
 
 export default {
   '*.js': (files) => {
     // from `files` filter those _NOT_ matching `*test.js`
-    const match = micromatch.not(files, '*test.js')
+    const match = files.filter((file) => picomatch.isMatch(file, '!*test.js'))
     return `eslint ${match.join(' ')}`
   },
 }
