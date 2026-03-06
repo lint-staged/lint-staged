@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "commander": "^14.0.3",
-    "fill-range": "^7.1.1",
     "listr2": "^9.0.5",
     "picomatch": "^4.0.3",
     "string-argv": "^0.3.2",

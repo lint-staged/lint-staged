@@ -2,4 +2,4 @@
 'lint-staged': minor
 ---
 
-replace micromatch with picomatch to reduce dependencies
+Replace `micromatch` with `picomatch` to reduce dependencies.
