@@ -52,7 +52,9 @@
     "listr2": "^9.0.5",
     "micromatch": "^4.0.8",
     "string-argv": "^0.3.2",
-    "tinyexec": "^1.0.2",
+    "tinyexec": "^1.0.2"
+  },
+  "optionalDependencies": {
     "yaml": "^2.8.2"
   },
   "devDependencies": {
