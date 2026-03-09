@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.3.3
+
+### Patch Changes
+
+- [#1740](https://github.com/lint-staged/lint-staged/pull/1740) [`0109e8d`](https://github.com/lint-staged/lint-staged/commit/0109e8d1507409d950dab0d65ce27bd40b1137c7) Thanks [@iiroj](https://github.com/iiroj)! - Make sure Git's warning about CRLF line-endings doesn't interfere with creating initial backup stash.
+
 ## 16.3.2
 
 ### Patch Changes
