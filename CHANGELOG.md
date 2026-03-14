@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.3.4
+
+### Patch Changes
+
+- [#1742](https://github.com/lint-staged/lint-staged/pull/1742) [`9d6e827`](https://github.com/lint-staged/lint-staged/commit/9d6e827b0c55da5b091c989111f6c55dd76539d9) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies, including [`tinyexec@1.0.4`](https://github.com/tinylibs/tinyexec/releases/tag/1.0.4) to make sure local `node_modules/.bin` are preferred to global locations (released in [`tinyexec@1.0.3`](https://github.com/tinylibs/tinyexec/releases/tag/1.0.3)).
+
 ## 16.3.3
 
 ### Patch Changes
