@@ -1,3 +1,19 @@
+## v17
+
+#### Node.js v20 is no longer supported.
+
+The oldest supported Node.js version is now 22.22.1, which is the latest active v22 LTS version at the time of release. You can — of course — update to v24 or v25, or later.
+
+#### The `yaml` dependency is now optional
+
+The dependency `yaml` is now marked as optional and probably won't be installed by default. If you're using a YAML configuration file you should install the package separately:
+
+```shell
+npm install --development yaml
+```
+
+If you're using `.lintstagedrc` as the config file name (without a file extension), it will be treated as a YAML file. If the content is JSON, consider renaming it to `.lintstagedrc.json` to avoid needing to install `yaml`.
+
 ## v16
 
 #### Updated Node.js version requirement
