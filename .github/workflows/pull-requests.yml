@@ -109,7 +109,7 @@ jobs:
           - '22.22.1' # lowest supported version
           - '22.x'
           - '24.x'
-          - latest
+          - '25.x'
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
@@ -148,11 +148,12 @@ jobs:
   test-msys2:
     strategy:
       matrix:
+        # Test with Node.js active LTS versions, and the latest version
         node:
-          - 20.17.0 # lowest supported version
-          - 20
-          - 22
-          - 24
+          - '22.22.1' # lowest supported version
+          - '22.x'
+          - '24.x'
+          - '25.x'
     name: Node.js ${{ matrix.node }} on windows-latest (MSYS2)
     runs-on: windows-latest
     defaults:
@@ -188,11 +189,12 @@ jobs:
   test-cygwin:
     strategy:
       matrix:
+        # Test with Node.js active LTS versions, and the latest version
         node:
-          - 20.17.0 # lowest supported version
-          - 20
-          - 22
-          - 24
+          - '22.22.1' # lowest supported version
+          - '22.x'
+          - '24.x'
+          - '25.x'
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
