@@ -1,5 +1,11 @@
 # lint-staged
 
+## 16.4.0
+
+### Minor Changes
+
+- [#1739](https://github.com/lint-staged/lint-staged/pull/1739) [`687fc90`](https://github.com/lint-staged/lint-staged/commit/687fc9069a312ac83ca48f035a1bbf453db91814) Thanks [@hyperz111](https://github.com/hyperz111)! - Replace `micromatch` with `picomatch` to reduce dependencies.
+
 ## 16.3.4
 
 ### Patch Changes
