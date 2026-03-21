@@ -199,6 +199,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: cygwin/cygwin-install-action@v6
+        with:
+          site: |
+            https://mirrors.kernel.org/sourceware/cygwin/
       - run: git config --global core.autocrlf true
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
