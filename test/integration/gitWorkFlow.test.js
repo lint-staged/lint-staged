@@ -10,6 +10,7 @@ import {
   GitError,
   HideUnstagedChangesError,
   RestoreMergeStatusError,
+  RestoreUnstagedChangesError,
 } from '../../lib/symbols.js'
 import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -28,7 +29,7 @@ describe('gitWorkflow', () => {
           gitConfigDir: path.join(cwd, './.git'),
         })
 
-        vi.doMock('execa', () => Promise.reject({}))
+        vi.doMock('tinyexec', () => Promise.reject({}))
         const ctx = getInitialState()
         // mock a simple failure
         gitWorkflow.getUnstagedFiles = () => ['foo']
@@ -205,6 +206,27 @@ describe('gitWorkflow', () => {
         expect(ctx.errors).toBeInstanceOf(Set)
         expect(ctx.errors.has(GitError)).toBe(true)
         expect(ctx.errors.has(RestoreMergeStatusError)).toBe(true)
+      })
+    )
+  })
+
+  describe('restoreUntrackedFiles', () => {
+    it(
+      'should handle error when restoring fails',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+
+        const ctx = getInitialState()
+        await expect(gitWorkflow.restoreUntrackedFiles(ctx)).rejects.toThrow(
+          'Untracked files could not be restored!'
+        )
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(RestoreUnstagedChangesError)).toBe(true)
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
   })
