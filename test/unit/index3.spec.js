@@ -1,6 +1,10 @@
 import makeConsoleMock from 'consolemock'
 import { describe, it, vi } from 'vitest'
 
+vi.mock('../../lib/assertGitVersion.js', () => ({
+  assertGitVersion: vi.fn(async () => true),
+}))
+
 vi.mock('../../lib/execGit.js', () => ({
   execGit: vi.fn(async () => {}),
 }))
