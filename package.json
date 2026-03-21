@@ -48,7 +48,6 @@
     "tag": "npx changeset tag"
   },
   "dependencies": {
-    "commander": "^14.0.3",
     "listr2": "^10.2.1",
     "picomatch": "^4.0.3",
     "string-argv": "^0.3.2",
