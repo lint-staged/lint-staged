@@ -82,6 +82,11 @@ export type Options = {
    */
   hideUnstaged?: boolean
   /**
+   * Whether to hide all unstaged changes and untracked files before running tasks
+   * @default false
+   */
+  hideAll?: boolean
+  /**
    * Disable lint-staged’s own console output
    * @default false
    */
