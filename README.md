@@ -104,34 +104,32 @@ For breaking changes, see [MIGRATION.md](./MIGRATION.md).
 ❯ npx lint-staged --help
 Usage: lint-staged [options]
 
-Options:
-  -V, --version                      output the version number
-  --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
-  -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
-  -c, --config [path]                path to configuration file, or - to read from stdin
-  --cwd [path]                       run all tasks in specific directory, instead of the current
-  -d, --debug                        print additional debug information (default: false)
-  --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies
-                                     "--no-stash".
-  --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
-  --continue-on-error                run all tasks to completion even if one fails (default: false)
-  --fail-on-changes                  fail with exit code 1 when tasks modify tracked files (default: false)
-  --max-arg-length [number]          maximum length of the command-line argument string (default: 0)
-  --no-revert                        do not revert to original state in case of errors.
-  --no-stash                         disable the backup stash. Implies "--no-revert".
-  --no-hide-partially-staged         disable hiding unstaged changes from partially staged files
-  --hide-unstaged                    hide all unstaged changes, instead of just partially staged (default: false)
-  -q, --quiet                        disable lint-staged’s own console output (default: false)
-  -r, --relative                     pass relative filepaths to tasks (default: false)
-  -v, --verbose                      show task output even when tasks succeed; by default only failed output is shown
-                                     (default: false)
-  -h, --help                         display help for command
+-h, --help                         display this help message
+-V, --version                      display the current version number
+--allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
+-p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
+-c, --config [path]                path to configuration file, or - to read from stdin
+--continue-on-error                run all tasks to completion even if one fails (default: false)
+--cwd [path]                       run all tasks in specific directory, instead of the current
+-d, --debug                        print additional debug information (default: false)
+--diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash".
+--diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
+--fail-on-changes                  fail with exit code 1 when tasks modify tracked files (default: false)
+--no-hide-partially-staged         hide unstaged changes from partially staged files (default: true)
+--hide-unstaged                    hide all unstaged changes, instead of just partially staged (default: false)
+--hide-all                         hide all unstaged changes and untracked files (default: false)
+--max-arg-length [number]          maximum length of the command-line argument string (default: 0)
+-q, --quiet                        disable lint-staged's own console output (default: false)
+-r, --relative                     pass relative filepaths to tasks (default: false)
+--no-revert                        revert to original state in case of errors (default: true)
+--no-stash                         enable the backup stash (default: true)
+-v, --verbose                      show task output even when tasks succeed; by default only failed output is shown (default: false)
 
 Any lost modifications can be restored from a git stash:
 
   > git stash list --format="%h %s"
-  h0a0s0h0 On main: lint-staged automatic backup
-  > git apply --index h0a0s0h0
+  <git-hash> On main: lint-staged automatic backup
+  > git apply --index <git-hash>
 ```
 
 #### `--allow-empty`
@@ -192,7 +190,11 @@ By default, unstaged changes from partially staged files will be hidden and appl
 
 #### `--hide-unstaged`
 
-Use this option to hide all unstaged changes to tracked files before running tasks. The changes will be applied back after running the tasks. Note that the combination of flags `--hide-unstaged --no-hide-partially-staged` isn't meaningful and behaves the same as just `--hide-unstaged`.
+Use this option to hide all unstaged changes in tracked files, instead of just those which are also partially staged, before running tasks. The changes will be applied back after running the tasks.
+
+#### `--hide-all`
+
+Add new option `--hide-all` for hiding all unstaged changes and untracked files, before running tasks. This makes it easier to run tools like [Knip](https://knip.dev) which check for unused code. Untracked files are included in the backup stash and restored automatically after running.
 
 #### `--quiet`
 
