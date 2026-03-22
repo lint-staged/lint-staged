@@ -52,7 +52,7 @@ describe('lintStaged', () => {
     vi.mocked(assertGitVersion).mockReturnValueOnce(false)
 
     await expect(() => lintStaged(undefined, logger)).rejects.toThrow(
-      'lint-staged requires at least Git version 2.27.0'
+      'lint-staged requires at least Git version 2.32.0'
     )
   })
 })
