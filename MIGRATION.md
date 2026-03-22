@@ -14,9 +14,9 @@ npm install --development yaml
 
 If you're using `.lintstagedrc` as the config file name (without a file extension), it will be treated as a YAML file. If the content is JSON, consider renaming it to `.lintstagedrc.json` to avoid needing to install `yaml`.
 
-#### Git version needs to be at least 2.27.0
+#### Git version needs to be at least 2.32.0
 
-_Lint-staged_ now tries to verify the installed Git version is at least `2.27.0`, released in 2020. If you're using an even older Git version, you need to [upgrade](https://git-scm.com/install/mac) it before running _lint-staged_!
+_Lint-staged_ now tries to verify the installed Git version is at least `2.32.0`, released in 2021. If you're using an even older Git version, you need to [upgrade](https://git-scm.com/install/mac) it before running _lint-staged_!
 
 ## v16
 
