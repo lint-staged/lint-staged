@@ -18,14 +18,14 @@ jobs:
     if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -36,14 +36,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -54,14 +54,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -72,12 +72,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -89,12 +89,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -120,12 +120,12 @@ jobs:
     steps:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -160,19 +160,19 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: msys2/setup-msys2@v2
+      - uses: msys2/setup-msys2@cafece8e6baf9247cf9b1bf95097b0b983cc558d # https://github.com/msys2/setup-msys2/releases/tag/v2.31.0
         with:
           msystem: UCRT64
           path-type: inherit
           install: >-
             git
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
@@ -198,17 +198,17 @@ jobs:
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
-      - uses: cygwin/cygwin-install-action@v6
+      - uses: cygwin/cygwin-install-action@711d29f3da23c9f4a1798e369a6f01198c13b11a # https://github.com/cygwin/cygwin-install-action/tree/v6.1
         with:
           site: |
             https://mirrors.kernel.org/sourceware/cygwin/
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # https://github.com/actions/setup-node/releases/tag/v6.3.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@v5
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # https://github.com/actions/cache/releases/tag/v5.0.4
         id: cache-node_modules
         with:
           path: node_modules
