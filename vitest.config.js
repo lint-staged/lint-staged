@@ -6,7 +6,7 @@ export default defineConfig({
       enabled: true,
       experimentalAstAwareRemapping: true,
       include: ['lib/**/*.js'],
-      provider: 'v8',
+      provider: 'istanbul',
       thresholds: {
         branches: 100,
         functions: 100,
@@ -19,9 +19,6 @@ export default defineConfig({
         lines: [90, 100],
         statements: [90, 100],
       },
-    },
-    env: {
-      NO_COLOR: '',
     },
     projects: [
       {

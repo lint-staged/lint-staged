@@ -62,7 +62,7 @@
     "@commitlint/cli": "20.5.0",
     "@commitlint/config-conventional": "20.5.0",
     "@eslint/js": "10.0.1",
-    "@vitest/coverage-v8": "4.1.1",
+    "@vitest/coverage-istanbul": "4.1.1",
     "@vitest/eslint-plugin": "1.6.13",
     "consolemock": "1.1.0",
     "cross-env": "10.1.0",
