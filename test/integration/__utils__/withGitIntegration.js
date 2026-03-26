@@ -116,16 +116,9 @@ const getGitUtils = (cwd) => {
    * @returns the cli output
    */
   const gitCommit = async (options, dir = cwd) => {
-    const globalConsoleTemp = console
     const logger = makeConsoleMock()
 
-    // Override global console because of Listr2
-    console = logger
-
     const passed = await lintStaged({ ...options?.lintStaged, cwd: dir }, logger)
-
-    // Restore global console
-    console = globalConsoleTemp
 
     if (!passed) throw new Error(logger.printHistory())
 
