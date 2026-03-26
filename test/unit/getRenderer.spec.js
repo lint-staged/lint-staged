@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest'
 
 import { getRenderer } from '../../lib/getRenderer.js'
+
 describe('getRenderer', () => {
   it('should return silent renderers when quiet', ({ expect }) => {
     expect(getRenderer({ color: true, quiet: true }, console, {})).toEqual({
