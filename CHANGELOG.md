@@ -1,5 +1,33 @@
 # lint-staged
 
+## 17.0.0
+
+### Major Changes
+
+- [#1745](https://github.com/lint-staged/lint-staged/pull/1745) [`e244adf`](https://github.com/lint-staged/lint-staged/commit/e244adfab430be95803e74b20acf518517054c9f) Thanks [@iiroj](https://github.com/iiroj)! - **Node.js v20 is no longer supported, and the oldest supported version is now `22.22.1`**, which is an active LTS version at the time of this release. Node.js 20 will be EOL after April 2026. Please upgrade your Node.js version!
+
+- [#1676](https://github.com/lint-staged/lint-staged/pull/1676) [`0584e0b`](https://github.com/lint-staged/lint-staged/commit/0584e0b8824a07ea4d0151f2c17fc37c4905a421) Thanks [@outslept](https://github.com/outslept)! - _Lint-staged_ now tries to verify the installed Git version is at least `2.32.0`, released in 2021. If you're using an even older Git version, you need to [upgrade](https://git-scm.com/install/mac) it before running _lint-staged_!
+
+- [#1745](https://github.com/lint-staged/lint-staged/pull/1745) [`2dcc40a`](https://github.com/lint-staged/lint-staged/commit/2dcc40a1a98aea20d38f76031ac30b278f81682a) Thanks [@iiroj](https://github.com/iiroj)! - The dependency `yaml` is now marked as optional and probably won't be installed by default. If you're using a YAML configuration file you should install the package separately:
+
+  ```shell
+  npm install --development yaml
+  ```
+
+  If you're using `.lintstagedrc` as the config file name (without a file extension), it will be treated as a YAML file. If the content is JSON, consider renaming it to `.lintstagedrc.json` to avoid needing to install `yaml`.
+
+### Minor Changes
+
+- [#1748](https://github.com/lint-staged/lint-staged/pull/1748) [`809d5ef`](https://github.com/lint-staged/lint-staged/commit/809d5ef0a66edb2b26b233d33ce8e14af6c978e7) Thanks [@iiroj](https://github.com/iiroj)! - Add new option `--hide-all` for hiding all unstaged changes and untracked files, before running tasks. This makes it easier to run tools like [Knip](https://knip.dev) which check for unused code. Untracked files are included in the backup stash and restored automatically after running.
+
+- [#1745](https://github.com/lint-staged/lint-staged/pull/1745) [`a9585ac`](https://github.com/lint-staged/lint-staged/commit/a9585ac7ce0162c5c6c9aa88a28c11c812abedaf) Thanks [@iiroj](https://github.com/iiroj)! - Remove `commander` as a dependency and use the built-in `parseArgs` from `node:util` to parse CLI flags.
+
+### Patch Changes
+
+- [#1755](https://github.com/lint-staged/lint-staged/pull/1755) [`c82d30b`](https://github.com/lint-staged/lint-staged/commit/c82d30bda8c80f886bdfead2e7aa123f7337aa76) Thanks [@iiroj](https://github.com/iiroj)! - All tests now pass on the [Bun](https://bun.com) runtime (latest), with the exception of spawning a command that is not found.
+
+- [#1750](https://github.com/lint-staged/lint-staged/pull/1750) [`a401818`](https://github.com/lint-staged/lint-staged/commit/a4018185016617b02e4473d14e036a5f1a9b3f85) Thanks [@iiroj](https://github.com/iiroj)! - Remove manual handling for `git stash --keep-index` resurrecting deleted files, because the issue was fixed in Git `2.23.0` and _lint-staged_ requires at least Git `2.32.0`.
+
 ## 16.4.0
 
 ### Minor Changes
