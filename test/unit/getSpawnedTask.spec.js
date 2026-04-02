@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
@@ -14,7 +16,7 @@ vi.mock('tinyexec', () => ({
   }),
 }))
 
-const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
+const { getSpawnedTask, getSpawnEnv } = await import('../../lib/getSpawnedTask.js')
 
 vi.useFakeTimers()
 
@@ -45,7 +47,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { FORCE_COLOR: 'true' },
+        env: { FORCE_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
@@ -63,7 +65,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
@@ -82,7 +84,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
@@ -103,7 +105,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: '../',
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
@@ -120,7 +122,7 @@ describe('getSpawnedTask', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
@@ -339,5 +341,62 @@ describe('getSpawnedTask', () => {
     await expect(() => taskFn()).rejects.toThrow('node [FAILED]')
 
     expect(abortController.signal.aborted).toBe(false)
+  })
+})
+
+describe('getSpawnEnv', () => {
+  const crossPlatformPath = (input) => path.resolve('/', input)
+
+  it('should add execPath directory to PATH', ({ expect }) => {
+    const proc = {
+      env: { PATH: crossPlatformPath('usr/bin') },
+      execPath: crossPlatformPath('opt/homebrew/bin/node'),
+    }
+
+    const env = getSpawnEnv(true, proc)
+
+    const splitEnv = env.PATH.split(path.delimiter)
+    expect(splitEnv).toStrictEqual([
+      crossPlatformPath('opt/homebrew/bin'),
+      crossPlatformPath('usr/bin'),
+    ])
+  })
+
+  it('should handle missing PATH', ({ expect }) => {
+    const proc = {
+      env: {},
+      execPath: crossPlatformPath('opt/homebrew/bin/node'),
+    }
+
+    const env = getSpawnEnv(true, proc)
+    const splitEnv = env.PATH.split(path.delimiter)
+    expect(splitEnv).toStrictEqual([crossPlatformPath('opt/homebrew/bin')])
+  })
+
+  it('should handle case-sensitive Path key on win32 platform', ({ expect }) => {
+    const proc = {
+      env: { Path: crossPlatformPath('usr/bin') },
+      execPath: crossPlatformPath('opt/homebrew/bin/node'),
+      platform: 'win32',
+    }
+
+    const env = getSpawnEnv(true, proc)
+    const splitEnv = env.Path.split(path.delimiter)
+    expect(splitEnv).toStrictEqual([
+      crossPlatformPath('opt/homebrew/bin'),
+      crossPlatformPath('usr/bin'),
+    ])
+  })
+
+  it('should handle missing Path on win32 platform', ({ expect }) => {
+    const proc = {
+      env: {},
+      execPath: crossPlatformPath('opt/homebrew/bin/node'),
+      platform: 'win32',
+    }
+
+    const env = getSpawnEnv(true, proc)
+    const splitEnv = env.Path.split(path.delimiter)
+    expect(splitEnv).toStrictEqual([crossPlatformPath('opt/homebrew/bin')])
   })
 })
