@@ -69,7 +69,7 @@ describe('getSpawnedTasks', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
     taskPromise = linter2.task()
@@ -80,7 +80,7 @@ describe('getSpawnedTasks', () => {
       nodeOptions: {
         cwd: process.cwd(),
         stdio: ['ignore'],
-        env: { NO_COLOR: 'true' },
+        env: { NO_COLOR: 'true', PATH: expect.any(String) },
       },
     })
   })
