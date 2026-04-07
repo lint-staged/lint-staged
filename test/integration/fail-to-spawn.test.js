@@ -9,10 +9,6 @@ describe('lint-staged', () => {
 
   test(
     'logs error when spawning fails',
-    {
-      /** @todo maybe spawning not-found commands doesn't work with Bun? */
-      skip: !!process.versions.bun,
-    },
     withGitIntegration(async ({ execGit, expect, gitCommit, writeFile }) => {
       await writeFile(
         'lint-staged.config.js',
