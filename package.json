@@ -51,7 +51,7 @@
     "listr2": "^10.2.1",
     "picomatch": "^4.0.4",
     "string-argv": "^0.3.2",
-    "tinyexec": "^1.0.4"
+    "tinyexec": "^1.1.1"
   },
   "optionalDependencies": {
     "yaml": "^2.8.3"
@@ -66,11 +66,11 @@
     "@vitest/eslint-plugin": "1.6.13",
     "consolemock": "1.1.0",
     "cross-env": "10.1.0",
-    "eslint": "10.1.0",
+    "eslint": "10.2.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-n": "17.24.0",
     "eslint-plugin-prettier": "5.5.5",
-    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-simple-import-sort": "13.0.0",
     "husky": "9.1.7",
     "mock-stdin": "1.0.0",
     "prettier": "3.8.1",
