@@ -1,12 +1,12 @@
 import { describe, it } from 'vitest'
 
 import {
-  applyModificationsSkipped,
   cleanupSkipped,
   getInitialState,
   restoreOriginalStateEnabled,
   restoreOriginalStateSkipped,
   restoreUnstagedChangesSkipped,
+  updateIndexSkipped,
 } from '../../lib/state.js'
 import {
   GitError,
@@ -15,10 +15,10 @@ import {
   TaskError,
 } from '../../lib/symbols.js'
 
-describe('applyModificationsSkipped', () => {
+describe('updateIndexSkipped', () => {
   it('should return false when reverting is disabled', ({ expect }) => {
     const state = getInitialState()
-    const result = applyModificationsSkipped({
+    const result = updateIndexSkipped({
       ...state,
       shouldRevert: false,
     })
@@ -28,7 +28,7 @@ describe('applyModificationsSkipped', () => {
 
   it('should return false when backup is disabled', ({ expect }) => {
     const state = getInitialState()
-    const result = applyModificationsSkipped({
+    const result = updateIndexSkipped({
       ...state,
       shouldBackup: false,
     })
@@ -38,7 +38,7 @@ describe('applyModificationsSkipped', () => {
 
   it('should return error message when there is an unknown git error', ({ expect }) => {
     const state = getInitialState()
-    const result = applyModificationsSkipped({
+    const result = updateIndexSkipped({
       ...state,
       shouldBackup: true,
       errors: new Set([GitError]),
