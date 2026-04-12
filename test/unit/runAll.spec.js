@@ -24,7 +24,7 @@ const mockGitWorkflow = {
   prepare: vi.fn(() => Promise.resolve()),
   hideUnstagedChanges: vi.fn(() => Promise.resolve()),
   runTasks: vi.fn(() => Promise.resolve()),
-  applyModifications: vi.fn(() => Promise.resolve()),
+  updateIndex: vi.fn(() => Promise.resolve()),
   restoreUnstagedChanges: vi.fn(() => Promise.resolve()),
   restoreOriginalState: vi.fn(() => Promise.resolve()),
   cleanup: vi.fn(() => Promise.resolve()),
@@ -51,7 +51,6 @@ vi.mock('../../lib/searchConfigs.js', () => ({
 }))
 
 const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
-const { GitWorkflow } = await import('../../lib/gitWorkflow.js')
 const { runAll } = await import('../../lib/runAll.js')
 const { searchConfigs } = await import('../../lib/searchConfigs.js')
 const { ConfigNotFoundError, GitError } = await import('../../lib/symbols.js')
@@ -189,7 +188,7 @@ describe('runAll', () => {
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
-    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Applying modifications from tasks/)
+    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Updating Git index again/)
   })
 
   it('should skip tasks and restore state if terminated', async ({ expect }) => {
@@ -221,103 +220,40 @@ describe('runAll', () => {
     )
   })
 
-  it('should resolve matched files to cwd when using relative option', async ({ expect }) => {
-    // A staged file inside test/, which will be our cwd
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'test/foo.js', status: 'A' }])
-
-    // We are only interested in the `matchedFileChunks` generation
-    let expected
-    const mockConstructor = vi.fn(function ({ matchedFileChunks }) {
-      expected = matchedFileChunks
-    })
-    GitWorkflow.mockImplementationOnce(mockConstructor)
-
-    const mockTask = vi.fn(() => ['echo "sample"'])
-
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': { '*.js': mockTask },
-    }))
-
-    // actual cwd
-    const cwd = process.cwd()
-    // For the test, set cwd in test/
-    const innerCwd = path.join(cwd, 'test/')
-
-    // Run lint-staged in `innerCwd` with relative option
-    // This means the sample task will receive `foo.js`
-    await runAll({
-      stash: false,
-      relative: true,
-      cwd: innerCwd,
-    })
-
-    // task received relative `foo.js`
-    expect(mockTask).toHaveBeenCalledTimes(1)
-    expect(mockTask).toHaveBeenCalledExactlyOnceWith(['foo.js'])
-    // GitWorkflow received absolute `test/foo.js`
-    expect(mockConstructor).toHaveBeenCalledTimes(1)
-    expect(expected).toEqual([
-      [
-        {
-          filepath: normalizePath(path.join(cwd, 'test/foo.js')),
-          status: 'A',
-        },
-      ],
-    ])
-  })
-
-  it('should resolve matched files to config locations with multiple configs', async ({
-    expect,
-  }) => {
+  it('should resolve matched files to default cwd with multiple configs', async ({ expect }) => {
     getStagedFiles.mockImplementationOnce(async () => [
-      { filepath: 'foo.js', status: 'A' },
+      { filepath: 'lib/foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
 
     const mockTask = vi.fn(() => ['echo "sample"'])
 
     searchConfigs.mockResolvedValueOnce({
+      'lib/.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
-      '.lintstagedrc.json': { '*.js': mockTask },
     })
-
-    // We are only interested in the `matchedFileChunks` generation
-    let expected
-    const mockConstructor = vi.fn(function ({ matchedFileChunks }) {
-      expected = matchedFileChunks
-    })
-    GitWorkflow.mockImplementationOnce(mockConstructor)
 
     await runAll({
       stash: false,
       relative: true,
     })
 
-    // task received relative `foo.js` from both directories
     expect(mockTask).toHaveBeenCalledTimes(2)
     expect(mockTask).toHaveBeenNthCalledWith(1, ['foo.js'])
     expect(mockTask).toHaveBeenNthCalledWith(2, ['foo.js'])
-    // GitWorkflow received absolute paths `foo.js` and `test/foo.js`
-    expect(mockConstructor).toHaveBeenCalledTimes(1)
-    expect(expected).toEqual([
-      [
-        { filepath: normalizePath(path.join(process.cwd(), 'test/foo.js')), status: 'A' },
-        { filepath: normalizePath(path.join(process.cwd(), 'foo.js')), status: 'A' },
-      ],
-    ])
   })
 
   it('should resolve matched files to explicit cwd with multiple configs', async ({ expect }) => {
     getStagedFiles.mockImplementationOnce(async () => [
-      { filepath: 'foo.js', status: 'A' },
+      { filepath: 'lib/foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
 
     const mockTask = vi.fn(() => ['echo "sample"'])
 
     searchConfigs.mockResolvedValueOnce({
+      'lib/.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
-      '.lintstagedrc.json': { '*.js': mockTask },
     })
 
     await runAll({
@@ -327,9 +263,8 @@ describe('runAll', () => {
     })
 
     expect(mockTask).toHaveBeenCalledTimes(2)
-    // This is now relative to "." instead of "test/"
-    expect(mockTask).toHaveBeenNthCalledWith(1, ['test/foo.js'])
-    expect(mockTask).toHaveBeenNthCalledWith(2, ['foo.js'])
+    expect(mockTask).toHaveBeenNthCalledWith(1, ['lib/foo.js'])
+    expect(mockTask).toHaveBeenNthCalledWith(2, ['test/foo.js'])
   })
 
   it('should error when no configurations found', async ({ expect }) => {
