@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: github/codeql-action/init@38697555549f1db7851b81482ff19f1fa5c4fedc # https://github.com/github/codeql-action/releases/tag/v4.34.1
+      - uses: github/codeql-action/init@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # https://github.com/github/codeql-action/releases/tag/v4.35.2
         with:
           languages: javascript
-      - uses: github/codeql-action/analyze@38697555549f1db7851b81482ff19f1fa5c4fedc # https://github.com/github/codeql-action/releases/tag/v4.34.1
+      - uses: github/codeql-action/analyze@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # https://github.com/github/codeql-action/releases/tag/v4.35.2
 
   npm:
     uses: ./.github/workflows/npm.yml
