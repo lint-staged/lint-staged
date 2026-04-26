@@ -8,7 +8,8 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * 1' # 00:00 on Monday.
+    - cron: '0 1 * * *' # At 01:00 every day
+  workflow_dispatch: # manual trigger
 
 permissions:
   contents: read
