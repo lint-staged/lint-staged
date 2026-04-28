@@ -51,7 +51,7 @@
     "listr2": "^10.2.1",
     "picomatch": "^4.0.4",
     "string-argv": "^0.3.2",
-    "tinyexec": "^1.1.1"
+    "tinyexec": "1.1.2-next.0"
   },
   "optionalDependencies": {
     "yaml": "^2.8.3"
