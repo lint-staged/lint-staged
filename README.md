@@ -150,7 +150,7 @@ Manually specify a path to a config file or npm package name. Note: when used, l
 
 #### `--cwd [path]`
 
-By default tasks run in the current working directory. Use the `--cwd some/directory` to override this. The path can be absolute or relative to the current working directory.
+Change the working directory _lint-staged_ searches for configuration from and runs tasks in. This applies only when using a single configuration file. Defaults to `process.cwd()` and the value can be absolute, or relative to the default value.
 
 #### `--debug`
 
@@ -231,7 +231,7 @@ _Lint-staged_ can be configured in many ways:
 
 Configuration should be an object where each value is a **command** to run and its key is a glob pattern to use for this command. This package uses [picomatch](https://github.com/micromatch/picomatch) for glob patterns. JavaScript files can also export advanced configuration as a function. See [Using JS configuration files](#using-js-configuration-files) for more info.
 
-You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used. See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
+You can also place multiple configuration files in different directories inside a project. For a given staged file, the closest configuration file will always be used and tasks will be run in the directory of the config (for example, the directory of a specific package in a monorepo). See ["How to use `lint-staged` in a multi-package monorepo?"](#how-to-use-lint-staged-in-a-multi-package-monorepo) for more info and an example.
 
 #### `package.json` example:
 
@@ -903,11 +903,11 @@ _Thanks to [this comment](https://youtrack.jetbrains.com/issue/IDEA-135454#comme
 <details>
   <summary>Click to expand</summary>
 
-Install _lint-staged_ on the monorepo root level, and add separate configuration files in each package. When running, _lint-staged_ will always use the configuration closest to a staged file, so having separate configuration files makes sure tasks do not "leak" into other packages.
+Install _lint-staged_ on the monorepo root level and add separate configuration files in each package. _Lint-staged_ will find each config file and match staged files to the closest config. The directory of each config file will be used as the working directory for those tasks and the `--cwd` option will be ignored. This is almost the same as running multiple processes of _lint-staged_ in parallel for each config, but multiple parallel locking Git operations are avoided.
 
 For example, in a monorepo with `packages/frontend/.lintstagedrc.json` and `packages/backend/.lintstagedrc.json`, a staged file inside `packages/frontend/` will only match that configuration, and not the one in `packages/backend/`.
 
-**Note**: _lint-staged_ discovers the closest configuration to each staged file, even if that configuration doesn't include any matching globs. Given these example configurations:
+**Note**: _lint-staged_ does not merge config files, so if the closest config file to a staged file doesn't match it, the file will be ignored. For example:
 
 ```js
 // ./.lintstagedrc.json
@@ -930,7 +930,7 @@ export default {
 }
 ```
 
-To support backwards-compatibility, monorepo features require multiple _lint-staged_ configuration files present in the git repo. If you still want to run _lint-staged_ in only one of the packages in a monorepo, you can use the `--cwd` option (for example, `lint-staged --cwd packages/frontend`).
+**Note**: If you want to run _lint-staged_ in only one package inside a monorepo, you can simply use the `--cwd` option (for example `lint-staged --cwd packages/frontend`).
 
 </details>
 
