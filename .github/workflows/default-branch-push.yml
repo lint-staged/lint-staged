@@ -47,6 +47,7 @@ jobs:
           title: '🦋 Changeset release'
           version: npm run version
           publish: npm run tag
+          commitMode: github-api # Sign commits and tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0' # disabled because pre-push hook checks for changesets which have now been removed
