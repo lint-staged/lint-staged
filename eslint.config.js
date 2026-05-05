@@ -31,6 +31,7 @@ export default [
     },
     rules: {
       ...vitest.configs.recommended.rules,
+      'n/no-unsupported-features/node-builtins': ['error', { allowExperimental: true }],
       'no-global-assign': 'off',
     },
   },
