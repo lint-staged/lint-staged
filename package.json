@@ -57,7 +57,7 @@
     "yaml": "^2.8.4"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "0.6.0",
+    "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.0",
     "@commitlint/cli": "20.5.3",
     "@commitlint/config-conventional": "20.5.3",
@@ -68,7 +68,7 @@
     "cross-env": "10.1.0",
     "eslint": "10.3.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-n": "17.24.0",
+    "eslint-plugin-n": "18.0.1",
     "eslint-plugin-prettier": "5.5.5",
     "eslint-plugin-simple-import-sort": "13.0.0",
     "husky": "9.1.7",

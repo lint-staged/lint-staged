@@ -109,7 +109,7 @@ jobs:
           - '22.22.1' # lowest supported version
           - '22.x'
           - '24.x'
-          - '25.x'
+          - '26.x'
         # Test with Ubuntu, macOS, and Windows
         os:
           - ubuntu-latest
