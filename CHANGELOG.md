@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.0.2
+
+### Patch Changes
+
+- [#1779](https://github.com/lint-staged/lint-staged/pull/1779) [`88670ca`](https://github.com/lint-staged/lint-staged/commit/88670ca2278200f6348ed663358895ddc4bfff3c) Thanks [@iiroj](https://github.com/iiroj)! - Enable immutable GitHub releases
+
 ## 17.0.1
 
 ### Patch Changes
