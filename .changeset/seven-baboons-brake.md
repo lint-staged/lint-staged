@@ -1,5 +1,0 @@
----
-'lint-staged': major
----
-
-_Lint-staged_ now tries to verify the installed Git version is at least `2.32.0`, released in 2021. If you're using an even older Git version, you need to [upgrade](https://git-scm.com/install/mac) it before running _lint-staged_!
