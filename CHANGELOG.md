@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.0.1
+
+### Patch Changes
+
+- [#1776](https://github.com/lint-staged/lint-staged/pull/1776) [`4a5664b`](https://github.com/lint-staged/lint-staged/commit/4a5664be63af19590ec37940f705dad870ac5cfb) Thanks [@iiroj](https://github.com/iiroj)! - Adjust GitHub Actions workflow so that automatic publishing works with signed commits.
+
 ## 17.0.0
 
 ### Major Changes
