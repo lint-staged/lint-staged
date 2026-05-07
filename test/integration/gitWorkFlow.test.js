@@ -187,6 +187,42 @@ describe('gitWorkflow', () => {
     )
   })
 
+  describe('updateIndex', () => {
+    it(
+      "should not override GIT_INDEX_FILE value when it's the default value",
+      withGitIntegration(async ({ cwd, expect }) => {
+        vi.stubEnv('GIT_INDEX_FILE', path.join(cwd, '.git/index.lock'))
+
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const ctx = getInitialState()
+
+        await expect(gitWorkflow.updateIndex(ctx)).rejects.toThrow('Prevented an empty git commit!')
+
+        vi.unstubAllEnvs()
+      })
+    )
+
+    it(
+      "should override GIT_INDEX_FILE value when it's not the default value",
+      withGitIntegration(async ({ cwd, expect }) => {
+        vi.stubEnv('GIT_INDEX_FILE', path.join(cwd, '.git/next-index-5207.lock'))
+
+        const gitWorkflow = new GitWorkflow({
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const ctx = getInitialState()
+
+        await expect(gitWorkflow.updateIndex(ctx)).rejects.toThrow('Prevented an empty git commit!')
+
+        vi.unstubAllEnvs()
+      })
+    )
+  })
+
   describe('restoreMergeStatus', () => {
     it(
       'should handle error when restoring merge state fails',
