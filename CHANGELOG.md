@@ -1,5 +1,13 @@
 # lint-staged
 
+## 17.0.3
+
+### Patch Changes
+
+- [#1782](https://github.com/lint-staged/lint-staged/pull/1782) [`06813f9`](https://github.com/lint-staged/lint-staged/commit/06813f9ab661db987e7720086ef9ec3f552ee097) Thanks [@iiroj](https://github.com/iiroj)! - Fix _lint-staged_ behavior when implicitly committing files without using `git add` by either:
+  - `git commit -am "my commit message"` where `-a` (`--all`) means to automatically stage all tracked modified and deleted files
+  - `git commit -m "my commit message" .` where `.` is an example of a [_pathspec_](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt-pathspec) where matching files will be staged
+
 ## 17.0.2
 
 ### Patch Changes
