@@ -1,5 +1,16 @@
 # lint-staged
 
+## 17.0.4
+
+### Patch Changes
+
+- [#1788](https://github.com/lint-staged/lint-staged/pull/1788) [`f95c1f8`](https://github.com/lint-staged/lint-staged/commit/f95c1f8df3368758c44c2052e568aac1b3d4c767) - Another fix for making sure _lint-staged_ adds task modifications correctly to the commit in the following cases:
+  - after editing `<file>` it is staged with `git add <file>`, and then committed with `git commit`
+  - after editing `<file>` it is committed with `git commit --all` without explicit `git add`
+  - after editing `<file>` it is committed with `git commit <pathspec>` without explicit `git add`
+
+  There's new test cases which actually setup the Git `pre_commit` hook to run _lint-staged_ and verify them. These issues started in **v17.0.0** when trying to improve support for committig without having explicitly staged files.
+
 ## 17.0.3
 
 ### Patch Changes
