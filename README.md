@@ -92,7 +92,7 @@ See [examples](#examples) and [configuration](#configuration) for more informati
 
 ## Changelog
 
-See [Releases](https://github.com/okonet/lint-staged/releases).
+See [Releases](https://github.com/lint-staged/lint-staged/releases).
 
 ### Migration
 
@@ -396,7 +396,7 @@ This will result in _lint-staged_ running `eslint file-1.js file-2.js`, when you
 
 ## Using JS configuration files
 
-Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/okonet/lint-staged#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
+Writing the configuration file in JavaScript is the most powerful way to configure lint-staged (`lint-staged.config.js`, [similar](https://github.com/lint-staged/lint-staged#configuration), or passed via `--config`). From the configuration file, you can export either a single function or an object.
 
 If the `exports` value is a function, it will receive an array of all staged filenames. You can then build your own matchers for the files and return a command string or an array of command strings. These strings are considered complete and should include the filename arguments, if wanted.
 
@@ -497,7 +497,7 @@ export default {
 <details>
   <summary>Click to expand</summary>
 
-It's better to use the [function-based configuration (seen above)](https://github.com/okonet/lint-staged#example-export-a-function-to-build-your-own-matchers), if your use case is this.
+It's better to use the [function-based configuration (seen above)](https://github.com/lint-staged/lint-staged#example-export-a-function-to-build-your-own-matchers), if your use case is this.
 
 ```js
 // lint-staged.config.js
@@ -945,7 +945,7 @@ tl;dr: Yes, but the pattern should start with `../`.
 
 By default, `lint-staged` executes tasks only on the files present inside the project folder(where `lint-staged` is installed and run from).
 So this question is relevant _only_ when the project folder is a child folder inside the git repo.
-In certain project setups, it might be desirable to bypass this restriction. See [#425](https://github.com/okonet/lint-staged/issues/425), [#487](https://github.com/okonet/lint-staged/issues/487) for more context.
+In certain project setups, it might be desirable to bypass this restriction. See [#425](https://github.com/lint-staged/lint-staged/issues/425), [#487](https://github.com/lint-staged/lint-staged/issues/487) for more context.
 
 `lint-staged` provides an escape hatch for the same(`>= v7.3.0`). For patterns that start with `../`, all the staged files are allowed to match against the pattern.
 Note that patterns like `*.js`, `**/*.js` will still only match the project files and not any of the files in parent or sibling directories.
@@ -993,7 +993,7 @@ npx lint-staged --diff="$(git merge-base main HEAD)"
 
 You should not use `ng lint` through _lint-staged_, because it's designed to lint an entire project. Instead, you can add `ng lint` to your git pre-commit hook the same way as you would run lint-staged.
 
-See issue [!951](https://github.com/okonet/lint-staged/issues/951) for more details and possible workarounds.
+See issue [!951](https://github.com/lint-staged/lint-staged/issues/951) for more details and possible workarounds.
 
 </details>
 
@@ -1033,7 +1033,7 @@ export default {
 
 In versions of ESLint > 7, [isPathIgnored](https://eslint.org/docs/developer-guide/nodejs-api#-eslintispathignoredfilepath) is an async function and now returns a promise. The code below can be used to reinstate the above functionality.
 
-Since [10.5.3](https://github.com/okonet/lint-staged/releases), any errors due to a bad ESLint config will come through to the console.
+Since [10.5.3](https://github.com/lint-staged/lint-staged/releases), any errors due to a bad ESLint config will come through to the console.
 
 ```js
 import { ESLint } from 'eslint'
@@ -1088,7 +1088,7 @@ When running `lint-staged` via Husky hooks, TypeScript may ignore `tsconfig.json
 > **TS17004:** Cannot use JSX unless the '--jsx' flag is provided.
 > **TS1056:** Accessors are only available when targeting ECMAScript 5 and higher.
 
-See issue [#825](https://github.com/okonet/lint-staged/issues/825) for more details.
+See issue [#825](https://github.com/lint-staged/lint-staged/issues/825) for more details.
 
 #### Root Cause
 
