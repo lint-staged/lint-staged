@@ -81,7 +81,7 @@ describe('validateOptions', () => {
 
           ENOENT: no such file or directory, access '${path.join(process.cwd(), 'non_existent')}'
 
-        See https://github.com/okonet/lint-staged#command-line-flags"
+        See https://github.com/lint-staged/lint-staged#command-line-flags"
       `)
     })
   })
