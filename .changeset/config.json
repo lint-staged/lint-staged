@@ -1,6 +1,12 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "lint-staged/lint-staged" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "disableThanks": true,
+      "repo": "lint-staged/lint-staged"
+    }
+  ],
   "access": "public",
   "baseBranch": "main"
 }
