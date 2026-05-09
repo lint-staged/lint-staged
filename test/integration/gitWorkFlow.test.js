@@ -4,6 +4,7 @@ import { describe, it, vi } from 'vitest'
 
 import { writeFile } from '../../lib/file.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
+import { normalizePath } from '../../lib/normalizePath.js'
 import { getInitialState } from '../../lib/state.js'
 import {
   GetBackupStashError,
@@ -190,8 +191,15 @@ describe('gitWorkflow', () => {
   describe('updateIndex', () => {
     it(
       "should not override GIT_INDEX_FILE value when it's the default value",
-      withGitIntegration(async ({ cwd, expect }) => {
-        vi.stubEnv('GIT_INDEX_FILE', path.join(cwd, '.git/index.lock'))
+      withGitIntegration(async ({ cwd, execGit, expect }) => {
+        const gitIndexFile = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'index.lock',
+        ])
+
+        vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
@@ -207,8 +215,15 @@ describe('gitWorkflow', () => {
 
     it(
       "should override GIT_INDEX_FILE value when it's not the default value",
-      withGitIntegration(async ({ cwd, expect }) => {
-        vi.stubEnv('GIT_INDEX_FILE', path.join(cwd, '.git/next-index-5207.lock'))
+      withGitIntegration(async ({ cwd, execGit, expect }) => {
+        const gitIndexFile = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'next-index-5207.lock',
+        ])
+
+        vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,

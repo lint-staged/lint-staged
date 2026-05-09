@@ -2,9 +2,11 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
+import { exec as tinyexec } from 'tinyexec'
 
 import { execGit as execGitBase } from '../../../lib/execGit.js'
 import lintStaged from '../../../lib/index.js'
+import { normalizePath } from '../../../lib/normalizePath.js'
 import { createTempDir } from '../../__utils__/createTempDir.js'
 import { isWindowsActions } from './isWindows'
 import { normalizeWindowsNewlines } from './normalizeWindowsNewlines.js'
@@ -128,7 +130,33 @@ const getGitUtils = (cwd) => {
     return logger.printHistory()
   }
 
-  return { appendFile, execGit, gitCommit, readFile, removeFile, writeFile }
+  /**
+   * Setup lint-staged in the pre-commit hook of the git repository using Husky
+   *  @returns {Promise<void>}
+   */
+  const setupPreCommitHook = async () => {
+    const packageJson = normalizePath(path.join(import.meta.dirname, '../../../package.json'))
+    await writeFile('package.json', await readFile(packageJson))
+
+    await tinyexec('husky', ['init'], { nodeOptions: { cwd } })
+
+    const lintStagedBin = normalizePath(
+      path.join(import.meta.dirname, '../../../bin/lint-staged.js')
+    )
+
+    const run = 'bun' in process.versions ? 'bun' : 'node'
+    await writeFile('.husky/pre-commit', `${run} ${lintStagedBin}`)
+  }
+
+  return {
+    appendFile,
+    execGit,
+    gitCommit,
+    readFile,
+    removeFile,
+    setupPreCommitHook,
+    writeFile,
+  }
 }
 
 /**

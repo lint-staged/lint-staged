@@ -28,7 +28,7 @@ export default defineConfig({
         test: {
           name: 'e2e',
           include: ['test/e2e/**/*.(test|spec).js'],
-          testTimeout: 20_000, // Windows in GitHub Actions...
+          testTimeout: 60_000, // Windows in GitHub Actions...
         },
       },
       {
