@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.0.5
+
+### Patch Changes
+
+- [#1792](https://github.com/lint-staged/lint-staged/pull/1792) [`1f67271`](https://github.com/lint-staged/lint-staged/commit/1f672718b6fa67e0f00aafe107cb9f084f4d9102) - Correctly set the `--max-arg-length` default value based on the running platform. This controls how very long lists of staged files are split into multiple chunks.
+
 ## 17.0.4
 
 ### Patch Changes
