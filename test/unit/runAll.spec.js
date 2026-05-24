@@ -188,7 +188,7 @@ describe('runAll', () => {
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
-    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Updating Git index again/)
+    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Staging changes from tasks/)
   })
 
   it('should skip tasks and restore state if terminated', async ({ expect }) => {
