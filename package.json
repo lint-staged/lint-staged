@@ -18,6 +18,10 @@
   "funding": {
     "url": "https://opencollective.com/lint-staged"
   },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
   "engines": {
     "node": ">=22.22.1"
   },
@@ -51,22 +55,22 @@
     "listr2": "^10.2.1",
     "picomatch": "^4.0.4",
     "string-argv": "^0.3.2",
-    "tinyexec": "^1.1.2"
+    "tinyexec": "^1.2.2"
   },
   "optionalDependencies": {
-    "yaml": "^2.8.4"
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.0",
-    "@commitlint/cli": "21.0.0",
-    "@commitlint/config-conventional": "21.0.0",
+    "@commitlint/cli": "21.0.1",
+    "@commitlint/config-conventional": "21.0.1",
     "@eslint/js": "10.0.1",
-    "@vitest/coverage-istanbul": "4.1.5",
-    "@vitest/eslint-plugin": "1.6.17",
+    "@vitest/coverage-istanbul": "4.1.7",
+    "@vitest/eslint-plugin": "1.6.18",
     "consolemock": "1.1.0",
     "cross-env": "10.1.0",
-    "eslint": "10.3.0",
+    "eslint": "10.4.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-n": "18.0.1",
     "eslint-plugin-prettier": "5.5.5",
@@ -74,8 +78,8 @@
     "husky": "9.1.7",
     "mock-stdin": "1.0.0",
     "prettier": "3.8.3",
-    "semver": "7.8.0",
-    "vitest": "4.1.5"
+    "semver": "7.8.1",
+    "vitest": "4.1.7"
   },
   "keywords": [
     "lint",

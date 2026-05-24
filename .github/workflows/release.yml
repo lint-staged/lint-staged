@@ -71,4 +71,4 @@ jobs:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - run: npm publish --provenance --access public
+      - run: npm stage publish
