@@ -71,4 +71,5 @@ jobs:
           node-version-file: .node-version
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
+      - run: npm install --global npm # TODO: remove after Node.js bundles at least 11.15.0
       - run: npm stage publish
