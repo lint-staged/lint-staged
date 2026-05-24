@@ -103,6 +103,7 @@ jobs:
 
   test-matrix:
     strategy:
+      fail-fast: false
       matrix:
         # Test with Node.js active LTS versions, and the latest version
         node:
@@ -147,6 +148,7 @@ jobs:
 
   test-deno:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -168,6 +170,7 @@ jobs:
 
   test-bun:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -189,6 +192,7 @@ jobs:
 
   test-msys2:
     strategy:
+      fail-fast: false
       matrix:
         # Test with Node.js active LTS versions, and the latest version
         node:
@@ -230,6 +234,7 @@ jobs:
 
   test-cygwin:
     strategy:
+      fail-fast: false
       matrix:
         # Test with Node.js active LTS versions, and the latest version
         node:
