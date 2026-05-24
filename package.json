@@ -18,6 +18,10 @@
   "funding": {
     "url": "https://opencollective.com/lint-staged"
   },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
   "engines": {
     "node": ">=22.22.1"
   },
