@@ -204,6 +204,7 @@ describe('gitWorkflow', () => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
+          matchedFileChunks: [[]],
         })
         const ctx = getInitialState()
 
@@ -228,6 +229,7 @@ describe('gitWorkflow', () => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
+          matchedFileChunks: [[]],
         })
         const ctx = getInitialState()
 
@@ -245,6 +247,7 @@ describe('gitWorkflow', () => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
+          matchedFileChunks: [[]],
         })
 
         gitWorkflow.mergeHeadBuffer = true
@@ -268,6 +271,7 @@ describe('gitWorkflow', () => {
         const gitWorkflow = new GitWorkflow({
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
+          matchedFileChunks: [[]],
         })
 
         const ctx = getInitialState()
