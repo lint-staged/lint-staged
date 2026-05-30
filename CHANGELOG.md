@@ -1,5 +1,17 @@
 # lint-staged
 
+## 17.0.6
+
+### Patch Changes
+
+- [#1803](https://github.com/lint-staged/lint-staged/pull/1803) [`bdf2770`](https://github.com/lint-staged/lint-staged/commit/bdf27700a6e25b40333672eef4d438984a2d0383) - Run all tests with [Deno](https://deno.com), in addition to Node.js and Bun.
+
+- [#1796](https://github.com/lint-staged/lint-staged/pull/1796) [`7508272`](https://github.com/lint-staged/lint-staged/commit/75082727cdd070adb59d62c9040515da3bbbb2f9) - Fix performance regression of _lint-staged_ v17 by going back to using `git add` to stage task modifications. This was changed to `git update-index --again` in v17 for less manual work, but unfortunately the `update-index` command gets slower in very large Git repos.
+
+- [#1797](https://github.com/lint-staged/lint-staged/pull/1797) [`7b2505a`](https://github.com/lint-staged/lint-staged/commit/7b2505a1f8fb8735e6306c7dabdd5295632f8c1a) - This version of _lint-staged_ uses the new [staged publishing for npm packages](https://docs.npmjs.com/staged-publishing) feature. Releases are already published from GitHub Actions with [trusted publishing](https://docs.npmjs.com/trusted-publishers), but now an additional approval with two-factor authentication is also required.
+
+- [#1802](https://github.com/lint-staged/lint-staged/pull/1802) [`321b0a9`](https://github.com/lint-staged/lint-staged/commit/321b0a972a434006f5b5fac18867974ef040d037) - Downgrade dependency `tinyexec@1.2.2` to avoid issues in version 1.2.3.
+
 ## 17.0.5
 
 ### Patch Changes
