@@ -7,6 +7,8 @@ use-cases are best.
 If this is a bug, please check that it can be reproduced in the latest version
 of `lint-staged`. Furthermore, please provide as much *relevant* info as
 possible. Including what is the expected and actual behavior.
+
+Write the issue in your own words. Do not just copy the output directly from an AI agent. Make sure the issue reflects your own thinking, and take ownership of its contents.
 -->
 
 ### Steps to reproduce
@@ -34,6 +36,7 @@ COPY THE DEBUG LOGS HERE
 
 </details>
 
-<!-- Check this box to certify that: -->
+---
 
 - [ ] I have read this issue template before submitting an issue. If left unchecked, the issue might be ignored or closed without consideration.
+- [ ] I have written this issue in my own words. I did not just copy the output directly from an AI agent. I have made sure this issue reflects my own thinking, and take ownership of its contents.

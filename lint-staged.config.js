@@ -1,6 +1,6 @@
 /** @type {import('./lib/index.js').Configuration} */
 export default {
-  '*.js': 'eslint',
-  '*.{json,md}': 'prettier --check',
+  '*.js': 'eslint --fix',
+  '*.{json,md}': 'prettier --write',
   '*.ts': () => 'tsc',
 }
