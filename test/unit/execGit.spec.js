@@ -28,7 +28,6 @@ describe('execGit', () => {
     expect(exec).toHaveBeenCalledExactlyOnceWith('git', [...GIT_GLOBAL_OPTIONS, 'init', 'param'], {
       nodeOptions: {
         cwd,
-        stdio: ['ignore'],
       },
     })
 
