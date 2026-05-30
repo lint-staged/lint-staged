@@ -44,7 +44,6 @@ describe('getSpawnedTask', () => {
     expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        stdio: ['ignore'],
         env: { FORCE_COLOR: 'true' },
       },
     })
@@ -62,7 +61,6 @@ describe('getSpawnedTask', () => {
     expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
     })
@@ -81,7 +79,6 @@ describe('getSpawnedTask', () => {
     expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
     })
@@ -102,7 +99,6 @@ describe('getSpawnedTask', () => {
     expect(exec).toHaveBeenLastCalledWith('git', ['diff', 'test.js'], {
       nodeOptions: {
         cwd: '../',
-        stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
     })
@@ -119,7 +115,6 @@ describe('getSpawnedTask', () => {
     expect(exec).toHaveBeenLastCalledWith('jest', ['test.js'], {
       nodeOptions: {
         cwd: process.cwd(),
-        stdio: ['ignore'],
         env: { NO_COLOR: 'true' },
       },
     })
