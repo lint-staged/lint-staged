@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.0.7
+
+### Patch Changes
+
+- [#1806](https://github.com/lint-staged/lint-staged/pull/1806) [`e692e58`](https://github.com/lint-staged/lint-staged/commit/e692e58ced9eae65b2077435b7e799c632f3db07) - Update dependency `tinyexec@^1.2.4`.
+
 ## 17.0.6
 
 ### Patch Changes
