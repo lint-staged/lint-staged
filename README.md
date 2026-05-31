@@ -772,6 +772,23 @@ module.exports = {
 
 ## Frequently Asked Questions
 
+### How does `lint-staged`'s stashing work?
+
+<details>
+<summary>Click to expand</summary>
+
+When running `lint-staged` with the default configuration, the following happens:
+
+1. The entire original state is backed up in a git stash using `git stash create` and `git stash store`. This leaves all files in the worktree by default — the regular `git stash` command would also remove them. This most probably ignores any untracked files, which is the default behavior of `git stash`.
+1. If some file is "_partially staged_", meaning there's both staged and unstaged changes in the same file, lint-staged will additionally save all of these in a patch file, basically like `git diff --patch >> .git/lint-staged_unstaged.patch`. After this, the unstaged changes to these files are removed from the worktree so that tasks only see the staged changes
+1. After running tasks, any new modifications to the originally staged files are added to the index
+1. After this, any originally unstaged changes to "_partially staged_" files are restored by applying the patch file from step 2.
+1. In case of any errors, the state is reset with `git reset` and the original state restored from the git stash created in step 1.
+
+If the process is interrupted at any point, it should be possible to restore changes from the git stash created in step 1. because it's only dropped in the last step, after successfully completing all previous steps in the process.
+
+</details>
+
 ### The output of commit hook looks weird (no colors, duplicate lines, verbose output on Windows, …)
 
 <details>
