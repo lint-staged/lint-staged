@@ -59,8 +59,6 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m test', '.'])
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJSWithChanges)
 
-      console.log(await execGit(['status']))
-
       expect(await execGit(['status'])).toMatch('nothing to commit, working tree clean')
     })
   )
