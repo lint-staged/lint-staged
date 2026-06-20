@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
+import lintStaged from '../../lib/index.js'
 import { prettierListDifferent, prettierWrite } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -10,41 +11,44 @@ import { withGitIntegration } from './__utils__/withGitIntegration.js'
 describe('lint-staged', () => {
   test(
     'handles merge conflicts',
-    withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
-      const fileInBranchA = `module.exports = "foo";\n`
-      const fileInBranchB = `module.exports = 'bar'\n`
-      const fileInBranchBFixed = `module.exports = "bar";\n`
+    withGitIntegration(
+      async ({ appendFile, cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
+        const fileInBranchA = `module.exports = "foo";\n`
+        const fileInBranchB = `module.exports = 'bar'\n`
+        const fileInBranchBFixed = `module.exports = "bar";\n`
 
-      // Create one branch
-      await execGit(['checkout', '-b', 'branch-a'])
-      await appendFile('test.js', fileInBranchA)
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
-      await execGit(['add', '.'])
+        // Create one branch
+        await execGit(['checkout', '-b', 'branch-a'])
+        await appendFile('test.js', fileInBranchA)
+        await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+        await execGit(['add', '.'])
 
-      await gitCommit({ gitCommit: ['-m commit a'] })
+        await gitCommit({ gitCommit: ['-m commit a'] })
 
-      expect(await readFile('test.js')).toEqual(fileInBranchA)
+        expect(await readFile('test.js')).toEqual(fileInBranchA)
 
-      await execGit(['checkout', 'main'])
+        await execGit(['checkout', 'main'])
 
-      // Create another branch
-      await execGit(['checkout', '-b', 'branch-b'])
-      await appendFile('test.js', fileInBranchB)
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
-      await execGit(['add', '.'])
-      await gitCommit({ gitCommit: ['-m commit b'] })
-      expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
+        // Create another branch
+        await execGit(['checkout', '-b', 'branch-b'])
+        await appendFile('test.js', fileInBranchB)
+        await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+        await execGit(['add', '.'])
+        await gitCommit({ gitCommit: ['-m commit b'] })
+        expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
 
-      // Merge first branch
-      await execGit(['checkout', 'main'])
-      await execGit(['merge', 'branch-a'])
-      expect(await readFile('test.js')).toEqual(fileInBranchA)
-      expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
+        // Merge first branch
+        await execGit(['checkout', 'main'])
+        await execGit(['merge', 'branch-a'])
+        expect(await readFile('test.js')).toEqual(fileInBranchA)
+        expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
-      // Merge second branch, causing merge conflict
-      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow()
+        // Merge second branch, causing merge conflict
+        await expect(execGit(['merge', 'branch-b'])).rejects.toThrow()
 
-      expect(await readFile('test.js')).toMatchInlineSnapshot(`
+        expect(await execGit(['status'])).toMatch('You have unmerged paths')
+
+        expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
         module.exports = "foo";
         =======
@@ -53,21 +57,38 @@ describe('lint-staged', () => {
         "
       `)
 
-      // Fix conflict and commit using lint-staged
-      await writeFile('test.js', fileInBranchB)
-      expect(await readFile('test.js')).toEqual(fileInBranchB)
-      await execGit(['add', '.'])
+        // Fix conflict
+        await writeFile('test.js', fileInBranchB)
+        expect(await readFile('test.js')).toEqual(fileInBranchB)
+        await execGit(['add', '.'])
 
-      await gitCommit({ gitCommit: ['--no-edit'] })
+        expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
 
-      // Nothing is wrong, so a new commit is created and file is pretty
-      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
-      const log = await execGit(['log', '-1', '--pretty=%B'])
-      expect(log).toMatch(`Merge branch 'branch-b`)
-      expect(log).toMatch(`Conflicts:`)
-      expect(log).toMatch(`test.js`)
-      expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
-    })
+        // running lint-staged with default config preserves merge state
+        await lintStaged({ cwd, quiet: true })
+
+        // running lint-staged with --hide-unstaged preserves merge state
+        await lintStaged({ cwd, quiet: true, hideUnstaged: true })
+
+        // running lint-staged with --hide-all preserves merge state
+        await lintStaged({ cwd, quiet: true, hideAll: true })
+
+        expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
+
+        // Commit
+        await gitCommit({ gitCommit: ['--no-edit'] })
+
+        expect(await execGit(['status'])).toMatch('nothing to commit, working tree clean')
+
+        // Nothing is wrong, so a new commit is created and file is pretty
+        expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('4')
+        const log = await execGit(['log', '-1', '--pretty=%B'])
+        expect(log).toMatch(`Merge branch 'branch-b`)
+        expect(log).toMatch(`Conflicts:`)
+        expect(log).toMatch(`test.js`)
+        expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
+      }
+    )
   )
 
   test(
@@ -108,6 +129,8 @@ describe('lint-staged', () => {
       // Merge second branch, causing merge conflict
       await expect(execGit(['merge', 'branch-b'])).rejects.toThrow()
 
+      expect(await execGit(['status'])).toMatch('You have unmerged paths')
+
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
         module.exports = "foo";
@@ -121,6 +144,8 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileInBranchB)
       expect(await readFile('test.js')).toEqual(fileInBranchB)
       await execGit(['add', '.'])
+
+      expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
 
       await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
 
