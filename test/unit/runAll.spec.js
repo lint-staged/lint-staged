@@ -16,6 +16,10 @@ vi.mock('tinyexec', () => ({
   }),
 }))
 
+vi.mock('../../lib/execGit.js', () => ({
+  execGit: vi.fn(async () => 'test'),
+}))
+
 vi.mock('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: vi.fn(async () => []),
 }))
@@ -384,9 +388,6 @@ describe('runAll', () => {
         '*.py': 'echo "failing py command"',
       },
     }))
-
-    // Mock first exec call (git operations) to succeed
-    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
 
     // Mock second task call (`echo "success js command 1"`) to succeed
     vi.mocked(exec).mockReturnValueOnce({

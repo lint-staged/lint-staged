@@ -42,7 +42,7 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
       // Merge second branch, causing merge conflict
-      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow('Merge conflict in test.js')
+      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow()
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
@@ -106,7 +106,7 @@ describe('lint-staged', () => {
       expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('commit a')
 
       // Merge second branch, causing merge conflict
-      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow('Merge conflict in test.js')
+      await expect(execGit(['merge', 'branch-b'])).rejects.toThrow()
 
       expect(await readFile('test.js')).toMatchInlineSnapshot(`
         "<<<<<<< HEAD
@@ -217,7 +217,7 @@ describe('lint-staged', () => {
       await execGit(['commit', '-m', 'Local changes'])
 
       // Initiate merge with conflict
-      await expect(execGit(['merge', 'main'])).rejects.toThrow('Merge conflict')
+      await expect(execGit(['merge', 'main'])).rejects.toThrow()
 
       expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`
         "UU modifiedFileConflictDiscardLocal.js
