@@ -1,5 +1,13 @@
 # lint-staged
 
+## 17.0.8
+
+### Patch Changes
+
+- [#1809](https://github.com/lint-staged/lint-staged/pull/1809) [`179b437`](https://github.com/lint-staged/lint-staged/commit/179b4372b2528f6fa66f927337d238711694d0e0) - Fix _lint-staged_ discarding the ongoing merge conflict status (`.git/MERGE_HEAD`) when using the `--hide-unstaged` or `--hide-all` options.
+
+- [#1811](https://github.com/lint-staged/lint-staged/pull/1811) [`3d0b2c0`](https://github.com/lint-staged/lint-staged/commit/3d0b2c0709a2a39aa7b134e3741fed21250d808e) - Fix issues with Git commands that are successful but also emit warnings to `stderr`, by ignoring the `stderr` output completely when the process exits with code 0. This was the behavior when using `nano-spawn` and `execa`, but when switching to `tinyexec` in 16.3.0 both `stdout` and `stderr` were used as interleaved output.
+
 ## 17.0.7
 
 ### Patch Changes
