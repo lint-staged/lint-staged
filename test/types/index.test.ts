@@ -40,7 +40,7 @@ test('lint-staged TypeScript types', () => {
 
     '*.ext9': [['oxfmt', 'oxlint']],
 
-    '*.ext10': ['oxfmt', ['oxlint', () => `tsc`]],
+    '*.ext10': ['oxfmt', ['oxlint', () => 'tsc']],
   }).toExtend<Configuration>()
 
   expectTypeOf((files: readonly string[]) => {

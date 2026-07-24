@@ -131,12 +131,30 @@ describe('getSpawnedTasks', () => {
         { filepath: 'test3.js', status: 'R' },
       ],
     })
-    expect(res.length).toBe(5)
-    expect(res[0].title).toEqual('test')
-    expect(res[1].title).toEqual('test2')
-    expect(res[2].title).toEqual('test test.js')
-    expect(res[3].title).toEqual('test test2.js')
-    expect(res[4].title).toEqual('test test3.js')
+    expect(res).toHaveLength(5)
+    expect(res[0].title).toBe('test')
+    expect(res[1].title).toBe('test2')
+    expect(res[2].title).toBe('test test.js')
+    expect(res[3].title).toBe('test test2.js')
+    expect(res[4].title).toBe('test test3.js')
+  })
+
+  it('should work with nested arrays for parallel tasks', async ({ expect }) => {
+    const res = await getSpawnedTasks({
+      abortController,
+      commands: ['first', 'second', ['third', () => 'third'], 'fourth'],
+      topLevelDir,
+      files: [{ filepath: 'test.js', status: 'M' }],
+    })
+
+    expect(res).toHaveLength(4)
+    expect(res[0].title).toBe('first')
+    expect(res[1].title).toBe('second')
+    expect(res[2]).toBeInstanceOf(Array)
+    expect(res[2]).toHaveLength(2)
+    expect(res[2][0].title).toBe('third')
+    expect(res[2][1].title).toBe('third')
+    expect(res[3].title).toBe('fourth')
   })
 
   it('should work with async function tasks', async ({ expect }) => {

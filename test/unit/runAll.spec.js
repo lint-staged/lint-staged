@@ -138,9 +138,9 @@ describe('runAll', () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
+    searchConfigs.mockResolvedValueOnce({
       '': { '*.css': 'echo "sample"' },
-    }))
+    })
 
     await expect(runAll({ quiet: true })).resolves.toBeTruthy()
 
@@ -151,9 +151,9 @@ describe('runAll', () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
+    searchConfigs.mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
-    }))
+    })
 
     mockGitWorkflow.prepare.mockImplementationOnce((ctx) => {
       ctx.errors.add(GitError)
@@ -170,9 +170,9 @@ describe('runAll', () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
+    searchConfigs.mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
-    }))
+    })
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
@@ -189,9 +189,9 @@ describe('runAll', () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
+    searchConfigs.mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
-    }))
+    })
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
@@ -208,9 +208,9 @@ describe('runAll', () => {
     expect.assertions(2)
 
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
+    searchConfigs.mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
-    }))
+    })
 
     mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
@@ -300,9 +300,23 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
 
+  it('should warn when "git add" was used in parallel commands', async ({ expect }) => {
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
+    searchConfigs.mockResolvedValueOnce({
+      '.lintstagedrc.json': { '*.js': ['prettier', ['eslint', 'git add']] },
+    })
+
+    await runAll({})
+
+    expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
+  })
+
   it('should not warn about "git add" when --quiet was used', async ({ expect }) => {
     getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    await expect(runAll({ configObject: { '*.js': ['git add'] }, quiet: true })).rejects.toThrow()
+    searchConfigs.mockResolvedValueOnce({
+      '.lintstagedrc.json': { '*.js': ['git add'] },
+    })
+    await runAll({ quiet: true })
     expect(console.printHistory()).toEqual('')
   })
 
