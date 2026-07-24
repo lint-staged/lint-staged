@@ -8,51 +8,55 @@ test('lint-staged TypeScript types', () => {
 
     '*.ext2': ['oxlint', 'oxfmt'],
 
-    '*.ext3': (fileNames: readonly string[]) => {
-      return `oxlint ${fileNames.join(' ')}`
+    '*.ext3': (files: readonly string[]) => {
+      return `oxlint ${files.join(' ')}`
     },
 
-    '*.ext4': (fileNames: readonly string[]) => {
-      return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
+    '*.ext4': (files: readonly string[]) => {
+      return [`oxlint ${files.join(' ')}`, `oxfmt --write ${files.join(' ')}`]
     },
 
-    '*.ext5': async (fileNames: readonly string[]) => {
-      return `oxlint ${fileNames.join(' ')}`
+    '*.ext5': async (files: readonly string[]) => {
+      return `oxlint ${files.join(' ')}`
     },
 
-    '*.ext6': async (fileNames: readonly string[]) => {
-      return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
+    '*.ext6': async (files: readonly string[]) => {
+      return [`oxlint ${files.join(' ')}`, `oxfmt --write ${files.join(' ')}`]
     },
 
     '*.ext7': {
       title: 'Sync Function Task',
-      task: (fileNames: readonly string[]) => {
-        console.log(fileNames)
+      task: (files: readonly string[]) => {
+        console.log(files)
       },
     },
 
     '*.ext8': {
       title: 'Async Function Task',
-      task: async (fileNames: readonly string[]) => {
-        console.log(fileNames)
+      task: async (files: readonly string[]) => {
+        console.log(files)
       },
     },
+
+    '*.ext9': [['oxfmt', 'oxlint']],
+
+    '*.ext10': ['oxfmt', ['oxlint', () => `tsc`]],
   }).toExtend<Configuration>()
 
-  expectTypeOf((fileNames: readonly string[]) => {
-    return `oxlint ${fileNames.join(' ')}`
+  expectTypeOf((files: readonly string[]) => {
+    return `oxlint ${files.join(' ')}`
   }).toExtend<Configuration>()
 
-  expectTypeOf((fileNames: readonly string[]) => {
-    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
+  expectTypeOf((files: readonly string[]) => {
+    return [`oxlint ${files.join(' ')}`, `oxfmt --write ${files.join(' ')}`]
   }).toExtend<Configuration>()
 
-  expectTypeOf(async (fileNames: readonly string[]) => {
-    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
+  expectTypeOf(async (files: readonly string[]) => {
+    return [`oxlint ${files.join(' ')}`, `oxfmt --write ${files.join(' ')}`]
   }).toExtend<Configuration>()
 
-  expectTypeOf(async (fileNames: readonly string[]) => {
-    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
+  expectTypeOf(async (files: readonly string[]) => {
+    return [`oxlint ${files.join(' ')}`, `oxfmt --write ${files.join(' ')}`]
   }).toExtend<Configuration>()
 
   expectTypeOf(lintStaged).toBeFunction()
