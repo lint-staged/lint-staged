@@ -46,7 +46,22 @@ describe('validateConfig', () => {
 
         Invalid value for '*.js': [ false ]
 
-        Should be an array of strings or functions.]
+        Should be an array of strings or functions, or single-level nested array or strings of functions.]
+    `)
+  })
+
+  it('should throw and should print validation errors for invalid config 4', ({ expect }) => {
+    const invalidConfig = {
+      '*.js': ['foo', ['bar', ['baz']]],
+    }
+
+    expect(() => validateConfig(invalidConfig, configPath, logger))
+      .toThrowErrorMatchingInlineSnapshot(`
+      [Error: ✖ Validation Error:
+
+        Invalid value for '*.js': [ 'foo', [ 'bar', [ 'baz' ] ] ]
+
+        Should be an array of strings or functions, or single-level nested array or strings of functions.]
     `)
   })
 

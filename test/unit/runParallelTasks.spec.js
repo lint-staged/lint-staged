@@ -1,7 +1,6 @@
 import makeConsoleMock from 'consolemock'
 import { describe, it, test, vi } from 'vitest'
 
-import * as figures from '../../lib/figures.js'
 import { parseConcurrency, runParallelTasks } from '../../lib/runParallelTasks.js'
 
 const createTaskGroup = (title, task, skip = vi.fn(() => false)) => ({ title, task, skip })
@@ -42,9 +41,20 @@ describe('runParallelTasks', () => {
     expect(first).toHaveBeenCalledWith(ctx)
     expect(failure).toHaveBeenCalledWith(ctx)
     expect(last).toHaveBeenCalledWith(ctx)
-    expect(logger.printHistory()).toMatch(`${figures.done()} first`)
-    expect(logger.printHistory()).toMatch(`${figures.error()} failure`)
-    expect(logger.printHistory()).toMatch(`${figures.done()} last`)
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG     config
+      LOG       *.js
+      LOG         ⋯ first
+      LOG         ⋯ failure
+      LOG         ⋯ last
+      LOG 
+      LOG ✔ first
+      ERROR ✖ failure
+      LOG ✔ last
+      LOG "
+    `)
   })
 
   it.for([
@@ -110,6 +120,60 @@ describe('runParallelTasks', () => {
     expect(second).toHaveBeenCalledOnce()
   })
 
+  it('should support nested arrays for a glob to run in parallel', async ({ expect }) => {
+    const first = vi.fn()
+    const second = vi.fn()
+
+    // These run in parallel, but the timeout value determines which one is fastest
+    const parallel_1 = vi.fn(() => new Promise((resolve) => void setTimeout(resolve, 30)))
+    const parallel_2 = vi.fn(() => new Promise((resolve) => void setTimeout(resolve, 20)))
+    const parallel_3 = vi.fn(() => new Promise((resolve) => void setTimeout(resolve, 10)))
+
+    const fourth = vi.fn()
+
+    const tasks = [
+      createTaskGroup('lint-staged.config.json', [
+        createTaskGroup('*.js', [
+          createTask('first', first),
+          createTask('second', second),
+          [
+            createTask('parallel_1', parallel_1),
+            createTask('parallel_2', parallel_2),
+            createTask('parallel_3', parallel_3),
+          ],
+          createTask('fourth', fourth),
+        ]),
+      ]),
+    ]
+
+    const logger = makeConsoleMock()
+
+    await runParallelTasks({}, tasks, {
+      abortController: new AbortController(),
+      logger,
+    })
+
+    // Notice in the log output the order or finished parallel tasks
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG     *.js
+      LOG       ⋯ first
+      LOG       ⋯ second
+      LOG       ┌ ⋯ parallel_1
+      LOG       │ ⋯ parallel_2
+      LOG       └ ⋯ parallel_3
+      LOG       ⋯ fourth
+      LOG 
+      LOG ✔ first
+      LOG ✔ second
+      LOG ✔ parallel_3
+      LOG ✔ parallel_2
+      LOG ✔ parallel_1
+      LOG ✔ fourth
+      LOG "
+    `)
+  })
+
   it('should stop pending tasks when aborted', async ({ expect }) => {
     const gate = Promise.withResolvers()
     const abortController = new AbortController()
@@ -136,10 +200,21 @@ describe('runParallelTasks', () => {
     await promise
 
     expect(pending).not.toHaveBeenCalled()
-    expect(logger.printHistory()).toMatch(`${figures.cancelled()} pending`)
-
     expect(later).not.toHaveBeenCalled()
-    expect(logger.printHistory()).toMatch(`${figures.cancelled()} later`)
+
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG     first glob
+      LOG       ⋯ first
+      LOG       ⋯ pending
+      LOG     second glob
+      LOG       ⋯ later
+      LOG 
+      LOG ✔ first
+      WARN ↓ pending
+      WARN ↓ later
+      LOG "
+    `)
   })
 
   it('should handle an empty task list', async ({ expect }) => {

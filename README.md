@@ -285,6 +285,17 @@ This is typically not a problem since the globs do not overlap, and the commands
 }
 ```
 
+If you want to run tasks parallely for a specific glob, you can nest one extra layer of arrays, inside the array. In the following example, `prettier` and `eslint` will run in parallel for `*.ts` files, while the two globs also run in parallel.
+
+```json
+{
+  "*.ts": [["prettier --list-different", "eslint"]],
+  "*.md": "prettier --list-different"
+}
+```
+
+---
+
 Pay extra attention when the configured globs overlap, and tasks make edits to files. For example, in this configuration `prettier` and `eslint` might try to make changes to the same `*.ts` file at the same time, causing a _race condition_:
 
 ```json
@@ -379,6 +390,14 @@ For example:
 going to execute `eslint` and if it exits with `0` code, it will execute `prettier --write` on all staged `*.js` files.
 
 This will result in _lint-staged_ running `eslint file-1.js file-2.js`, when you have staged files `file-1.js`, `file-2.js` and `README.md`, and if it passes, `prettier --write file-1.js file-2.js`.
+
+As mentioned previously, it's possible to nest one level of commands into an array, inside the array. This way you can run tasks in parallel for a given glob. The following demonstrates the order tasks will start in:
+
+```json
+{
+  "*.ts": ["first", "second", ["third", "third"], "fourth"]
+}
+```
 
 ## Using JS configuration files
 
