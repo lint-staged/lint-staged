@@ -188,18 +188,12 @@ describe('lint-staged', () => {
     })
   )
 
-  /**
-   * @todo Lint-staged wouldn't have to operate on all files marked as staged during a
-   * merge conflict resolution; we can optimize it by using a more accurate diff
-   * what has really changed in the upstream branch.
-   */
   test(
-    'operates on too many files during merge conflict',
+    'does not operate on too many files during merge conflict',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
       const commonContent = `export function     common()  {    };\n\n\n\n`
 
       const upstreamContent = `export function      upstream() {    };\n\n\n\n`
-      const prettyUpstreamContent = `export function upstream() {}\n`
 
       const localContent = `export function      local() {    };\n\n\n\n`
       const prettyLocalContent = `export function local() {}\n`
@@ -277,6 +271,24 @@ describe('lint-staged', () => {
         A  newFileNoConflict.js"
       `)
 
+      const currentIndex = await execGit(['write-tree'])
+      const threeWay = await execGit([
+        'diff',
+        '--cc',
+        '--name-only',
+        currentIndex,
+        'HEAD',
+        'MERGE_HEAD', // This only exists during merge conflict
+      ])
+
+      // These are the only files that should be formatted
+      expect(threeWay).toMatchInlineSnapshot(`
+        "modifiedFileConflictMergeLocal.js
+        modifiedFileIndexOnly.js
+        newFileConflictMergeLocal.js
+        newFileIndexOnly.js"
+      `)
+
       await gitCommit(['-m', 'Merge upstream'])
 
       // Verify only files different from upstream had oxfmt run
@@ -285,11 +297,11 @@ describe('lint-staged', () => {
       expect(await readFile('newFileIndexOnly.js')).toEqual(prettyLocalContent)
       expect(await readFile('modifiedFileIndexOnly.js')).toEqual(prettyLocalContent)
 
-      // These files wouldn't have to be linted as there were no conflicts
-      expect(await readFile('newFileNoConflict.js')).toEqual(prettyUpstreamContent)
-      expect(await readFile('newFileConflictDiscardLocal.js')).toEqual(prettyUpstreamContent)
-      expect(await readFile('modifiedFileNoConflict.js')).toEqual(prettyUpstreamContent)
-      expect(await readFile('modifiedFileConflictDiscardLocal.js')).toEqual(prettyUpstreamContent)
+      // These files were not formatted as there were no conflicts
+      expect(await readFile('newFileNoConflict.js')).toEqual(upstreamContent)
+      expect(await readFile('newFileConflictDiscardLocal.js')).toEqual(upstreamContent)
+      expect(await readFile('modifiedFileNoConflict.js')).toEqual(upstreamContent)
+      expect(await readFile('modifiedFileConflictDiscardLocal.js')).toEqual(upstreamContent)
     })
   )
 })
