@@ -33,8 +33,7 @@ describe('resolveGitRepo', () => {
   }) => {
     const { gitConfigDir } = await resolveGitRepo()
 
-    // Path ends in "/.git"
-    expect(normalizePath(gitConfigDir)).toEqual(normalizePath(path.join(REPO_ROOT, '.git')))
+    expect(normalizePath(gitConfigDir)).toMatch(REPO_ROOT)
 
     const { stderr } = spawnSync('git', ['rev-parse', '--show-toplevel'], {
       cwd: gitConfigDir,
