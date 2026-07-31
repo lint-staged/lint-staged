@@ -7,9 +7,9 @@ import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-const exists = async (path) => {
+const exists = async (p) => {
   try {
-    await fs.stat(path)
+    await fs.stat(p)
     return true
   } catch {
     return false

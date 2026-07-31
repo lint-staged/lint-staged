@@ -37,7 +37,7 @@ for (const [dependency, version] of Object.entries(packageJson.dependencies)) {
 
   const json = stdout ? JSON.parse(stdout.trim()) : ''
 
-  const requiredVersion = Array.isArray(json) ? json[json.length - 1] : json
+  const requiredVersion = Array.isArray(json) ? json.at(-1) : json
 
   /** True if currently-required range is inside the dependency's required range */
   const isSubset = subset(lintStagedRequires, requiredVersion)

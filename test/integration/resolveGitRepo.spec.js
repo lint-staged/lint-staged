@@ -7,17 +7,17 @@ import { describe, it } from 'vitest'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { resolveGitRepo } from '../../lib/resolveGitRepo.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const REPO_ROOT = normalizePath(path.join(__dirname, '../../'))
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = normalizePath(path.join(CURRENT_DIR, '../../'))
 
 describe('resolveGitRepo', () => {
   it('should resolve to repo root', async ({ expect }) => {
-    const { topLevelDir } = await resolveGitRepo(__dirname)
+    const { topLevelDir } = await resolveGitRepo(CURRENT_DIR)
     expect(topLevelDir).toEqual(normalizePath(REPO_ROOT))
   })
 
   it('should return "topLevelDir" value compatible with node:child_process', async ({ expect }) => {
-    const { topLevelDir } = await resolveGitRepo(__dirname)
+    const { topLevelDir } = await resolveGitRepo(CURRENT_DIR)
     expect(topLevelDir).toEqual(normalizePath(REPO_ROOT))
 
     const { stdout } = spawnSync('git', ['rev-parse', '--show-toplevel'], {

@@ -1,5 +1,5 @@
 import makeConsoleMock from 'consolemock'
-import { describe, expect, it, suite, vi } from 'vitest'
+import { describe, it, suite, vi } from 'vitest'
 
 suite('debug', async () => {
   describe('enableDebug', () => {
@@ -15,7 +15,7 @@ suite('debug', async () => {
   })
 
   describe('createDebug', () => {
-    it('should create debug logger', async () => {
+    it('should create debug logger', async ({ expect }) => {
       const { createDebug, enableDebug } = await vi.importActual('../../lib/debug.js')
 
       const logger = makeConsoleMock()

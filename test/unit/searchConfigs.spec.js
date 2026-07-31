@@ -28,7 +28,7 @@ const { execGit } = await import('../../lib/execGit.js')
 const { loadConfig } = await import('../../lib/loadConfig.js')
 const { searchConfigs } = await import('../../lib/searchConfigs.js')
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url))
 
 describe('searchConfigs', () => {
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe('searchConfigs', () => {
 
   it('should return empty object for invalid config path', async ({ expect }) => {
     await expect(
-      searchConfigs({ configPath: path.join(__dirname, 'missing.json') })
+      searchConfigs({ configPath: path.join(CURRENT_DIR, 'missing.json') })
     ).resolves.toEqual({})
   })
 
