@@ -1,5 +1,44 @@
 # lint-staged
 
+## 17.3.0
+
+### Minor Changes
+
+- [#1825](https://github.com/lint-staged/lint-staged/pull/1825) [`16b3f74`](https://github.com/lint-staged/lint-staged/commit/16b3f74850e5d2811b5fbaea6c136733a71ad3e4) - It is now possible to run multiple tasks in parallel for a single glob by configuring it with an array of tasks (which run sequentially), and then placing another array inside it (where the tasks will run in parallel). The following demonstrates the order tasks will start in:
+
+  ```json
+  {
+    "*.ts": ["first", "second", ["third", "third"], "fourth"]
+  }
+  ```
+
+  As a concrete example, _lint-staged_'s own configuration is:
+
+  ```js
+  /** @type {import('./lib/index.js').Configuration} */
+  export default {
+    "*": [
+      [
+        "oxfmt --check --no-error-on-unmatched-pattern",
+        "oxlint --no-error-on-unmatched-pattern",
+      ],
+    ],
+    "*.ts": () => "tsc",
+  };
+  ```
+
+  which means:
+
+  1. for all staged files, run the two commands in parallel with staged filenames appended, for example:
+     - `oxfmt --check --no-error-on-unmatched-pattern lib/index.js`
+     - `oxlint --no-error-on-unmatched-pattern lib/index.js`
+  1. additionally, if any `*.ts` files are staged, run `tsc` without appending any arguments
+  1. The two sets of commands also run in parallel
+
+### Patch Changes
+
+- [#1829](https://github.com/lint-staged/lint-staged/pull/1829) [`15f7e53`](https://github.com/lint-staged/lint-staged/commit/15f7e5314b4afe4702808d978758b22d42437f43) - During an in-progress merge, files that are unchanged from the branch being merged are now skipped. Technically, files are only included if there are staged changes against both `HEAD` and `MERGE_HEAD`.
+
 ## 17.2.0
 
 ### Minor Changes
@@ -9,8 +48,8 @@
   ```js
   /** @type {import('lint-staged').Configuration} */
   export default {
-    '*.ts': () => 'tsc', // Run "tsc" when any TS file is changed (for entire project)
-  }
+    "*.ts": () => "tsc", // Run "tsc" when any TS file is changed (for entire project)
+  };
   ```
 
   Where the spawned command is literally `"tsc"` without any extra arguments. Previously, this was still chunked when a lot of files were staged. Now, it probably won't be chunked because the length of the command is just three letters.
@@ -20,13 +59,13 @@
   ```js
   /** @type {import('lint-staged').Configuration} */
   export default {
-    '*.js': {
-      title: 'Log staged JS files to console',
+    "*.js": {
+      title: "Log staged JS files to console",
       task: async (files) => {
-        console.log('Staged JS files:', files)
+        console.log("Staged JS files:", files);
       },
     },
-  }
+  };
   ```
 
 ## 17.1.1
@@ -424,7 +463,7 @@
   If you were using the shell option to avoid passing filenames to tasks, for example `bash -c 'tsc --noEmit'`, use the function syntax instead:
 
   ```js
-  export default { '*.ts': () => 'tsc --noEmit' }
+  export default { "*.ts": () => "tsc --noEmit" };
   ```
 
 - [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - Validation for deprecated advanced configuration has been removed. The advanced configuration was removed in _lint-staged_ version 9 and until now validation has failed if advanced configuration options were detected. Going forward the entire configuration will be treated with the same logic and if these advanced options are still present, they might be treated as valid globs for staged files instead.
@@ -437,13 +476,13 @@
 
   ```js
   export default {
-    '*.js': {
-      title: 'My task',
+    "*.js": {
+      title: "My task",
       task: async (files) => {
-        console.log('Staged JS files:', files)
+        console.log("Staged JS files:", files);
       },
     },
-  }
+  };
   ```
 
   _Lint-staged_ will run your function task with the staged files matching the configured glob as its argument, and show the custom title in its console output.
@@ -475,6 +514,7 @@
   By default Prettier [prefers double quotes](https://prettier.io/docs/rationale#strings).
 
   #### Previously
+
   1. Stage `file.js` with only double quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -482,6 +522,7 @@
   1. Commit was not done, original state is restored and single quotes `'` are staged
 
   #### Now
+
   1. Stage `file.js` with only double-quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -520,8 +561,8 @@
    * @type {import('lint-staged').Configuration}
    */
   export default {
-    '*': 'prettier --write',
-  }
+    "*": "prettier --write",
+  };
   ```
 
   It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-types` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.
@@ -1013,7 +1054,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from 'lint-staged'
+import lintStaged from "lint-staged";
 ```
 
 ## [v11.3.0-beta.2](https://github.com/lint-staged/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021
