@@ -39,7 +39,6 @@ describe('killSubProcesses', () => {
   })
 
   it('should kill Unix process group', async ({ expect }) => {
-    const mockKill = vi.fn()
     Object.defineProperty(process, 'kill', {
       value: mockKill,
     })

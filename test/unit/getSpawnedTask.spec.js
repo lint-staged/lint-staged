@@ -22,9 +22,10 @@ vi.mock('../../lib/killSubprocesses.js', () => ({
   killSubProcesses: vi.fn(),
 }))
 
-const abortController = getAbortController()
-
-const defaultOpts = { abortController, files: ['test.js'] }
+const defaultOpts = {
+  abortController: getAbortController(),
+  files: ['test.js'],
+}
 
 describe('getSpawnedTask', () => {
   beforeEach(() => {

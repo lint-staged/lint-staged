@@ -23,9 +23,9 @@ describe('lint-staged', () => {
     import path from 'node:path'
     import { fileURLToPath } from 'node:url'
 
-    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url))
 
-    export default { '*.js': \`node \${path.resolve(__dirname, '${SCRIPT_FILE}')}\` }
+    export default { '*.js': \`node \${path.resolve(CURRENT_DIR, '${SCRIPT_FILE}')}\` }
   `
 
   test(

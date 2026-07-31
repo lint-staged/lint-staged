@@ -8,7 +8,7 @@ import { beforeEach, describe, it } from 'vitest'
 import { dynamicImport, loadConfig } from '../../lib/loadConfig.js'
 import { createTempDir } from '../__utils__/createTempDir.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url))
 
 describe('loadConfig', () => {
   const logger = makeConsoleMock()
@@ -20,7 +20,10 @@ describe('loadConfig', () => {
   it('should load JSON config file', async ({ expect }) => {
     expect.assertions(1)
 
-    const { config } = await loadConfig(path.join(__dirname, '__mocks__', 'my-config.json'), logger)
+    const { config } = await loadConfig(
+      path.join(CURRENT_DIR, '__mocks__', 'my-config.json'),
+      logger
+    )
 
     expect(config).toMatchInlineSnapshot(`
       {
@@ -32,7 +35,10 @@ describe('loadConfig', () => {
   it('should load YAML config file', async ({ expect }) => {
     expect.assertions(1)
 
-    const { config } = await loadConfig(path.join(__dirname, '__mocks__', 'my-config.yml'), logger)
+    const { config } = await loadConfig(
+      path.join(CURRENT_DIR, '__mocks__', 'my-config.yml'),
+      logger
+    )
 
     expect(config).toMatchInlineSnapshot(`
       {
@@ -45,7 +51,7 @@ describe('loadConfig', () => {
     expect.assertions(2)
 
     const { config } = await loadConfig(
-      path.join(__dirname, '__mocks__', 'invalid-config-file.yml'),
+      path.join(CURRENT_DIR, '__mocks__', 'invalid-config-file.yml'),
       logger
     )
 
@@ -58,7 +64,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      path.join(__dirname, '__mocks__', 'advanced-esm-config.js'),
+      path.join(CURRENT_DIR, '__mocks__', 'advanced-esm-config.js'),
       logger
     )
 
@@ -90,7 +96,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      path.join(__dirname, '__mocks__', 'advanced-cjs-config.cjs'),
+      path.join(CURRENT_DIR, '__mocks__', 'advanced-cjs-config.cjs'),
       logger
     )
 
@@ -167,7 +173,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const { config } = await loadConfig(
-      path.join(__dirname, '__mocks__', 'my-lint-staged-config'),
+      path.join(CURRENT_DIR, '__mocks__', 'my-lint-staged-config'),
       logger
     )
 
@@ -198,7 +204,7 @@ describe('loadConfig', () => {
     expect.assertions(1)
 
     const result = await loadConfig(
-      path.join(__dirname, '__mocks__', 'invalid-json-config.json'),
+      path.join(CURRENT_DIR, '__mocks__', 'invalid-json-config.json'),
       logger
     )
 
