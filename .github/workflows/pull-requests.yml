@@ -68,7 +68,7 @@ jobs:
           key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
       - run: npm run typecheck
 
-  ESLint:
+  Lint:
     needs: npm
     runs-on: ubuntu-latest
     steps:
@@ -82,6 +82,7 @@ jobs:
         with:
           path: node_modules
           key: node-modules-ubuntu-latest-${{ hashFiles('package-lock.json') }}
+      - run: node bin/lint-staged.js --all
       - run: npm run lint
 
   test-node-range:

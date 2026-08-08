@@ -10,6 +10,7 @@ suite('cli', () => {
       const options = parseCliOptions()
 
       expect(options).toStrictEqual({
+        all: undefined,
         allowEmpty: undefined,
         concurrent: undefined,
         configPath: undefined,
@@ -92,13 +93,14 @@ suite('cli', () => {
 
         -h, --help                         display this help message
         -V, --version                      display the current version number
+        --all                              include all files tracked in Git instead of only staged (default: false). Implies "--no-stash" and "--allow-empty"
         --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
         -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
         -c, --config [path]                path to configuration file, or - to read from stdin
         --continue-on-error                run all tasks to completion even if one fails (default: false)
         --cwd [path]                       run all tasks in specific directory, instead of the current
         -d, --debug                        print additional debug information (default: false)
-        --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash".
+        --diff [string]                    override the default "--staged" flag of "git diff" to get list of files. Implies "--no-stash"
         --diff-filter [string]             override the default "--diff-filter=ACMR" flag of "git diff" to get list of files
         --fail-on-changes                  fail with exit code 1 when tasks modify tracked files (default: false)
         --no-hide-partially-staged         hide unstaged changes from partially staged files (default: true)
@@ -128,6 +130,9 @@ suite('cli', () => {
 
         -h, --help                         display this help message
         -V, --version                      display the current version number
+        --all                              include all files tracked in Git instead of
+                                           only staged (default: false). Implies
+                                           "--no-stash" and "--allow-empty"
         --allow-empty                      allow empty commits when tasks revert all
                                            staged changes (default: false)
         -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or
@@ -142,7 +147,7 @@ suite('cli', () => {
                                            false)
         --diff [string]                    override the default "--staged" flag of "git
                                            diff" to get list of files. Implies
-                                           "--no-stash".
+                                           "--no-stash"
         --diff-filter [string]             override the default "--diff-filter=ACMR"
                                            flag of "git diff" to get list of files
         --fail-on-changes                  fail with exit code 1 when tasks modify

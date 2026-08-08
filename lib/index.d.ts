@@ -5,6 +5,12 @@ export type { Configuration }
 /** `lint-staged` Node.js API options */
 export type Options = {
   /**
+   * Include all files tracked in Git instead of only staged
+   * @warn implies `stash: false` and `allowEmpty: true`
+   * @default false
+   */
+  all?: boolean
+  /**
    * Allow empty commits when tasks revert all staged changes
    * @default false
    */
