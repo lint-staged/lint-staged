@@ -8,5 +8,6 @@
     }
   ],
   "access": "public",
-  "baseBranch": "main"
+  "baseBranch": "main",
+  "format": "oxfmt"
 }
