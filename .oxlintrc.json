@@ -10,6 +10,9 @@
     "node": true
   },
   "jsPlugins": ["@e18e/eslint-plugin"],
+  "options": {
+    "reportUnusedDisableDirectives": "error"
+  },
   "plugins": ["import", "eslint", "node", "oxc", "vitest"],
   "rules": {
     "e18e/ban-dependencies": "error",

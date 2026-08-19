@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import util from 'node:util'
 
+// oxlint-disable-next-line - already included in the project via other dependencies
 import { subset } from 'semver'
 import { exec } from 'tinyexec'
 
