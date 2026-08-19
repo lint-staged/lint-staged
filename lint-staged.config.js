@@ -1,7 +1,8 @@
-/** @type {import('./lib/index.js').Configuration} */
-export default {
+import { defineConfig } from './lib/config.js'
+
+export default defineConfig({
   '*': [
     ['oxfmt --check --no-error-on-unmatched-pattern', 'oxlint --no-error-on-unmatched-pattern'],
   ],
   '*.ts': () => 'tsc',
-}
+})

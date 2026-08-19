@@ -229,7 +229,7 @@ You can also place multiple configuration files in different directories inside 
 }
 ```
 
-#### `.lintstagedrc` example
+#### `.lintstagedrc.json` example
 
 ```json
 {
@@ -245,16 +245,14 @@ So, considering you did `git add file1.ext file2.ext`, lint-staged will run the 
 
 ### TypeScript
 
-_Lint-staged_ provides TypeScript types for the configuration and main Node.js API. You can use the JSDoc syntax in your JS configuration files:
+_Lint-staged_ provides TypeScript types for the configuration and main Node.js API. You can use the `defineConfig` helper in your JS configuration files:
 
 ```js
-/**
- * @filename: lint-staged.config.js
- * @type {import('lint-staged').Configuration}
- */
-export default {
+import { defineConfig } from 'lint-staged/config'
+
+export default defineConfig({
   '*': 'prettier --write',
-}
+})
 ```
 
 It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-types` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.

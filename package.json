@@ -34,6 +34,10 @@
       "types": "./lib/index.d.ts",
       "default": "./lib/index.js"
     },
+    "./config": {
+      "types": "./lib/config.d.ts",
+      "default": "./lib/config.js"
+    },
     "./bin": "./bin/lint-staged.js",
     "./package.json": "./package.json"
   },
