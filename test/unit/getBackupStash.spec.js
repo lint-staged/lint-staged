@@ -1,3 +1,5 @@
+import crypto from 'node:crypto'
+
 import makeConsoleMock from 'consolemock'
 import { describe, it, vi } from 'vitest'
 
@@ -12,7 +14,7 @@ vi.mock('../../lib/execGit.js', () => ({
 }))
 
 const { execGit } = await import('../../lib/execGit.js')
-const { GitWorkflow, STASH } = await import('../../lib/gitWorkflow.js')
+const { GitWorkflow } = await import('../../lib/gitWorkflow.js')
 
 describe('gitWorkflow', () => {
   const options = { logger: makeConsoleMock(), gitConfigDir: '.' }
@@ -34,7 +36,9 @@ describe('gitWorkflow', () => {
       const ctx = getInitialState()
       ctx.backupHash = 'not-found'
 
-      execGit.mockResolvedValueOnce(`"deadbeef On main: ${STASH}"`)
+      execGit.mockResolvedValueOnce(
+        `"deadbeef On main: lint-staged automatic backup (${crypto.randomBytes(4).toString('hex')})"`
+      )
 
       await expect(gitWorkflow.getBackupStash(ctx)).rejects.toThrow(
         'lint-staged automatic backup is missing!'
@@ -46,12 +50,12 @@ describe('gitWorkflow', () => {
     it('should return ref to the backup stash', async ({ expect }) => {
       const gitWorkflow = new GitWorkflow(options)
       const ctx = getInitialState()
-      ctx.a = 'abc123'
+      ctx.backupHash = 'abc123'
 
       execGit.mockResolvedValueOnce(
         [
           '"deadbeef On main: some random stuff"',
-          `"${ctx.backupHash} on main: ${STASH}"`,
+          `"${ctx.backupHash} on main: lint-staged automatic backup (${crypto.randomBytes(4).toString('hex')})"`,
           '"hash1234 On main: other random stuff"',
         ].join('\u0000')
       )
