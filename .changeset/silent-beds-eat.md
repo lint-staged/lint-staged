@@ -2,4 +2,4 @@
 'lint-staged': patch
 ---
 
-The automatic backup stash works better with concurrent invocations of _lint-staged_, for example in multiple worktrees. The dropping of the stash after running is still problematic, as Git only supports referencing a stash by its index (e.g. `git stash drop stash@{0}`).
+The behavior of the automatic backup stash has been improved when running _lint-staged_ in multiple worktrees in parallel. You should still avoid running multiple instances of _lint-staged_ in parallel in the same tree, because some of the Git operations are locking and might lead to data loss.
