@@ -6,6 +6,7 @@ import makeConsoleMock from 'consolemock'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
 import { normalizePath } from '../../lib/normalizePath.js'
+import { parseOptions } from '../../lib/parseOptions.js'
 import { TaskError } from '../../lib/symbols.js'
 
 vi.mock('tinyexec', () => ({
@@ -81,31 +82,33 @@ describe('runAll', () => {
 
   it('should resolve the promise with no tasks', async ({ expect }) => {
     expect.assertions(1)
-    await expect(runAll({})).resolves.toBeTruthy()
+    await expect(runAll(parseOptions({}))).resolves.toBeTruthy()
   })
 
   it('should enable debug logs', async ({ expect }) => {
     expect.assertions(1)
-    await expect(runAll({ debug: true })).resolves.toBeTruthy()
+    await expect(runAll(parseOptions({ debug: true }))).resolves.toBeTruthy()
   })
 
   it('should throw when failed to find staged files', async ({ expect }) => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => null)
-    await expect(runAll({ configObject: {}, configPath })).rejects.toThrow('lint-staged failed')
+    await expect(runAll(parseOptions({ configObject: {}, configPath }))).rejects.toThrow(
+      'lint-staged failed'
+    )
   })
 
   it('should throw when failed to find staged files and quiet', async ({ expect }) => {
     expect.assertions(1)
     getStagedFiles.mockImplementationOnce(async () => null)
-    await expect(runAll({ configObject: {}, configPath, quiet: true })).rejects.toThrow(
-      'lint-staged failed'
-    )
+    await expect(
+      runAll(parseOptions({ configObject: {}, configPath, quiet: true }))
+    ).rejects.toThrow('lint-staged failed')
   })
 
   it('should print output when no staged files', async ({ expect }) => {
     expect.assertions(1)
-    await expect(runAll({ configObject: {}, configPath })).resolves.toMatchObject({
+    await expect(runAll(parseOptions({ configObject: {}, configPath }))).resolves.toMatchObject({
       output: [expect.stringContaining('could not find any staged files')],
       quiet: false,
     })
@@ -113,7 +116,9 @@ describe('runAll', () => {
 
   it('should not print output when no staged files and quiet', async ({ expect }) => {
     expect.assertions(1)
-    await expect(runAll({ configObject: {}, configPath, quiet: true })).resolves.toMatchObject({
+    await expect(
+      runAll(parseOptions({ configObject: {}, configPath, quiet: true }))
+    ).resolves.toMatchObject({
       output: [],
       quiet: true,
     })
@@ -121,14 +126,14 @@ describe('runAll', () => {
 
   it('should resolve the promise with no files', async ({ expect }) => {
     expect.assertions(1)
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath })
+    await runAll(parseOptions({ configObject: { '*.js': ['echo "sample"'] }, configPath }))
     expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
   it('should use an injected logger', async ({ expect }) => {
     expect.assertions(1)
     const logger = makeConsoleMock()
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, configPath }, logger)
+    await runAll(parseOptions({ configObject: { '*.js': ['echo "sample"'] }, configPath }), logger)
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
@@ -142,7 +147,7 @@ describe('runAll', () => {
       '': { '*.css': 'echo "sample"' },
     })
 
-    await expect(runAll({ quiet: true })).resolves.toBeTruthy()
+    await expect(runAll(parseOptions({ quiet: true }))).resolves.toBeTruthy()
 
     expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
@@ -159,7 +164,7 @@ describe('runAll', () => {
       ctx.errors.add(GitError)
     })
 
-    await expect(runAll({})).rejects.toThrow('lint-staged failed')
+    await expect(runAll(parseOptions({}))).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped running tasks')
   })
@@ -178,7 +183,7 @@ describe('runAll', () => {
       ctx.errors.add(TaskError)
     })
 
-    await expect(runAll({})).rejects.toThrow('lint-staged failed')
+    await expect(runAll(parseOptions({}))).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped staging changes from tasks')
   })
@@ -197,7 +202,7 @@ describe('runAll', () => {
       ctx.errors.add(TaskError)
     })
 
-    await expect(runAll({ hideAll: true })).rejects.toThrow('lint-staged failed')
+    await expect(runAll(parseOptions({ hideAll: true }))).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped restoring untracked files')
   })
@@ -217,7 +222,7 @@ describe('runAll', () => {
       ctx.errors.add(GitError)
     })
 
-    await expect(runAll({})).rejects.toThrow('lint-staged failed')
+    await expect(runAll(parseOptions({}))).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped reverting to original state because of errors')
   })
@@ -235,10 +240,12 @@ describe('runAll', () => {
       'test/.lintstagedrc.json': { '*.js': mockTask },
     })
 
-    await runAll({
-      stash: false,
-      relative: true,
-    })
+    await runAll(
+      parseOptions({
+        stash: false,
+        relative: true,
+      })
+    )
 
     expect(mockTask).toHaveBeenCalledTimes(2)
     expect(mockTask).toHaveBeenNthCalledWith(1, ['foo.js'])
@@ -258,11 +265,13 @@ describe('runAll', () => {
       'test/.lintstagedrc.json': { '*.js': mockTask },
     })
 
-    await runAll({
-      cwd: '.',
-      stash: false,
-      relative: true,
-    })
+    await runAll(
+      parseOptions({
+        cwd: '.',
+        stash: false,
+        relative: true,
+      })
+    )
 
     expect(mockTask).toHaveBeenCalledTimes(2)
     expect(mockTask).toHaveBeenNthCalledWith(1, ['lib/foo.js'])
@@ -280,11 +289,14 @@ describe('runAll', () => {
     expect.assertions(1)
 
     try {
-      await runAll({
-        cwd: '.',
-        stash: false,
-        relative: true,
-      })
+      await runAll(
+        parseOptions({
+          cwd: '.',
+          stash: false,
+          relative: true,
+        })
+      )
+      expect.fail()
     } catch ({ ctx }) {
       expect(ctx.errors.has(ConfigNotFoundError)).toBe(true)
     }
@@ -296,7 +308,7 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
 
-    await runAll({})
+    await runAll(parseOptions({}))
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
 
@@ -306,7 +318,7 @@ describe('runAll', () => {
       '.lintstagedrc.json': { '*.js': ['prettier', ['eslint', 'git add']] },
     })
 
-    await runAll({})
+    await runAll(parseOptions({}))
 
     expect(console.printHistory()).toMatch('Some of your tasks use `git add` command')
   })
@@ -316,29 +328,35 @@ describe('runAll', () => {
     searchConfigs.mockResolvedValueOnce({
       '.lintstagedrc.json': { '*.js': ['git add'] },
     })
-    await runAll({ quiet: true })
+    await runAll(parseOptions({ quiet: true }))
     expect(console.printHistory()).toEqual('')
   })
 
   it('should warn when --no-stash was used', async ({ expect }) => {
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false })
+    await runAll(parseOptions({ configObject: { '*.js': ['echo "sample"'] }, stash: false }))
     expect(console.printHistory()).toMatch(
       'Skipping backup because `--no-stash` was used. This might result in data loss.'
     )
   })
 
   it('should not warn when --no-stash was used together with --quiet', async ({ expect }) => {
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, stash: false, quiet: true })
+    await runAll(
+      parseOptions({ configObject: { '*.js': ['echo "sample"'] }, stash: false, quiet: true })
+    )
     expect(console.printHistory()).toEqual('')
   })
 
   it('should warn when --diff was used', async ({ expect }) => {
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, diff: 'branch1...branch2' })
+    await runAll(
+      parseOptions({ configObject: { '*.js': ['echo "sample"'] }, diff: 'branch1...branch2' })
+    )
     expect(console.printHistory()).toMatch('Skipping backup because `--diff` was used.')
   })
 
   it('should warn when --no-hide-partially-staged was used', async ({ expect }) => {
-    await runAll({ configObject: { '*.js': ['echo "sample"'] }, hidePartiallyStaged: false })
+    await runAll(
+      parseOptions({ configObject: { '*.js': ['echo "sample"'] }, hidePartiallyStaged: false })
+    )
     expect(console.printHistory()).toMatch(
       'Skipping hiding unstaged changes from partially staged files because `--no-hide-partially-staged` was used.'
     )

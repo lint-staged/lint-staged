@@ -7,7 +7,7 @@ import { withGitIntegration } from './__utils__/withGitIntegration.js'
 describe('lint-staged', () => {
   test(
     'lints all files when --all is used',
-    withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
+    withGitIntegration(async ({ execGit, expect, gitCommit, writeFile }) => {
       // Commit ugly file
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
@@ -15,17 +15,17 @@ describe('lint-staged', () => {
 
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
-      // Run lint-staged with --all
-      const stdout = await gitCommit({ lintStaged: { all: true } })
+      try {
+        // Run lint-staged with --all
+        await gitCommit({ lintStaged: { all: true } })
+        expect.fail('Should throw')
+      } catch (error) {
+        expect(error.message).toMatch(
+          'Skipping backup because `--all` was used. This might result in data loss.'
+        )
 
-      expect(stdout).toMatch(
-        'Skipping backup because `--all` was used. This might result in data loss.'
-      )
-
-      // Nothing is wrong, so a new commit is created
-      expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
-      expect(await execGit(['log', '-1', '--pretty=%B'])).toMatch('test')
-      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
+        expect(error.message).toMatch('oxfmt --list-different')
+      }
     })
   )
 })
