@@ -36,7 +36,7 @@ describe('validateOptions', () => {
       }
     )
 
-    it.for([-1, 'foo', 0.5, NaN])(
+    it.for([-1, 'foo', 'true', 'false', '10', 0.5, NaN])(
       'Should reject invalid value: $0',
       async (concurrent, { expect }) => {
         const logger = makeConsoleMock()
@@ -112,7 +112,7 @@ describe('validateOptions', () => {
       }
     )
 
-    it.for([-Infinity, -1, 0, 0.5, NaN])(
+    it.for([-Infinity, -1, 0, '100', 0.5, NaN])(
       'Should reject invalid value: $0',
       async (maxArgLength, { expect }) => {
         const logger = makeConsoleMock()

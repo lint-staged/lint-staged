@@ -10,62 +10,33 @@ suite('cli', () => {
       const options = parseCliOptions()
 
       expect(options).toStrictEqual({
-        allowEmpty: false,
-        concurrent: true,
+        allowEmpty: undefined,
+        concurrent: undefined,
         configPath: undefined,
-        continueOnError: false,
+        continueOnError: undefined,
         cwd: undefined,
-        debug: false,
+        debug: undefined,
         diff: undefined,
         diffFilter: undefined,
-        failOnChanges: false,
-        help: false,
-        hidePartiallyStaged: true,
-        hideUnstaged: false,
-        hideAll: false,
+        failOnChanges: undefined,
+        help: undefined,
+        hidePartiallyStaged: undefined,
+        hideUnstaged: undefined,
+        hideAll: undefined,
         maxArgLength: undefined,
-        quiet: false,
-        relative: false,
-        revert: true,
-        stash: true,
-        verbose: false,
-        version: false,
+        quiet: undefined,
+        relative: undefined,
+        revert: undefined,
+        stash: undefined,
+        verbose: undefined,
+        version: undefined,
       })
     })
 
-    it('implies disabling stash option, when using diff option', ({ expect }) => {
+    it('should parse diff option without applying defaults', ({ expect }) => {
       const options = parseCliOptions(['--diff=main...HEAD'])
       expect(options.diff).toBe('main...HEAD')
-      expect(options.stash).toBe(false)
-    })
-
-    it('implies disabling revert option, when using fail-on-changes option', ({ expect }) => {
-      const options = parseCliOptions(['--fail-on-changes'])
-      expect(options.failOnChanges).toBe(true)
-      expect(options.revert).toBe(false)
-    })
-
-    it('implies disabling revert option, when stash option disabled', ({ expect }) => {
-      const options = parseCliOptions(['--no-stash'])
-      expect(options.stash).toBe(false)
-      expect(options.revert).toBe(false)
-    })
-
-    it('implies disabling hide-partially-changed option, when using hide-unstaged option', ({
-      expect,
-    }) => {
-      const options = parseCliOptions(['--hide-unstaged'])
-      expect(options.hideUnstaged).toBe(true)
-      expect(options.hidePartiallyStaged).toBe(false)
-    })
-
-    it('implies disabling hide-partially-changed and hide-unstaged options, when using hide-all option', ({
-      expect,
-    }) => {
-      const options = parseCliOptions(['--hide-all'])
-      expect(options.hideAll).toBe(true)
-      expect(options.hidePartiallyStaged).toBe(false)
-      expect(options.hideUnstaged).toBe(false)
+      expect(options.stash).toBeUndefined()
     })
 
     it('should parse concurrent=false option', ({ expect }) => {
