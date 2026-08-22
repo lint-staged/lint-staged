@@ -5,7 +5,7 @@
 Added a new `defineConfig` helper for type-checking the _lint-staged_ configuration:
 
 ```ts
-// lint-staged.config.js
+// lint-staged.config.ts
 
 import { defineConfig } from 'lint-staged/config'
 

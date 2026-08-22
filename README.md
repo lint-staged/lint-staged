@@ -96,6 +96,7 @@ Usage: lint-staged [options]
 
 -h, --help                         display this help message
 -V, --version                      display the current version number
+--all                              include all files tracked in Git instead of only staged (default: false). Implies "--no-stash" and "--allow-empty".
 --allow-empty                      allow empty commits when tasks revert all staged changes (default: false)
 -p, --concurrent <number|boolean>  the number of tasks to run concurrently, or false for serial (default: true)
 -c, --config [path]                path to configuration file, or - to read from stdin
@@ -121,6 +122,10 @@ Any lost modifications can be restored from a git stash:
   <git-hash> On main: lint-staged automatic backup
   > git apply --index <git-hash>
 ```
+
+#### `--all`
+
+By default _lint-staged_ only runs tasks on files that include staged changes (hence the name). Use this flag to include all files tracked in Git version control (standard exclusions apply). Using this flag implies the `--no-stash` flag, disabling the automatic backup, and the `--allow-empty` flag so that _lint-staged_ doesn't fail when there are no changes after running. This makes it easier to run `npx lint-staged --all` on a clean state, for example in CI.
 
 #### `--allow-empty`
 

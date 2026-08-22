@@ -87,6 +87,23 @@ describe('getStagedFiles', () => {
     expect(staged).toEqual(null)
   })
 
+  it('should support getting all tracked files, instead of just staged', async ({ expect }) => {
+    vi.mocked(execGit).mockImplementationOnce(async () => 'foo.js\u0000bar.js\u0000')
+
+    const staged = await getStagedFiles({
+      all: true,
+      cwd: '/',
+      gitConfigDir: '/',
+    })
+
+    expect(staged).toEqual([
+      { filepath: normalizeWindowsPath('/foo.js'), status: 'X' },
+      { filepath: normalizeWindowsPath('/bar.js'), status: 'X' },
+    ])
+
+    expect(execGit).toHaveBeenCalledExactlyOnceWith(['ls-files', '--full-name', '-z'])
+  })
+
   it('should support overriding diff trees with ...', async ({ expect }) => {
     vi.mocked(execGit).mockImplementationOnce(
       async () =>
