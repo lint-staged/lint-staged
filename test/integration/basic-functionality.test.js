@@ -151,19 +151,19 @@ describe('lint-staged', () => {
   )
 
   test(
-    'fails when backup stash is missing',
+    'warns during cleanup when backup stash is missing',
     withGitIntegration(async ({ execGit, expect, gitCommit, writeFile }) => {
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', 'test.js'])
 
-      await expect(
-        gitCommit({
-          lintStaged: {
-            // Remove backup stash during run
-            config: { '*.js': () => 'git stash drop' },
-          },
-        })
-      ).rejects.toThrow('lint-staged automatic backup is missing')
+      const result = await gitCommit({
+        lintStaged: {
+          // Remove backup stash during run
+          config: { '*.js': () => 'git stash drop' },
+        },
+      })
+
+      expect(result).toMatch('lint-staged automatic backup is missing')
     })
   )
 

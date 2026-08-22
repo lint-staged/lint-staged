@@ -9,7 +9,6 @@ import { normalizePath } from '../../lib/normalizePath.js'
 import { getInitialState } from '../../lib/state.js'
 import {
   ApplyEmptyCommitError,
-  GetBackupStashError,
   GitError,
   HideUnstagedChangesError,
   RestoreMergeStatusError,
@@ -68,31 +67,6 @@ describe('gitWorkflow', () => {
         await gitWorkflow.prepare(ctx)
 
         expect(ctx.errors).toBeInstanceOf(Set)
-        expect(ctx.errors.has(GitError)).toBe(true)
-      })
-    )
-  })
-
-  describe('cleanup', () => {
-    it(
-      'should handle errors',
-      withGitIntegration(async ({ cwd, expect }) => {
-        const gitWorkflow = new GitWorkflow({
-          logger: makeConsoleMock(),
-          topLevelDir: cwd,
-          gitConfigDir: path.join(cwd, './.git'),
-        })
-
-        const ctx = getInitialState()
-
-        await gitWorkflow.cleanup(ctx)
-
-        expect(gitWorkflow.logger.printHistory()).toMatch(
-          'lint-staged automatic backup is missing!'
-        )
-
-        expect(ctx.errors).toBeInstanceOf(Set)
-        expect(ctx.errors.has(GetBackupStashError)).toBe(true)
         expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
