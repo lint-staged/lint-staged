@@ -1,5 +1,31 @@
 # lint-staged
 
+## 17.4.0
+
+### Minor Changes
+
+- [#1836](https://github.com/lint-staged/lint-staged/pull/1836) [`90ec282`](https://github.com/lint-staged/lint-staged/commit/90ec28245085343f56661ebc004e7b89304762dd) - Added a new `defineConfig` helper for type-checking the _lint-staged_ configuration:
+
+  ```ts
+  // lint-staged.config.ts
+
+  import { defineConfig } from 'lint-staged/config'
+
+  export default defineConfig({
+    '*.js': ['prettier --check', 'eslint'],
+  })
+  ```
+
+- [#1832](https://github.com/lint-staged/lint-staged/pull/1832) [`510a27c`](https://github.com/lint-staged/lint-staged/commit/510a27cac303990d71755aec203caed605b53caa) - Added a new flag `--all` to make _lint-staged_ include all files tracked by Git, instead of only staged.
+
+  By default _lint-staged_ only runs tasks on files that include staged changes (hence the name). Use this flag to include all files tracked in Git version control (standard exclusions apply). Using this flag implies the `--no-stash` flag, disabling the automatic backup, and the `--allow-empty` flag so that _lint-staged_ doesn't fail when there are no changes after running. This makes it easier to run `npx lint-staged --all` on a clean state, for example in CI.
+
+### Patch Changes
+
+- [#1838](https://github.com/lint-staged/lint-staged/pull/1838) [`69bec99`](https://github.com/lint-staged/lint-staged/commit/69bec9930a73901bf908e3d0c0cdcafe5abf74b1) - The behavior of the automatic backup stash has been improved when running _lint-staged_ in multiple worktrees in parallel. You should still avoid running multiple instances of _lint-staged_ in parallel in the same tree, because some of the Git operations are locking and might lead to data loss.
+
+- [#1839](https://github.com/lint-staged/lint-staged/pull/1839) [`5e5bdd2`](https://github.com/lint-staged/lint-staged/commit/5e5bdd29645063300256109bbbceb9dabcb014e4) - Parsing of _lint-staged_ CLI flags and Node.js API options has been rewritten to avoid inconsistent behavior between the two.
+
 ## 17.3.0
 
 ### Minor Changes
