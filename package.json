@@ -51,9 +51,8 @@
     "lint": "oxfmt && oxlint",
     "test": "vitest",
     "typecheck": "tsc",
-    "version": "npx changeset version",
-    "postversion": "npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
-    "tag": "npx changeset tag"
+    "version": "changeset version && npm i --package-lock-only && git commit -am \"chore(changeset): release\"",
+    "tag": "changeset tag"
   },
   "dependencies": {
     "picomatch": "^4.0.7",

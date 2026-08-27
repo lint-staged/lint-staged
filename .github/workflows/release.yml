@@ -46,17 +46,14 @@ jobs:
 
       - name: Changesets
         id: changesets
-        uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # https://github.com/changesets/action/releases/tag/v1.7.0
+        uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # https://github.com/changesets/action/releases/tag/v2.1.1
         with:
-          title: '🦋 Changeset release'
-          version: npm run version
-          publish: npm run tag
-          setupGitUser: false
-          createGithubReleases: true
-          commitMode: github-api # Sign commits and tags
-          commit: 'chore(changeset): release'
+          commit-message: 'chore(changeset): release' # this is not used because of the custom version script
+          create-github-releases: true
+          publish-script: npm run tag
+          pr-title: '🦋 Changeset release'
+          version-script: npm run version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0' # disabled because pre-push hook checks for changesets which have now been removed
 
   Publish:
