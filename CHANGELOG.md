@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.4.1
+
+### Patch Changes
+
+- [#1840](https://github.com/lint-staged/lint-staged/pull/1840) [`efe5b63`](https://github.com/lint-staged/lint-staged/commit/efe5b63cc4961c80b6363fe40bac3c145e3ddbb2) - This is a version-bump-only release because the previous version `17.4.0` was not published to npmjs.com due to problems with GitHub Actions and Changesets.
+
 ## 17.4.0
 
 ### Minor Changes
