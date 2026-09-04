@@ -39,7 +39,7 @@ describe('getStagedFiles', () => {
     ])
 
     expect(execGit).toHaveBeenCalledExactlyOnceWith(
-      ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
+      ['diff', '--diff-filter=ACMR', '--staged', '--ita-visible-in-index', '--raw', '-z'],
       { cwd: '/' }
     )
   })
@@ -61,7 +61,7 @@ describe('getStagedFiles', () => {
     ])
 
     expect(execGit).toHaveBeenCalledExactlyOnceWith(
-      ['diff', '--diff-filter=ACMR', '--staged', '--raw', '-z'],
+      ['diff', '--diff-filter=ACMR', '--staged', '--ita-visible-in-index', '--raw', '-z'],
       { cwd: '/' }
     )
   })
@@ -122,7 +122,7 @@ describe('getStagedFiles', () => {
     ])
 
     expect(execGit).toHaveBeenCalledExactlyOnceWith(
-      ['diff', '--diff-filter=ACMR', 'main...my-branch', '--raw', '-z'],
+      ['diff', '--diff-filter=ACMR', 'main...my-branch', '--ita-visible-in-index', '--raw', '-z'],
       { cwd: '/' }
     )
   })
@@ -145,7 +145,7 @@ describe('getStagedFiles', () => {
     ])
 
     expect(execGit).toHaveBeenCalledExactlyOnceWith(
-      ['diff', '--diff-filter=ACMR', 'main', 'my-branch', '--raw', '-z'],
+      ['diff', '--diff-filter=ACMR', 'main', 'my-branch', '--ita-visible-in-index', '--raw', '-z'],
       { cwd: '/' }
     )
   })
@@ -168,7 +168,7 @@ describe('getStagedFiles', () => {
     ])
 
     expect(execGit).toHaveBeenCalledExactlyOnceWith(
-      ['diff', '--diff-filter=ACDMRTUXB', '--staged', '--raw', '-z'],
+      ['diff', '--diff-filter=ACDMRTUXB', '--staged', '--ita-visible-in-index', '--raw', '-z'],
       { cwd: '/' }
     )
   })
