@@ -5,7 +5,8 @@ import path from 'node:path'
 import makeConsoleMock from 'consolemock'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
-import { getStagedFiles, getAddedFilesWithoutIta } from '../../lib/getStagedFiles.js'
+import { getIntentToAddFiles } from '../../lib/getIntentToAddFiles.js'
+import { getStagedFiles } from '../../lib/getStagedFiles.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { parseOptions } from '../../lib/parseOptions.js'
 import { searchConfigs } from '../../lib/searchConfigs.js'
@@ -25,7 +26,10 @@ vi.mock('../../lib/execGit.js', () => ({
 
 vi.mock('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: vi.fn(async () => []),
-  getAddedFilesWithoutIta: vi.fn(async () => []),
+}))
+
+vi.mock('../../lib/getIntentToAddFiles.js', () => ({
+  getIntentToAddFiles: vi.fn(async () => []),
 }))
 
 const mockGitWorkflow = {
@@ -144,7 +148,6 @@ describe('runAll', () => {
     expect.assertions(2)
 
     vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'A' }])
-    vi.mocked(getAddedFilesWithoutIta).mockResolvedValueOnce(['sample.js'])
     vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.css': 'echo "sample"' },
     })
@@ -259,7 +262,6 @@ describe('runAll', () => {
       { filepath: 'lib/foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
-    vi.mocked(getAddedFilesWithoutIta).mockResolvedValue(['lib/foo.js', 'test/foo.js'])
 
     const mockTask = vi.fn(() => ['echo "sample"'])
 
@@ -286,7 +288,6 @@ describe('runAll', () => {
       { filepath: 'foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
-    vi.mocked(getAddedFilesWithoutIta).mockResolvedValue(['foo.js', 'test/foo.js'])
 
     vi.mocked(searchConfigs).mockResolvedValueOnce({})
 
@@ -371,7 +372,7 @@ describe('runAll', () => {
       { filepath: 'intent-to-add.js', status: 'A' },
       { filepath: 'modified.js', status: 'M' },
     ])
-    vi.mocked(getAddedFilesWithoutIta).mockResolvedValueOnce(['modified.js'])
+    vi.mocked(getIntentToAddFiles).mockResolvedValueOnce(['intent-to-add.js'])
 
     await expect(runAll(parseOptions({}))).rejects.toMatchObject(
       expect.objectContaining({
