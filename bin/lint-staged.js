@@ -3,12 +3,12 @@
 import { userInfo } from 'node:os'
 
 import { getVersionNumber, parseCliOptions, printHelpText } from '../lib/cli.js'
-import { enableColors } from '../lib/colors.js'
+import { enableColors, supportsColors } from '../lib/colors.js'
 import { createDebug, enableDebug } from '../lib/debug.js'
 import lintStaged from '../lib/index.js'
 import { readStdin } from '../lib/readStdin.js'
 
-enableColors(!!process.stdout.hasColors?.())
+enableColors(supportsColors())
 const debugLog = createDebug('lint-staged:bin')
 
 // SIGINT handled by an AbortController
