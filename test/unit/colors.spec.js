@@ -1,8 +1,41 @@
-import { describe, suite, test } from 'vitest'
+import { PassThrough } from 'node:stream'
 
-import { enableColors, green, red, dim, blue, bold, yellow } from '../../lib/colors.js'
+import { afterEach, describe, suite, test, vi } from 'vitest'
+
+import {
+  enableColors,
+  supportsColors,
+  green,
+  red,
+  dim,
+  blue,
+  bold,
+  yellow,
+} from '../../lib/colors.js'
 
 suite('colors', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  test('supports FORCE_COLOR without a TTY', ({ expect }) => {
+    const stream = new PassThrough()
+    Object.defineProperty(stream, 'isTTY', { value: false })
+
+    vi.stubEnv('NO_COLOR', undefined)
+    vi.stubEnv('FORCE_COLOR', '1')
+
+    expect(stream.isTTY).toBe(false)
+    expect(stream.hasColors).toBeUndefined()
+    expect(supportsColors(stream)).toBe(true)
+  })
+
+  test('supports NO_COLOR', ({ expect }) => {
+    vi.stubEnv('NO_COLOR', '1')
+
+    expect(supportsColors()).toBe(false)
+  })
+
   describe('color functions', async () => {
     enableColors(true)
 
