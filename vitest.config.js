@@ -46,6 +46,7 @@ export default defineConfig({
           typecheck: {
             enabled: true,
             include: ['test/types/index.(test|spec).ts'],
+            build: true,
           },
         },
       },
