@@ -5,9 +5,11 @@ import path from 'node:path'
 import makeConsoleMock from 'consolemock'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
+import { getStagedFiles, getAddedFilesWithoutIta } from '../../lib/getStagedFiles.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { parseOptions } from '../../lib/parseOptions.js'
-import { TaskError } from '../../lib/symbols.js'
+import { searchConfigs } from '../../lib/searchConfigs.js'
+import { IntentToAddError, TaskError } from '../../lib/symbols.js'
 
 vi.mock('tinyexec', () => ({
   exec: vi.fn().mockReturnValue({
@@ -23,6 +25,7 @@ vi.mock('../../lib/execGit.js', () => ({
 
 vi.mock('../../lib/getStagedFiles.js', () => ({
   getStagedFiles: vi.fn(async () => []),
+  getAddedFilesWithoutIta: vi.fn(async () => []),
 }))
 
 const mockGitWorkflow = {
@@ -56,9 +59,7 @@ vi.mock('../../lib/searchConfigs.js', () => ({
   searchConfigs: vi.fn(async () => ({})),
 }))
 
-const { getStagedFiles } = await import('../../lib/getStagedFiles.js')
 const { runAll } = await import('../../lib/runAll.js')
-const { searchConfigs } = await import('../../lib/searchConfigs.js')
 const { ConfigNotFoundError, GitError } = await import('../../lib/symbols.js')
 
 const configPath = '.lintstagedrc.json'
@@ -92,7 +93,7 @@ describe('runAll', () => {
 
   it('should throw when failed to find staged files', async ({ expect }) => {
     expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => null)
+    vi.mocked(getStagedFiles).mockResolvedValueOnce(null)
     await expect(runAll(parseOptions({ configObject: {}, configPath }))).rejects.toThrow(
       'lint-staged failed'
     )
@@ -100,7 +101,7 @@ describe('runAll', () => {
 
   it('should throw when failed to find staged files and quiet', async ({ expect }) => {
     expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => null)
+    vi.mocked(getStagedFiles).mockResolvedValueOnce(null)
     await expect(
       runAll(parseOptions({ configObject: {}, configPath, quiet: true }))
     ).rejects.toThrow('lint-staged failed')
@@ -142,8 +143,9 @@ describe('runAll', () => {
   }) => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'A' }])
+    vi.mocked(getAddedFilesWithoutIta).mockResolvedValueOnce(['sample.js'])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.css': 'echo "sample"' },
     })
 
@@ -155,8 +157,8 @@ describe('runAll', () => {
   it('should skip tasks if previous git error', async ({ expect }) => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
     })
 
@@ -174,8 +176,8 @@ describe('runAll', () => {
   }) => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
     })
 
@@ -193,8 +195,8 @@ describe('runAll', () => {
   }) => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
     })
 
@@ -212,8 +214,8 @@ describe('runAll', () => {
   }) => {
     expect.assertions(2)
 
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '': { '*.js': 'echo "sample"' },
     })
 
@@ -228,14 +230,14 @@ describe('runAll', () => {
   })
 
   it('should resolve matched files to default cwd with multiple configs', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [
-      { filepath: 'lib/foo.js', status: 'A' },
-      { filepath: 'test/foo.js', status: 'A' },
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([
+      { filepath: 'lib/foo.js', status: 'M' },
+      { filepath: 'test/foo.js', status: 'M' },
     ])
 
     const mockTask = vi.fn(() => ['echo "sample"'])
 
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       'lib/.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
     })
@@ -253,14 +255,15 @@ describe('runAll', () => {
   })
 
   it('should resolve matched files to explicit cwd with multiple configs', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([
       { filepath: 'lib/foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
+    vi.mocked(getAddedFilesWithoutIta).mockResolvedValue(['lib/foo.js', 'test/foo.js'])
 
     const mockTask = vi.fn(() => ['echo "sample"'])
 
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       'lib/.lintstagedrc.json': { '*.js': mockTask },
       'test/.lintstagedrc.json': { '*.js': mockTask },
     })
@@ -279,12 +282,13 @@ describe('runAll', () => {
   })
 
   it('should error when no configurations found', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([
       { filepath: 'foo.js', status: 'A' },
       { filepath: 'test/foo.js', status: 'A' },
     ])
+    vi.mocked(getAddedFilesWithoutIta).mockResolvedValue(['foo.js', 'test/foo.js'])
 
-    searchConfigs.mockResolvedValueOnce({})
+    vi.mocked(searchConfigs).mockResolvedValueOnce({})
 
     expect.assertions(1)
 
@@ -303,8 +307,8 @@ describe('runAll', () => {
   })
 
   it('should warn when "git add" was used in commands', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '.lintstagedrc.json': { '*.js': 'git add' },
     })
 
@@ -313,8 +317,8 @@ describe('runAll', () => {
   })
 
   it('should warn when "git add" was used in parallel commands', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '.lintstagedrc.json': { '*.js': ['prettier', ['eslint', 'git add']] },
     })
 
@@ -324,8 +328,8 @@ describe('runAll', () => {
   })
 
   it('should not warn about "git add" when --quiet was used', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockResolvedValueOnce({
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
       '.lintstagedrc.json': { '*.js': ['git add'] },
     })
     await runAll(parseOptions({ quiet: true }))
@@ -359,6 +363,24 @@ describe('runAll', () => {
     )
     expect(console.printHistory()).toMatch(
       'Skipping hiding unstaged changes from partially staged files because `--no-hide-partially-staged` was used.'
+    )
+  })
+
+  it('should throw when failed files added with --intent-to-add', async ({ expect }) => {
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([
+      { filepath: 'intent-to-add.js', status: 'A' },
+      { filepath: 'modified.js', status: 'M' },
+    ])
+    vi.mocked(getAddedFilesWithoutIta).mockResolvedValueOnce(['modified.js'])
+
+    await expect(runAll(parseOptions({}))).rejects.toMatchObject(
+      expect.objectContaining({
+        message: 'lint-staged failed',
+        cause: ['intent-to-add.js'],
+        ctx: expect.objectContaining({
+          errors: new Set([IntentToAddError]),
+        }),
+      })
     )
   })
 })
