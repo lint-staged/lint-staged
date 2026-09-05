@@ -1,5 +1,19 @@
 # lint-staged
 
+## 17.5.0
+
+### Minor Changes
+
+- [#1847](https://github.com/lint-staged/lint-staged/pull/1847) [`f9063b7`](https://github.com/lint-staged/lint-staged/commit/f9063b7d71857cb8893ee1bb5b63da05b2819b23) - _Lint-staged_ now refuses to run when files were staged with `--intent-to-add`, because Git stash doesn't support them. Previously this was an unhandled error.
+
+### Patch Changes
+
+- [#1848](https://github.com/lint-staged/lint-staged/pull/1848) [`d718ccc`](https://github.com/lint-staged/lint-staged/commit/d718ccc59cf73bf7d333135826270b5742fefec1) - _Lint-staged_ now handles color support better in non-TTY streams, and honors the `FORCE_COLOR` environment variable.
+
+- [#1845](https://github.com/lint-staged/lint-staged/pull/1845) [`7e5ece8`](https://github.com/lint-staged/lint-staged/commit/7e5ece8408097994bd1dfcfbf395aa9838782d19) - Update `tinyexec@1.3.1` so that local binaries from `node_modules/.bin` are resolved starting from the directory of each _lint-staged_ configuration file (in monorepo setups). This behavior was broken in `lint-staged@16.3.0` where they were only resolved from the current working directory and up.
+
+- [#1845](https://github.com/lint-staged/lint-staged/pull/1845) [`eb8a4e3`](https://github.com/lint-staged/lint-staged/commit/eb8a4e3ae1bbdf648b647ff3a17a6205870b27be) - Do not try to restore untracked files when using `--hide-all` and there is no initial commit yet.
+
 ## 17.4.1
 
 ### Patch Changes
