@@ -425,15 +425,23 @@ This will result in _lint-staged_ first running `eslint .` (matching _all_ files
 You can also configure _lint-staged_ to run a JavaScript/Node.js script directly, passing the list of staged files as an argument:
 
 ```js
-export default {
-  '*.js': {
-    title: 'Log staged JS files to console',
-    task: async (files) => {
-      console.log('Staged JS files:', files)
+import { defineConfig } from './lib/config.js'
+
+export default defineConfig({
+  '*': {
+    title: 'Fail if PDF files are committed',
+    task: async (filepaths, { log }) => {
+      const pdfFiles = filepaths.filter((f) => f.toLowerCase().endsWith('.pdf'))
+      if (pdfFiles.length > 0) {
+        log('PDF files should not be committed: %s', pdfFiles)
+        throw new Error('Failed')
+      }
     },
   },
-}
+})
 ```
+
+Use the `log()` function to emit output from the task. By default it will only be shown in the console when the task fails, unless the `--verbose` option is used. The `log()` uses [Node.js `util.format()`](https://nodejs.org/api/util.html#utilformatformat-args) and each call will be on its own line.
 
 ### Example: Export a function to build your own matchers
 
