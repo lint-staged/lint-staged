@@ -66,4 +66,4 @@ export type Configuration =
  *   "*.js": ["prettier --check", "eslint"]
  * })
  */
-export const defineConfig = (config: Configuration) => config
+export function defineConfig(config: Configuration): Configuration
