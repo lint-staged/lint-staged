@@ -1,5 +1,13 @@
 # lint-staged
 
+## 17.5.1
+
+### Patch Changes
+
+- [#1852](https://github.com/lint-staged/lint-staged/pull/1852) [`bfcca94`](https://github.com/lint-staged/lint-staged/commit/bfcca94e61aef7078a7a0ec8165c0cc2c9baca99) - Fix TypeScript issue `TS1254` from `defineConfig()` by changing the signature from `const` to a `function`:
+
+  > A 'const' initializer in an ambient context must be a string or numeric literal or literal enum reference.
+
 ## 17.5.0
 
 ### Minor Changes
