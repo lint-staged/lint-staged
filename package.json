@@ -44,8 +44,7 @@
   "types": "./lib/index.d.ts",
   "files": [
     "bin/",
-    "lib/",
-    "MIGRATION.md"
+    "lib/"
   ],
   "scripts": {
     "lint": "oxfmt && oxlint",
