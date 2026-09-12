@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
-import { describe, it, vi } from 'vitest'
+import { afterEach, describe, it, vi } from 'vitest'
 
 import { writeFile } from '../../lib/file.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
@@ -300,8 +300,118 @@ describe('gitWorkflow', () => {
   })
 
   describe('updateIndex', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs()
+    })
+
     it(
       "should not override GIT_INDEX_FILE value when it's the default value",
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
+        const gitIndexFile = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'index.lock',
+        ])
+
+        vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
+
+        await appendFile('test.txt', 'staged content\n')
+        await execGit(['add', 'test.txt'])
+        await appendFile('test.txt', 'task modification\n')
+
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const ctx = getInitialState()
+        const execGitSpy = vi.spyOn(gitWorkflow, 'execGit')
+
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors).toEqual(new Set())
+        expect(await execGit(['show', ':test.txt'])).toBe('staged content\ntask modification')
+        expect(execGitSpy).toHaveBeenCalledWith([
+          'add',
+          '--',
+          normalizePath(path.join(cwd, 'test.txt')),
+        ])
+        expect(execGitSpy).not.toHaveBeenCalledWith(
+          expect.arrayContaining(['add']),
+          expect.anything()
+        )
+      })
+    )
+
+    it(
+      "should override GIT_INDEX_FILE value when it's not the default value",
+      withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
+        const gitIndexFile = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'next-index-5207.lock',
+        ])
+
+        vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
+
+        await appendFile('test.txt', 'staged content\n')
+        await execGit(['add', 'test.txt'])
+        await appendFile('test.txt', 'task modification\n')
+
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const ctx = getInitialState()
+
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors).toEqual(new Set())
+        expect(await execGit(['show', ':test.txt'])).toBe('staged content\ntask modification')
+
+        const defaultIndexLock = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'index.lock',
+        ])
+        expect(
+          await execGit(['show', ':test.txt'], {
+            env: { GIT_INDEX_FILE: defaultIndexLock },
+          })
+        ).toBe('staged content\ntask modification')
+      })
+    )
+
+    it(
+      'should skip staging unchanged files when GIT_INDEX_FILE is unset',
+      withGitIntegration(async ({ cwd, execGit, expect }) => {
+        vi.stubEnv('GIT_INDEX_FILE', undefined)
+
+        await execGit(['read-tree', 'HEAD'])
+
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const ctx = getInitialState()
+        const execGitSpy = vi.spyOn(gitWorkflow, 'execGit')
+
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors).toEqual(new Set([ApplyEmptyCommitError]))
+        expect(execGitSpy).toHaveBeenCalledTimes(2)
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['add']))
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['rev-parse']))
+      })
+    )
+
+    it(
+      'should skip staging unchanged files when GIT_INDEX_FILE is the default lockfile',
       withGitIntegration(async ({ cwd, execGit, expect }) => {
         const gitIndexFile = await execGit([
           'rev-parse',
@@ -312,23 +422,27 @@ describe('gitWorkflow', () => {
 
         vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
+        await execGit(['read-tree', 'HEAD'])
+
         const gitWorkflow = new GitWorkflow({
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
         const ctx = getInitialState()
+        const execGitSpy = vi.spyOn(gitWorkflow, 'execGit')
 
         await gitWorkflow.updateIndex(ctx)
 
-        expect(ctx.errors.has(ApplyEmptyCommitError)).toBe(true)
-
-        vi.unstubAllEnvs()
+        expect(ctx.errors).toEqual(new Set([ApplyEmptyCommitError]))
+        expect(execGitSpy).toHaveBeenCalledTimes(2)
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['add']))
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['rev-parse']))
       })
     )
 
     it(
-      "should override GIT_INDEX_FILE value when it's not the default value",
+      'should skip staging unchanged files when GIT_INDEX_FILE is a non-default lockfile',
       withGitIntegration(async ({ cwd, execGit, expect }) => {
         const gitIndexFile = await execGit([
           'rev-parse',
@@ -339,18 +453,22 @@ describe('gitWorkflow', () => {
 
         vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
+        await execGit(['read-tree', 'HEAD'])
+
         const gitWorkflow = new GitWorkflow({
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
         const ctx = getInitialState()
+        const execGitSpy = vi.spyOn(gitWorkflow, 'execGit')
 
         await gitWorkflow.updateIndex(ctx)
 
-        expect(ctx.errors.has(ApplyEmptyCommitError)).toBe(true)
-
-        vi.unstubAllEnvs()
+        expect(ctx.errors).toEqual(new Set([ApplyEmptyCommitError]))
+        expect(execGitSpy).toHaveBeenCalledTimes(2)
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['add']))
+        expect(execGitSpy).not.toHaveBeenCalledWith(expect.arrayContaining(['rev-parse']))
       })
     )
 
