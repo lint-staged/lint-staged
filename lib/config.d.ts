@@ -35,6 +35,22 @@ type ParallelTasks = (SpawnedTask | GenerateTask)[]
  */
 type SequentialTasks = (SpawnedTask | GenerateTask | ParallelTasks)[]
 
+type TaskFunctionContext = {
+  /**
+   * Emit output from the task. All arguments of the call will be passed to Node.js `util.format()`.
+   * The output will only be shown on error, unless `--verbose` is used.
+   *
+   * @example log('Hello from task')
+   *
+   * @see https://nodejs.org/api/util.html#utilformatformat-args
+   *
+   * @param {any} format
+   * @param {any[]} param
+   * @returns {void}
+   */
+  log: (format, ...param) => void
+}
+
 /**
  * A single Node.js/JavaScript task that defines its title and the function which will be
  * run with the list of the matched staged files as its argument.
@@ -49,7 +65,7 @@ type SequentialTasks = (SpawnedTask | GenerateTask | ParallelTasks)[]
  */
 type TaskFunction = {
   title: string
-  task: (filepaths: readonly string[]) => void | Promise<void>
+  task: (filepaths: readonly string[], context: TaskFunctionContext) => void | Promise<void>
 }
 
 /** An entire `lint-staged` configuration, or a function that returns one */

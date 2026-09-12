@@ -38,9 +38,16 @@ test('lint-staged TypeScript types', () => {
       },
     },
 
-    '*.ext9': [['oxfmt', 'oxlint']],
+    '*.ext9': {
+      title: 'Async Function Task with output logger function',
+      task: async (files: readonly string[], { log }: { log: (...args: any[]) => void }) => {
+        log(files)
+      },
+    },
 
-    '*.ext10': ['oxfmt', ['oxlint', () => 'tsc']],
+    '*.ext10': [['oxfmt', 'oxlint']],
+
+    '*.ext11': ['oxfmt', ['oxlint', () => 'tsc']],
   }).toExtend<Configuration>()
 
   expectTypeOf((files: readonly string[]) => {
