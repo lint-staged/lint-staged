@@ -1,5 +1,38 @@
 # lint-staged
 
+## 17.6.0
+
+### Minor Changes
+
+- [#1850](https://github.com/lint-staged/lint-staged/pull/1850) [`938d3f4`](https://github.com/lint-staged/lint-staged/commit/938d3f43d07cbd74f08052dfb8a7380ce8868180) - Task functions like `{ title, task }` can now use a logger function `log()` to emit output while the task runs. By default, the output will only be visible if the tasks fails, unless the `--verbose` option was used. Additionally, when the task rejects, the error will be shown in the output.
+
+  ```js
+  import { defineConfig } from './lib/config.js'
+
+  export default defineConfig({
+    '*': {
+      title: 'Fail if PDF files are committed',
+      task: async (filepaths, { log }) => {
+        const pdfFiles = filepaths.filter((f) => f.toLowerCase().endsWith('.pdf'))
+        if (pdfFiles.length > 0) {
+          log('PDF files should not be committed: %s', pdfFiles)
+          throw new Error('Failed')
+        }
+      },
+    },
+  })
+  ```
+
+- [#1854](https://github.com/lint-staged/lint-staged/pull/1854) [`30562bc`](https://github.com/lint-staged/lint-staged/commit/30562bcbc5267bdb733c257c79c0a65c34465ba3) - As a new feature, **all tracked files that were modified by tasks are now staged** and added to the commit. Previously _lint-staged_ simply run `git add` for all originally staged files regardless if they were modified or not, but now `git add` is ran for tracked files that are different from before running the tasks. Note that this does not include possible new, untracked files that were created by tasks, because Git doesn't know about them.
+
+### Patch Changes
+
+- [#1860](https://github.com/lint-staged/lint-staged/pull/1860) [`4296532`](https://github.com/lint-staged/lint-staged/commit/4296532155fb893ab8f754a47f3518f691fd4d98) - The assigment of staged files to _lint-staged_ configuration files (when using multiple, for example in a monorepo) has been rewritten to be more efficient. As a reminder, each staged file is assigned to exactly one configuration (the closest one), even if that config doesn't match the file in its globs.
+
+- [#1859](https://github.com/lint-staged/lint-staged/pull/1859) [`f0ea69d`](https://github.com/lint-staged/lint-staged/commit/f0ea69dc67399e504a08db67594f697d4c24df6d) - Various performance improvements from skipping redundant internal Git calls.
+
+- [#1856](https://github.com/lint-staged/lint-staged/pull/1856) [`69d7d17`](https://github.com/lint-staged/lint-staged/commit/69d7d17ca6d3b10f2ececf8b2756c1927a627821) - Partially staged changes are hidden in a uniquely-named patch file to avoid multiple invocations of _lint-staged_ overwriting it.
+
 ## 17.5.1
 
 ### Patch Changes
