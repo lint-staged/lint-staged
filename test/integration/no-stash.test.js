@@ -148,9 +148,12 @@ describe('lint-staged', () => {
       )
       expect(error).toMatch('Failed to restore unstaged changes')
       expect(error).toMatch('Unstaged changes have been kept back in a patch file:')
-      expect(error).toMatch('lint-staged_unstaged.patch')
 
-      expect(await readFile('.git/lint-staged_unstaged.patch')).toMatch(`
+      // oxlint-disable-next-line e18e/prefer-static-regex
+      const patchPath = /WARN\s(.*unstaged\.patch$)/.exec(error)?.[1]
+      expect(patchPath).toBeTruthy()
+
+      expect(await readFile(patchPath)).toMatch(`
 -    'foo': 'bar'
 +    'foo': 'bar',
 +    'bar': 'baz'
