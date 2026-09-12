@@ -1,5 +1,3 @@
-test
-
 # 🚫💩 lint-staged
 
 Run tasks like formatters and linters against staged git files and don't let :poop: slip into your code base!
