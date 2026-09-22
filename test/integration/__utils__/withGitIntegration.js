@@ -188,6 +188,6 @@ export const withGitIntegration =
     try {
       await testFunction({ ...utils, expect, cwd })
     } finally {
-      await fs.rm(cwd, { force: true, recursive: true })
+      await fs.rm(cwd, { force: true, maxRetries: 2, recursive: true })
     }
   }
