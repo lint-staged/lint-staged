@@ -48,6 +48,16 @@ test('lint-staged TypeScript types', () => {
     '*.ext10': [['oxfmt', 'oxlint']],
 
     '*.ext11': ['oxfmt', ['oxlint', () => 'tsc']],
+
+    '*.ext12': () => ['before', ['oxfmt', 'oxlint'], 'after'],
+
+    '*.ext13': async () => ['before', ['oxfmt', 'oxlint'], 'after'],
+
+    '*.ext14': ['before', () => ['oxfmt', 'oxlint'], 'after'],
+
+    '*.ext15': ['before', async () => ['oxfmt', 'oxlint'], 'after'],
+
+    '*.ext16': [['oxfmt', async () => 'oxlint']],
   }).toExtend<Configuration>()
 
   expectTypeOf((files: readonly string[]) => {
@@ -67,4 +77,13 @@ test('lint-staged TypeScript types', () => {
   }).toExtend<Configuration>()
 
   expectTypeOf(defineConfig).parameter(0).toEqualTypeOf<Configuration>()
+
+  expectTypeOf(() => ['before', ['oxfmt', 'oxlint'], 'after']).toExtend<Configuration>()
+  expectTypeOf(async () => [['oxfmt', 'oxlint']]).toExtend<Configuration>()
+
+  expectTypeOf({ '*': ['before', () => [['oxfmt', 'oxlint']]] }).not.toExtend<Configuration>()
+  expectTypeOf({ '*': [['oxfmt', () => ['oxlint']]] }).not.toExtend<Configuration>()
+  expectTypeOf({ '*': () => [[['oxfmt']]] }).not.toExtend<Configuration>()
+  expectTypeOf({ '*': () => ['oxfmt', false] }).not.toExtend<Configuration>()
+  expectTypeOf({ '*': () => () => 'oxfmt' }).not.toExtend<Configuration>()
 })

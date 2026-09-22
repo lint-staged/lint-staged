@@ -2,7 +2,8 @@ import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
 import { getAbortController } from '../../lib/getAbortController.js'
-const { getSpawnedTasks, getMaxArgLength } = await import('../../lib/getSpawnedTasks.js')
+import { runParallelTasks } from '../../lib/runParallelTasks.js'
+const { getSpawnedTasks } = await import('../../lib/getSpawnedTasks.js')
 
 vi.mock('tinyexec', () => ({
   exec: vi.fn().mockReturnValue({
@@ -131,12 +132,14 @@ describe('getSpawnedTasks', () => {
         { filepath: 'test3.js', status: 'R' },
       ],
     })
-    expect(res).toHaveLength(5)
+    expect(res).toHaveLength(3)
     expect(res[0].title).toBe('test')
     expect(res[1].title).toBe('test2')
-    expect(res[2].title).toBe('test test.js')
-    expect(res[3].title).toBe('test test2.js')
-    expect(res[4].title).toBe('test test3.js')
+    expect(res[2].map((task) => task.title)).toEqual([
+      'test test.js',
+      'test test2.js',
+      'test test3.js',
+    ])
   })
 
   it('should work with nested arrays for parallel tasks', async ({ expect }) => {
@@ -168,7 +171,7 @@ describe('getSpawnedTasks', () => {
     expect(res[0].title).toEqual('test')
   })
 
-  it("should throw when function task doesn't return string | string[]", async ({ expect }) => {
+  it('should throw when a function returns invalid commands', async ({ expect }) => {
     await expect(
       getSpawnedTasks({
         abortController,
@@ -180,8 +183,62 @@ describe('getSpawnedTasks', () => {
 
   Invalid value for '[Function]': null
 
-  Function task should return a string or an array of strings`)
+  Commands must be strings, with at most one nested array inside the sequential task list. Function results must preserve this nesting limit.`)
   })
+
+  it.for([
+    ['one', () => ['two_1', 'two_2'], 'three'],
+    () => ['one', ['two_1', 'two_2'], 'three'],
+    ['one', async () => ['two_1', 'two_2'], 'three'],
+    async () => ['one', ['two_1', 'two_2'], 'three'],
+  ])(
+    'runs generated parallel groups between sequential tasks: %j',
+    async (commands, { expect }) => {
+      const started = []
+      const bothStarted = Promise.withResolvers()
+      const finishParallel = Promise.withResolvers()
+      const controller = getAbortController()
+      const task = await getSpawnedTasks({
+        abortController: controller,
+        commands,
+        topLevelDir,
+        files: [{ filepath: 'test.js', status: 'M' }],
+      })
+
+      await vi.mocked(exec).withImplementation(
+        (command) => ({
+          async *[Symbol.asyncIterator]() {
+            started.push(command)
+            if (command.startsWith('two_')) {
+              if (started.includes('two_1') && started.includes('two_2')) bothStarted.resolve()
+              await finishParallel.promise
+            }
+            yield ''
+          },
+        }),
+        async () => {
+          const execution = runParallelTasks(
+            {},
+            [{ skip: () => false, task: [{ skip: () => false, task }] }],
+            { abortController: controller, concurrent: false }
+          )
+
+          await bothStarted.promise
+          expect(started).toEqual(['one', 'two_1', 'two_2'])
+          finishParallel.resolve()
+          await execution
+          expect(started).toEqual(['one', 'two_1', 'two_2', 'three'])
+          expect(exec).toHaveBeenCalledWith('two_1', [], expect.any(Object))
+          expect(exec).toHaveBeenCalledWith('two_2', [], expect.any(Object))
+          expect(exec).toHaveBeenCalledWith(
+            'one',
+            typeof commands === 'function' ? [] : ['test.js'],
+            expect.any(Object)
+          )
+        }
+      )
+    }
+  )
 
   it('should prevent function from mutating original file list', async ({ expect }) => {
     const files = ['test.js']
@@ -203,16 +260,5 @@ describe('getSpawnedTasks', () => {
 
     /** ...but the original file list was not mutated */
     expect(files).toEqual(['test.js'])
-  })
-})
-
-describe('getMaxArgLength', () => {
-  it.for([
-    ['darwin', 262_144],
-    ['win32', 8_191],
-    ['linux', 131_072],
-    ['foobar', 131_072],
-  ])('should return $2 for $1', ([platform, expected], { expect }) => {
-    expect(getMaxArgLength(platform)).toEqual(expected)
   })
 })
