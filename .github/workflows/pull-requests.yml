@@ -18,14 +18,14 @@ jobs:
     if: github.event_name == 'pull_request' && !startsWith(github.event.pull_request.title, '🦋 Changeset release')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -36,14 +36,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -54,14 +54,14 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -72,12 +72,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -90,12 +90,12 @@ jobs:
     needs: npm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -122,12 +122,12 @@ jobs:
     steps:
       - if: matrix.os == 'windows-latest'
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -153,19 +153,19 @@ jobs:
     name: Deno (latest) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
           key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json') }}
       - if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
-      - uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # https://github.com/denoland/setup-deno/releases/tag/v2.0.4
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # https://github.com/denoland/setup-deno/releases/tag/v2.0.5
         with:
           deno-version: latest
       - run: node --version
@@ -187,7 +187,7 @@ jobs:
     name: Bun (latest) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # https://github.com/oven-sh/setup-bun/releases/tag/v2.2.0
         with:
           bun-version: latest
@@ -214,19 +214,19 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: msys2/setup-msys2@e9898307ac31d1a803454791be09ab9973336e1c # https://github.com/msys2/setup-msys2/releases/tag/v2.31.1
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # https://github.com/msys2/setup-msys2/releases/tag/v2.32.0
         with:
           msystem: UCRT64
           path-type: inherit
           install: >-
             git
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
@@ -258,12 +258,12 @@ jobs:
           site: |
             https://mirrors.kernel.org/sourceware/cygwin/
       - run: git config --global core.autocrlf true
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # https://github.com/actions/checkout/releases/tag/v6.0.2
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # https://github.com/actions/setup-node/releases/tag/v6.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # https://github.com/actions/checkout/releases/tag/v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # https://github.com/actions/setup-node/releases/tag/v7.0.0
         with:
           node-version: ${{ matrix.node }}
           package-manager-cache: false
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # https://github.com/actions/cache/releases/tag/v5.0.5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # https://github.com/actions/cache/releases/tag/v5.1.0
         id: cache-node_modules
         with:
           path: node_modules
