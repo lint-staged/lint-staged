@@ -15,12 +15,12 @@ describe('getSpawnedTask', () => {
       getSpawnedTask({
         abortController,
         command: 'node -e "setTimeout(() => void 0, 10000)"',
-        isFn: true,
+        files: [],
       })(context),
       getSpawnedTask({
         abortController,
         command: 'node -e "process.exit(1)"',
-        isFn: true,
+        files: [],
       })(context),
     ])
 
@@ -51,7 +51,7 @@ describe('getSpawnedTask', () => {
     const taskPromise = getSpawnedTask({
       abortController,
       command: 'node -e "setTimeout(() => void 0, 10000)"',
-      isFn: true,
+      files: [],
     })(context)
 
     abortController.abort('SIGINT')

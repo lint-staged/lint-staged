@@ -5,35 +5,42 @@
  */
 type SpawnedTask = string
 
-type SyncGenerateTask = (files: readonly string[]) => string | string[]
+type SyncGenerateTask<Result> = (files: readonly string[]) => Result
 
-type AsyncGenerateTask = (files: readonly string[]) => Promise<string | string[]>
+type AsyncGenerateTask<Result> = (files: readonly string[]) => Promise<Result>
 
 /**
  * A function that returns one or more tasks that will be spawned and run sequentially, in order.
- * The function receives list of the matched staged files as its argument. Can be sync or async.
+ * Tasks can be nested in one extra level of array to run them in parallel.
+ * The function receives list of the matched staged files as its argument and should return the
+ * complete command to be run, including passing filenames. Can be sync or async.
  *
  * @example <caption>Return a command after manipulating list of staged files</caption>
  * (files: string) => `eslint --fix ${files.map((f) => `'${f}'`).join(' ')}`
  *
  * @example <caption>Ignore staged files and run "tsc" and "vitest" without any arguments</caption>
  * () => ['tsc', 'vitest']
+ *
+ * @example <caption>Run "tsc" and "vitest" concurrently</caption>
+ * () => [['tsc', 'vitest']]
  */
-type GenerateTask = SyncGenerateTask | AsyncGenerateTask
+type GenerateTask<Result = string | (string | string[])[]> =
+  | SyncGenerateTask<Result>
+  | AsyncGenerateTask<Result>
 
 /**
  * List of tasks that will be run in parallel
  *
  * @example ["prettier --write", "eslint --fix"]
  */
-type ParallelTasks = (SpawnedTask | GenerateTask)[]
+type ParallelTasks = (SpawnedTask | GenerateTask<string>)[]
 
 /**
  * List of tasks that will be run sequentially, in order
  *
  * @example ["prettier --write", "eslint --fix"]
  */
-type SequentialTasks = (SpawnedTask | GenerateTask | ParallelTasks)[]
+type SequentialTasks = (SpawnedTask | GenerateTask<string | string[]> | ParallelTasks)[]
 
 type TaskFunctionContext = {
   /**

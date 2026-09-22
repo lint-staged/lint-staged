@@ -49,11 +49,11 @@ describe('getSpawnedTask', () => {
     })
   })
 
-  it('should not append pathsToLint when isFn', async ({ expect }) => {
+  it('should not append filenames when the prepared file list is empty', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
       ...defaultOpts,
-      isFn: true,
+      files: [],
       command: 'node --arg=true ./myscript.js test.js',
     })
 
