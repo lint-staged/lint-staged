@@ -425,7 +425,7 @@ This will result in _lint-staged_ first running `eslint .` (matching _all_ files
 You can also configure _lint-staged_ to run a JavaScript/Node.js script directly, passing the list of staged files as an argument:
 
 ```js
-import { defineConfig } from './lib/config.js'
+import { defineConfig } from 'lint-staged/config'
 
 export default defineConfig({
   '*': {
