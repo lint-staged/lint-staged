@@ -50,12 +50,8 @@ type TaskFunctionContext = {
    * @example log('Hello from task')
    *
    * @see https://nodejs.org/api/util.html#utilformatformat-args
-   *
-   * @param {any} format
-   * @param {any[]} param
-   * @returns {void}
    */
-  log: (format, ...param) => void
+  log: (format: any, ...param: any[]) => void
 }
 
 /**
