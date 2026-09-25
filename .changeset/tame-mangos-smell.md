@@ -2,4 +2,6 @@
 'lint-staged': minor
 ---
 
-As a new feature, **all tracked files that were modified by tasks are now staged** and added to the commit. Previously _lint-staged_ simply ran `git add` for all originally staged files that were matched by the configured globs regardless if they were modified or not, but now `git add` is run for all tracked files that are different from before running the tasks. Pre-existing unstaged edits in files modified by tasks may also be staged. Use `--hide-unstaged` to hide those edits while tasks run.
+_lint-staged_ now stages changes to **all tracked files modified by tasks**, including files that weren’t originally staged or didn’t match the configured globs. This can happen when your task has side-effects, or it's a function that ignores the staged files like `() => "prettier --write ."`.
+
+If you have unstaged changes in a file and the task also edits that file, your unstaged changes will be staged too. Use `--hide-unstaged` to hide your changes while tasks run.
