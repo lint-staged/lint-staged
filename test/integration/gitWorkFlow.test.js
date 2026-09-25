@@ -1,14 +1,16 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
 import { afterEach, describe, it, vi } from 'vitest'
 
-import { writeFile } from '../../lib/file.js'
+import { writeFile as mockedWriteFile } from '../../lib/file.js'
 import { GitWorkflow } from '../../lib/gitWorkflow.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { getInitialState } from '../../lib/state.js'
 import {
   ApplyEmptyCommitError,
+  FailOnChangesError,
   GitError,
   HideUnstagedChangesError,
   RestoreMergeStatusError,
@@ -304,6 +306,95 @@ describe('gitWorkflow', () => {
       vi.unstubAllEnvs()
     })
 
+    describe('unstaged type changes', () => {
+      const typeChangedFile = 'a café.txt'
+
+      for (const quotePath of [true, false]) {
+        for (const { title, modifiedFile, failOnChanges } of [
+          {
+            title: 'stages edits to a file with an existing unstaged type change',
+            modifiedFile: typeChangedFile,
+            failOnChanges: false,
+          },
+          {
+            title: 'stages edits to a file following an unstaged type change',
+            modifiedFile: 'c.txt',
+            failOnChanges: false,
+          },
+          {
+            title: 'fails on edits to a file with an existing unstaged type change',
+            modifiedFile: typeChangedFile,
+            failOnChanges: true,
+          },
+          {
+            title: 'ignores unchanged unstaged type changes',
+            modifiedFile: undefined,
+            failOnChanges: true,
+          },
+        ]) {
+          it(
+            `${title} (core.quotePath=${quotePath})`,
+            withGitIntegration(async ({ cwd, execGit, expect, removeFile, writeFile }) => {
+              await execGit(['config', 'core.quotePath', String(quotePath)])
+              await fs.symlink('README.md', path.join(cwd, typeChangedFile))
+              await writeFile('b.txt', 'original content\n')
+              await writeFile('c.txt', 'original content\n')
+              await execGit(['add', '--', typeChangedFile, 'b.txt', 'c.txt'])
+              await execGit(['commit', '-m', 'commit symlink and regular files'])
+
+              // The type change must exist before the task snapshot is captured.
+              await removeFile(typeChangedFile)
+              await writeFile(typeChangedFile, 'replacement content\n')
+
+              // Keep the fail-on-changes case isolated to detect a missed addition block.
+              const unstagedFiles = [typeChangedFile]
+              if (!failOnChanges) {
+                await writeFile('b.txt', 'unstaged content\n')
+                await writeFile('c.txt', 'unstaged content\n')
+                unstagedFiles.push('b.txt', 'c.txt')
+              }
+
+              const gitWorkflow = new GitWorkflow({
+                allowEmpty: true,
+                logger: makeConsoleMock(),
+                topLevelDir: cwd,
+                gitConfigDir: path.join(cwd, './.git'),
+              })
+              const ctx = getInitialState({ failOnChanges })
+
+              await gitWorkflow.runTasks(ctx, [], {
+                abortController: new AbortController(),
+              })
+
+              if (modifiedFile) {
+                await writeFile(modifiedFile, 'task modification\n')
+              }
+
+              await gitWorkflow.updateIndex(ctx)
+
+              expect(ctx.errors).toEqual(
+                new Set(failOnChanges && modifiedFile ? [FailOnChangesError] : [])
+              )
+
+              for (const file of [typeChangedFile, 'b.txt', 'c.txt']) {
+                const originalContent = file === typeChangedFile ? 'README.md' : 'original content'
+                expect(await execGit(['show', `:${file}`])).toBe(
+                  file === modifiedFile && !failOnChanges ? 'task modification' : originalContent
+                )
+              }
+
+              const remainingFiles = unstagedFiles.filter(
+                (file) => failOnChanges || file !== modifiedFile
+              )
+              expect(await execGit(['diff', '--name-only', '-z'])).toBe(
+                remainingFiles.map((file) => `${file}\u0000`).join('')
+              )
+            })
+          )
+        }
+      }
+    })
+
     it(
       "should not override GIT_INDEX_FILE value when it's the default value",
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
@@ -504,7 +595,7 @@ describe('gitWorkflow', () => {
         })
 
         gitWorkflow.mergeHeadBuffer = true
-        writeFile.mockImplementation(() => Promise.reject('test'))
+        vi.mocked(mockedWriteFile).mockImplementation(() => Promise.reject('test'))
         const ctx = getInitialState()
         await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrow()
 

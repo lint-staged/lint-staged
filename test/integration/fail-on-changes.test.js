@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import { describe, test } from 'vitest'
 
 import * as configFixtures from './__fixtures__/configs.js'
@@ -31,6 +34,42 @@ describe('lint-staged', () => {
       // Changes weren't reverted because "--no-revert" is implied
       expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
     })
+  )
+
+  test(
+    'should fail when a task edits an unstaged symlink replacement and --fail-on-changes is used',
+    withGitIntegration(
+      async ({ cwd, execGit, expect, gitCommit, readFile, removeFile, writeFile }) => {
+        await execGit(['config', '--local', 'core.symlinks', 'true'])
+
+        await writeFile('target.js', fileFixtures.prettyJS)
+        await fs.symlink('target.js', path.join(cwd, 'test.js'))
+        await execGit(['add', 'target.js', 'test.js'])
+        await execGit(['commit', '-m', 'commit symlink'])
+
+        // Leave the type change unstaged so it is present in the snapshot before tasks.
+        await removeFile('test.js')
+        await writeFile('test.js', fileFixtures.uglyJS)
+
+        // Stage only the config; the task explicitly formats all files.
+        await writeFile('lint-staged.config.mjs', 'export default () => "oxfmt --write test.js"')
+        await execGit(['add', 'lint-staged.config.mjs'])
+        expect(await execGit(['diff', '--name-only'])).toEqual('test.js')
+        expect(await execGit(['diff', '--cached', '--name-only'])).toEqual('lint-staged.config.mjs')
+
+        await expect(
+          gitCommit({
+            lintStaged: {
+              failOnChanges: true,
+            },
+          })
+        ).rejects.toThrow('lint-staged failed because `--fail-on-changes` was used')
+
+        expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS)
+        expect(await execGit(['show', ':test.js'])).toEqual('target.js')
+        expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
+      }
+    )
   )
 
   test(
