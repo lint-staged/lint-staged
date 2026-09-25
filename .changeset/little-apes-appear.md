@@ -2,7 +2,7 @@
 'lint-staged': minor
 ---
 
-Task functions like `{ title, task }` can now use a logger function `log()` to emit output while the task runs. By default, the output will only be visible if the tasks fails, unless the `--verbose` option was used. Additionally, when the task rejects, the error will be shown in the output.
+Task functions like `{ title, task }` can now use a logger function `log()` to emit output while the task runs. By default, the output will only be visible if the task fails, unless the `--verbose` option was used. Additionally, when the task rejects, the error will be shown in the output.
 
 ```js
 import { defineConfig } from 'lint-staged/config'
