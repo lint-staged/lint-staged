@@ -207,7 +207,7 @@ jobs:
           - '22.22.1' # lowest supported version
           - '22.x'
           - '24.x'
-          - '25.x'
+          - '26.x'
     name: Node.js ${{ matrix.node }} on windows-latest (MSYS2)
     runs-on: windows-latest
     defaults:
@@ -249,7 +249,7 @@ jobs:
           - '22.22.1' # lowest supported version
           - '22.x'
           - '24.x'
-          - '25.x'
+          - '26.x'
     name: Node.js ${{ matrix.node }} on windows-latest (Cygwin)
     runs-on: windows-latest
     steps:
