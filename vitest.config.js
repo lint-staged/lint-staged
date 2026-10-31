@@ -44,9 +44,9 @@ export default defineConfig({
           include: ['test/types/index.(test|spec).ts'],
           testTimeout: 5_000,
           typecheck: {
+            checker: 'tsc',
             enabled: true,
             include: ['test/types/index.(test|spec).ts'],
-            build: true,
           },
         },
       },

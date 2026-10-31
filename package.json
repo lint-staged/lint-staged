@@ -67,6 +67,7 @@
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@e18e/eslint-plugin": "0.8.1",
+    "@types/node": "26.6.6",
     "@vitest/coverage-istanbul": "5.0.5",
     "consolemock": "1.1.0",
     "cross-env": "10.1.0",
@@ -75,6 +76,7 @@
     "oxfmt": "0.75.0",
     "oxlint": "1.90.0",
     "semver": "7.8.5",
+    "typescript": "7.0.2",
     "vitest": "5.0.5"
   },
   "keywords": [
