@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.6.1
+
+### Patch Changes
+
+- [#1869](https://github.com/lint-staged/lint-staged/pull/1869) [`18bc32f`](https://github.com/lint-staged/lint-staged/commit/18bc32fc937c5230190644eb3497ad0e2158e00f) - The warning about the temporary patch file containing hidden partially-staged changes is only displayed when restoring the changes failed.
+
 ## 17.6.0
 
 ### Minor Changes
