@@ -166,19 +166,24 @@ describe('lint-staged', () => {
       await execGit(['add', 'test.js'])
 
       // Run lint-staged with action that does horrible things to the file, causing a merge conflict
-      await expect(
-        gitCommit({
-          lintStaged: {
-            config: {
-              '*.js': async () => {
-                const testFile = path.join(cwd, 'test.js')
-                fs.writeFileSync(testFile, Buffer.from(fileFixtures.invalidJS, 'binary'))
-                return `oxfmt --write ${testFile}`
-              },
+      const result = gitCommit({
+        lintStaged: {
+          config: {
+            '*.js': async () => {
+              const testFile = path.join(cwd, 'test.js')
+              fs.writeFileSync(testFile, Buffer.from(fileFixtures.invalidJS, 'binary'))
+              return `oxfmt --write ${testFile}`
             },
           },
-        })
-      ).rejects.toThrow('Failed to restore unstaged changes!')
+        },
+      })
+      await expect(result).rejects.toThrow('Failed to restore unstaged changes!')
+      await expect(result).rejects.toThrow('Done reverting to original state!')
+
+      // Succesfully reverted to original state, so no need to warn about patch file
+      await expect(result).rejects.not.toThrow(
+        'Unstaged changes have been kept back in a patch file:'
+      )
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
