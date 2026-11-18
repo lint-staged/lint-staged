@@ -73,6 +73,35 @@ describe('lint-staged', () => {
   )
 
   test(
+    'should not fail with --fail-on-changes when a task modifies only a file outside the commit pathspec',
+    withGitIntegration(
+      async ({ appendFile, execGit, expect, readFile, setupPreCommitHook, writeFile }) => {
+        await writeFile('test.js', fileFixtures.prettyJS)
+        await writeFile('other.js', fileFixtures.uglyJS)
+        await writeFile(
+          'lint-staged.config.mjs',
+          'export default () => "oxfmt --write test.js other.js"'
+        )
+        await execGit(['add', '.'])
+        await execGit(['commit', '-m', 'commit fixtures'])
+        await setupPreCommitHook()
+        await appendFile('.husky/pre-commit', ' --fail-on-changes')
+
+        // Both files are formatted, but only other.js needs edits.
+        await writeFile('test.js', fileFixtures.prettyJSWithChanges)
+        await execGit(['commit', '-m', 'commit only test.js', '--', 'test.js'])
+
+        expect(await execGit(['show', 'HEAD:test.js'])).toBe(
+          fileFixtures.prettyJSWithChanges.trim()
+        )
+        expect(await execGit(['show', 'HEAD:other.js'])).toBe(fileFixtures.uglyJS.trim())
+        expect(await execGit(['diff', '--cached', '--name-only'])).toBe('')
+        expect(await readFile('other.js')).toBe(fileFixtures.prettyJS)
+      }
+    )
+  )
+
+  test(
     'should not fail when --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
