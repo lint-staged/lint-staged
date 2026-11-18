@@ -32,6 +32,29 @@ describe('lint-staged', () => {
   )
 
   test(
+    'leaves task edits outside the commit pathspec unstaged',
+    withGitIntegration(async ({ execGit, expect, readFile, setupPreCommitHook, writeFile }) => {
+      await writeFile('test.js', fileFixtures.prettyJS)
+      await writeFile('other.js', fileFixtures.uglyJS)
+      await writeFile(
+        'lint-staged.config.mjs',
+        'export default () => "oxfmt --write test.js other.js"'
+      )
+      await execGit(['add', '.'])
+      await execGit(['commit', '-m', 'commit fixtures'])
+      await setupPreCommitHook()
+
+      await writeFile('test.js', fileFixtures.uglyJSWithChanges)
+      await execGit(['commit', '-m', 'commit only test.js', '--', 'test.js'])
+
+      expect(await execGit(['show', 'HEAD:test.js'])).toBe(fileFixtures.prettyJSWithChanges.trim())
+      expect(await execGit(['show', 'HEAD:other.js'])).toBe(fileFixtures.uglyJS.trim())
+      expect(await execGit(['diff', '--cached', '--name-only'])).toBe('')
+      expect(await readFile('other.js')).toBe(fileFixtures.prettyJS)
+    })
+  )
+
+  test(
     'keeps unrelated changes unstaged when their patch is no longer last in the diff',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
