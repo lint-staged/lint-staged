@@ -23,6 +23,11 @@ export default defineConfig({
     env: {
       NO_COLOR: '1',
     },
+    /**
+     * @todo Bun doesn't support channel.unref()
+     * @see {@link https://github.com/oven-sh/bun/issues/33593}
+     * */
+    pool: process.versions.bun ? 'threads' : 'forks',
     projects: [
       {
         test: {
