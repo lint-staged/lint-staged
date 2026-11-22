@@ -68,16 +68,16 @@
     "@commitlint/config-conventional": "21.2.4",
     "@e18e/eslint-plugin": "0.8.1",
     "@types/node": "26.6.6",
-    "@vitest/coverage-istanbul": "5.1.0",
+    "@vitest/coverage-istanbul": "5.1.1",
     "consolemock": "1.1.0",
     "cross-env": "10.1.0",
     "husky": "9.1.7",
     "mock-stdin": "1.0.0",
-    "oxfmt": "0.78.0",
-    "oxlint": "1.93.0",
+    "oxfmt": "0.79.0",
+    "oxlint": "1.94.0",
     "semver": "7.8.6",
     "typescript": "7.0.2",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "keywords": [
     "check",

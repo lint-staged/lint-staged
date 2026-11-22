@@ -436,7 +436,7 @@ describe('gitWorkflow', () => {
     )
 
     it(
-      "should override GIT_INDEX_FILE value when it's not the default value",
+      'should stage only matched files in both indexes when using a non-default lockfile',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitIndexFile = await execGit([
           'rev-parse',
@@ -444,14 +444,25 @@ describe('gitWorkflow', () => {
           '--git-path',
           'next-index-5207.lock',
         ])
-
+        const defaultIndexLock = await execGit([
+          'rev-parse',
+          '--path-format=absolute',
+          '--git-path',
+          'index.lock',
+        ])
+        const activeIndex = { env: { GIT_INDEX_FILE: gitIndexFile } }
+        const defaultIndex = { env: { GIT_INDEX_FILE: defaultIndexLock } }
+        await execGit(['read-tree', 'HEAD'], activeIndex)
+        await execGit(['read-tree', 'HEAD'], defaultIndex)
         vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
         await appendFile('test.txt', 'staged content\n')
         await execGit(['add', 'test.txt'])
         await appendFile('test.txt', 'task modification\n')
+        await appendFile('README.md', 'unrelated task modification\n')
 
         const gitWorkflow = new GitWorkflow({
+          matchedFiles: new Set([normalizePath(path.join(cwd, 'test.txt'))]),
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
@@ -461,19 +472,15 @@ describe('gitWorkflow', () => {
         await gitWorkflow.updateIndex(ctx)
 
         expect(ctx.errors).toEqual(new Set())
-        expect(await execGit(['show', ':test.txt'])).toBe('staged content\ntask modification')
+        expect(await execGit(['show', ':test.txt'], activeIndex)).toBe(
+          'staged content\ntask modification'
+        )
+        expect(await execGit(['show', ':README.md'], activeIndex)).toBe('# Test')
 
-        const defaultIndexLock = await execGit([
-          'rev-parse',
-          '--path-format=absolute',
-          '--git-path',
-          'index.lock',
-        ])
-        expect(
-          await execGit(['show', ':test.txt'], {
-            env: { GIT_INDEX_FILE: defaultIndexLock },
-          })
-        ).toBe('staged content\ntask modification')
+        expect(await execGit(['show', ':test.txt'], defaultIndex)).toBe(
+          'staged content\ntask modification'
+        )
+        expect(await execGit(['show', ':README.md'], defaultIndex)).toBe('# Test')
       })
     )
 
