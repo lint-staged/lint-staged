@@ -1,5 +1,13 @@
 # lint-staged
 
+## 17.6.2
+
+### Patch Changes
+
+- [#1871](https://github.com/lint-staged/lint-staged/pull/1871) [`9663745`](https://github.com/lint-staged/lint-staged/commit/966374557564190a60b23d38fb50079c27c98581) - Version `v17.6.0` introduced automatic staging of all tracked files edited by tasks, even if the files were not originally staged. This version adjusts the behavior so that when using a pathspec like `git commit file.js` (implying `--only`), the staging is limited to those files. The default behavior when running `git commit` is unchanged.
+
+- [#1871](https://github.com/lint-staged/lint-staged/pull/1871) [`7a96baf`](https://github.com/lint-staged/lint-staged/commit/7a96baff2d67b8a9a24e41cf4051d46f8e302058) - Similar to the above, when using `--fail-on-changes` and a pathspec like `git commit file.js` (implying `--only`), the commit will fail only if those files were changed. The default behavior when running `git commit` is unchanged, and the commit will fail on any changes to tracked files.
+
 ## 17.6.1
 
 ### Patch Changes
