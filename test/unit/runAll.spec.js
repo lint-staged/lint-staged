@@ -34,7 +34,7 @@ vi.mock('../../lib/getIntentToAddFiles.js', () => ({
 
 const mockGitWorkflow = {
   cleanup: vi.fn(() => Promise.resolve()),
-  hideUnstagedChanges: vi.fn(() => Promise.resolve()),
+  hidePartiallyStagedChanges: vi.fn(() => Promise.resolve()),
   logger: makeConsoleMock(),
   prepare: vi.fn(() => Promise.resolve()),
   restoreOriginalState: vi.fn(() => Promise.resolve()),
@@ -172,6 +172,23 @@ describe('runAll', () => {
     await expect(runAll(parseOptions({}))).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped running tasks')
+  })
+
+  it('should not hide partially staged changes when prepare fails', async ({ expect }) => {
+    expect.assertions(2)
+
+    vi.mocked(getStagedFiles).mockResolvedValueOnce([{ filepath: 'sample.js', status: 'M' }])
+    vi.mocked(searchConfigs).mockResolvedValueOnce({
+      '': { '*.js': 'echo "sample"' },
+    })
+
+    mockGitWorkflow.prepare.mockImplementationOnce((ctx) => {
+      ctx.hasFilesToHide = true
+      ctx.errors.add(GitError)
+    })
+
+    await expect(runAll(parseOptions({}))).rejects.toThrow('lint-staged failed')
+    expect(mockGitWorkflow.hidePartiallyStagedChanges).not.toHaveBeenCalled()
   })
 
   it('should skip applying unstaged modifications if there are errors during a task', async ({
