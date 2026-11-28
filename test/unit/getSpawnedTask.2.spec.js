@@ -2,7 +2,6 @@ import { exec } from 'tinyexec'
 import { describe, it, vi } from 'vitest'
 
 import { enableColors } from '../../lib/colors.js'
-import { getAbortController } from '../../lib/getAbortController.js'
 
 vi.mock('tinyexec', () => ({
   exec: vi.fn().mockReturnValue({
@@ -20,7 +19,7 @@ vi.mock('../../lib/killSubprocesses.js', () => ({
   killSubProcesses: vi.fn(),
 }))
 
-const abortController = getAbortController()
+const abortController = new AbortController()
 
 const defaultOpts = { abortController, files: ['test.js'] }
 

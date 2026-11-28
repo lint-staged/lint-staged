@@ -1,7 +1,6 @@
 import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
-import { getAbortController } from '../../lib/getAbortController.js'
 import { killSubProcesses } from '../../lib/killSubprocesses.js'
 import { getInitialState } from '../../lib/state.js'
 import { TaskError } from '../../lib/symbols.js'
@@ -23,7 +22,7 @@ vi.mock('../../lib/killSubprocesses.js', () => ({
 }))
 
 const defaultOpts = {
-  abortController: getAbortController(),
+  abortController: new AbortController(),
   files: ['test.js'],
 }
 
@@ -298,7 +297,7 @@ describe('getSpawnedTask', () => {
   }) => {
     expect.assertions(2)
 
-    const abortController = getAbortController()
+    const abortController = new AbortController()
 
     const taskFn = getSpawnedTask({
       ...defaultOpts,

@@ -1,7 +1,6 @@
 import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
-import { getAbortController } from '../../lib/getAbortController.js'
 import { runParallelTasks } from '../../lib/runParallelTasks.js'
 const { getSpawnedTasks } = await import('../../lib/getSpawnedTasks.js')
 
@@ -13,7 +12,7 @@ vi.mock('tinyexec', () => ({
   }),
 }))
 
-const abortController = getAbortController()
+const abortController = new AbortController()
 
 describe('getSpawnedTasks', () => {
   const topLevelDir = process.cwd()
@@ -197,7 +196,7 @@ describe('getSpawnedTasks', () => {
       const started = []
       const bothStarted = Promise.withResolvers()
       const finishParallel = Promise.withResolvers()
-      const controller = getAbortController()
+      const controller = new AbortController()
       const task = await getSpawnedTasks({
         abortController: controller,
         commands,

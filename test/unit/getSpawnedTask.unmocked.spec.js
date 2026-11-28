@@ -1,6 +1,5 @@
 import { describe, it } from 'vitest'
 
-import { getAbortController } from '../../lib/getAbortController.js'
 import { getInitialState } from '../../lib/state.js'
 
 const { getSpawnedTask } = await import('../../lib/getSpawnedTask.js')
@@ -9,7 +8,7 @@ describe('getSpawnedTask', () => {
   it('should kill a long running task when another fails', async ({ expect }) => {
     const context = getInitialState()
 
-    const abortController = getAbortController()
+    const abortController = new AbortController()
 
     const results = await Promise.allSettled([
       getSpawnedTask({
@@ -46,7 +45,7 @@ describe('getSpawnedTask', () => {
   it('should kill task on SIGINT', async ({ expect }) => {
     const context = getInitialState()
 
-    const abortController = getAbortController()
+    const abortController = new AbortController()
 
     const taskPromise = getSpawnedTask({
       abortController,
