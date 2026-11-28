@@ -1,5 +1,13 @@
 # lint-staged
 
+## 17.6.3
+
+### Patch Changes
+
+- [#1873](https://github.com/lint-staged/lint-staged/pull/1873) [`9791e53`](https://github.com/lint-staged/lint-staged/commit/9791e53c94630b5f18693d38216b25404aa8db09) - Clean up the `SIGINT` event listener after running. This is used to handle manually stopping _lint-staged_ while running, e.g. by pressing `CTRL+C`.
+
+- [#1873](https://github.com/lint-staged/lint-staged/pull/1873) [`de5f54a`](https://github.com/lint-staged/lint-staged/commit/de5f54acce88341692a6b33273bf1b92c25f56e1) - Unstaged changes to files with additional staged changes ("_partially staged_") are no longer hidden when the first preparation step of _lint-staged_ fails.
+
 ## 17.6.2
 
 ### Patch Changes
